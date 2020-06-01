@@ -1,0 +1,75 @@
+package com.pj.squashrestapp.config.security;
+
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.ArrayList;
+
+import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
+import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET;
+import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFIX;
+
+/**
+ *
+ */
+@Slf4j
+public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+
+  public JWTAuthorizationFilter(final AuthenticationManager authManager) {
+    super(authManager);
+  }
+
+  @Override
+  protected void doFilterInternal(final HttpServletRequest req,
+                                  final HttpServletResponse res,
+                                  final FilterChain chain) throws IOException, ServletException {
+    final String header = req.getHeader(HEADER_STRING);
+
+    if (header != null && header.startsWith(TOKEN_PREFIX)) {
+      final UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+    chain.doFilter(req, res);
+  }
+
+  private UsernamePasswordAuthenticationToken getAuthentication(final HttpServletRequest request) {
+    final String tokenWithHeader = request.getHeader(HEADER_STRING);
+
+    if (tokenWithHeader != null) {
+      final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
+
+      final String user;
+      try {
+        user = JWT
+                .require(Algorithm.HMAC512(SECRET.getBytes()))
+                .build()
+                .verify(token)
+                .getSubject();
+
+        log.info("Token will expire at {}", JWT.decode(token).getExpiresAt());
+
+        if (user != null) {
+          return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+        }
+
+      } catch (final TokenExpiredException e) {
+        log.info(e.getMessage());
+      }
+
+      return null;
+    }
+    return null;
+  }
+}

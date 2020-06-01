@@ -1,0 +1,56 @@
+package com.pj.squashrestapp.model;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "xp_points_for_place")
+@Getter
+@Setter
+@NoArgsConstructor
+public class XpPointsForPlace {
+
+  @Id
+  @Column(name = "id",
+          nullable = false,
+          updatable = false)
+  @GeneratedValue(
+          strategy = GenerationType.AUTO,
+          generator = "native")
+  @GenericGenerator(
+          name = "native",
+          strategy = "native")
+  private Long id;
+
+  @Column(name = "place_in_round")
+  private int placeInRound;
+
+  @Column(name = "place_in_round_group")
+  private int placeInRoundGroup;
+
+  @Column(name = "points")
+  private int points;
+
+  @ManyToOne
+  @JoinColumn(name = "xp_points_for_round_group_id", referencedColumnName = "id")
+  private XpPointsForRoundGroup xpPointsForRoundGroup;
+
+  public XpPointsForPlace(final int place, final int placesInAllRoundsBefore ,final int points, final XpPointsForRoundGroup xpPointsForRoundGroup) {
+    this.placeInRound = placesInAllRoundsBefore + place;
+    this.placeInRoundGroup = place;
+    this.points = points;
+    this.xpPointsForRoundGroup = xpPointsForRoundGroup;
+  }
+
+}
