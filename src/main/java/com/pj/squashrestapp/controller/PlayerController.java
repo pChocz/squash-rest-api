@@ -7,6 +7,8 @@ import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -34,6 +36,8 @@ public class PlayerController {
           params = {"id", "role"},
           method = GET)
   @ResponseBody
+  @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+//  @Secured("ROLE_ADMIN")
   List<PlayerDetailedDto> byLeagueId(@RequestParam("id") final Long id,
                                      @RequestParam("role") final LeagueRole role) {
     final List<PlayerDetailedDto> players = playerRepository.findByLeague(id, role);

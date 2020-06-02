@@ -17,10 +17,15 @@ import java.util.List;
 @SuppressWarnings({"unused", "JavaDoc"})
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 
+
+  Player findByUsernameOrEmail(String username, String email);
+
   Player findByUsername(String username);
+
 
   @Query("SELECT p FROM Player p WHERE p.id IN :ids")
   List<Player> findByIds(@Param("ids") Long[] ids);
+
 
   @Query("""
           SELECT NEW com.pj.squashrestapp.model.dto.PlayerDetailedDto(  
@@ -44,6 +49,22 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           """)
   List<LeagueRole> findRolesForUserByLeague(@Param("id") Long id,
                                             @Param("leagueId") Long leagueId);
+
+
+  @Query("""
+          SELECT r.leagueRole FROM Player p
+            JOIN p.roles r
+              WHERE p.username = :username
+          """)
+  List<LeagueRole> findAllRolesForUsername(@Param("username") String username);
+
+
+  @Query("""
+          SELECT a.type FROM Player p
+            JOIN p.authorities a
+              WHERE p.username = :username
+          """)
+  List<AuthorityType> findAuthoritiesForUsername(@Param("username") String username);
 
 
   @Query("""

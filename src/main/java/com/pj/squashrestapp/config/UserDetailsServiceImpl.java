@@ -32,35 +32,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   private PlayerRepository playerRepository;
 
   @Override
-  public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-    final Player player = playerRepository.findByUsername(username);
-
+  public UserDetails loadUserByUsername(final String usernameOrEmail) throws UsernameNotFoundException {
+    final Player player = playerRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
     if (player == null) {
       throw new UsernameNotFoundException("User not found!");
     }
-
-    final List<AuthorityType> authoritiesForUser = playerRepository.findAuthoritiesForUser(player.getId());
-    final Collection<? extends GrantedAuthority> authorities = getAuthorities(authoritiesForUser);
-
-    return new User(
-            player.getUsername(),
-            player.getPassword(),
-            true,
-            true,
-            true,
-            true,
-            authorities);
-  }
-
-  private Collection<? extends GrantedAuthority> getAuthorities(final Collection<AuthorityType> authorityTypes) {
-    return getGrantedAuthorities(authorityTypes);
-  }
-
-  private List<GrantedAuthority> getGrantedAuthorities(final Collection<AuthorityType> authorityTypes) {
-    return authorityTypes
-            .stream()
-            .map(type -> new SimpleGrantedAuthority(type.name()))
-            .collect(Collectors.toList());
+    final PlayerDetails playerDetails = new PlayerDetails(player);
+    return playerDetails;
   }
 
 }

@@ -1,12 +1,13 @@
 package com.pj.squashrestapp.config.security;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.auth0.jwt.interfaces.DecodedJWT;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
@@ -16,9 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
-import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET;
+import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET_KEY;
 import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFIX;
 
 /**
@@ -50,18 +53,25 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     if (tokenWithHeader != null) {
       final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
 
-      final String user;
       try {
-        user = JWT
-                .require(Algorithm.HMAC512(SECRET.getBytes()))
+        final Claims claims = Jwts
+                .parserBuilder()
+                .setSigningKey(SECRET_KEY)
                 .build()
-                .verify(token)
-                .getSubject();
+                .parseClaimsJws(token)
+                .getBody();
 
-        log.info("Token will expire at {}", JWT.decode(token).getExpiresAt());
+        final String user = claims.getSubject();
+
+        final ArrayList<String> authorities = (ArrayList<String>) claims.get("roles");
+
+        final List<GrantedAuthority> grantedAuthorities = authorities
+                .stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
 
         if (user != null) {
-          return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+          return new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
         }
 
       } catch (final TokenExpiredException e) {

@@ -1,5 +1,10 @@
 package com.pj.squashrestapp.config.security;
 
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+
+import java.security.Key;
+
 /**
  * Several constants related to the Token authentication.
  */
@@ -16,12 +21,15 @@ public final class SecurityConstants {
    * */
   public static final long EXPIRATION_TIME = 3_600_000;
 
-  public static final String SECRET = "SecretKeyToGenJWTs";
-
   public static final String TOKEN_PREFIX = "Bearer ";
 
   public static final String HEADER_STRING = "Authorization";
 
   public static final String SIGN_UP_URL = "/users/sign-up";
+
+  public static final Key SECRET_KEY = Keys
+          .hmacShaKeyFor(
+                  Decoders.BASE64.decode(
+                          "QLTIh5c0pedaXdRzckPnlr1OCHuMcBmhHGzACijWJ0zlJ7Ua5LFkiRwX0e2TMIHo1tQLNHk6INSFc6JXY2g6letWJClMHYp2XO1f"));
 
 }

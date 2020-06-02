@@ -10,6 +10,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,10 +52,10 @@ public class Player {
   @Column(name = "email")
   private String email;
 
-  @ManyToMany(mappedBy = "players")
+  @ManyToMany(mappedBy = "players", fetch = FetchType.EAGER)
   private Set<Authority> authorities;
 
-  @ManyToMany(mappedBy = "players")
+  @ManyToMany(mappedBy = "players", fetch = FetchType.EAGER)
   private Set<RoleForLeague> roles;
 
   private String token;
