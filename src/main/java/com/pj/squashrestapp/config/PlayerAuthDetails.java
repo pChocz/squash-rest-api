@@ -2,9 +2,7 @@ package com.pj.squashrestapp.config;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.RoleForLeague;
-import lombok.AccessLevel;
+import com.pj.squashrestapp.model.dto.PlayerAuthDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,9 +18,6 @@ import java.util.stream.Collectors;
 @Getter
 public class PlayerAuthDetails implements UserDetails {
 
-  @Getter(AccessLevel.PRIVATE)
-  private final Player player;
-
   private final String username;
   private final String password;
   private final Collection<? extends GrantedAuthority> authorities;
@@ -33,12 +28,11 @@ public class PlayerAuthDetails implements UserDetails {
   private final boolean credentialsNonExpired;
   private final boolean enabled;
 
-  public PlayerAuthDetails(final Player player) {
-    this.player = player;
-    this.username = player.getUsername();
-    this.password = player.getPassword();
-    this.authorities = extractAuthorities();
-    this.rolesForLeagues = extractRolesForLeagues();
+  public PlayerAuthDetails(final List<PlayerAuthDto> authDtoList) {
+    this.username = authDtoList.get(0).getUsername();
+    this.password = authDtoList.get(0).getPassword();
+    this.authorities = extractAuthorities(authDtoList);
+    this.rolesForLeagues = extractRolesForLeagues(authDtoList);
 
     // todo: check what to do with it later
     this.accountNonExpired = true;
@@ -47,18 +41,17 @@ public class PlayerAuthDetails implements UserDetails {
     this.enabled = true;
   }
 
-  private Collection<? extends GrantedAuthority> extractAuthorities() {
-    return player
-            .getAuthorities()
+  private Collection<? extends GrantedAuthority> extractAuthorities(final List<PlayerAuthDto> authDtoList) {
+    return authDtoList
             .stream()
-            .map(auth -> new SimpleGrantedAuthority(auth.getType().name()))
-            .collect(Collectors.toList());
+            .map(auth -> new SimpleGrantedAuthority(auth.getAuthorityType().name()))
+            .collect(Collectors.toSet());
   }
 
-  private Multimap<String, String> extractRolesForLeagues() {
+  private Multimap<String, String> extractRolesForLeagues(final List<PlayerAuthDto> authDtoList) {
     final Multimap<String, String> multimap = HashMultimap.create();
-    for (final RoleForLeague role : player.getRoles()) {
-      multimap.put(role.getLeague().getName(), role.getLeagueRole().name());
+    for (final PlayerAuthDto authDto : authDtoList) {
+      multimap.put(authDto.getLeagueName(), authDto.getRole().name());
     }
     return multimap;
   }

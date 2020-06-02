@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET_KEY;
@@ -67,7 +68,7 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
         final String username = claims.getSubject();
         final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
-        final List<GrantedAuthority> grantedAuthorities = (List<GrantedAuthority>) player.getAuthorities();
+        final Set<GrantedAuthority> grantedAuthorities = (Set<GrantedAuthority>) player.getAuthorities();
 
         return new UsernamePasswordAuthenticationToken(
                 player.getUsername(),

@@ -89,21 +89,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
               }
             });
 
-//    http.csrf().disable()
-//            .authorizeRequests()
-//            .antMatchers("/**").hasRole("USER")
-//            .antMatchers("/admin/**").hasRole("ADMIN")
-//            .and()
-//            .formLogin()
-//            .successForwardUrl("/me");
-
-//    http.authorizeRequests()
-//            .antMatchers("/**").hasAnyRole("ADMIN", "USER")
-//            .anyRequest()
-//            .authenticated()
-//            .and()
-//            .formLogin()
-//            .successForwardUrl("/me");
   }
 
   @Bean
