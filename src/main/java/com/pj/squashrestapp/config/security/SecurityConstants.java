@@ -6,7 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 
 /**
- * Several constants related to the Token authentication.
+ * Several constants related to the token authentication.
  */
 @SuppressWarnings("JavaDoc")
 public final class SecurityConstants {
@@ -19,7 +19,7 @@ public final class SecurityConstants {
    *     60_000 ms = 1 minute
    * </pre>
    * */
-  public static final long EXPIRATION_TIME = 3_600_000;
+  public static final long EXPIRATION_TIME = 860_400_000; // 10 days
 
   public static final String TOKEN_PREFIX = "Bearer ";
 

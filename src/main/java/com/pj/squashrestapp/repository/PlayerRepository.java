@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
@@ -39,6 +38,23 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           """)
   List<PlayerDetailedDto> findByLeague(@Param("leagueId") Long leagueId,
                                        @Param("leagueRole") LeagueRole leagueRole);
+
+
+//  @Query("""
+//          SELECT NEW com.pj.squashrestapp.model.dto.PlayerAuthorizationDto(
+//            p.username AS username,
+//            p.password AS password,
+//            a.type AS authority,
+//            r.leagueRole AS role,
+//            l.name AS leagueName)
+//          FROM Player p
+//            JOIN p.authorities a
+//            JOIN p.roles r
+//            JOIN r.league l
+//              WHERE (p.username = :usernameOrEmail
+//                     OR p.email = :usernameOrEmail)
+//          """)
+//  List<PlayerAuthorizationDto> getAuth(@Param("usernameOrEmail") String usernameOrEmail);
 
 
   @Query("""

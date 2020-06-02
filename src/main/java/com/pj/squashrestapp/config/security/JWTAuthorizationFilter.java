@@ -1,14 +1,16 @@
 package com.pj.squashrestapp.config.security;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.pj.squashrestapp.config.PlayerAuthDetails;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -16,9 +18,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET_KEY;
@@ -30,8 +30,12 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
 @Slf4j
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-  public JWTAuthorizationFilter(final AuthenticationManager authManager) {
+  private final UserDetailsService userDetailsService;
+
+  public JWTAuthorizationFilter(final AuthenticationManager authManager,
+                                final UserDetailsService userDetailsService) {
     super(authManager);
+    this.userDetailsService = userDetailsService;
   }
 
   @Override
@@ -61,20 +65,16 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
                 .parseClaimsJws(token)
                 .getBody();
 
-        final String user = claims.getSubject();
+        final String username = claims.getSubject();
+        final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
+        final List<GrantedAuthority> grantedAuthorities = (List<GrantedAuthority>) player.getAuthorities();
 
-        final ArrayList<String> authorities = (ArrayList<String>) claims.get("roles");
+        return new UsernamePasswordAuthenticationToken(
+                player.getUsername(),
+                null,
+                grantedAuthorities);
 
-        final List<GrantedAuthority> grantedAuthorities = authorities
-                .stream()
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
-
-        if (user != null) {
-          return new UsernamePasswordAuthenticationToken(user, null, grantedAuthorities);
-        }
-
-      } catch (final TokenExpiredException e) {
+      } catch (final TokenExpiredException | ExpiredJwtException e) {
         log.info(e.getMessage());
       }
 
