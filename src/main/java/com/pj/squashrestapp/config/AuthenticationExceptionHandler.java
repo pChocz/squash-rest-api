@@ -12,9 +12,9 @@ import java.util.Date;
 /**
  *
  */
-public class CustomAuthenticationEntryPoint {
+public class AuthenticationExceptionHandler {
 
-  public CustomAuthenticationEntryPoint(final HttpServletRequest request,
+  public AuthenticationExceptionHandler(final HttpServletRequest request,
                                         final HttpServletResponse response,
                                         final AuthenticationException e) throws IOException {
 

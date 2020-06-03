@@ -15,11 +15,11 @@ import java.util.Date;
 /**
  *
  */
-public class CustomAccessDeniedHandler {
+public class AccessDeniedExceptionHandler {
 
-  public CustomAccessDeniedHandler(final HttpServletRequest request,
-                                   final HttpServletResponse response,
-                                   final AccessDeniedException e) throws IOException {
+  public AccessDeniedExceptionHandler(final HttpServletRequest request,
+                                      final HttpServletResponse response,
+                                      final AccessDeniedException e) throws IOException {
 
     final UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
     final String username = token.getName();

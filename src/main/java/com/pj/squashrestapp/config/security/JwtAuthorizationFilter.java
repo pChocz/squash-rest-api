@@ -29,12 +29,12 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
  *
  */
 @Slf4j
-public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
+public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final UserDetailsService userDetailsService;
   private final SecretKeyHolder secretKeyHolder;
 
-  public JWTAuthorizationFilter(final AuthenticationManager authManager,
+  public JwtAuthorizationFilter(final AuthenticationManager authManager,
                                 final UserDetailsService userDetailsService,
                                 final SecretKeyHolder secretKeyHolder) {
     super(authManager);
@@ -60,11 +60,11 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
    *
    * NULL is returned in case of unsuccessful authentication,
    * which can happen because of following reasons (i.a.):
-   * - MalformedJwtException      -> JWT does not seem to be valid token at all
+   * - MalformedJwtException      -> Token does not seem to be valid at all
    * - SignatureException         -> Token has proper syntax but signature does not match the content
-   * - UsernameNotFoundException  -> Valid token but username does not exist
+   * - UsernameNotFoundException  -> Token is valid but username does not exist
    * - ExpiredJwtException        -> Token has expired, obviously
-   * - MalformedJsonException     -> Unpacked token has wrong JSON syntax
+   * - MalformedJsonException     -> Token has wrong JSON syntax
    * </pre>
    */
   @SuppressWarnings("ProhibitedExceptionCaught")

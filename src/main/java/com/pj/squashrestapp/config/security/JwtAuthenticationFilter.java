@@ -31,13 +31,13 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
  *
  */
 @Slf4j
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final static String WRONG_CREDENTIALS_FORMAT_MESSAGE = "Wrong format of credentials received";
   private final AuthenticationManager authenticationManager;
   private final SecretKeyHolder secretKeyHolder;
 
-  public JWTAuthenticationFilter(final AuthenticationManager authenticationManager,
+  public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
                                  final SecretKeyHolder secretKeyHolder) {
     this.authenticationManager = authenticationManager;
     this.secretKeyHolder = secretKeyHolder;

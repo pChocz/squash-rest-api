@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.config.security.JWTAuthenticationFilter;
-import com.pj.squashrestapp.config.security.JWTAuthorizationFilter;
+import com.pj.squashrestapp.config.security.JwtAuthenticationFilter;
+import com.pj.squashrestapp.config.security.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.SecretKeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,19 +42,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Override
   protected void configure(final HttpSecurity http) throws Exception {
 
-    http.cors().and().csrf().disable()
-            .authorizeRequests()
-            .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
-            .anyRequest().authenticated()
-            .and()
-            .addFilter(new JWTAuthenticationFilter(authenticationManager(), secretKeyHolder))
-            .addFilter(new JWTAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder))
-            // this disables session creation on Spring Security
-            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    // disables cross-origin-resource-sharing and cross-site-request-forgery protection
+    http.cors().and().csrf().disable();
 
+    // set up of endpoints permissions
+    http.authorizeRequests()
+            .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+            .anyRequest().authenticated();
+
+    // authentication and authorization filters
+    http.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder));
+
+    // this disables session creation on Spring Security
+    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+    // exception handling for unauthenticated/unathorized accesses
     http.exceptionHandling()
-            .authenticationEntryPoint(CustomAuthenticationEntryPoint::new)
-            .accessDeniedHandler(CustomAccessDeniedHandler::new);
+            .authenticationEntryPoint(AuthenticationExceptionHandler::new)
+            .accessDeniedHandler(AccessDeniedExceptionHandler::new);
   }
 
   @Bean
