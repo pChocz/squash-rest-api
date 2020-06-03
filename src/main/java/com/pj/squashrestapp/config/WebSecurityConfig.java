@@ -2,6 +2,7 @@ package com.pj.squashrestapp.config;
 
 import com.pj.squashrestapp.config.security.JWTAuthenticationFilter;
 import com.pj.squashrestapp.config.security.JWTAuthorizationFilter;
+import com.pj.squashrestapp.config.security.SecretKeyHolder;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
+import java.security.Key;
 import java.util.Date;
 
 import static com.pj.squashrestapp.config.security.SecurityConstants.SIGN_UP_URL;
@@ -42,6 +44,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   @Autowired
   UserDetailsService userDetailsService;
 
+  @Autowired
+  SecretKeyHolder secretKeyHolder;
+
   @Override
   protected void configure(final HttpSecurity http) throws Exception {
 
@@ -50,8 +55,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
             .anyRequest().authenticated()
             .and()
-            .addFilter(new JWTAuthenticationFilter(authenticationManager()))
-            .addFilter(new JWTAuthorizationFilter(authenticationManager(), userDetailsService))
+            .addFilter(new JWTAuthenticationFilter(authenticationManager(), secretKeyHolder))
+            .addFilter(new JWTAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder))
             // this disables session creation on Spring Security
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 

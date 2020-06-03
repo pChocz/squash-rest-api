@@ -3,24 +3,33 @@ package com.pj.squashrestapp.config.security;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
 
 /**
- *
+ * Helper class that extracts jwt.secret key from the application.yml
+ * file and builds cryptographic key needed for the authenticaton and
+ * autorization purposes within the Spring Security framework.
  */
-@Component
-@Getter
-public final class SecretKeyHolder {
+@Setter
+@Configuration
+@EnableConfigurationProperties
+@ConfigurationProperties("jwt")
+public class SecretKeyHolder {
 
-  private final Key secretKey;
+  @Value(value = "${secret:}")
+  private String secret;
 
-  @Autowired
-  public SecretKeyHolder(@Value(value = "${jwt.secret:}") final String stringSecretKey) {
-    this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(stringSecretKey));
+  public Key getSecretKey() {
+    return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
   }
 
 }

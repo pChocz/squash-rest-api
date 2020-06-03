@@ -32,11 +32,14 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final UserDetailsService userDetailsService;
+  private final SecretKeyHolder secretKeyHolder;
 
   public JWTAuthorizationFilter(final AuthenticationManager authManager,
-                                final UserDetailsService userDetailsService) {
+                                final UserDetailsService userDetailsService,
+                                final SecretKeyHolder secretKeyHolder) {
     super(authManager);
     this.userDetailsService = userDetailsService;
+    this.secretKeyHolder = secretKeyHolder;
   }
 
   @Override
@@ -51,13 +54,18 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   /**
+   * <pre>
    * User authentication is performed in this method, based on the
    * token received in the HTTP request.
    *
    * NULL is returned in case of unsuccessful authentication,
    * which can happen because of following reasons (i.a.):
-   * - todo: document!
-   *
+   * - MalformedJwtException      -> JWT does not seem to be valid token at all
+   * - SignatureException         -> Token has proper syntax but signature does not match the content
+   * - UsernameNotFoundException  -> Valid token but username does not exist
+   * - ExpiredJwtException        -> Token has expired, obviously
+   * - MalformedJsonException     -> Unpacked token has wrong JSON syntax
+   * </pre>
    */
   @SuppressWarnings("ProhibitedExceptionCaught")
   private UsernamePasswordAuthenticationToken getAuthentication(final HttpServletRequest request) {
@@ -71,18 +79,17 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     try {
       final Claims claims = Jwts
               .parserBuilder()
-              .setSigningKey(SECRET_KEY)
+              .setSigningKey(secretKeyHolder.getSecretKey())
               .build()
               .parseClaimsJws(token)
               .getBody();
-      final String username = claims.getSubject();
-      final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
 
       log.info("\nToken Info:\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
-              username,
+              claims.getSubject(),
               claims.getIssuedAt(),
               claims.getExpiration());
 
+      final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(claims.getSubject());
       return new UsernamePasswordAuthenticationToken(
               player.getUsername(),
               player.getPassword(),

@@ -4,6 +4,7 @@ import com.pj.squashrestapp.config.PlayerAuthDetails;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -32,11 +34,13 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final static String WRONG_CREDENTIALS_FORMAT_MESSAGE = "Wrong format of credentials received";
-
   private final AuthenticationManager authenticationManager;
+  private final SecretKeyHolder secretKeyHolder;
 
-  public JWTAuthenticationFilter(final AuthenticationManager authenticationManager) {
+  public JWTAuthenticationFilter(final AuthenticationManager authenticationManager,
+                                 final SecretKeyHolder secretKeyHolder) {
     this.authenticationManager = authenticationManager;
+    this.secretKeyHolder = secretKeyHolder;
   }
 
   @Override
@@ -72,7 +76,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .setSubject(principal.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(SECRET_KEY)
+            .signWith(secretKeyHolder.getSecretKey())
             .compact();
 
     res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
