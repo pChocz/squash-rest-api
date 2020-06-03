@@ -22,11 +22,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(final String usernameOrEmail) throws UsernameNotFoundException {
     final List<PlayerAuthDto> authDtoList = playerRepository.getAuthorizationData(usernameOrEmail);
-
     if (authDtoList.isEmpty()) {
       throw new UsernameNotFoundException("User not found!");
     }
-
     final PlayerAuthDetails playerAuthDetails = new PlayerAuthDetails(authDtoList);
     return playerAuthDetails;
   }

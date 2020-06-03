@@ -55,8 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             // this disables session creation on Spring Security
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-    http
-            .exceptionHandling()
+    http.exceptionHandling()
             .authenticationEntryPoint((request, response, e) ->
             {
               response.setContentType("application/json;charset=UTF-8");
@@ -88,7 +87,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         .toString());
               }
             });
-
   }
 
   @Bean

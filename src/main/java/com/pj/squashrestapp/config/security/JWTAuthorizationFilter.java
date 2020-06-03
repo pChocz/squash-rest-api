@@ -43,44 +43,55 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
   protected void doFilterInternal(final HttpServletRequest req,
                                   final HttpServletResponse res,
                                   final FilterChain chain) throws IOException, ServletException {
-    final String header = req.getHeader(HEADER_STRING);
-
-    if (header != null && header.startsWith(TOKEN_PREFIX)) {
-      final UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+    final UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
+    if (authentication != null) {
       SecurityContextHolder.getContext().setAuthentication(authentication);
     }
     chain.doFilter(req, res);
   }
 
+  /**
+   * User authentication is performed in this method, based on the
+   * token received in the HTTP request.
+   *
+   * NULL is returned in case of unsuccessful authentication,
+   * which can happen because of following reasons (i.a.):
+   * - todo: document!
+   *
+   */
+  @SuppressWarnings("ProhibitedExceptionCaught")
   private UsernamePasswordAuthenticationToken getAuthentication(final HttpServletRequest request) {
     final String tokenWithHeader = request.getHeader(HEADER_STRING);
-
-    if (tokenWithHeader != null) {
-      final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
-
-      try {
-        final Claims claims = Jwts
-                .parserBuilder()
-                .setSigningKey(SECRET_KEY)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
-        final String username = claims.getSubject();
-        final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
-        final Set<GrantedAuthority> grantedAuthorities = (Set<GrantedAuthority>) player.getAuthorities();
-
-        return new UsernamePasswordAuthenticationToken(
-                player.getUsername(),
-                null,
-                grantedAuthorities);
-
-      } catch (final TokenExpiredException | ExpiredJwtException e) {
-        log.info(e.getMessage());
-      }
-
+    if (tokenWithHeader == null) {
+      log.warn("Authorization is missing in the request");
       return null;
     }
-    return null;
+
+    final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
+    try {
+      final Claims claims = Jwts
+              .parserBuilder()
+              .setSigningKey(SECRET_KEY)
+              .build()
+              .parseClaimsJws(token)
+              .getBody();
+      final String username = claims.getSubject();
+      final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
+
+      log.info("\nToken Info:\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
+              username,
+              claims.getIssuedAt(),
+              claims.getExpiration());
+
+      return new UsernamePasswordAuthenticationToken(
+              player.getUsername(),
+              player.getPassword(),
+              player.getAuthorities());
+
+    } catch (final Exception e) {
+      log.warn(e.getMessage());
+      return null;
+    }
   }
+
 }

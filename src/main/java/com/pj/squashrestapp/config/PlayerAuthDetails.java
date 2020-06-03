@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -20,7 +21,7 @@ public class PlayerAuthDetails implements UserDetails {
 
   private final String username;
   private final String password;
-  private final Collection<? extends GrantedAuthority> authorities;
+  private final Set<GrantedAuthority> authorities;
   private final Multimap<String, String> rolesForLeagues;
 
   private final boolean accountNonExpired;
@@ -41,7 +42,7 @@ public class PlayerAuthDetails implements UserDetails {
     this.enabled = true;
   }
 
-  private Collection<? extends GrantedAuthority> extractAuthorities(final List<PlayerAuthDto> authDtoList) {
+  private Set<GrantedAuthority> extractAuthorities(final List<PlayerAuthDto> authDtoList) {
     return authDtoList
             .stream()
             .map(auth -> new SimpleGrantedAuthority(auth.getAuthorityType().name()))

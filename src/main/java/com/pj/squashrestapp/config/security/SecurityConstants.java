@@ -27,8 +27,8 @@ public final class SecurityConstants {
 
   public static final String SIGN_UP_URL = "/users/sign-up";
 
-  public static final Key SECRET_KEY = Keys
-          .hmacShaKeyFor(
+  public static final Key SECRET_KEY =
+          Keys.hmacShaKeyFor(
                   Decoders.BASE64.decode(
                           "QLTIh5c0pedaXdRzckPnlr1OCHuMcBmhHGzACijWJ0zlJ7Ua5LFkiRwX0e2TMIHo1tQLNHk6INSFc6JXY2g6letWJClMHYp2XO1f"));
 

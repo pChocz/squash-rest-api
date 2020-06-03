@@ -2,7 +2,9 @@ package com.pj.squashrestapp.config.security;
 
 import com.pj.squashrestapp.config.PlayerAuthDetails;
 import io.jsonwebtoken.Jwts;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +28,10 @@ import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFI
 /**
  *
  */
+@Slf4j
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+  private final static String WRONG_CREDENTIALS_FORMAT_MESSAGE = "Wrong format of credentials received";
 
   private final AuthenticationManager authenticationManager;
 
@@ -35,19 +40,23 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   }
 
   @Override
-  public Authentication attemptAuthentication(final HttpServletRequest req, final HttpServletResponse res)
-          throws AuthenticationException {
+  public Authentication attemptAuthentication(final HttpServletRequest req,
+                                              final HttpServletResponse res) throws AuthenticationException {
     try {
       final String reqInput = IOUtils.toString(req.getInputStream());
       final byte[] decode = Base64.getDecoder().decode(reqInput);
       final String[] credentials = new String(decode).split(":");
+      if (credentials.length != 2) {
+        log.warn(WRONG_CREDENTIALS_FORMAT_MESSAGE);
+        throw new AuthenticationCredentialsNotFoundException(WRONG_CREDENTIALS_FORMAT_MESSAGE);
+      }
       final var authentication = new UsernamePasswordAuthenticationToken(credentials[0], credentials[1], new ArrayList<>());
       final Authentication authenticate = authenticationManager.authenticate(authentication);
-
       return authenticate;
 
-    } catch (final IOException | IllegalArgumentException e) {
-      throw new RuntimeException(e);
+    } catch (final IOException | IllegalArgumentException | AuthenticationException e) {
+      log.warn(e.getMessage());
+      throw new AuthenticationCredentialsNotFoundException(e.getMessage());
     }
   }
 
