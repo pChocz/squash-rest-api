@@ -65,7 +65,15 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           """ )
   List<SingleSetRowDto> retrieveByLeagueIdFinishedRoundsOnly(@Param("leagueId") Long leagueId);
 
-  Match getById(Long id);
+  @Query("""
+          SELECT l.id FROM Match m
+           JOIN RoundGroup rg ON m.roundGroup = rg
+           JOIN Round r ON rg.round = r
+           JOIN Season s ON r.season = s
+           JOIN League l ON s.league = l
+              WHERE m.id = :matchId
+          """)
+  Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
 
 
 

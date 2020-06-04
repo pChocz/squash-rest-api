@@ -109,12 +109,12 @@ public class MatchController {
           params = {"matchId", "setNumber", "p1score", "p2score"},
           method = POST)
   @ResponseBody
+  @PreAuthorize("hasRoleForMatch(#matchId, 'PLAYER')")
   SetDto updateMatch(
           @RequestParam("matchId") final Long matchId,
           @RequestParam("setNumber") final int setNumber,
           @RequestParam("p1score") final int p1score,
           @RequestParam("p2score") final int p2score) {
-
     final SetResult setToModify = setResultRepository.findByMatchIdAndNumber(matchId, setNumber);
     setToModify.setFirstPlayerScore(p1score);
     setToModify.setSecondPlayerScore(p2score);

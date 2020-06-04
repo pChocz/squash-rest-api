@@ -3,6 +3,7 @@ package com.pj.squashrestapp.config.security.method;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.repository.MatchRepository;
+import com.pj.squashrestapp.repository.RoundRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +22,19 @@ import org.springframework.security.core.Authentication;
  * the {@link com.pj.squashrestapp.controller} package.
  */
 @SuppressWarnings("unused")
+@Getter
+@Setter
 public class CustomMethodSecurityExpressionRoot
         extends SecurityExpressionRoot
         implements MethodSecurityExpressionOperations {
 
   private final UserDetailsImpl principal;
 
-  @Getter
-  @Setter
-  private Object filterObject;
+  private MatchRepository matchRepository;
+  private RoundRepository roundRepository;
 
-  @Getter
-  @Setter
+  private Object target;
+  private Object filterObject;
   private Object returnObject;
 
   /**
@@ -48,7 +50,11 @@ public class CustomMethodSecurityExpressionRoot
 
   @Override
   public Object getThis() {
-    return null;
+    return target;
+  }
+
+  void setThis(final Object target) {
+    this.target = target;
   }
 
   public boolean hasRoleForLeague(final Long leagueId, final String role) {
@@ -58,14 +64,12 @@ public class CustomMethodSecurityExpressionRoot
     return principal.hasRoleForLeague(leagueId, role);
   }
 
-  // TODO: how to provide matchRepository to this class?
-//  public boolean hasRoleForMatch(final Long matchId, final String role) {
-//    final Match match = matchRepository.getById(matchId);
-//    final Long leagueId = 1L;
-//    if (principal.isAdmin()) {
-//      return true;
-//    }
-//    return principal.hasRoleForLeague(leagueId, role);
-//  }
+  public boolean hasRoleForMatch(final Long matchId, final String role) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    final Long leagueId = matchRepository.retrieveLeagueIdOfMatch(matchId);
+    return principal.hasRoleForLeague(leagueId, role);
+  }
 
 }
