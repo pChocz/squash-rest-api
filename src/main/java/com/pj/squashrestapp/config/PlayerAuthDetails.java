@@ -22,7 +22,7 @@ public class PlayerAuthDetails implements UserDetails {
   private final String username;
   private final String password;
   private final Set<GrantedAuthority> authorities;
-  private final Multimap<String, String> rolesForLeagues;
+  private final Multimap<Long, String> rolesForLeagues;
 
   private final boolean accountNonExpired;
   private final boolean accountNonLocked;
@@ -49,19 +49,23 @@ public class PlayerAuthDetails implements UserDetails {
             .collect(Collectors.toSet());
   }
 
-  private Multimap<String, String> extractRolesForLeagues(final List<PlayerAuthDto> authDtoList) {
-    final Multimap<String, String> multimap = HashMultimap.create();
+  private Multimap<Long, String> extractRolesForLeagues(final List<PlayerAuthDto> authDtoList) {
+    final Multimap<Long, String> multimap = HashMultimap.create();
     for (final PlayerAuthDto authDto : authDtoList) {
-      multimap.put(authDto.getLeagueName(), authDto.getRole().name());
+      multimap.put(authDto.getLeagueId(), authDto.getRole().name());
     }
     return multimap;
   }
 
-  public boolean isPlayerOfLeague(final String leagueName) {
-    final Collection<String> rolesForLeague = rolesForLeagues.get(leagueName);
+  public boolean isAdmin() {
+    return authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+  }
+
+  public boolean hasRoleForLeague(final Long leagueId, final String role) {
+    final Collection<String> rolesForLeague = rolesForLeagues.get(leagueId);
     return (rolesForLeague == null)
             ? false
-            : rolesForLeague.contains("PLAYER");
+            : rolesForLeague.contains(role);
   }
 
 }

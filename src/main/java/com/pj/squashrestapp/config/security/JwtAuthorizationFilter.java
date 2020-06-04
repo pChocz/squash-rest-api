@@ -83,17 +83,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
               .build()
               .parseClaimsJws(token)
               .getBody();
+      final String username = claims.getSubject();
 
       log.info("\nToken Info:\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
-              claims.getSubject(),
+              username,
               claims.getIssuedAt(),
               claims.getExpiration());
 
-      final PlayerAuthDetails player = (PlayerAuthDetails) userDetailsService.loadUserByUsername(claims.getSubject());
-      return new UsernamePasswordAuthenticationToken(
-              player.getUsername(),
-              player.getPassword(),
-              player.getAuthorities());
+      final PlayerAuthDetails playerAuthDetails = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
+      final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+              playerAuthDetails,
+              playerAuthDetails.getPassword(),
+              playerAuthDetails.getAuthorities());
+      return usernamePasswordAuthenticationToken;
 
     } catch (final Exception e) {
       log.warn(e.getMessage());

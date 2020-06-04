@@ -70,7 +70,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
 
 
-
 //  @Query("SELECT DISTINCT m FROM Match m JOIN FETCH m.setResults")
 //  List<MatchProjection> retrieveAllMatchesProjection();
 

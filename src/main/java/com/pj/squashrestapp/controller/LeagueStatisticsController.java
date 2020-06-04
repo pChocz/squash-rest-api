@@ -4,6 +4,7 @@ import com.pj.squashrestapp.service.LeagueStatsWrapper;
 import com.pj.squashrestapp.service.LeagueStatisticsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,7 +28,8 @@ public class LeagueStatisticsController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  LeagueStatsWrapper byLeagueId(@RequestParam("id") final Long id) {
+  @PreAuthorize("hasPermission(#id, 'League', 'PLAYER')")
+  LeagueStatsWrapper byId(@RequestParam("id") final Long id) {
     return leagueStatisticsService.buildStatsForLeagueId(id);
   }
 

@@ -3,6 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.pj.squashrestapp.config.PlayerAuthDetails;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.LeagueRole;
@@ -49,7 +50,6 @@ public class MeController {
     final UserBasicInfo userBasicInfo = new UserBasicInfo(player, auth);
     return userBasicInfo;
   }
-
 
   @RequestMapping(
           value = "/getAllRoles",

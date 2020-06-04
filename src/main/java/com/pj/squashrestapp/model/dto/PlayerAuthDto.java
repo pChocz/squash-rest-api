@@ -13,6 +13,6 @@ public class PlayerAuthDto {
   String password;
   AuthorityType authorityType;
   LeagueRole role;
-  String leagueName;
+  Long leagueId;
 
 }

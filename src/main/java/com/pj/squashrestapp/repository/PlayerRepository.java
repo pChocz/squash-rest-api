@@ -46,7 +46,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             p.password AS password,
             a.type AS authorityType,
             r.leagueRole AS role,
-            l.name AS leagueName)
+            l.id AS leagueId)
           FROM Player p
             JOIN p.authorities a
             JOIN p.roles r
