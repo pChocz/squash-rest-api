@@ -28,7 +28,7 @@ public class LeagueStatisticsController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  @PreAuthorize("hasPermission(#id, 'League', 'PLAYER')")
+  @PreAuthorize("hasRoleForLeague(#id, 'PLAYER')")
   LeagueStatsWrapper byId(@RequestParam("id") final Long id) {
     return leagueStatisticsService.buildStatsForLeagueId(id);
   }

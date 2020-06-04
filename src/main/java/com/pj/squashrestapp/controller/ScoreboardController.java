@@ -7,6 +7,7 @@ import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.util.MatchUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -58,6 +59,7 @@ public class ScoreboardController {
           params = {"id"},
           method = GET)
   @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#id, 'PLAYER')")
   Scoreboard byLeagueId(
           @RequestParam("id") final Long id) {
     final List<SingleSetRowDto> sets = matchRepository.retrieveByLeagueId(id);

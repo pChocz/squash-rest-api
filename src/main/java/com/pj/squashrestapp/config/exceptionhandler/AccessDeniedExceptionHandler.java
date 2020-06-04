@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.config;
+package com.pj.squashrestapp.config.exceptionhandler;
 
 import net.minidev.json.JSONObject;
 import org.springframework.security.access.AccessDeniedException;

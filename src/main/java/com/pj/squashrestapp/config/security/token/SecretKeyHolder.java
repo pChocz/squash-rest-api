@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.config.security;
+package com.pj.squashrestapp.config.security.token;
 
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

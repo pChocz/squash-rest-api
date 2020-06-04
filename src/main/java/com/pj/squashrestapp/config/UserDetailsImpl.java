@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  *
  */
 @Getter
-public class PlayerAuthDetails implements UserDetails {
+public class UserDetailsImpl implements UserDetails {
 
   private final String username;
   private final String password;
@@ -29,7 +29,7 @@ public class PlayerAuthDetails implements UserDetails {
   private final boolean credentialsNonExpired;
   private final boolean enabled;
 
-  public PlayerAuthDetails(final List<PlayerAuthDto> authDtoList) {
+  public UserDetailsImpl(final List<PlayerAuthDto> authDtoList) {
     this.username = authDtoList.get(0).getUsername();
     this.password = authDtoList.get(0).getPassword();
     this.authorities = extractAuthorities(authDtoList);

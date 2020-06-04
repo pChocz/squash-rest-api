@@ -1,10 +1,9 @@
-package com.pj.squashrestapp.config.security;
+package com.pj.squashrestapp.config.security.token;
 
-import com.pj.squashrestapp.config.PlayerAuthDetails;
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,15 +16,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.security.Key;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 
-import static com.pj.squashrestapp.config.security.SecurityConstants.EXPIRATION_TIME;
-import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
-import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET_KEY;
-import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFIX;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPIRATION_TIME;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 /**
  *
@@ -69,7 +66,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                           final HttpServletResponse res,
                                           final FilterChain chain,
                                           final Authentication auth) throws IOException, ServletException {
-    final PlayerAuthDetails principal = (PlayerAuthDetails) auth.getPrincipal();
+    final UserDetailsImpl principal = (UserDetailsImpl) auth.getPrincipal();
 
     final String token = Jwts
             .builder()

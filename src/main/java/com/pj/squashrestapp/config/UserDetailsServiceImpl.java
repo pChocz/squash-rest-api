@@ -25,8 +25,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     if (authDtoList.isEmpty()) {
       throw new UsernameNotFoundException("User not found!");
     }
-    final PlayerAuthDetails playerAuthDetails = new PlayerAuthDetails(authDtoList);
-    return playerAuthDetails;
+    final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(authDtoList);
+    return userDetailsImpl;
   }
 
 }

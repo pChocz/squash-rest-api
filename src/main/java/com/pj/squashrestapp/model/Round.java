@@ -46,7 +46,7 @@ public class Round {
   @Column(name = "date")
   private Date date;
 
-  @OneToMany(mappedBy = "round", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE})
+  @OneToMany(mappedBy = "round", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE})
   private List<RoundGroup> roundGroups;
 
   @ManyToOne

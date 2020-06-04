@@ -1,14 +1,11 @@
-package com.pj.squashrestapp.config.security;
+package com.pj.squashrestapp.config.security.token;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
-import com.pj.squashrestapp.config.PlayerAuthDetails;
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
@@ -18,12 +15,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
-import java.util.Set;
 
-import static com.pj.squashrestapp.config.security.SecurityConstants.HEADER_STRING;
-import static com.pj.squashrestapp.config.security.SecurityConstants.SECRET_KEY;
-import static com.pj.squashrestapp.config.security.SecurityConstants.TOKEN_PREFIX;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 /**
  *
@@ -90,11 +84,11 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
               claims.getIssuedAt(),
               claims.getExpiration());
 
-      final PlayerAuthDetails playerAuthDetails = (PlayerAuthDetails) userDetailsService.loadUserByUsername(username);
+      final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
       final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-              playerAuthDetails,
-              playerAuthDetails.getPassword(),
-              playerAuthDetails.getAuthorities());
+              userDetailsImpl,
+              userDetailsImpl.getPassword(),
+              userDetailsImpl.getAuthorities());
       return usernamePasswordAuthenticationToken;
 
     } catch (final Exception e) {

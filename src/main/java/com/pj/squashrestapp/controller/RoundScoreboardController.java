@@ -44,15 +44,6 @@ public class RoundScoreboardController {
   @Autowired
   private XpPointsRepository xpPointsRepository;
 
-  @Autowired
-  private SeasonRepository seasonRepository;
-
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private RoundRepository roundRepository;
-
   @RequestMapping(
           value = "/byRoundId",
           params = {"id"},
@@ -75,37 +66,5 @@ public class RoundScoreboardController {
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
   }
-
-
-  /**
-   * EXAMPLE:
-   *  addRoundToSeason ? roundNumber=7 & seasonId=2 & playersIds=1,2,3 & playersIds=4,5,6
-   *
-   */
-  @RequestMapping(
-          value = "/addRoundToSeason",
-          params = {"roundNumber", "roundDate", "seasonId", "playersIds"},
-          method = POST)
-  @ResponseBody
-  String addRoundToSeason(
-          @RequestParam("roundNumber") final int roundNumber,
-          @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
-          @RequestParam("seasonId") final Long seasonId,
-          @RequestParam("playersIds") final List<Long[]> playersIds) {
-
-    final Map<Integer, List<Player>> map = new LinkedHashMap<>();
-    for (int i=0; i < playersIds.size(); i++) {
-      final int groupNumber = i+1;
-      final Long[] groupPlayersIds = playersIds.get(i);
-      final List<Player> groupPlayers = playerRepository.findByIds(groupPlayersIds);
-      map.put(groupNumber, groupPlayers);
-    }
-    final Season season = seasonRepository.findSeasonById(seasonId);
-
-    final Round round = new Round(roundNumber, Date.valueOf(roundDate), season, map);
-    roundRepository.save(round);
-    return "dupa";
-  }
-
 
 }

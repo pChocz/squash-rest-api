@@ -52,10 +52,10 @@ public class Player {
   @Column(name = "email")
   private String email;
 
-  @ManyToMany(mappedBy = "players", fetch = FetchType.EAGER)
+  @ManyToMany(mappedBy = "players")
   private Set<Authority> authorities;
 
-  @ManyToMany(mappedBy = "players", fetch = FetchType.EAGER)
+  @ManyToMany(mappedBy = "players")
   private Set<RoleForLeague> roles;
 
   private String token;

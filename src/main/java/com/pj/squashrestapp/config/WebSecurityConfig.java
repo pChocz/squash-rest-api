@@ -1,8 +1,10 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.config.security.JwtAuthenticationFilter;
-import com.pj.squashrestapp.config.security.JwtAuthorizationFilter;
-import com.pj.squashrestapp.config.security.SecretKeyHolder;
+import com.pj.squashrestapp.config.exceptionhandler.AccessDeniedExceptionHandler;
+import com.pj.squashrestapp.config.exceptionhandler.AuthenticationExceptionHandler;
+import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
+import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
+import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,8 +23,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import static com.pj.squashrestapp.config.security.SecurityConstants.SIGN_UP_URL;
 
 /**
  *
@@ -47,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // set up of endpoints permissions
     http.authorizeRequests()
-            .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+            .antMatchers(HttpMethod.POST, "/users/sign-up").permitAll()
             .anyRequest().authenticated();
 
     // authentication and authorization filters

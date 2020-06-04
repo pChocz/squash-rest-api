@@ -49,7 +49,7 @@ public class RoundGroup {
   )
   private List<Player> players;
 
-  @OneToMany(mappedBy = "roundGroup", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE})
+  @OneToMany(mappedBy = "roundGroup", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE})
   private List<Match> matches;
 
   @ManyToOne
