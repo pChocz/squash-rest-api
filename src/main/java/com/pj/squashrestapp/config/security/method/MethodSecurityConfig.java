@@ -16,9 +16,6 @@ import org.springframework.security.config.annotation.method.configuration.Globa
         jsr250Enabled = true)
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-  @Autowired
-  private CustomMethodSecurityExpressionHandler expressionHandler;
-
   @Override
   protected MethodSecurityExpressionHandler createExpressionHandler() {
     final CustomMethodSecurityExpressionHandler expressionHandler = new CustomMethodSecurityExpressionHandler();
