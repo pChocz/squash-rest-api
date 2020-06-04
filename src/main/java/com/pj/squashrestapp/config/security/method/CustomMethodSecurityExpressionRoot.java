@@ -1,8 +1,11 @@
 package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.repository.MatchRepository;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -54,5 +57,15 @@ public class CustomMethodSecurityExpressionRoot
     }
     return principal.hasRoleForLeague(leagueId, role);
   }
+
+  // TODO: how to provide matchRepository to this class?
+//  public boolean hasRoleForMatch(final Long matchId, final String role) {
+//    final Match match = matchRepository.getById(matchId);
+//    final Long leagueId = 1L;
+//    if (principal.isAdmin()) {
+//      return true;
+//    }
+//    return principal.hasRoleForLeague(leagueId, role);
+//  }
 
 }

@@ -1,9 +1,8 @@
-package com.pj.squashrestapp.config.exceptionhandler;
+package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
 import net.minidev.json.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.servlet.http.HttpServletRequest;

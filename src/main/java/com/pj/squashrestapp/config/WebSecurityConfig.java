@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.config.exceptionhandler.AccessDeniedExceptionHandler;
-import com.pj.squashrestapp.config.exceptionhandler.AuthenticationExceptionHandler;
+import com.pj.squashrestapp.config.security.accessexceptionhandler.AccessDeniedExceptionHandler;
+import com.pj.squashrestapp.config.security.accessexceptionhandler.AuthenticationExceptionHandler;
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;

@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.config.exceptionhandler;
+package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
 import net.minidev.json.JSONObject;
 import org.springframework.security.core.AuthenticationException;

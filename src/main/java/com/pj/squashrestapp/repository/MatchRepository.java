@@ -65,8 +65,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           """ )
   List<SingleSetRowDto> retrieveByLeagueIdFinishedRoundsOnly(@Param("leagueId") Long leagueId);
 
-
-
+  Match getById(Long id);
 
 
 
