@@ -4,6 +4,7 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
+import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.model.projection.MatchProjection;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -98,6 +100,48 @@ public class MatchController {
     return matches;
   }
 
+  @RequestMapping(
+          value = "/byMatchId",
+          params = {"id"},
+          method = GET)
+  @ResponseBody
+  MatchDto byMatchId(
+          @RequestParam("id") final Long id) {
+    final List<SingleSetRowDto> sets = matchRepository.retrieveByMatchId(id);
+    final MatchDto match = MatchUtil.rebuildSingleMatch(sets);
+    return match;
+  }
+
+
+  /**
+   * EXAMPLE:
+   *  localhost:8080/matches/updateMatch?matchId=402&setNumber=1&p1score=11&p2score=4
+   *
+   */
+  @RequestMapping(
+          value = "/updateFinishedMatch",
+          params = {"matchId", "setNumber", "p1score", "p2score"},
+          method = POST)
+  @ResponseBody
+  @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR')")
+  SetDto updateFinishedMatch(
+          @RequestParam("matchId") final Long matchId,
+          @RequestParam("setNumber") final int setNumber,
+          @RequestParam("p1score") final int p1score,
+          @RequestParam("p2score") final int p2score) {
+    final SetResult setToModify = setResultRepository.findByMatchIdAndNumber(matchId, setNumber);
+    setToModify.setFirstPlayerScore(p1score);
+    setToModify.setSecondPlayerScore(p2score);
+
+    final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
+    if (!setResultHelper.isValid()) {
+      throw new IllegalArgumentException("Not valid set result provided! -> " + setToModify);
+    }
+
+    setResultRepository.save(setToModify);
+    return new SetDto(setToModify);
+  }
+
 
   /**
    * EXAMPLE:
@@ -109,7 +153,7 @@ public class MatchController {
           params = {"matchId", "setNumber", "p1score", "p2score"},
           method = POST)
   @ResponseBody
-  @PreAuthorize("hasRoleForMatch(#matchId, 'PLAYER')")
+  @PreAuthorize("hasRoleForMatch(#matchId, 'PLAYER') and isMatchEmpty(#matchId)")
   SetDto updateMatch(
           @RequestParam("matchId") final Long matchId,
           @RequestParam("setNumber") final int setNumber,
@@ -118,9 +162,16 @@ public class MatchController {
     final SetResult setToModify = setResultRepository.findByMatchIdAndNumber(matchId, setNumber);
     setToModify.setFirstPlayerScore(p1score);
     setToModify.setSecondPlayerScore(p2score);
+
+    final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
+    if (!setResultHelper.isValid()) {
+      throw new IllegalArgumentException("Not valid set result provided! -> " + setToModify);
+    }
+
     setResultRepository.save(setToModify);
     return new SetDto(setToModify);
   }
 
-}
 
+
+}

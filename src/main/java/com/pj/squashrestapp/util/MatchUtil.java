@@ -14,6 +14,7 @@ import lombok.experimental.UtilityClass;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -31,6 +32,14 @@ public class MatchUtil {
     }
 
     return perGroupMatches;
+  }
+
+  public MatchDto rebuildSingleMatch(final List<SingleSetRowDto> sets) {
+    final long matchesCount = sets.stream().map(SingleSetRowDto::getMatchId).distinct().count();
+    if (matchesCount != 1) {
+      throw new IllegalArgumentException("Cannot rebuild single match as sets belong to several matches");
+    }
+    return new MatchDto(sets);
   }
 
   public List<MatchDto> rebuildMatches(final List<SingleSetRowDto> sets) {

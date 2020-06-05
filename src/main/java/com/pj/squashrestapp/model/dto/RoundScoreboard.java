@@ -15,6 +15,7 @@ public class RoundScoreboard {
 
   @JsonIgnore
   private final List<Integer> playersPerGroup;
+
   private final List<Scoreboard> roundGroupScoreboards;
 
   public RoundScoreboard() {

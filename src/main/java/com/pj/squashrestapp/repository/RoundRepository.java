@@ -14,4 +14,12 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
 
   Round findRoundById(Long id);
 
+  @Query("""
+          SELECT l.id FROM Round r
+           JOIN Season s ON r.season = s
+           JOIN League l ON s.league = l
+              WHERE r.id = :roundId
+          """)
+  Long retrieveLeagueIdOfRound(@Param("roundId") Long roundId);
+
 }

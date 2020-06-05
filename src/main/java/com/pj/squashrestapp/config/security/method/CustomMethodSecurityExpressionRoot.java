@@ -2,6 +2,9 @@ package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import lombok.Getter;
@@ -70,6 +73,21 @@ public class CustomMethodSecurityExpressionRoot
     }
     final Long leagueId = matchRepository.retrieveLeagueIdOfMatch(matchId);
     return principal.hasRoleForLeague(leagueId, role);
+  }
+
+  public boolean hasRoleForRound(final Long roundId, final String role) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    final Long leagueId = roundRepository.retrieveLeagueIdOfRound(roundId);
+    return principal.hasRoleForLeague(leagueId, role);
+  }
+
+  public boolean isMatchEmpty(final Long matchId) {
+    final Match match = matchRepository.findById(matchId).orElse(null);
+    final MatchHelper matchHelper = new MatchHelper(match);
+    final Player winner = matchHelper.getWinner();
+    return winner == null;
   }
 
 }

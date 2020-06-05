@@ -59,6 +59,11 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   @Query(SELECT + " WHERE l.id = :leagueId")
   List<SingleSetRowDto> retrieveByLeagueId(@Param("leagueId") Long leagueId);
 
+
+  @Query(SELECT + " WHERE m.id = :matchId")
+  List<SingleSetRowDto> retrieveByMatchId(@Param("matchId") Long matchId);
+
+
   @Query(SELECT + """
           WHERE l.id = :leagueId
           AND r.finished = TRUE
@@ -74,7 +79,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
               WHERE m.id = :matchId
           """)
   Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
-
 
 
 //  @Query("SELECT DISTINCT m FROM Match m JOIN FETCH m.setResults")

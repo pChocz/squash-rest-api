@@ -60,7 +60,7 @@ public class RoundController {
           params = {"roundNumber", "roundDate", "seasonNumber", "leagueId", "playersIds"},
           method = POST)
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#id, 'ADMIN')")
+  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
   String add(
           @RequestParam("roundNumber") final int roundNumber,
           @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
@@ -89,6 +89,7 @@ public class RoundController {
           params = {"roundId"},
           method = DELETE)
   @ResponseBody
+  @PreAuthorize("hasRoleForRound(#roundId, 'MODERATOR')")
   String delete(
           @RequestParam("roundId") final Long roundId) {
 
