@@ -35,4 +35,50 @@ public class MatchHelper {
     return null;
   }
 
+  public boolean isValid() {
+    final SetResult setResult1 = getSetResult(1);
+    final SetResult setResult2 = getSetResult(2);
+    final SetResult setResult3 = getSetResult(3);
+
+    if (isEmptySet(setResult1)
+            && !isEmptySet(setResult2)) {
+      return false;
+
+    } else if (isEmptySet(setResult1)
+            && !isEmptySet(setResult3)) {
+      return false;
+
+    } else if (isEmptySet(setResult2)
+            && !isEmptySet(setResult3)) {
+      return false;
+
+    } else if (isFinishedAfterTwoSets(setResult1, setResult2)
+            && !isEmptySet(setResult3)) {
+      return false;
+
+    } else {
+      return true;
+    }
+  }
+
+  private SetResult getSetResult(final int number) {
+    return match
+            .getSetResults()
+            .stream()
+            .filter(set -> set.getNumber() == number)
+            .findFirst()
+            .orElse(null);
+  }
+
+  private boolean isEmptySet(final SetResult setResult) {
+    return setResult.getFirstPlayerScore() == 0
+            && setResult.getSecondPlayerScore() == 0;
+  }
+
+  private boolean isFinishedAfterTwoSets(final SetResult setResult1, final SetResult setResult2) {
+    final Player winner1 = setResult1.getWinner();
+    final Player winner2 = setResult2.getWinner();
+    return winner1.equals(winner2);
+  }
+
 }

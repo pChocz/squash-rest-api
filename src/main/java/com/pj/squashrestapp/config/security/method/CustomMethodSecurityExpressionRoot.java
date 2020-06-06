@@ -3,6 +3,7 @@ package com.pj.squashrestapp.config.security.method;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
@@ -81,6 +82,12 @@ public class CustomMethodSecurityExpressionRoot
     }
     final Long leagueId = roundRepository.retrieveLeagueIdOfRound(roundId);
     return principal.hasRoleForLeague(leagueId, role);
+  }
+
+  public boolean isRoundOfMatchInProgress(final Long matchId) {
+    final Round round = roundRepository.findRoundByMatchId(matchId);
+    final boolean isRoundFinished = round.isFinished();
+    return !isRoundFinished;
   }
 
   public boolean isMatchEmpty(final Long matchId) {

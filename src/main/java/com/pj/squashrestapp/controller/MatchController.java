@@ -1,9 +1,11 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
+import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.model.projection.MatchProjection;
 import com.pj.squashrestapp.repository.MatchRepository;
@@ -119,59 +121,87 @@ public class MatchController {
    *
    */
   @RequestMapping(
-          value = "/updateFinishedMatch",
-          params = {"matchId", "setNumber", "p1score", "p2score"},
-          method = POST)
-  @ResponseBody
-  @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR')")
-  SetDto updateFinishedMatch(
-          @RequestParam("matchId") final Long matchId,
-          @RequestParam("setNumber") final int setNumber,
-          @RequestParam("p1score") final int p1score,
-          @RequestParam("p2score") final int p2score) {
-    final SetResult setToModify = setResultRepository.findByMatchIdAndNumber(matchId, setNumber);
-    setToModify.setFirstPlayerScore(p1score);
-    setToModify.setSecondPlayerScore(p2score);
-
-    final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
-    if (!setResultHelper.isValid()) {
-      throw new IllegalArgumentException("Not valid set result provided! -> " + setToModify);
-    }
-
-    setResultRepository.save(setToModify);
-    return new SetDto(setToModify);
-  }
-
-
-  /**
-   * EXAMPLE:
-   *  localhost:8080/matches/updateMatch?matchId=402&setNumber=1&p1score=11&p2score=4
-   *
-   */
-  @RequestMapping(
           value = "/updateMatch",
           params = {"matchId", "setNumber", "p1score", "p2score"},
           method = POST)
   @ResponseBody
-  @PreAuthorize("hasRoleForMatch(#matchId, 'PLAYER') and isMatchEmpty(#matchId)")
-  SetDto updateMatch(
+  @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR') " +
+          "or " +
+          "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
+  Object updateFinishedMatch(
           @RequestParam("matchId") final Long matchId,
           @RequestParam("setNumber") final int setNumber,
           @RequestParam("p1score") final int p1score,
           @RequestParam("p2score") final int p2score) {
-    final SetResult setToModify = setResultRepository.findByMatchIdAndNumber(matchId, setNumber);
-    setToModify.setFirstPlayerScore(p1score);
-    setToModify.setSecondPlayerScore(p2score);
 
-    final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
-    if (!setResultHelper.isValid()) {
-      throw new IllegalArgumentException("Not valid set result provided! -> " + setToModify);
+    final Match matchToModify = matchRepository.getOne(matchId);
+    final String initialMatchResult = matchToModify.toString();
+    final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
+
+    try {
+
+      if (setToModify.getFirstPlayerScore() != 0
+              || setToModify.getSecondPlayerScore() != 0) {
+        throw new IllegalArgumentException();
+      }
+
+      setToModify.setFirstPlayerScore(p1score);
+      setToModify.setSecondPlayerScore(p2score);
+
+      final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
+      if (!setResultHelper.isValid()) {
+        throw new IllegalArgumentException();
+      }
+
+      final MatchHelper matchHelper = new MatchHelper(matchToModify);
+      if (!matchHelper.isValid()) {
+        throw new IllegalArgumentException();
+      }
+
+      setResultRepository.save(setToModify);
+
+      final String message = "\nSuccesfully updated the match!" +
+              "\n\t-> " + initialMatchResult + "\t- earlier" +
+              "\n\t-> " + matchToModify + "\t- now";
+      log.info(message);
+
+      return new SetDto(setToModify);
+
+    } catch (final IllegalArgumentException e) {
+      final String message = "\nDoes not look like a valid match result after the update!" +
+              "\n\t-> " + matchToModify + "\t- tried to update to look like this" +
+              "\n\t-> " + initialMatchResult + "\t- leaving the old result like this.";
+      log.error(message);
+      return message;
     }
-
-    setResultRepository.save(setToModify);
-    return new SetDto(setToModify);
   }
 
+  @RequestMapping(
+          value = "/clearSet",
+          params = {"matchId", "setNumber"},
+          method = POST)
+  @ResponseBody
+  @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR') " +
+          "or " +
+          "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
+  SetDto clearSet(
+          @RequestParam("matchId") final Long matchId,
+          @RequestParam("setNumber") final int setNumber) {
+    final Match matchToModify = matchRepository.getOne(matchId);
+    final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
+    final String initialMatchResult = matchToModify.toString();
 
+    setToModify.setFirstPlayerScore(0);
+    setToModify.setSecondPlayerScore(0);
+
+    setResultRepository.save(setToModify);
+
+    final String message = "\nSuccesfully updated the match!" +
+            "\n\t-> " + initialMatchResult + "\t- earlier" +
+            "\n\t-> " + matchToModify + "\t- now";
+    log.info(message);
+
+    return new SetDto(setToModify);
+  }
 
 }
