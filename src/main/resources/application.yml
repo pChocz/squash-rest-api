@@ -1,6 +1,5 @@
-#
+# ###### ##########
 # Spring Properties
-
 spring:
   jpa:
     hibernate:
@@ -8,22 +7,33 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL57InnoDBDialect
+        generate_statistics: true
 #        format_sql: true
     show-sql: true
   datasource:
+    # TODO: database credentials should be externalized later anyway!
     url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/squash_league_second
     username: squashuser
     password: squash123!@#
 
-#
-# Token
 
+# #####
+# Token
+# TODO: secret should be externalized later anyway!
 jwt:
   secret: QLTIh5c0pedaXdRzckPnlr1OCHuMcBmhHGzACijWJ0zlJ7Ua5LFkiRwX0e2TMIHo1tQLNHk6INSFc6JXY2g6letWJClMHYp2XO1f
 
-#
-# Logging
 
+# #######
+# Logging
+logging:
+  level:
+    org:
+      hibernate:
+#        stat: debug
+
+
+# May be useful later
 #logging:
 #  level:
 #    org:

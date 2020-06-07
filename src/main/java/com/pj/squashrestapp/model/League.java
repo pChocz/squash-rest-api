@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model;
 
-import lombok.EqualsAndHashCode;
+import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +24,10 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class League {
+public class League implements Identifiable {
+
+  public static EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {
+  };
 
   @Id
   @Column(name = "id",

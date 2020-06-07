@@ -2,6 +2,7 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardDto;
+import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,7 +33,11 @@ public class SeasonController {
           method = GET)
   @ResponseBody
   SeasonScoreboardDto overalScoreboard(@RequestParam("id") final Long id) {
+    final long startTime = System.nanoTime();
+
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(id);
+
+    TimeLogUtil.logFinish(startTime);
     return seasonScoreboardDto;
   }
 
@@ -42,7 +47,11 @@ public class SeasonController {
           method = GET)
   @ResponseBody
   List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
+    final long startTime = System.nanoTime();
+
     final List<RoundScoreboard> roundScoreboards = seasonService.perRoundScoreboard(id);
+
+    TimeLogUtil.logFinish(startTime);
     return roundScoreboards;
   }
 

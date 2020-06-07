@@ -9,6 +9,7 @@ import com.pj.squashrestapp.model.dto.SingleSetRowDto;
 import com.pj.squashrestapp.repository.HallOfFameSeasonRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +27,11 @@ import java.util.stream.Collectors;
 @Service
 public class LeagueStatisticsService {
 
+  @Getter
   @Autowired
   private MatchRepository matchRepository;
 
+  @Getter
   @Autowired
   private LeagueRepository leagueRepository;
 

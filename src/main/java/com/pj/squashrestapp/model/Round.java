@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.model;
 
+import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,15 +19,38 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "rounds")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Round {
+public class Round implements Identifiable {
+
+  public static EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {
+  };
+
+  public static EntityVisitor<Round, Season> ENTITY_VISITOR = new EntityVisitor<>(Round.class) {
+
+    @Override
+    public Season getParent(Round visitingObject) {
+      return visitingObject.getSeason();
+    }
+
+    @Override
+    public List<Round> getChildren(Season parent) {
+      return parent.getRounds();
+    }
+
+    @Override
+    public void setChildren(Season parent) {
+      parent.setRounds(new ArrayList<Round>());
+    }
+  };
 
 
   @Id

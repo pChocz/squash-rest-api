@@ -54,4 +54,9 @@ public class MatchDto {
     }
   }
 
+  @Override
+  public String toString() {
+    return "[" + matchId + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
+  }
+
 }

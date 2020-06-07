@@ -51,4 +51,9 @@ public class SetDto {
             : 0;
   }
 
+  @Override
+  public String toString() {
+    return firstPlayerScore + ":" + secondPlayerScore;
+  }
+
 }

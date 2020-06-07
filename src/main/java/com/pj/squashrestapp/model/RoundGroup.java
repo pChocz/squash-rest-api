@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.model;
 
+import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,16 +18,42 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "round_groups")
 @Getter
 @Setter
 @NoArgsConstructor
-public class RoundGroup {
+public class RoundGroup implements Identifiable {
+
+  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(RoundGroup.class) {
+  };
+
+  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR = new EntityVisitor<>(RoundGroup.class) {
+
+    @Override
+    public Round getParent(RoundGroup visitingObject) {
+      return visitingObject.getRound();
+    }
+
+    @Override
+    public List<RoundGroup> getChildren(Round parent) {
+      return parent.getRoundGroups();
+    }
+
+    @Override
+    public void setChildren(Round parent) {
+      parent.setRoundGroups(new ArrayList<RoundGroup>());
+    }
+  };
 
   @Id
   @Column(name = "id",
