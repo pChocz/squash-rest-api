@@ -2,7 +2,6 @@ package com.pj.squashrestapp.model;
 
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,9 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "seasons")
@@ -35,19 +32,18 @@ public class Season implements Identifiable {
   };
 
   public static EntityVisitor<Season, League> ENTITY_VISITOR = new EntityVisitor<>(Season.class) {
-
     @Override
-    public League getParent(Season visitingObject) {
+    public League getParent(final Season visitingObject) {
       return visitingObject.getLeague();
     }
 
     @Override
-    public List<Season> getChildren(League parent) {
+    public List<Season> getChildren(final League parent) {
       return parent.getSeasons();
     }
 
     @Override
-    public void setChildren(League parent) {
+    public void setChildren(final League parent) {
       parent.setSeasons(new ArrayList<Season>());
     }
   };
@@ -89,7 +85,7 @@ public class Season implements Identifiable {
     this.seasonResults = new ArrayList<>();
   }
 
-  public void addRound(Round round) {
+  public void addRound(final Round round) {
     this.rounds.add(round);
   }
 

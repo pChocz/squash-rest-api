@@ -1,7 +1,13 @@
 package com.pj.squashrestapp.controller;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.XpPointsForPlace;
+import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.RoundScoreboard;
@@ -12,15 +18,17 @@ import com.pj.squashrestapp.model.dto.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
+import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
+import com.pj.squashrestapp.util.EntityGraphReconstruct;
 import com.pj.squashrestapp.util.MatchUtil;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -39,51 +47,38 @@ public class SeasonService {
   @Autowired
   private SeasonRepository seasonRepository;
 
+  @Autowired
+  private SetResultRepository setResultRepository;
 
-  public SeasonScoreboardDto overalScoreboard(final Long id) {
+  @Autowired
+  private XpPointsService xpPointsService;
 
-    final Season season = seasonRepository.findSeasonById(id);
-    final int seasonNumber = season.getNumber();
-    final Date seasonStartDate = season.getStartDate();
+  public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
+    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
+    final Season season = EntityGraphReconstruct.reconstructSeason(setResultListForSeason, seasonId);
+    return getSeasonScoreboardDto(season);
+  }
 
-    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(id, seasonNumber, seasonStartDate);
+  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season) {
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
+    final ArrayListMultimap<String, Integer> xpPointsForRound = xpPointsService.buildAll();
 
-
-
-    final List<Long> roundsIds = seasonRepository.retrieveFinishedGroupIdsBySeasonId(id);
-
-
-
-    final int numberOfFinishedRounds = roundsIds.size();
-    seasonScoreboardDto.setFinishedRounds(numberOfFinishedRounds);
-
-
-
-    for (final Long roundId : roundsIds) {
-
-
-      final List<SingleSetRowDto> sets = matchRepository.retrieveByRoundId(roundId);
-      final int roundNumber = sets.get(0).getRoundNumber();
-      final Multimap<Long, MatchDto> perGroupMatches = MatchUtil.rebuildRoundMatchesPerRoundGroupId(sets);
-
+    for (final Round round : season.getRounds()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard();
-      for (final Long roundGroupId : perGroupMatches.keySet()) {
-        roundScoreboard.addRoundGroup(perGroupMatches.get(roundGroupId));
+      for (final RoundGroup roundGroup : round.getRoundGroups()) {
+        roundScoreboard.addRoundGroupNew(roundGroup);
       }
 
       final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
       final String split = MatchUtil.integerListToString(playersPerGroup);
-      final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
-
+      final List<Integer> xpPoints = xpPointsForRound.get(split);
       roundScoreboard.assignPointsAndPlaces(xpPoints);
-
 
       for (final Scoreboard scoreboard : roundScoreboard.getRoundGroupScoreboards()) {
         for (final ScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
 
           final PlayerDto player = scoreboardRow.getPlayer();
-
           final SeasonScoreboardRowDto seasonScoreboardRowDto = seasonScoreboardDto
                   .getSeasonScoreboardRows()
                   .stream()
@@ -91,31 +86,23 @@ public class SeasonService {
                   .findFirst()
                   .orElse(new SeasonScoreboardRowDto(player));
 
-          seasonScoreboardRowDto.addXpForRound(roundNumber, scoreboardRow.getXpEarned());
-
-
+          seasonScoreboardRowDto.addXpForRound(round.getNumber(), scoreboardRow.getXpEarned());
           final boolean containsPlayer = seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
           if (!containsPlayer) {
             seasonScoreboardDto.getSeasonScoreboardRows().add(seasonScoreboardRowDto);
           }
         }
       }
-
     }
-
 
     for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
       seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getAllRounds(), seasonScoreboardDto.getFinishedRounds());
     }
-
     seasonScoreboardDto.sortRows();
-
     return seasonScoreboardDto;
   }
 
-
   List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
-
     final List<Long> roundsIds = seasonRepository.retrieveFinishedGroupIdsBySeasonId(id);
 
     final List<RoundScoreboard> roundScoreboards = new ArrayList<>();
@@ -135,10 +122,7 @@ public class SeasonService {
       roundScoreboard.assignPointsAndPlaces(xpPoints);
       roundScoreboards.add(roundScoreboard);
     }
-
     return roundScoreboards;
   }
-
-
 
 }

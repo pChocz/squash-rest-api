@@ -16,9 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Entity
@@ -28,26 +26,26 @@ import java.util.regex.Pattern;
 @NoArgsConstructor
 public class SetResult implements Identifiable {
 
-  public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<SetResult, Match>(SetResult.class) {
+  private static final String REGEX = "(\\s*\\d{1,2})\\D+(\\d{1,2}\\s*)";
 
+  private static final Pattern PATTERN = Pattern.compile(REGEX);
+
+  public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
     @Override
-    public Match getParent(SetResult visitingObject) {
+    public Match getParent(final SetResult visitingObject) {
       return visitingObject.getMatch();
     }
 
     @Override
-    public List<SetResult> getChildren(Match parent) {
+    public List<SetResult> getChildren(final Match parent) {
       return parent.getSetResults();
     }
 
     @Override
-    public void setChildren(Match parent) {
+    public void setChildren(final Match parent) {
       parent.setSetResults(new ArrayList<SetResult>());
     }
   };
-
-  private static final String REGEX = "(\\s*\\d{1,2})\\D+(\\d{1,2}\\s*)";
-  private static final Pattern PATTERN = Pattern.compile(REGEX);
 
   @Id
   @Column(name = "id",

@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.Match;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.model;
 
+import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,7 +25,27 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class XpPointsForRoundGroup {
+public class XpPointsForRoundGroup implements Identifiable {
+
+  public static EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR_FINAL = new EntityVisitor<>(XpPointsForRoundGroup.class) {
+  };
+
+  public static EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR = new EntityVisitor<>(XpPointsForRoundGroup.class) {
+    @Override
+    public XpPointsForRound getParent(final XpPointsForRoundGroup visitingObject) {
+      return visitingObject.getXpPointsForRound();
+    }
+
+    @Override
+    public List<XpPointsForRoundGroup> getChildren(final XpPointsForRound parent) {
+      return parent.getXpPointsForRoundGroups();
+    }
+
+    @Override
+    public void setChildren(final XpPointsForRound parent) {
+      parent.setXpPointsForRoundGroups(new ArrayList<XpPointsForRoundGroup>());
+    }
+  };
 
   @Id
   @Column(name = "id",

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class RoundScoreboardController {
 
     final RoundScoreboard roundScoreboard = new RoundScoreboard();
     for (final Long roundGroupId : perGroupMatches.keySet()) {
-      roundScoreboard.addRoundGroup(perGroupMatches.get(roundGroupId));
+      roundScoreboard.addRoundGroup(new ArrayList<>(perGroupMatches.get(roundGroupId)));
     }
 
     final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();

@@ -1,11 +1,14 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.RoundGroup;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -21,6 +24,17 @@ public class RoundScoreboard {
   public RoundScoreboard() {
     this.roundGroupScoreboards = new ArrayList<>();
     this.playersPerGroup = new ArrayList<>();
+  }
+
+  public void addRoundGroupNew(final RoundGroup roundGroup) {
+    final List<MatchDto> matchDtos = roundGroup
+            .getMatches()
+            .stream()
+            .map(MatchDto::new)
+            .collect(Collectors.toList());
+    final Scoreboard scoreboard = new Scoreboard(matchDtos);
+    roundGroupScoreboards.add(scoreboard);
+    playersPerGroup.add(scoreboard.getScoreboardRows().size());
   }
 
   public void addRoundGroup(final Collection<MatchDto> matches) {

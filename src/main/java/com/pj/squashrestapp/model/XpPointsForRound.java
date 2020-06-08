@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.model;
 
+import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +26,10 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @NoArgsConstructor
-public class XpPointsForRound {
+public class XpPointsForRound implements Identifiable {
+
+  public static EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(XpPointsForRound.class) {
+  };
 
   @Id
   @Column(name = "id",

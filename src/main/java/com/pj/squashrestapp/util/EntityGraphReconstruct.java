@@ -1,16 +1,21 @@
 package com.pj.squashrestapp.util;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.XpPointsForPlace;
+import com.pj.squashrestapp.model.XpPointsForRound;
+import com.pj.squashrestapp.model.XpPointsForRoundGroup;
 import com.pj.squashrestapp.model.util.ClassId;
 import com.pj.squashrestapp.model.util.EntityGraphBuilder;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import lombok.experimental.UtilityClass;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -72,6 +77,38 @@ public class EntityGraphReconstruct {
     return entityGraphBuilder
             .getEntityContext()
             .getObject(roundGroupClassId);
+  }
+
+//      final List<XpPointsForRound> allPointsForRounds = seasonService.getXpPointsRepository().findAll();
+//    final List<XpPointsForPlace> allPoints = seasonService.getXpPointsRepository().fetchAll();
+//    final ArrayListMultimap<String, Integer> xpPointsForRound = EntityGraphReconstruct.reconstructXpPointsForRound(allPointsForRounds, allPoints);
+
+
+  public ArrayListMultimap<String, Integer> reconstructXpPointsForRound(final List<XpPointsForRound> allPointsForRounds,
+                                                                        final List<XpPointsForPlace> allPoints) {
+    final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{
+            XpPointsForPlace.ENTITY_VISITOR,
+            XpPointsForRoundGroup.ENTITY_VISITOR,
+            XpPointsForRound.ENTITY_VISITOR_FINAL
+    }).build(allPoints);
+
+    final ArrayListMultimap<String, Integer> multimap = ArrayListMultimap.create();
+
+    for (final XpPointsForRound xpPointsForRound : allPointsForRounds) {
+      final ClassId<XpPointsForRound> xpPointsForRoundClassId = new ClassId<>(XpPointsForRound.class, xpPointsForRound.getId());
+
+      final XpPointsForRound xpPointsForRoundReconstructed = entityGraphBuilder
+              .getEntityContext()
+              .getObject(xpPointsForRoundClassId);
+
+      final String split = xpPointsForRoundReconstructed.getSplit();
+      for (final XpPointsForRoundGroup xpPointsForRoundGroup : xpPointsForRoundReconstructed.getXpPointsForRoundGroups()) {
+        for (final XpPointsForPlace xpPointsForPlaces : xpPointsForRoundGroup.getXpPointsForPlaces()) {
+          multimap.put(split, xpPointsForPlaces.getPoints());
+        }
+      }
+    }
+    return multimap;
   }
 
 }

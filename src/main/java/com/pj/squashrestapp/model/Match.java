@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.SortComparator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,20 +15,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedAttributeNode;
-import javax.persistence.NamedEntityGraph;
-import javax.persistence.NamedEntityGraphs;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 /**
  *
@@ -45,19 +35,18 @@ public class Match implements Identifiable {
   };
 
   public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR = new EntityVisitor<>(Match.class) {
-
     @Override
-    public RoundGroup getParent(Match visitingObject) {
+    public RoundGroup getParent(final Match visitingObject) {
       return visitingObject.getRoundGroup();
     }
 
     @Override
-    public List<Match> getChildren(RoundGroup parent) {
+    public List<Match> getChildren(final RoundGroup parent) {
       return parent.getMatches();
     }
 
     @Override
-    public void setChildren(RoundGroup parent) {
+    public void setChildren(final RoundGroup parent) {
       parent.setMatches(new ArrayList<Match>());
     }
   };

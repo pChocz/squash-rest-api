@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.Season;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Value;
@@ -36,11 +38,16 @@ public class SeasonScoreboardDto {
 
   List<SeasonScoreboardRowDto> seasonScoreboardRows;
 
-  public SeasonScoreboardDto(final Long seasonId, final int seasonNumber, final Date seasonStartDate) {
-    this.seasonId = seasonId;
-    this.seasonNumber = seasonNumber;
-    this.seasonStartDate = seasonStartDate;
+  public SeasonScoreboardDto(final Season season) {
+    this.seasonId = season.getId();
+    this.seasonNumber = season.getNumber();
+    this.seasonStartDate = season.getStartDate();
     this.seasonScoreboardRows = new ArrayList<>();
+    this.finishedRounds = (int) season
+            .getRounds()
+            .stream()
+            .filter(Round::isFinished)
+            .count();
   }
 
   public void sortRows() {

@@ -19,10 +19,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Entity
 @Table(name = "rounds")
@@ -35,23 +33,21 @@ public class Round implements Identifiable {
   };
 
   public static EntityVisitor<Round, Season> ENTITY_VISITOR = new EntityVisitor<>(Round.class) {
-
     @Override
-    public Season getParent(Round visitingObject) {
+    public Season getParent(final Round visitingObject) {
       return visitingObject.getSeason();
     }
 
     @Override
-    public List<Round> getChildren(Season parent) {
+    public List<Round> getChildren(final Season parent) {
       return parent.getRounds();
     }
 
     @Override
-    public void setChildren(Season parent) {
+    public void setChildren(final Season parent) {
       parent.setRounds(new ArrayList<Round>());
     }
   };
-
 
   @Id
   @Column(name = "id",
@@ -124,7 +120,7 @@ public class Round implements Identifiable {
             .sum();
   }
 
-  public int getNumberOfPlayersInGroupOfNumber(int groupNumber) {
+  public int getNumberOfPlayersInGroupOfNumber(final int groupNumber) {
     return this
             .roundGroups
             .stream()
@@ -141,7 +137,7 @@ public class Round implements Identifiable {
             .size();
   }
 
-  public void addRoundGroup(RoundGroup roundGroup) {
+  public void addRoundGroup(final RoundGroup roundGroup) {
     if (this.roundGroups == null) {
       this.roundGroups = new ArrayList<>();
     }

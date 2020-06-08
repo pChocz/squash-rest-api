@@ -18,14 +18,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 @Entity
 @Table(name = "round_groups")
@@ -38,19 +33,18 @@ public class RoundGroup implements Identifiable {
   };
 
   public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR = new EntityVisitor<>(RoundGroup.class) {
-
     @Override
-    public Round getParent(RoundGroup visitingObject) {
+    public Round getParent(final RoundGroup visitingObject) {
       return visitingObject.getRound();
     }
 
     @Override
-    public List<RoundGroup> getChildren(Round parent) {
+    public List<RoundGroup> getChildren(final Round parent) {
       return parent.getRoundGroups();
     }
 
     @Override
-    public void setChildren(Round parent) {
+    public void setChildren(final Round parent) {
       parent.setRoundGroups(new ArrayList<RoundGroup>());
     }
   };
@@ -93,8 +87,8 @@ public class RoundGroup implements Identifiable {
   }
 
   public void generateEmptyMatches() {
-    for (int i=0; i < players.size(); i++) {
-      for (int j=i+1; j < players.size(); j++) {
+    for (int i = 0; i < players.size(); i++) {
+      for (int j = i + 1; j < players.size(); j++) {
         this.matches.add(new Match(this, players.get(i), players.get(j), true));
       }
     }
