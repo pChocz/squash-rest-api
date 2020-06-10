@@ -10,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,11 +42,11 @@ public class RoleForLeague {
           strategy = "native")
   private Long id;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id", referencedColumnName = "id")
   private League league;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
           joinColumns = @JoinColumn(name = "roles_for_leagues_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id")

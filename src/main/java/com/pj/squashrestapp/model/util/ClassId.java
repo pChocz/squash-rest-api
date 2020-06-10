@@ -3,9 +3,9 @@ package com.pj.squashrestapp.model.util;
 import lombok.Data;
 import lombok.Getter;
 
-@SuppressWarnings("JavaDoc")
 @Data
 @Getter
+@SuppressWarnings("JavaDoc")
 public class ClassId<T> {
 
   private final Class<T> clazz;

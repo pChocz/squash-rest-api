@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,7 +50,7 @@ public class XpPointsForRound implements Identifiable {
   @Column(name = "number_of_players")
   private int numberOfPlayers;
 
-  @OneToMany(mappedBy = "xpPointsForRound", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "xpPointsForRound", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<XpPointsForRoundGroup> xpPointsForRoundGroups;
 
   public XpPointsForRound(final int[] splitAsArray, final int[][] points) {

@@ -9,6 +9,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,7 +64,7 @@ public class XpPointsForPlace implements Identifiable {
   @Column(name = "points")
   private int points;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "xp_points_for_round_group_id", referencedColumnName = "id")
   private XpPointsForRoundGroup xpPointsForRoundGroup;
 

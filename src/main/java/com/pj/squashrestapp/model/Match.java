@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -63,22 +64,22 @@ public class Match implements Identifiable {
           strategy = "native")
   private Long id;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "first_player_id", referencedColumnName = "id")
   private Player firstPlayer;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "second_player_id", referencedColumnName = "id")
   private Player secondPlayer;
 
-  @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
+  @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
   private List<SetResult> setResults;
 
   private transient String _1stSetResult;
   private transient String _2ndSetResult;
   private transient String _3rdSetResult;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "round_group_id", referencedColumnName = "id")
   private RoundGroup roundGroup;
 

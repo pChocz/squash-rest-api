@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -44,16 +45,16 @@ public class League implements Identifiable {
   @Column(name = "name", unique = true)
   private String name;
 
-  @OneToMany(mappedBy = "league")
+  @OneToMany(mappedBy = "league", fetch = FetchType.LAZY)
   private List<Season> seasons;
 
-  @OneToMany(mappedBy = "league")
+  @OneToMany(mappedBy = "league", fetch = FetchType.LAZY)
   private List<RoleForLeague> rolesForLeague;
 
   @Column(name = "logo")
   private Blob logo;
 
-  @OneToMany(mappedBy = "league", cascade = CascadeType.REFRESH)
+  @OneToMany(mappedBy = "league", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
   private List<HallOfFameSeason> hallOfFameSeasons;
 
   public League(final String name) {

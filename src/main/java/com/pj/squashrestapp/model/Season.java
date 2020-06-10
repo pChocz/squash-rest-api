@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -66,13 +67,13 @@ public class Season implements Identifiable {
   @Column(name = "start_date")
   private Date startDate;
 
-  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH)
+  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
   private List<Round> rounds;
 
-  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH)
-  private List<SeasonResult> seasonResults;
+//  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
+//  private List<SeasonResult> seasonResults;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id", referencedColumnName = "id")
   private League league;
 
@@ -82,7 +83,7 @@ public class Season implements Identifiable {
     this.startDate = startDate;
 
     this.rounds = new ArrayList<>();
-    this.seasonResults = new ArrayList<>();
+//    this.seasonResults = new ArrayList<>();
   }
 
   public void addRound(final Round round) {

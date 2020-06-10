@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,25 +46,16 @@ public class SeasonResult implements Comparable<SeasonResult> {
           strategy = "native")
   private Long id;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "player_id", referencedColumnName = "id")
   private Player player;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "season_id", referencedColumnName = "id")
   private Season season;
 
-  @OneToMany(mappedBy = "seasonResult", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "seasonResult", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<RoundResult> roundResults;
-
-//  @ElementCollection
-//  @CollectionTable(
-//          name = "season_results_points_per_round",
-//          joinColumns = @JoinColumn(
-//                  name="season_results_id",
-//                  referencedColumnName = "id"))
-//  @Column(name = "points_per_round")
-//  private List<Integer> pointsPerRound;
 
   @Column(name = "bonus_points")
   private int bonusPoints;

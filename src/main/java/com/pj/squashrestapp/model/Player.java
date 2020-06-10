@@ -52,13 +52,11 @@ public class Player {
   @Column(name = "email")
   private String email;
 
-  @ManyToMany(mappedBy = "players")
+  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
   private Set<Authority> authorities;
 
-  @ManyToMany(mappedBy = "players")
+  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
   private Set<RoleForLeague> roles;
-
-  private String token;
 
   public Player(final String username, final String email) {
     this.username = username;

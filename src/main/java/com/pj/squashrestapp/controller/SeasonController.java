@@ -34,9 +34,7 @@ public class SeasonController {
   @ResponseBody
   SeasonScoreboardDto overalScoreboard(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
-
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(id);
-
     TimeLogUtil.logFinish(startTime);
     return seasonScoreboardDto;
   }
@@ -48,9 +46,7 @@ public class SeasonController {
   @ResponseBody
   List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
-
     final List<RoundScoreboard> roundScoreboards = seasonService.perRoundScoreboard(id);
-
     TimeLogUtil.logFinish(startTime);
     return roundScoreboards;
   }

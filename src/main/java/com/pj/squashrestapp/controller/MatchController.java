@@ -188,7 +188,14 @@ public class MatchController {
           @RequestParam("matchId") final Long matchId,
           @RequestParam("setNumber") final int setNumber) {
     final Match matchToModify = matchRepository.getOne(matchId);
-    final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
+
+    final SetResult setToModify = matchToModify
+            .getSetResults()
+            .stream()
+            .filter(set -> set.getNumber() == setNumber)
+            .findFirst()
+            .orElse(null);
+
     final String initialMatchResult = matchToModify.toString();
 
     setToModify.setFirstPlayerScore(0);

@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.model.dto;
 
-import com.pj.squashrestapp.model.RoundResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

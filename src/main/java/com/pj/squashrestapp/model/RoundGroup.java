@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -64,17 +65,17 @@ public class RoundGroup implements Identifiable {
   @Column(name = "number")
   private int number;
 
-  @ManyToMany
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
           joinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id")
   )
   private List<Player> players;
 
-  @OneToMany(mappedBy = "roundGroup", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE})
+  @OneToMany(mappedBy = "roundGroup", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
   private List<Match> matches;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "round_id", referencedColumnName = "id")
   private Round round;
 
