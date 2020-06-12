@@ -8,7 +8,7 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.SimpleMatchDto;
 import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.util.EntityGraphReconstruct;
+import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class SetResultsController {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchByLeagueId(id);
-    final League leagueFetched = EntityGraphReconstruct.reconstructLeague(setResults, id);
+    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, id);
 
     final List<SimpleMatchDto> matches = new ArrayList<>();
     int counter = 0;
@@ -71,7 +71,7 @@ public class SetResultsController {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchBySeasonId(id);
-    final Season seasonFetched = EntityGraphReconstruct.reconstructSeason(setResults, id);
+    final Season seasonFetched = EntityGraphBuildUtil.reconstructSeason(setResults, id);
 
     final List<SimpleMatchDto> matches = new ArrayList<>();
     int counter = 0;
@@ -98,7 +98,7 @@ public class SetResultsController {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(id);
-    final Round roundFetched = EntityGraphReconstruct.reconstructRound(setResults, id);
+    final Round roundFetched = EntityGraphBuildUtil.reconstructRound(setResults, id);
 
     final List<SimpleMatchDto> matches = new ArrayList<>();
     int counter = 0;

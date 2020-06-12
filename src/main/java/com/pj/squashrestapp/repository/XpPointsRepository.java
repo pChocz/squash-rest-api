@@ -26,8 +26,8 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
 
   @Query("""
           SELECT xpp FROM XpPointsForPlace xpp
-          INNER JOIN FETCH xpp.xpPointsForRoundGroup xprg
-          INNER JOIN FETCH xprg.xpPointsForRound xpr
+            INNER JOIN FETCH xpp.xpPointsForRoundGroup xprg
+            INNER JOIN FETCH xprg.xpPointsForRound xpr
           """)
   List<XpPointsForPlace> fetchAll();
 

@@ -23,7 +23,6 @@ import java.util.List;
 @Entity
 @Table(name = "leagues")
 @Getter
-@Setter
 @NoArgsConstructor
 public class League implements Identifiable {
 
@@ -42,30 +41,53 @@ public class League implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "name", unique = true)
   private String name;
 
-  @OneToMany(mappedBy = "league", fetch = FetchType.LAZY)
-  private List<Season> seasons;
-
-  @OneToMany(mappedBy = "league", fetch = FetchType.LAZY)
-  private List<RoleForLeague> rolesForLeague;
-
+  @Setter
   @Column(name = "logo")
   private Blob logo;
 
-  @OneToMany(mappedBy = "league", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-  private List<HallOfFameSeason> hallOfFameSeasons;
+  @Setter
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<Season> seasons = new ArrayList<>();
+
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<RoleForLeague> rolesForLeague = new ArrayList<>();
+
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<HallOfFameSeason> hallOfFameSeasons = new ArrayList<>();
 
   public League(final String name) {
     this.name = name;
   }
 
   public void addSeason(final Season season) {
-    if (this.seasons == null) {
-      this.seasons = new ArrayList<>();
-    }
     this.seasons.add(season);
+    season.setLeague(this);
+  }
+
+  public void addRoleForLeague(final RoleForLeague roleForLeague) {
+    this.rolesForLeague.add(roleForLeague);
+    roleForLeague.setLeague(this);
+  }
+
+  public void addHallOfFameSeason(final HallOfFameSeason hallOfFameSeason) {
+    this.hallOfFameSeasons.add(hallOfFameSeason);
+    hallOfFameSeason.setLeague(this);
   }
 
   @Override

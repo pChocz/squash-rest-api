@@ -26,7 +26,6 @@ import java.util.Map;
 @Entity
 @Table(name = "rounds")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Round implements Identifiable {
 
@@ -62,22 +61,32 @@ public class Round implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "number")
   private int number;
 
+  @Setter
   @Column(name = "date")
   private Date date;
 
-  @OneToMany(mappedBy = "round", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-  private List<RoundGroup> roundGroups;
+  @Setter
+  @OneToMany(
+          mappedBy = "round",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<RoundGroup> roundGroups = new ArrayList<>();
 
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "season_id", referencedColumnName = "id")
   private Season season;
 
+  @Setter
   @Column(name = "finished")
   private boolean finished;
 
+  @Setter
   @Column(name = "split")
   private String split;
 
@@ -87,62 +96,14 @@ public class Round implements Identifiable {
     this.season = season;
   }
 
-  /**
-   * Used to create new empty Round from scratch
-   *
-   * @param number
-   * @param date
-   * @param season
-   * @param mapOfPlayersForEachGroup
-   */
-  public Round(final int number, final Date date, final Season season, final Map<Integer, List<Player>> mapOfPlayersForEachGroup) {
-    this.number = number;
-    this.date = date;
-    this.season = season;
-
-    this.roundGroups = new ArrayList<>();
-    for (final Integer groupNumber : mapOfPlayersForEachGroup.keySet()) {
-      final RoundGroup roundGroup = new RoundGroup(groupNumber, mapOfPlayersForEachGroup.get(groupNumber), this);
-      roundGroup.generateEmptyMatches();
-      this.roundGroups.add(roundGroup);
-    }
-  }
-
   @Override
   public String toString() {
-    return "Season " + season.getNumber() + " / Round " + number + " / Date: " + date;
-  }
-
-  public int getNumberOfPlayers() {
-    return this
-            .roundGroups
-            .stream()
-            .mapToInt(roundGroup -> roundGroup.getPlayers().size())
-            .sum();
-  }
-
-  public int getNumberOfPlayersInGroupOfNumber(final int groupNumber) {
-    return this
-            .roundGroups
-            .stream()
-            .filter(roundGroup -> roundGroup.getNumber() == groupNumber)
-            .findFirst()
-            .get()
-            .getPlayers()
-            .size();
-  }
-
-  public int getNumberOfGroups() {
-    return this
-            .roundGroups
-            .size();
+    return "Season " + season.getNumber() + " | Round " + number + " | Date: " + date;
   }
 
   public void addRoundGroup(final RoundGroup roundGroup) {
-    if (this.roundGroups == null) {
-      this.roundGroups = new ArrayList<>();
-    }
     this.roundGroups.add(roundGroup);
+    roundGroup.setRound(this);
   }
 
 }

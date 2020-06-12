@@ -25,7 +25,6 @@ import java.util.List;
 @Entity
 @Table(name = "seasons")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Season implements Identifiable {
 
@@ -61,33 +60,30 @@ public class Season implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "number")
   private int number;
 
+  @Setter
   @Column(name = "start_date")
   private Date startDate;
 
-  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-  private List<Round> rounds;
+  @Setter
+  @OneToMany(
+          mappedBy = "season",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<Round> rounds = new ArrayList<>();
 
-//  @OneToMany(mappedBy = "season", cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
-//  private List<SeasonResult> seasonResults;
-
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "league_id", referencedColumnName = "id")
+  @JoinColumn(name = "league_id")
   private League league;
-
-  public Season(final League league, final int number, final Date startDate) {
-    this.league = league;
-    this.number = number;
-    this.startDate = startDate;
-
-    this.rounds = new ArrayList<>();
-//    this.seasonResults = new ArrayList<>();
-  }
 
   public void addRound(final Round round) {
     this.rounds.add(round);
+    round.setSeason(this);
   }
 
   @Override

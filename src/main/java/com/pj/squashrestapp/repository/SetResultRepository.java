@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.SeasonResult;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.util.EntityGraphReconstruct;
+import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,53 +30,88 @@ import java.util.List;
  * Second solution prevents additional queries to fill players fields.
  *
  * As a result we can extract entire league with a single query and
- * reconstruct it later with {@link EntityGraphReconstruct} utility class.
+ * reconstruct it later with {@link EntityGraphBuildUtil} utility class.
  */
 @SuppressWarnings({"JavaDoc", "unused"})
 public interface SetResultRepository extends JpaRepository<SetResult, Long> {
 
-  @Query("""
+  String SELECT_FETCH_LEAGUE = """
           SELECT sr FROM SetResult sr
           INNER JOIN FETCH sr.match m
           INNER JOIN FETCH m.roundGroup rg
           INNER JOIN FETCH rg.round r
           INNER JOIN FETCH r.season s
           INNER JOIN FETCH s.league l
-            WHERE l.id = :leagueId
+                    
+          """;
+
+  String SELECT_FETCH_SEASON = """
+          SELECT sr FROM SetResult sr
+          INNER JOIN FETCH sr.match m
+          INNER JOIN FETCH m.roundGroup rg
+          INNER JOIN FETCH rg.round r
+          INNER JOIN FETCH r.season s
+                    
+          """;
+
+  String SELECT_FETCH_ROUND = """
+          SELECT sr FROM SetResult sr
+          INNER JOIN FETCH sr.match m
+          INNER JOIN FETCH m.roundGroup rg
+          INNER JOIN FETCH rg.round r
+                    
+          """;
+
+
+  @Query(SELECT_FETCH_LEAGUE + """
+          WHERE l.id = :leagueId 
+            AND m.firstPlayer.id IN :playersIds 
+            AND m.secondPlayer.id IN :playersIds
           """)
+  @EntityGraph(attributePaths = {
+          "match.firstPlayer",
+          "match.secondPlayer",
+  })
+  List<SetResult> fetchBySeveralPlayersIdsAndLeagueId(
+          @Param("leagueId") Long leagueId,
+          @Param("playersIds") Long[] playersIds);
+
+
+  @Query(SELECT_FETCH_LEAGUE + """
+          WHERE l.id = :leagueId 
+            AND (m.firstPlayer.id = :playerId 
+             OR m.secondPlayer.id = :playerId)
+          """)
+  @EntityGraph(attributePaths = {
+          "match.firstPlayer",
+          "match.secondPlayer",
+  })
+  List<SetResult> fetchByOnePlayerIdAndLeagueId(
+          @Param("leagueId") Long leagueId,
+          @Param("playerId") Long[] playerId);
+
+
+  @Query(SELECT_FETCH_LEAGUE + "WHERE l.id = :leagueId")
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
   })
   List<SetResult> fetchByLeagueId(@Param("leagueId") Long leagueId);
 
-  @Query("""
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-          INNER JOIN FETCH rg.round r
-          INNER JOIN FETCH r.season s
-            WHERE s.id = :seasonId
-          """)
+
+  @Query(SELECT_FETCH_SEASON + "WHERE s.id = :seasonId")
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
   })
   List<SetResult> fetchBySeasonId(@Param("seasonId") Long seasonId);
 
-  @Query("""
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-          INNER JOIN FETCH rg.round r
-            WHERE r.id = :roundId
-          """)
+
+  @Query(SELECT_FETCH_ROUND + "WHERE r.id = :roundId")
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
   })
   List<SetResult> fetchByRoundId(@Param("roundId") Long roundId);
-
-
 
 }

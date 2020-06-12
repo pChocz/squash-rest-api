@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
@@ -22,7 +23,6 @@ import java.util.List;
 @Entity
 @Table(name = "xp_points_for_place")
 @Getter
-@Setter
 @NoArgsConstructor
 public class XpPointsForPlace implements Identifiable {
 
@@ -55,17 +55,22 @@ public class XpPointsForPlace implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "place_in_round")
   private int placeInRound;
 
+  @Setter
   @Column(name = "place_in_round_group")
   private int placeInRoundGroup;
 
+  @Setter
   @Column(name = "points")
   private int points;
 
+  @JsonIgnore
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "xp_points_for_round_group_id", referencedColumnName = "id")
+  @JoinColumn(name = "xp_points_for_round_group_id")
   private XpPointsForRoundGroup xpPointsForRoundGroup;
 
   public XpPointsForPlace(final int place, final int placesInAllRoundsBefore ,final int points, final XpPointsForRoundGroup xpPointsForRoundGroup) {

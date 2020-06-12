@@ -2,7 +2,6 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
-import com.pj.squashrestapp.model.projection.MatchProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -79,22 +78,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
               WHERE m.id = :matchId
           """)
   Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
-
-
-//  @Query("SELECT DISTINCT m FROM Match m JOIN FETCH m.setResults")
-//  List<MatchProjection> retrieveAllMatchesProjection();
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
 

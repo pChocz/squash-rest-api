@@ -6,8 +6,6 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.XpPointsForPlace;
-import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.RoundScoreboard;
@@ -20,9 +18,9 @@ import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
-import com.pj.squashrestapp.util.EntityGraphReconstruct;
+import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchUtil;
-import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,14 +53,14 @@ public class SeasonService {
 
   public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
-    final Season season = EntityGraphReconstruct.reconstructSeason(setResultListForSeason, seasonId);
+    final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
     return getSeasonScoreboardDto(season);
   }
 
   public SeasonScoreboardDto getSeasonScoreboardDto(final Season season) {
     final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
-    final ArrayListMultimap<String, Integer> xpPointsForRound = xpPointsService.buildAll();
+    final ArrayListMultimap<String, Integer> xpPointsForRound = xpPointsService.buildAllAsIntegerMultimap();
 
     for (final Round round : season.getRounds()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard();
@@ -71,7 +69,7 @@ public class SeasonService {
       }
 
       final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
-      final String split = MatchUtil.integerListToString(playersPerGroup);
+      final String split = GeneralUtil.integerListToString(playersPerGroup);
       final List<Integer> xpPoints = xpPointsForRound.get(split);
       roundScoreboard.assignPointsAndPlaces(xpPoints);
 
@@ -116,7 +114,7 @@ public class SeasonService {
       }
 
       final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
-      final String split = MatchUtil.integerListToString(playersPerGroup);
+      final String split = GeneralUtil.integerListToString(playersPerGroup);
       final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
 
       roundScoreboard.assignPointsAndPlaces(xpPoints);

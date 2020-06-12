@@ -15,15 +15,15 @@ import com.pj.squashrestapp.model.util.EntityGraphBuilder;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import lombok.experimental.UtilityClass;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Entity Graph Reconstructor for the {@link SetResult} class that
  * allows to build entire structure above, up to league entity.
  */
 @UtilityClass
-public class EntityGraphReconstruct {
+public class EntityGraphBuildUtil {
 
   public League reconstructLeague(final List<SetResult> setResults, final Long leagueId) {
     final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{
@@ -79,11 +79,6 @@ public class EntityGraphReconstruct {
             .getObject(roundGroupClassId);
   }
 
-//      final List<XpPointsForRound> allPointsForRounds = seasonService.getXpPointsRepository().findAll();
-//    final List<XpPointsForPlace> allPoints = seasonService.getXpPointsRepository().fetchAll();
-//    final ArrayListMultimap<String, Integer> xpPointsForRound = EntityGraphReconstruct.reconstructXpPointsForRound(allPointsForRounds, allPoints);
-
-
   public ArrayListMultimap<String, Integer> reconstructXpPointsForRound(final List<XpPointsForRound> allPointsForRounds,
                                                                         final List<XpPointsForPlace> allPoints) {
     final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{
@@ -109,6 +104,25 @@ public class EntityGraphReconstruct {
       }
     }
     return multimap;
+  }
+
+  public List<XpPointsForRound> reconstructXpPointsList(final List<XpPointsForRound> allPointsForRounds,
+                                                        final List<XpPointsForPlace> allPoints) {
+    final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{
+            XpPointsForPlace.ENTITY_VISITOR,
+            XpPointsForRoundGroup.ENTITY_VISITOR,
+            XpPointsForRound.ENTITY_VISITOR_FINAL
+    }).build(allPoints);
+
+    final List<XpPointsForRound> xpPointsForRoundList = allPointsForRounds
+            .stream()
+            .map(xpPointsForRound -> new ClassId<>(XpPointsForRound.class, xpPointsForRound.getId()))
+            .map(xpPointsForRoundClassId -> entityGraphBuilder
+                    .getEntityContext()
+                    .getObject(xpPointsForRoundClassId))
+            .collect(Collectors.toList());
+
+    return xpPointsForRoundList;
   }
 
 }

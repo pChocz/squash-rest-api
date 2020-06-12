@@ -20,14 +20,14 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "authorities")
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Authority {
 
   @Id
@@ -44,17 +44,13 @@ public class Authority {
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-          joinColumns = @JoinColumn(name = "authorities_id", referencedColumnName = "id"),
-          inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id")
+          joinColumns = @JoinColumn(name = "authorities_id"),
+          inverseJoinColumns = @JoinColumn(name = "player_id")
   )
-  private List<Player> players;
+  private Set<Player> players = new HashSet<>();
 
+  @Setter
   @Enumerated(EnumType.STRING)
   private AuthorityType type;
-
-  public Authority(final AuthorityType authorityType) {
-    this.players = new ArrayList<>();
-    this.type = authorityType;
-  }
 
 }

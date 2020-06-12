@@ -26,7 +26,6 @@ import java.util.List;
 @Entity
 @Table(name = "round_groups")
 @Getter
-@Setter
 @NoArgsConstructor
 public class RoundGroup implements Identifiable {
 
@@ -62,70 +61,31 @@ public class RoundGroup implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "number")
   private int number;
 
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(
-          joinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"),
-          inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id")
-  )
-  private List<Player> players;
+  @Setter
+  @OneToMany(
+          mappedBy = "roundGroup",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<Match> matches = new ArrayList<>();
 
-  @OneToMany(mappedBy = "roundGroup", cascade = {CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.REMOVE}, fetch = FetchType.LAZY)
-  private List<Match> matches;
-
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "round_id", referencedColumnName = "id")
+  @JoinColumn(name = "round_id")
   private Round round;
 
-  public RoundGroup(final int number, final List<Player> players, final Round round) {
-    this.number = number;
-    this.players = players;
-    this.round = round;
-
-    this.matches = new ArrayList<>();
-  }
-
-  public void generateEmptyMatches() {
-    for (int i = 0; i < players.size(); i++) {
-      for (int j = i + 1; j < players.size(); j++) {
-        this.matches.add(new Match(this, players.get(i), players.get(j), true));
-      }
-    }
+  public void addMatch(final Match match) {
+    this.matches.add(match);
+    match.setRoundGroup(this);
   }
 
   @Override
   public String toString() {
-    return "Round " + round.getNumber() + " / Group " + number + " / " + players.size() + " players";
+    return "Round " + round.getNumber() + " | Group " + number;
   }
-//
-//  public VerticalLayout createGroupLabel() {
-//    final VerticalLayout layout = new VerticalLayout();
-//    layout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
-//    layout.setAlignItems(FlexComponent.Alignment.CENTER);
-//    layout.getStyle().set("padding", "0px");
-//
-//    final int playersCount = getPlayers().size();
-//    final int number = getNumber();
-//
-//    final String numeral
-//            = number == 1 ? "st"
-//            : number == 2 ? "nd"
-//            : number == 3 ? "rd"
-//            : "th";
-//
-//    final Span groupSpan = new Span(number + numeral + " group");
-//    groupSpan.getStyle().set("margin-bottom", "-1px");
-//    groupSpan.getStyle().set("padding-top", "0px");
-//
-//    final Span playersSpan = new Span(playersCount + " players");
-//    playersSpan.getStyle().set("margin-top", "-1px");
-//    playersSpan.getStyle().set("padding-bottom", "0px");
-//
-//    layout.add(groupSpan);
-//    layout.add(playersSpan);
-//    return layout;
-//  }
 
 }

@@ -28,7 +28,6 @@ import java.util.List;
 @Entity
 @Table(name = "matches")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Match implements Identifiable {
 
@@ -64,50 +63,37 @@ public class Match implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "first_player_id", referencedColumnName = "id")
+  @JoinColumn(name = "first_player_id")
   private Player firstPlayer;
 
+  @Setter
   @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "second_player_id", referencedColumnName = "id")
+  @JoinColumn(name = "second_player_id")
   private Player secondPlayer;
 
-  @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-  private List<SetResult> setResults;
+  @Setter
+  @OneToMany(
+          mappedBy = "match",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private List<SetResult> setResults = new ArrayList<>();
 
-  private transient String _1stSetResult;
-  private transient String _2ndSetResult;
-  private transient String _3rdSetResult;
-
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "round_group_id", referencedColumnName = "id")
+  @JoinColumn(name = "round_group_id")
   private RoundGroup roundGroup;
 
-  public Match(final RoundGroup roundGroup, final Player firstPlayer, final Player secondPlayer, final boolean withAllEmptySets) {
-    this.roundGroup = roundGroup;
-    this.firstPlayer = firstPlayer;
-    this.secondPlayer = secondPlayer;
-    this.setResults = new ArrayList<>();
-    this.setResults.add(new SetResult(1, this));
-    this.setResults.add(new SetResult(2, this));
-    this.setResults.add(new SetResult(3, this));
-  }
-
-  public Match(final RoundGroup roundGroup, final Player firstPlayer, final Player secondPlayer) {
-    this.roundGroup = roundGroup;
-    this.firstPlayer = firstPlayer;
-    this.secondPlayer = secondPlayer;
+  public void addSetResult(final SetResult setResult) {
+    this.setResults.add(setResult);
+    setResult.setMatch(this);
   }
 
   @Override
   public String toString() {
-    return "[" + dbId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResults;
-  }
-
-  private String dbId() {
-    return id == null
-            ? "no id"
-            : String.valueOf(id);
+    return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResults;
   }
 
 }

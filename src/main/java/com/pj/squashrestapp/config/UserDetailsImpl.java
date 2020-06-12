@@ -2,6 +2,9 @@ package com.pj.squashrestapp.config;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.model.Authority;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.dto.PlayerAuthDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -29,11 +32,11 @@ public class UserDetailsImpl implements UserDetails {
   private final boolean credentialsNonExpired;
   private final boolean enabled;
 
-  public UserDetailsImpl(final List<PlayerAuthDto> authDtoList) {
-    this.username = authDtoList.get(0).getUsername();
-    this.password = authDtoList.get(0).getPassword();
-    this.authorities = extractAuthorities(authDtoList);
-    this.rolesForLeagues = extractRolesForLeagues(authDtoList);
+  public UserDetailsImpl(final Player player) {
+    this.username = player.getUsername();
+    this.password = player.getPassword();
+    this.authorities = extractAuthorities(player.getAuthorities());
+    this.rolesForLeagues = extractRolesForLeagues(player.getRoles());
 
     // todo: check what to do with it later
     this.accountNonExpired = true;
@@ -42,17 +45,17 @@ public class UserDetailsImpl implements UserDetails {
     this.enabled = true;
   }
 
-  private Set<GrantedAuthority> extractAuthorities(final List<PlayerAuthDto> authDtoList) {
-    return authDtoList
+  private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {
+    return authorities
             .stream()
-            .map(auth -> new SimpleGrantedAuthority(auth.getAuthorityType().name()))
+            .map(authority -> new SimpleGrantedAuthority(authority.getType().name()))
             .collect(Collectors.toSet());
   }
 
-  private Multimap<Long, String> extractRolesForLeagues(final List<PlayerAuthDto> authDtoList) {
+  private Multimap<Long, String> extractRolesForLeagues(final Set<RoleForLeague> roles) {
     final Multimap<Long, String> multimap = HashMultimap.create();
-    for (final PlayerAuthDto authDto : authDtoList) {
-      multimap.put(authDto.getLeagueId(), authDto.getRole().name());
+    for (final RoleForLeague role : roles) {
+      multimap.put(role.getLeague().getId(), role.getLeagueRole().name());
     }
     return multimap;
   }

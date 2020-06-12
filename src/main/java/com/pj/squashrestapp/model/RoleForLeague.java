@@ -20,14 +20,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "roles_for_leagues")
 @Getter
-@Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class RoleForLeague {
 
   @Id
@@ -42,26 +42,22 @@ public class RoleForLeague {
           strategy = "native")
   private Long id;
 
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "league_id", referencedColumnName = "id")
+  @JoinColumn(name = "league_id")
   private League league;
 
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-          joinColumns = @JoinColumn(name = "roles_for_leagues_id", referencedColumnName = "id"),
-          inverseJoinColumns = @JoinColumn(name = "player_id", referencedColumnName = "id")
+          joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
+          inverseJoinColumns = @JoinColumn(name = "player_id")
   )
-  private List<Player> players;
+  private Set<Player> players = new HashSet<>();
 
+  @Setter
   @Column(name="league_role")
   @Enumerated(EnumType.STRING)
   private LeagueRole leagueRole;
-
-  public RoleForLeague(final League league, final LeagueRole leagueRole) {
-    this.players = new ArrayList<>();
-    this.league = league;
-    this.leagueRole = leagueRole;
-  }
 
   @Override
   public String toString() {

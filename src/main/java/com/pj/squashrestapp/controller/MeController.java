@@ -40,7 +40,7 @@ public class MeController {
   @ResponseBody
   public UserBasicInfo aboutMe() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.findByUsername(auth.getName());
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).get();
     final UserBasicInfo userBasicInfo = new UserBasicInfo(player, auth);
     return userBasicInfo;
   }
@@ -66,7 +66,6 @@ public class MeController {
     final UserBasicInfo userBasicInfo = new UserBasicInfo(player, auth);
     return userBasicInfo.getRoles();
   }
-
 
 
   @Getter

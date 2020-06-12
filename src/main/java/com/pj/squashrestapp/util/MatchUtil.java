@@ -69,18 +69,4 @@ public class MatchUtil {
     return perSeasonMatches;
   }
 
-  /**
-   * Converts list of Integer to nicely formatted String,
-   * ex: 1 | 3 | 4
-   *
-   * @param integerList list of integers to format
-   * @return nicely formatted String
-   */
-  public String integerListToString(final List<Integer> integerList) {
-    return integerList
-            .stream()
-            .map(Object::toString)
-            .collect(Collectors.joining(" | "));
-  }
-
 }

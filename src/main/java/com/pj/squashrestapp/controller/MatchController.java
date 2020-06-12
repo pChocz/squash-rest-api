@@ -7,7 +7,6 @@ import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
-import com.pj.squashrestapp.model.projection.MatchProjection;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.MatchUtil;

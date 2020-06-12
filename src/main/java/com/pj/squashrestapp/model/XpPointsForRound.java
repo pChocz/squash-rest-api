@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model;
 
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "xp_points_for_round")
 @Getter
-@Setter
 @NoArgsConstructor
 public class XpPointsForRound implements Identifiable {
 
@@ -44,48 +44,29 @@ public class XpPointsForRound implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "split")
   private String split;
 
+  @Setter
   @Column(name = "number_of_players")
   private int numberOfPlayers;
 
-  @OneToMany(mappedBy = "xpPointsForRound", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @Setter
+  @OneToMany(
+          mappedBy = "xpPointsForRound",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
   private List<XpPointsForRoundGroup> xpPointsForRoundGroups;
 
   public XpPointsForRound(final int[] splitAsArray, final int[][] points) {
     this.numberOfPlayers = Arrays.stream(splitAsArray).sum();
-    this.split = intArrayToString(splitAsArray);
+    this.split = GeneralUtil.intArrayToString(splitAsArray);
     this.xpPointsForRoundGroups = new ArrayList<>(splitAsArray.length);
     for (int i = 1; i <= points.length; i++) {
       this.xpPointsForRoundGroups.add(new XpPointsForRoundGroup(i, points, this));
     }
-  }
-
-  public static String intArrayToString(final int[] intArray) {
-    return integerListToString(
-            intArrayToList(intArray));
-  }
-
-  /**
-   * Converts list of Integer to nicely formatted String,
-   * ex: 1 | 3 | 4
-   *
-   * @param integerList list of integers to format
-   * @return nicely formatted String
-   */
-  public static String integerListToString(final List<Integer> integerList) {
-    return integerList
-            .stream()
-            .map(Object::toString)
-            .collect(Collectors.joining(" | "));
-  }
-
-  public static List<Integer> intArrayToList(final int[] integerList) {
-    return Arrays
-            .stream(integerList)
-            .boxed()
-            .collect(Collectors.toList());
   }
 
 }

@@ -1,14 +1,12 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.model.dto.PlayerAuthDto;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  *
@@ -21,11 +19,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(final String usernameOrEmail) throws UsernameNotFoundException {
-    final List<PlayerAuthDto> authDtoList = playerRepository.getAuthorizationData(usernameOrEmail);
-    if (authDtoList.isEmpty()) {
-      throw new UsernameNotFoundException("User not found!");
-    }
-    final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(authDtoList);
+    final Player player = playerRepository
+            .fetchForAuthorizationByUsernameOrEmail(usernameOrEmail)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+    final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);
     return userDetailsImpl;
   }
 

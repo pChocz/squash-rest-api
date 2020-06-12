@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "players")
 @Getter
-@Setter
 @NoArgsConstructor
 public class Player {
 
@@ -43,26 +42,31 @@ public class Player {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "username", unique = true)
   private String username;
 
+  @Setter
   @Column(name = "password")
   private String password;
 
-  @Column(name = "email")
+  @Setter
+  @Column(name = "email", unique = true)
   private String email;
 
-  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
-  private Set<Authority> authorities;
+  @ManyToMany(
+          mappedBy = "players",
+          fetch = FetchType.LAZY)
+  private Set<Authority> authorities = new HashSet<>();
 
-  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
-  private Set<RoleForLeague> roles;
+  @ManyToMany(
+          mappedBy = "players",
+          fetch = FetchType.LAZY)
+  private Set<RoleForLeague> roles = new HashSet<>();
 
   public Player(final String username, final String email) {
     this.username = username;
     this.email = email;
-    this.roles = new HashSet<>();
-    this.authorities = new HashSet<>();
   }
 
   public void addRole(final RoleForLeague roleForLeague) {

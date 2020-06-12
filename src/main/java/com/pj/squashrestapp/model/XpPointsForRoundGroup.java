@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
@@ -24,7 +25,6 @@ import java.util.List;
 @Entity
 @Table(name = "xp_points_for_round_group")
 @Getter
-@Setter
 @NoArgsConstructor
 public class XpPointsForRoundGroup implements Identifiable {
 
@@ -60,12 +60,20 @@ public class XpPointsForRoundGroup implements Identifiable {
           strategy = "native")
   private Long id;
 
+  @Setter
   @Column(name = "round_group_number")
   private int roundGroupNumber;
 
-  @OneToMany(mappedBy = "xpPointsForRoundGroup", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+  @Setter
+  @OneToMany(
+          mappedBy = "xpPointsForRoundGroup",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
   private List<XpPointsForPlace> xpPointsForPlaces;
 
+  @JsonIgnore
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "xp_points_for_round_id", referencedColumnName = "id")
   private XpPointsForRound xpPointsForRound;
