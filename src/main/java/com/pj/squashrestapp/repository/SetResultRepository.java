@@ -88,13 +88,14 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   })
   List<SetResult> fetchByOnePlayerIdAndLeagueId(
           @Param("leagueId") Long leagueId,
-          @Param("playerId") Long[] playerId);
+          @Param("playerId") Long playerId);
 
 
   @Query(SELECT_FETCH_LEAGUE + "WHERE l.id = :leagueId")
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
+          "match.roundGroup.round.season.bonusPoints"
   })
   List<SetResult> fetchByLeagueId(@Param("leagueId") Long leagueId);
 

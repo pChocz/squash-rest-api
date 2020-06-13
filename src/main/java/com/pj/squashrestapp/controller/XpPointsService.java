@@ -25,8 +25,15 @@ public class XpPointsService {
   public ArrayListMultimap<String, Integer> buildAllAsIntegerMultimap() {
     final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();
     final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
-    final ArrayListMultimap<String, Integer> xpPointsForRound = EntityGraphBuildUtil.reconstructXpPointsForRound(allPointsForRounds, allPoints);
-    return xpPointsForRound;
+    final ArrayListMultimap<String, Integer> multimap = EntityGraphBuildUtil.reconstructXpPointsForRound(allPointsForRounds, allPoints);
+    return multimap;
+  }
+
+  public ArrayListMultimap<String, Integer> buildForGivenSplitAsMultimap(final String split) {
+    final List<Integer> list = xpPointsRepository.retrievePointsBySplit(split);
+    final ArrayListMultimap<String, Integer> multimap = ArrayListMultimap.create();
+    multimap.putAll(split, list);
+    return multimap;
   }
 
   public List<Integer> buildForGivenSplit(final String split) {

@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
@@ -67,6 +68,7 @@ public class SetResult implements Identifiable {
   @Column(name = "second_player_score")
   private int secondPlayerScore;
 
+  @JsonIgnore
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "match_id")

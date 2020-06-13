@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +47,7 @@ public class Player {
   @Column(name = "username", unique = true)
   private String username;
 
+  @JsonIgnore
   @Setter
   @Column(name = "password")
   private String password;
@@ -54,11 +56,13 @@ public class Player {
   @Column(name = "email", unique = true)
   private String email;
 
+  @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)
   private Set<Authority> authorities = new HashSet<>();
 
+  @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)

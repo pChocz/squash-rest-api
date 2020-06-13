@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
@@ -20,7 +21,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "seasons")
@@ -77,6 +80,15 @@ public class Season implements Identifiable {
   private List<Round> rounds = new ArrayList<>();
 
   @Setter
+  @OneToMany(
+          mappedBy = "season",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private Set<BonusPoint> bonusPoints = new HashSet<>();
+
+  @JsonIgnore
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id")
   private League league;
@@ -84,6 +96,11 @@ public class Season implements Identifiable {
   public void addRound(final Round round) {
     this.rounds.add(round);
     round.setSeason(this);
+  }
+
+  public void addBonusPoint(final BonusPoint bonusPoint) {
+    this.bonusPoints.add(bonusPoint);
+    bonusPoint.setSeason(this);
   }
 
   @Override

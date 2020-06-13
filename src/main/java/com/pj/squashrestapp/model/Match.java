@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.util.EntityVisitor;
 import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
@@ -81,6 +82,7 @@ public class Match implements Identifiable {
           orphanRemoval = true)
   private List<SetResult> setResults = new ArrayList<>();
 
+  @JsonIgnore
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "round_group_id")

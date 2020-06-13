@@ -1,12 +1,15 @@
-package com.pj.squashrestapp.controller;
+package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.controller.SeasonService;
+import com.pj.squashrestapp.controller.XpPointsService;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -25,27 +28,16 @@ import java.util.stream.Collectors;
 public class LeagueService {
 
   @Autowired
+  SetResultRepository setResultRepository;
+
+  @Autowired
+  XpPointsService xpPointsService;
+
+  @Autowired
+  LeagueRepository leagueRepository;
+
+  @Autowired
   private SeasonService seasonService;
-
-  @Autowired
-  private SetResultRepository setResultRepository;
-
-  @Autowired
-  private XpPointsService xpPointsService;
-
-  public List<SeasonScoreboardDto> overalScoreboard(final Long leagueId) {
-    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueId);
-    final League league = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueId);
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
-
-    final List<SeasonScoreboardDto> seasonScoreboardDtoList = league
-            .getSeasons()
-            .stream()
-            .map(season -> seasonService.getSeasonScoreboardDto(season))
-            .collect(Collectors.toList());
-
-    return seasonScoreboardDtoList;
-  }
 
   public List<PlayerLeagueXpOveral> overalXpPoints(final Long leagueId) {
     final List<SeasonScoreboardDto> seasonScoreboardDtoList = overalScoreboard(leagueId);
@@ -65,6 +57,24 @@ public class LeagueService {
             .collect(Collectors.toList());
 
     return playerLeagueXpOveralList;
+  }
+
+  public List<SeasonScoreboardDto> overalScoreboard(final Long leagueId) {
+    final League league = fetchEntireLeague(leagueId);
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+
+    final List<SeasonScoreboardDto> seasonScoreboardDtoList = league
+            .getSeasons()
+            .stream()
+            .map(season -> seasonService.getSeasonScoreboardDto(season, xpPointsPerSplit))
+            .collect(Collectors.toList());
+
+    return seasonScoreboardDtoList;
+  }
+
+  public League fetchEntireLeague(final Long leagueId) {
+    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueId);
+    return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueId);
   }
 
 }

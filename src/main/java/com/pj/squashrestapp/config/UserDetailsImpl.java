@@ -5,7 +5,6 @@ import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
-import com.pj.squashrestapp.model.dto.PlayerAuthDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

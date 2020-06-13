@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.model.HallOfFameSeason;
 import com.pj.squashrestapp.util.MatchUtil;
-import com.pj.squashrestapp.model.dto.HallOfFameSeasonDto;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.Scoreboard;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
@@ -52,9 +52,9 @@ public class LeagueStatisticsService {
     final Scoreboard scoreboard = new Scoreboard(matchesPerSeason.values());
 
     // hall of fame
-    final List<HallOfFameSeasonDto> hallOfFameDto = extractHallOfFameSeason(id);
+    final List<HallOfFameSeason> hallOfFame = hallOfFameSeasonRepository.retrieveByLeagueId(id);
 
-    return new LeagueStatsWrapper(logo64encoded, overalStats, scoreboard, hallOfFameDto);
+    return new LeagueStatsWrapper(logo64encoded, overalStats, scoreboard, hallOfFame);
   }
 
   private String extractLeagueLogo(final Long id) {
@@ -72,14 +72,6 @@ public class LeagueStatisticsService {
     }
 
     return Base64.getEncoder().encodeToString(decodedBytes);
-  }
-
-  private List<HallOfFameSeasonDto> extractHallOfFameSeason(final Long id) {
-    return hallOfFameSeasonRepository
-            .retrieveByLeagueId(id)
-            .stream()
-            .map(HallOfFameSeasonDto::new)
-            .collect(Collectors.toList());
   }
 
 }

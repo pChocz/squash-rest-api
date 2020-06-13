@@ -2,6 +2,8 @@ package com.pj.squashrestapp.controller;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.util.concurrent.AtomicLongMap;
+import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
@@ -54,13 +56,23 @@ public class SeasonService {
   public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
     final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
-    return getSeasonScoreboardDto(season);
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit);
+    return seasonScoreboardDto;
   }
 
-  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season) {
-    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
+  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season,
+                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit) {
 
-    final ArrayListMultimap<String, Integer> xpPointsForRound = xpPointsService.buildAllAsIntegerMultimap();
+    final AtomicLongMap<Long> bonusPointsAggregatedPerPlayer = AtomicLongMap.create();
+
+    for (final BonusPoint bonusPoint : season.getBonusPoints()) {
+      final Long playerId = bonusPoint.getPlayer().getId();
+      final int points = bonusPoint.getPoints();
+      bonusPointsAggregatedPerPlayer.getAndAdd(playerId, points);
+    }
+
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
     for (final Round round : season.getRounds()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard();
@@ -70,7 +82,7 @@ public class SeasonService {
 
       final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
       final String split = GeneralUtil.integerListToString(playersPerGroup);
-      final List<Integer> xpPoints = xpPointsForRound.get(split);
+      final List<Integer> xpPoints = xpPointsPerSplit.get(split);
       roundScoreboard.assignPointsAndPlaces(xpPoints);
 
       for (final Scoreboard scoreboard : roundScoreboard.getRoundGroupScoreboards()) {
@@ -82,7 +94,7 @@ public class SeasonService {
                   .stream()
                   .filter(p -> p.getPlayer().equals(player))
                   .findFirst()
-                  .orElse(new SeasonScoreboardRowDto(player));
+                  .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedPerPlayer));
 
           seasonScoreboardRowDto.addXpForRound(round.getNumber(), scoreboardRow.getXpEarned());
           final boolean containsPlayer = seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
@@ -94,8 +106,9 @@ public class SeasonService {
     }
 
     for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getAllRounds(), seasonScoreboardDto.getFinishedRounds());
+      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds());
     }
+
     seasonScoreboardDto.sortRows();
     return seasonScoreboardDto;
   }

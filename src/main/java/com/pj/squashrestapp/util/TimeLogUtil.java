@@ -1,5 +1,8 @@
 package com.pj.squashrestapp.util;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pj.squashrestapp.service.LeagueStatsWrapper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +25,34 @@ public class TimeLogUtil {
 
   public void logFinish(final long startTime) {
     final double durationSecondsRounded = getDurationSecondsRounded(startTime);
-    log.info("{} seconds took", durationSecondsRounded);
+    log.info("{} seconds", durationSecondsRounded);
+  }
+
+  public <T> void logFinishWithJsonPrint(final long startTime, final T objectToPrint) {
+    try {
+      final ObjectMapper mapper = new ObjectMapper();
+      log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectToPrint));
+
+      final double durationSecondsRounded = getDurationSecondsRounded(startTime);
+      log.info("{} seconds", durationSecondsRounded);
+
+    } catch (final JsonProcessingException e) {
+      log.error("not serializable object", e);
+    }
+  }
+
+  public <T> void logFinishWithJsonPrint(final long startTime, final int counter, final T objectToPrint) {
+    try {
+      final ObjectMapper mapper = new ObjectMapper();
+      log.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(objectToPrint));
+
+      final double durationSecondsRounded = getDurationSecondsRounded(startTime);
+      log.info("finished fetching {} items", counter);
+      log.info("{} seconds", durationSecondsRounded);
+
+    } catch (final JsonProcessingException e) {
+      log.error("not serializable object", e);
+    }
   }
 
 }

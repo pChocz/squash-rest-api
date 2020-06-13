@@ -1,8 +1,9 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
-import com.pj.squashrestapp.model.dto.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardDto;
+import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,19 @@ public class LeagueController {
 
     TimeLogUtil.logFinish(startTime);
     return playerLeagueXpOveralList;
+  }
+
+
+  @RequestMapping(
+          value = "/entire",
+          params = {"id"},
+          method = GET)
+  @ResponseBody
+  League entireLeague(@RequestParam("id") final Long id) {
+    final long startTime = System.nanoTime();
+    final League league = leagueService.fetchEntireLeague(id);
+    TimeLogUtil.logFinish(startTime);
+    return league;
   }
 
 }

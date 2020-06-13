@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.model.dto.HallOfFameSeasonDto;
+import com.pj.squashrestapp.model.HallOfFameSeason;
 import com.pj.squashrestapp.model.dto.Scoreboard;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,6 +17,6 @@ public class LeagueStatsWrapper {
   private final String logo64encoded;
   private final OveralStats overalStats;
   private final Scoreboard scoreboard;
-  private final List<HallOfFameSeasonDto> hallOfFame;
+  private final List<HallOfFameSeason> hallOfFame;
 
 }

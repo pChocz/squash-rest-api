@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,6 +43,7 @@ public class Authority {
           strategy = "native")
   private Long id;
 
+  @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
           joinColumns = @JoinColumn(name = "authorities_id"),

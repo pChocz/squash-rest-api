@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
@@ -43,7 +45,12 @@ public class LeagueStatisticsController {
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#id, 'PLAYER')")
   LeagueStatsWrapper byId(@RequestParam("id") final Long id) {
-    return leagueStatisticsService.buildStatsForLeagueId(id);
+    final long startTime = System.nanoTime();
+
+    final LeagueStatsWrapper leagueStatsWrapper = leagueStatisticsService.buildStatsForLeagueId(id);
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, leagueStatsWrapper);
+    return leagueStatsWrapper;
   }
 
   @RequestMapping(

@@ -24,6 +24,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  *
+ * TODO: ONLY FOR TESTING of Set result reconstructing!
+ *
  */
 @Slf4j
 @RestController
@@ -52,13 +54,13 @@ public class SetResultsController {
           for (final Match match : roundGroup.getMatches()) {
             counter++;
             final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-            log.info(simpleMatchDto.toString());
             matches.add(simpleMatchDto);
           }
         }
       }
     }
-    TimeLogUtil.logFinish(startTime, counter);
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, counter, matches);
     return matches;
   }
 
@@ -80,12 +82,12 @@ public class SetResultsController {
         for (final Match match : roundGroup.getMatches()) {
           counter++;
           final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-          log.info(simpleMatchDto.toString());
           matches.add(simpleMatchDto);
         }
       }
     }
-    TimeLogUtil.logFinish(startTime, counter);
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, counter, matches);
     return matches;
   }
 
@@ -106,11 +108,11 @@ public class SetResultsController {
       for (final Match match : roundGroup.getMatches()) {
         counter++;
         final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-        log.info(simpleMatchDto.toString());
         matches.add(simpleMatchDto);
       }
     }
-    TimeLogUtil.logFinish(startTime, counter);
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, counter, matches);
     return matches;
   }
 

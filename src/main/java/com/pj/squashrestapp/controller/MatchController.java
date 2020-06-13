@@ -1,15 +1,22 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.RoundGroup;
+import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.SetDto;
+import com.pj.squashrestapp.model.dto.SimpleMatchDto;
 import com.pj.squashrestapp.model.dto.SingleSetRowDto;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
+import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.MatchUtil;
+import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -42,26 +51,65 @@ public class MatchController {
 
   @RequestMapping(
           value = "/bySinglePlayer",
-          params = {"id"},
+          params = {"playerId", "leagueId"},
           method = GET)
   @ResponseBody
-  List<MatchDto> bySinglePlayer(
-          @RequestParam("id") final Long id) {
-//    final List<MatchProjection> matchProjections = matchRepository.retrieveAllMatchesProjection();
-    final List<SingleSetRowDto> sets = matchRepository.retrieveBySinglePlayer(id);
-    final List<MatchDto> matches = MatchUtil.rebuildMatches(sets);
+  List<SimpleMatchDto> bySinglePlayer(
+          @RequestParam("playerId") final Long playerId,
+          @RequestParam("leagueId") final Long leagueId) {
+    final long startTime = System.nanoTime();
+
+    final List<SetResult> setResults = setResultRepository.fetchByOnePlayerIdAndLeagueId(leagueId, playerId);
+    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
+
+    final List<SimpleMatchDto> matches = leagueFetched
+            .getSeasons()
+            .stream()
+            .flatMap(season -> season
+                    .getRounds()
+                    .stream())
+            .flatMap(round -> round
+                    .getRoundGroups()
+                    .stream())
+            .flatMap(roundGroup -> roundGroup
+                    .getMatches()
+                    .stream())
+            .map(SimpleMatchDto::new)
+            .collect(Collectors.toList());
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, matches);
     return matches;
   }
 
   @RequestMapping(
           value = "/bySeveralPlayers",
-          params = {"ids"},
+          params = {"playersIds", "leagueId"},
           method = GET)
   @ResponseBody
-  List<MatchDto> bySeveralPlayers(
-          @RequestParam final Long[] ids) {
-    final List<SingleSetRowDto> sets = matchRepository.retrieveBySeveralPlayersById(ids);
-    final List<MatchDto> matches = MatchUtil.rebuildMatches(sets);
+  List<SimpleMatchDto> bySeveralPlayers(
+          @RequestParam("playersIds") final Long[] playersIds,
+          @RequestParam("leagueId") final Long leagueId) {
+    final long startTime = System.nanoTime();
+
+    final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueId, playersIds);
+    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
+
+    final List<SimpleMatchDto> matches = leagueFetched
+            .getSeasons()
+            .stream()
+            .flatMap(season -> season
+                    .getRounds()
+                    .stream())
+            .flatMap(round -> round
+                    .getRoundGroups()
+                    .stream())
+            .flatMap(roundGroup -> roundGroup
+                    .getMatches()
+                    .stream())
+            .map(SimpleMatchDto::new)
+            .collect(Collectors.toList());
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, matches);
     return matches;
   }
 

@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,11 +43,13 @@ public class RoleForLeague {
           strategy = "native")
   private Long id;
 
+  @JsonIgnore
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id")
   private League league;
 
+  @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
           joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
