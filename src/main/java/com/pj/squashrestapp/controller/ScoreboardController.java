@@ -1,24 +1,20 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.Scoreboard;
-import com.pj.squashrestapp.model.dto.MatchDto;
-import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.util.MatchExtractorUtil;
-import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
+import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.service.LeagueService;
+import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  *
@@ -29,53 +25,48 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class ScoreboardController {
 
   @Autowired
-  private SetResultRepository setResultRepository;
+  private ScoreboardService scoreboardService;
 
-  @RequestMapping(
-          value = "/bySeveralPlayers",
-          params = {"leagueId", "playerIds"},
-          method = GET)
+  @Autowired
+  private LeagueService leagueService;
+
+  @GetMapping(value = "/leagues/{leagueId}/players/{playersIds}")
   @ResponseBody
-  Scoreboard bySeveralPlayers(
-          @RequestParam("playersIds") final Long[] playersIds,
-          @RequestParam("leagueId") final Long leagueId) {
-    final long startTime = System.nanoTime();
+  Scoreboard scoreboardForLeagueForSeveralPlayers(
+          @PathVariable final Long leagueId,
+          @PathVariable final Long[] playersIds) {
 
-    final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueId, playersIds);
-    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-    final Scoreboard scoreboard = new Scoreboard(matches);
+    final long startTime = System.nanoTime();
+    final Scoreboard scoreboard = scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
 
     TimeLogUtil.logFinishWithJsonPrint(startTime, scoreboard);
     return scoreboard;
   }
 
-//  @RequestMapping(
-//          value = "/byRoundGroupId",
-//          params = {"id"},
-//          method = GET)
-//  @ResponseBody
-//  Scoreboard byRoundId(
-//          @RequestParam("id") final Long id) {
-//    final List<SingleSetRowDto> sets = matchRepository.retrieveByRoundGroupId(id);
-//    final List<MatchDto> matches = MatchUtil.rebuildMatches(sets);
-//    final Scoreboard scoreboard = new Scoreboard(matches);
-//    return scoreboard;
-//  }
+  @GetMapping(value = "/rounds/{roundId}")
+  @ResponseBody
+  RoundScoreboard scoreboardForRound(
+          @PathVariable final Long roundId) {
 
-  @RequestMapping(
-          value = "/byLeagueId",
-          params = {"id"},
-          method = GET)
+    final long startTime = System.nanoTime();
+    final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundId);
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, roundScoreboard);
+    return roundScoreboard;
+  }
+
+  @GetMapping(value = "/leagues/{leagueId}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#id, 'PLAYER')")
-  Scoreboard byLeagueId(
-          @RequestParam("id") final Long id) {
-    final List<SetResult> setResults = setResultRepository.fetchByLeagueId(id);
-    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, id);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-    final Scoreboard scoreboard = new Scoreboard(matches);
-    return scoreboard;
+  EntireLeagueScoreboard scoreboardForLeague(
+          @PathVariable final Long leagueId) {
+
+    final long startTime = System.nanoTime();
+    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueId);
+    final EntireLeagueScoreboard entireLeagueScoreboard = leagueStatsWrapper.getScoreboard();
+
+    TimeLogUtil.logFinishWithJsonPrint(startTime, entireLeagueScoreboard);
+    return entireLeagueScoreboard;
   }
 
 }

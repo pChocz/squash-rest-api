@@ -1,8 +1,9 @@
-package com.pj.squashrestapp.service;
+package com.pj.squashrestapp.model.dto.leaguestats;
 
 import com.pj.squashrestapp.model.HallOfFameSeason;
-import com.pj.squashrestapp.model.dto.Scoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  *
  */
 @Getter
+@Builder
 @AllArgsConstructor
 public class LeagueStatsWrapper {
 
@@ -18,7 +20,7 @@ public class LeagueStatsWrapper {
   private final String logo64encoded;
   private final OveralStats overalStats;
   private final List<PerSeasonStats> perSeasonStats;
-  private final Scoreboard scoreboard;
+  private final EntireLeagueScoreboard scoreboard;
   private final List<HallOfFameSeason> hallOfFame;
 
 }

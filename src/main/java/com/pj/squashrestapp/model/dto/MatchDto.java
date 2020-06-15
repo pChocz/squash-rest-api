@@ -2,12 +2,16 @@ package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.RoundGroup;
+import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Value;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -38,16 +42,20 @@ public class MatchDto {
   List<SetDto> sets;
 
   public MatchDto(final Match match) {
+    final RoundGroup roundGroup = match.getRoundGroup();
+    final Round round = roundGroup.getRound();
+    final Season season = round.getSeason();
+
     this.matchId = match.getId();
     this.firstPlayer = new PlayerDto(match.getFirstPlayer());
     this.secondPlayer = new PlayerDto(match.getSecondPlayer());
-    this.roundGroupId = match.getRoundGroup().getId();
-    this.roundGroupNumber = match.getRoundGroup().getNumber();
-    this.roundDate = match.getRoundGroup().getRound().getDate();
-    this.roundId = match.getRoundGroup().getRound().getId();
-    this.roundNumber = match.getRoundGroup().getRound().getNumber();
-    this.seasonId = match.getRoundGroup().getRound().getSeason().getId();
-    this.seasonNumber = match.getRoundGroup().getRound().getSeason().getNumber();
+    this.roundGroupId = roundGroup.getId();
+    this.roundGroupNumber = roundGroup.getNumber();
+    this.roundDate = round.getDate();
+    this.roundId = round.getId();
+    this.roundNumber = round.getNumber();
+    this.seasonId = season.getId();
+    this.seasonNumber = season.getNumber();
 
     this.sets = new ArrayList<>();
     for (final SetResult setResult : match.getSetResults()) {

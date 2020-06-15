@@ -1,6 +1,7 @@
-package com.pj.squashrestapp.model.dto;
+package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.google.common.util.concurrent.AtomicLongMap;
+import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;

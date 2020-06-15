@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.service;
+package com.pj.squashrestapp.model.dto.leaguestats;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

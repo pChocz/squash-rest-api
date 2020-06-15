@@ -1,22 +1,15 @@
-package com.pj.squashrestapp.model.dto;
+package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 /**
  *

@@ -16,6 +16,8 @@ import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,94 +42,14 @@ public class MatchController {
   @Autowired
   private SetResultRepository setResultRepository;
 
-  @RequestMapping(
-          value = "/bySinglePlayer",
-          params = {"playerId", "leagueId"},
-          method = GET)
+  @GetMapping(value = "/{matchId}")
   @ResponseBody
-  List<MatchDto> bySinglePlayer(
-          @RequestParam("playerId") final Long playerId,
-          @RequestParam("leagueId") final Long leagueId) {
-    final long startTime = System.nanoTime();
-
-    final List<SetResult> setResults = setResultRepository.fetchByOnePlayerIdAndLeagueId(leagueId, playerId);
-    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-
-    TimeLogUtil.logFinishWithJsonPrint(startTime, matches);
-    return matches;
-  }
-
-  @RequestMapping(
-          value = "/bySeveralPlayers",
-          params = {"playersIds", "leagueId"},
-          method = GET)
-  @ResponseBody
-  List<MatchDto> bySeveralPlayers(
-          @RequestParam("playersIds") final Long[] playersIds,
-          @RequestParam("leagueId") final Long leagueId) {
-    final long startTime = System.nanoTime();
-
-    final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueId, playersIds);
-    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-
-    TimeLogUtil.logFinishWithJsonPrint(startTime, matches);
-    return matches;
-  }
-
-  @RequestMapping(
-          value = "/byRoundGroupId",
-          params = {"id"},
-          method = GET)
-  @ResponseBody
-  List<MatchDto> byRoundId(
-          @RequestParam("id") final Long id) {
-    final List<SetResult> setResults = setResultRepository.fetchByRoundGroupId(id);
-    final RoundGroup roundGroup = EntityGraphBuildUtil.reconstructRoundGroup(setResults, id);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
-    return matches;
-  }
-
-  @RequestMapping(
-          value = "/bySeasonId",
-          params = {"id"},
-          method = GET)
-  @ResponseBody
-  List<MatchDto> bySeasonId(
-          @RequestParam("id") final Long id) {
-    final List<SetResult> setResults = setResultRepository.fetchBySeasonId(id);
-    final RoundGroup roundGroup = EntityGraphBuildUtil.reconstructRoundGroup(setResults, id);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
-    return matches;
-  }
-
-  @RequestMapping(
-          value = "/byLeagueId",
-          params = {"id"},
-          method = GET)
-  @ResponseBody
-  List<MatchDto> byLeagueId(
-          @RequestParam("id") final Long id) {
-    final List<SetResult> setResults = setResultRepository.fetchByLeagueId(id);
-    final RoundGroup roundGroup = EntityGraphBuildUtil.reconstructRoundGroup(setResults, id);
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
-    return matches;
-  }
-
-  @RequestMapping(
-          value = "/byMatchId",
-          params = {"id"},
-          method = GET)
-  @ResponseBody
-  MatchDto byMatchId(
-          @RequestParam("id") final Long id) {
-    final List<SetResult> setResults = setResultRepository.fetchByMatchId(id);
-    final Match match = EntityGraphBuildUtil.reconstructMatch(setResults, id);
+  MatchDto byMatchId(@PathVariable final Long matchId) {
+    final List<SetResult> setResults = setResultRepository.fetchByMatchId(matchId);
+    final Match match = EntityGraphBuildUtil.reconstructMatch(setResults, matchId);
     final MatchDto matchDto = new MatchDto(match);
     return matchDto;
   }
-
 
   /**
    * EXAMPLE:

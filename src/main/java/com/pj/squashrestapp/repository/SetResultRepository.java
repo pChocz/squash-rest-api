@@ -125,6 +125,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
+          "match.roundGroup.round.season"
   })
   List<SetResult> fetchByRoundId(@Param("roundId") Long roundId);
 
@@ -141,6 +142,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
+          "match.roundGroup.round.season"
   })
   List<SetResult> fetchByMatchId(@Param("matchId") Long matchId);
 

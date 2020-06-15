@@ -1,0 +1,49 @@
+package com.pj.squashrestapp.model.dto.scoreboard;
+
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
+import com.pj.squashrestapp.util.MatchExtractorUtil;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ *
+ */
+@Slf4j
+@Getter
+public class EntireLeagueScoreboard {
+
+  private final String leagueName;
+  private final int numberOfMatches;
+
+  private final List<EntireLeagueScoreboardRow> rows;
+
+  public EntireLeagueScoreboard(final League league, final List<PlayerLeagueXpOveral> playerLeagueXpOveralList) {
+    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(league);
+
+    this.numberOfMatches = matches.size();
+    this.leagueName = "dupa";
+
+    final RoundGroupScoreboard roundGroupScoreboard = new RoundGroupScoreboard(matches);
+
+    this.rows = new ArrayList<>();
+    for (final PlayerLeagueXpOveral playerLeagueXpOveral : playerLeagueXpOveralList) {
+      final PlayerDto player = playerLeagueXpOveral.getPlayer();
+
+      final ScoreboardRow scoreboardRowForPlayer = roundGroupScoreboard
+              .getScoreboardRows()
+              .stream()
+              .filter(scoreboardRow -> scoreboardRow.getPlayer().equals(player))
+              .findFirst().orElse(null);
+
+      final EntireLeagueScoreboardRow entireLeagueScoreboardRow = new EntireLeagueScoreboardRow(playerLeagueXpOveral, scoreboardRowForPlayer);
+      this.rows.add(entireLeagueScoreboardRow);
+    }
+  }
+
+}

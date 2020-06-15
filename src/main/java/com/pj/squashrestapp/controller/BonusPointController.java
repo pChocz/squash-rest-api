@@ -4,6 +4,8 @@ import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,14 +27,10 @@ public class BonusPointController {
   @Autowired
   private BonusPointService bonusPointService;
 
-
-  @RequestMapping(
-          value = "/forPlayer",
-          params = {"playerId", "seasonId"},
-          method = GET)
+  @GetMapping(value = "/seasons/{seasonId}/players/{playerId}")
   @ResponseBody
-  List<BonusPoint> forPlayer(@RequestParam("playerId") final Long playerId,
-                             @RequestParam("seasonId") final Long seasonId) {
+  List<BonusPoint> forSeasonForPlayer(@PathVariable final Long seasonId,
+                                      @PathVariable final Long playerId) {
     final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(playerId, seasonId);
     return bonusPoints;
   }

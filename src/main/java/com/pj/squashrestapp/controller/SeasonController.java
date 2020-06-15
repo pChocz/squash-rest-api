@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.dto.RoundScoreboard;
-import com.pj.squashrestapp.model.dto.SeasonScoreboardDto;
+import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 

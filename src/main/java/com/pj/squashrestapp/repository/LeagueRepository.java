@@ -11,4 +11,7 @@ import java.sql.Blob;
 
 public interface LeagueRepository extends JpaRepository<League, Long> {
 
+  @Query("SELECT l.logo FROM League l WHERE l.id = :leagueId")
+  Blob extractLogoBlob(@Param("leagueId") Long leagueId);
+
 }

@@ -1,9 +1,8 @@
 package com.pj.squashrestapp.model.dto;
 
-import lombok.Data;
+import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import lombok.Getter;
 
-import java.util.Collection;
 import java.util.List;
 
 @Getter

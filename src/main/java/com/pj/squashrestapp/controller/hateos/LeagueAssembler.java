@@ -29,10 +29,10 @@ public class LeagueAssembler extends RepresentationModelAssemblerSupport<League,
   public LeagueModel toModel(final League leagueEntity) {
     final LeagueModel leagueModel = instantiateModel(leagueEntity);
 
-    leagueModel.add(linkTo(
-            methodOn(LeagueController.class)
-                    .overalScoreboard(leagueEntity.getId()))
-            .withRel("overal-scoreboard"));
+//    leagueModel.add(linkTo(
+//            methodOn(LeagueController.class)
+//                    .overalScoreboard(leagueEntity.getId()))
+//            .withRel("overal-scoreboard"));
 
     leagueModel.setId(leagueEntity.getId());
     leagueModel.setName(leagueEntity.getName());
