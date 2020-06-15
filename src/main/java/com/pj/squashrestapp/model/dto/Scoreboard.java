@@ -1,17 +1,12 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.Match;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
@@ -20,6 +15,8 @@ import java.util.stream.Stream;
 public class Scoreboard {
 
   private final List<ScoreboardRow> scoreboardRows;
+
+  @JsonIgnore
   private final Collection<MatchDto> matches;
 
   public Scoreboard(final Collection<MatchDto> matches) {
@@ -47,6 +44,5 @@ public class Scoreboard {
 
     Collections.sort(scoreboardRows);
   }
-
 
 }

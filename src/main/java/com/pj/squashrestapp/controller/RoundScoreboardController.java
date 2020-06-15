@@ -1,13 +1,15 @@
 package com.pj.squashrestapp.controller;
 
-import com.google.common.collect.Multimap;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.RoundGroup;
+import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.RoundScoreboard;
-import com.pj.squashrestapp.model.dto.SingleSetRowDto;
+import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.repository.MatchRepository;
+import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
+import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
-import com.pj.squashrestapp.util.MatchUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -32,6 +34,9 @@ public class RoundScoreboardController {
   private MatchRepository matchRepository;
 
   @Autowired
+  private SetResultRepository setResultRepository;
+
+  @Autowired
   private XpPointsRepository xpPointsRepository;
 
   @RequestMapping(
@@ -41,12 +46,12 @@ public class RoundScoreboardController {
   @ResponseBody
   RoundScoreboard byRoundId(@RequestParam("id") final Long id) {
 
-    final List<SingleSetRowDto> sets = matchRepository.retrieveByRoundId(id);
-    final Multimap<Long, MatchDto> perGroupMatches = MatchUtil.rebuildRoundMatchesPerRoundGroupId(sets);
+    final List<SetResult> setResults = setResultRepository.fetchByRoundId(id);
+    final Round round = EntityGraphBuildUtil.reconstructRound(setResults, id);
 
     final RoundScoreboard roundScoreboard = new RoundScoreboard();
-    for (final Long roundGroupId : perGroupMatches.keySet()) {
-      roundScoreboard.addRoundGroup(new ArrayList<>(perGroupMatches.get(roundGroupId)));
+    for (final RoundGroup roundGroup : round.getRoundGroups()) {
+      roundScoreboard.addRoundGroup(roundGroup.getMatches().stream().map(MatchDto::new).collect(Collectors.toList()));
     }
 
     final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();

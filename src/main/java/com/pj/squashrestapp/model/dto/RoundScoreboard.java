@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.RoundGroup;
 import lombok.Getter;
 

@@ -1,14 +1,6 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.RoundGroup;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.XpPointsForRound;
-import com.pj.squashrestapp.model.dto.SimpleMatchDto;
-import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

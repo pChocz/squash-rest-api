@@ -62,6 +62,19 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
                     
           """;
 
+  String SELECT_FETCH_ROUND_GROUP = """
+          SELECT sr FROM SetResult sr
+          INNER JOIN FETCH sr.match m
+          INNER JOIN FETCH m.roundGroup rg
+                    
+          """;
+
+  String SELECT_FETCH_MATCH = """
+          SELECT sr FROM SetResult sr
+          INNER JOIN FETCH sr.match m
+                    
+          """;
+
 
   @Query(SELECT_FETCH_LEAGUE + """
           WHERE l.id = :leagueId 
@@ -114,5 +127,21 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
           "match.secondPlayer",
   })
   List<SetResult> fetchByRoundId(@Param("roundId") Long roundId);
+
+
+  @Query(SELECT_FETCH_ROUND_GROUP + "WHERE rg.id = :roundGroupId")
+  @EntityGraph(attributePaths = {
+          "match.firstPlayer",
+          "match.secondPlayer",
+  })
+  List<SetResult> fetchByRoundGroupId(@Param("roundGroupId") Long roundGroupId);
+
+
+  @Query(SELECT_FETCH_MATCH + "WHERE m.id = :matchId")
+  @EntityGraph(attributePaths = {
+          "match.firstPlayer",
+          "match.secondPlayer",
+  })
+  List<SetResult> fetchByMatchId(@Param("matchId") Long matchId);
 
 }

@@ -6,7 +6,7 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.SimpleMatchDto;
+import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
@@ -40,21 +40,21 @@ public class SetResultsController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  List<SimpleMatchDto> byLeagueId(@RequestParam("id") final Long id) {
+  List<MatchDto> byLeagueId(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchByLeagueId(id);
     final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, id);
 
-    final List<SimpleMatchDto> matches = new ArrayList<>();
+    final List<MatchDto> matches = new ArrayList<>();
     int counter = 0;
     for (final Season season : leagueFetched.getSeasons()) {
       for (final Round round : season.getRounds()) {
         for (final RoundGroup roundGroup : round.getRoundGroups()) {
           for (final Match match : roundGroup.getMatches()) {
             counter++;
-            final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-            matches.add(simpleMatchDto);
+            final MatchDto matchDto = new MatchDto(match);
+            matches.add(matchDto);
           }
         }
       }
@@ -69,20 +69,20 @@ public class SetResultsController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  List<SimpleMatchDto> bySeasonId(@RequestParam("id") final Long id) {
+  List<MatchDto> bySeasonId(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchBySeasonId(id);
     final Season seasonFetched = EntityGraphBuildUtil.reconstructSeason(setResults, id);
 
-    final List<SimpleMatchDto> matches = new ArrayList<>();
+    final List<MatchDto> matches = new ArrayList<>();
     int counter = 0;
     for (final Round round : seasonFetched.getRounds()) {
       for (final RoundGroup roundGroup : round.getRoundGroups()) {
         for (final Match match : roundGroup.getMatches()) {
           counter++;
-          final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-          matches.add(simpleMatchDto);
+          final MatchDto matchDto = new MatchDto(match);
+          matches.add(matchDto);
         }
       }
     }
@@ -96,19 +96,19 @@ public class SetResultsController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  List<SimpleMatchDto> byRoundId(@RequestParam("id") final Long id) {
+  List<MatchDto> byRoundId(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
 
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(id);
     final Round roundFetched = EntityGraphBuildUtil.reconstructRound(setResults, id);
 
-    final List<SimpleMatchDto> matches = new ArrayList<>();
+    final List<MatchDto> matches = new ArrayList<>();
     int counter = 0;
     for (final RoundGroup roundGroup : roundFetched.getRoundGroups()) {
       for (final Match match : roundGroup.getMatches()) {
         counter++;
-        final SimpleMatchDto simpleMatchDto = new SimpleMatchDto(match);
-        matches.add(simpleMatchDto);
+        final MatchDto matchDto = new MatchDto(match);
+        matches.add(matchDto);
       }
     }
 

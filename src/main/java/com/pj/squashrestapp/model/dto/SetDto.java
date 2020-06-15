@@ -19,12 +19,6 @@ public class SetDto {
   private final int firstPlayerScore;
   private final int secondPlayerScore;
 
-  public SetDto(final SingleSetRowDto setRowDto) {
-    this.setNumber = setRowDto.getSetNumber();
-    this.firstPlayerScore = setRowDto.getFirstPlayerScore();
-    this.secondPlayerScore = setRowDto.getSecondPlayerScore();
-  }
-
   public SetDto(final SetResult setResult) {
     this.setNumber = setResult.getNumber();
     this.firstPlayerScore = setResult.getFirstPlayerScore();
@@ -38,9 +32,19 @@ public class SetDto {
   }
 
   @JsonIgnore
+  public boolean isNotEmpty() {
+    return !isEmpty();
+  }
+
+  @JsonIgnore
   public boolean isTieBreak() {
     final int greaterScore = getGreaterScore();
     return greaterScore == 9;
+  }
+
+  @JsonIgnore
+  public boolean isRegularSet() {
+    return !isTieBreak();
   }
 
   private int getGreaterScore() {

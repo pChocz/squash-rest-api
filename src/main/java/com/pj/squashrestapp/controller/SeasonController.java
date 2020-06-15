@@ -32,23 +32,23 @@ public class SeasonController {
           params = {"id"},
           method = GET)
   @ResponseBody
-  SeasonScoreboardDto overalScoreboard(@RequestParam("id") final Long id) {
+  public SeasonScoreboardDto overalScoreboard(@RequestParam("id") final Long id) {
     final long startTime = System.nanoTime();
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(id);
     TimeLogUtil.logFinish(startTime);
     return seasonScoreboardDto;
   }
 
-  @RequestMapping(
-          value = "/perRoundScoreboard",
-          params = {"id"},
-          method = GET)
-  @ResponseBody
-  List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
-    final long startTime = System.nanoTime();
-    final List<RoundScoreboard> roundScoreboards = seasonService.perRoundScoreboard(id);
-    TimeLogUtil.logFinish(startTime);
-    return roundScoreboards;
-  }
+//  @RequestMapping(
+//          value = "/perRoundScoreboard",
+//          params = {"id"},
+//          method = GET)
+//  @ResponseBody
+//  List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
+//    final long startTime = System.nanoTime();
+//    final List<RoundScoreboard> roundScoreboards = seasonService.perRoundScoreboard(id);
+//    TimeLogUtil.logFinish(startTime);
+//    return roundScoreboards;
+//  }
 
 }

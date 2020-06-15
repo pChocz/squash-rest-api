@@ -14,7 +14,6 @@ import java.util.List;
 /**
  *
  */
-@SuppressWarnings("unused")
 @Getter
 @Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -37,24 +36,6 @@ public class MatchDto {
   int seasonNumber;
 
   List<SetDto> sets;
-
-  public MatchDto(final List<SingleSetRowDto> singleSetRowsDto) {
-    this.matchId = singleSetRowsDto.get(0).getMatchId();
-    this.firstPlayer = new PlayerDto(singleSetRowsDto.get(0).getFirstPlayerId(), singleSetRowsDto.get(0).getFirstPlayerName());
-    this.secondPlayer = new PlayerDto(singleSetRowsDto.get(0).getSecondPlayerId(), singleSetRowsDto.get(0).getSecondPlayerName());
-    this.roundGroupId = singleSetRowsDto.get(0).getRoundGroupId();
-    this.roundGroupNumber = singleSetRowsDto.get(0).getRoundGroupNumber();
-    this.roundDate = singleSetRowsDto.get(0).getRoundDate();
-    this.roundId = singleSetRowsDto.get(0).getRoundId();
-    this.roundNumber = singleSetRowsDto.get(0).getRoundNumber();
-    this.seasonId = singleSetRowsDto.get(0).getSeasonId();
-    this.seasonNumber = singleSetRowsDto.get(0).getSeasonNumber();
-
-    this.sets = new ArrayList<>();
-    for (final SingleSetRowDto setRowDto : singleSetRowsDto) {
-      this.sets.add(new SetDto(setRowDto));
-    }
-  }
 
   public MatchDto(final Match match) {
     this.matchId = match.getId();

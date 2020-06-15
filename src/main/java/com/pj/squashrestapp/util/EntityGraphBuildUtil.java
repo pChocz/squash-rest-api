@@ -79,6 +79,17 @@ public class EntityGraphBuildUtil {
             .getObject(roundGroupClassId);
   }
 
+  public Match reconstructMatch(final List<SetResult> setResults, final Long matchId) {
+    final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{
+            SetResult.ENTITY_VISITOR,
+            Match.ENTITY_VISITOR_FINAL
+    }).build(setResults);
+    final ClassId<Match> roundGroupClassId = new ClassId<>(Match.class, matchId);
+    return entityGraphBuilder
+            .getEntityContext()
+            .getObject(roundGroupClassId);
+  }
+
   public ArrayListMultimap<String, Integer> reconstructXpPointsForRound(final List<XpPointsForRound> allPointsForRounds,
                                                                         final List<XpPointsForPlace> allPoints) {
     final EntityGraphBuilder entityGraphBuilder = new EntityGraphBuilder(new EntityVisitor[]{

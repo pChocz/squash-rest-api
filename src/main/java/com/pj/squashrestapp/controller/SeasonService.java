@@ -8,21 +8,18 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.Scoreboard;
 import com.pj.squashrestapp.model.dto.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.SeasonScoreboardRowDto;
-import com.pj.squashrestapp.model.dto.SingleSetRowDto;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
-import com.pj.squashrestapp.util.MatchUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -113,27 +110,27 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
-  List<RoundScoreboard> perRoundScoreboard(@RequestParam("id") final Long id) {
-    final List<Long> roundsIds = seasonRepository.retrieveFinishedGroupIdsBySeasonId(id);
-
-    final List<RoundScoreboard> roundScoreboards = new ArrayList<>();
-    for (final Long roundId : roundsIds) {
-      final List<SingleSetRowDto> sets = matchRepository.retrieveByRoundId(roundId);
-      final Multimap<Long, MatchDto> perGroupMatches = MatchUtil.rebuildRoundMatchesPerRoundGroupId(sets);
-
-      final RoundScoreboard roundScoreboard = new RoundScoreboard();
-      for (final Long roundGroupId : perGroupMatches.keySet()) {
-        roundScoreboard.addRoundGroup(perGroupMatches.get(roundGroupId));
-      }
-
-      final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
-      final String split = GeneralUtil.integerListToString(playersPerGroup);
-      final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
-
-      roundScoreboard.assignPointsAndPlaces(xpPoints);
-      roundScoreboards.add(roundScoreboard);
-    }
-    return roundScoreboards;
-  }
+//  List<RoundScoreboard> perRoundScoreboard(final Long id) {
+//    final List<Long> roundsIds = seasonRepository.retrieveFinishedGroupIdsBySeasonId(id);
+//
+//    final List<RoundScoreboard> roundScoreboards = new ArrayList<>();
+//    for (final Long roundId : roundsIds) {
+//      final List<SingleSetRowDto> sets = matchRepository.retrieveByRoundId(roundId);
+//      final Multimap<Long, MatchDto> perGroupMatches = MatchUtil.rebuildRoundMatchesPerRoundGroupId(sets);
+//
+//      final RoundScoreboard roundScoreboard = new RoundScoreboard();
+//      for (final Long roundGroupId : perGroupMatches.keySet()) {
+//        roundScoreboard.addRoundGroup(perGroupMatches.get(roundGroupId));
+//      }
+//
+//      final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
+//      final String split = GeneralUtil.integerListToString(playersPerGroup);
+//      final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
+//
+//      roundScoreboard.assignPointsAndPlaces(xpPoints);
+//      roundScoreboards.add(roundScoreboard);
+//    }
+//    return roundScoreboards;
+//  }
 
 }

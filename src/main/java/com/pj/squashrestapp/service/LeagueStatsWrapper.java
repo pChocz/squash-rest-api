@@ -14,8 +14,10 @@ import java.util.List;
 @AllArgsConstructor
 public class LeagueStatsWrapper {
 
+  private final String leagueName;
   private final String logo64encoded;
   private final OveralStats overalStats;
+  private final List<PerSeasonStats> perSeasonStats;
   private final Scoreboard scoreboard;
   private final List<HallOfFameSeason> hallOfFame;
 
