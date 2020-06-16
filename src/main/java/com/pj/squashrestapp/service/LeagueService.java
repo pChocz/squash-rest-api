@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.controller.XpPointsService;
 import com.pj.squashrestapp.model.HallOfFameSeason;
 import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.MatchDto;
@@ -17,15 +18,21 @@ import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.repository.HallOfFameSeasonRepository;
+import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.engine.jdbc.BlobProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.Charset;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +48,9 @@ public class LeagueService {
   LeagueRepository leagueRepository;
 
   @Autowired
+  LeagueLogoRepository leagueLogoRepository;
+
+  @Autowired
   SetResultRepository setResultRepository;
 
   @Autowired
@@ -52,13 +62,26 @@ public class LeagueService {
   @Autowired
   private HallOfFameSeasonRepository hallOfFameSeasonRepository;
 
+  public void saveLogoForLeague(final Long leagueId, final String logoBase64) {
+    final Blob pictureBlob = BlobProxy.generateProxy(logoBase64.getBytes(Charset.defaultCharset()));
+
+    final LeagueLogo leagueLogo = new LeagueLogo();
+    leagueLogo.setPicture(pictureBlob);
+
+    final League league = leagueRepository.findById(leagueId).get();
+    league.setLeagueLogo(leagueLogo);
+    leagueLogo.setLeague(league);
+
+    leagueLogoRepository.save(leagueLogo);
+  }
+
   public LeagueStatsWrapper buildStatsForLeagueId(final Long leagueId) {
     final League league = fetchEntireLeague(leagueId);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
     // logo
-//    final Blob blob = leagueRepository.extractLogoBlob(leagueId);
-//    final String logo64encoded = extractLeagueLogo(blob);
+    final Blob blob = leagueLogoRepository.extractLogoBlob(leagueId);
+    final String logo64encoded = extractLeagueLogo(blob);
 
     // per season stats
     final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);
@@ -75,7 +98,7 @@ public class LeagueService {
 
     return LeagueStatsWrapper.builder()
             .leagueName(league.getName())
-            .logo64encoded("dupa")
+            .logo64encoded(logo64encoded)
             .overalStats(overalStats)
             .perSeasonStats(perSeasonStatsList)
             .scoreboard(scoreboard)
@@ -88,21 +111,21 @@ public class LeagueService {
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueId);
   }
 
-//  private String extractLeagueLogo(final Blob blob) {
-//    byte[] decodedBytes = new byte[0];
-//    if (blob != null) {
-//      try {
-//        final int length = (int) blob.length();
-//        final byte[] bytes = blob.getBytes(1, length);
-//        decodedBytes = Base64.getDecoder().decode(bytes);
-//        blob.free();
-//      } catch (final SQLException e) {
-//        log.error("SQL Exception when trying to encode league logo", e);
-//      }
-//    }
-//
-//    return Base64.getEncoder().encodeToString(decodedBytes);
-//  }
+  private String extractLeagueLogo(final Blob blob) {
+    byte[] decodedBytes = new byte[0];
+    if (blob != null) {
+      try {
+        final int length = (int) blob.length();
+        final byte[] bytes = blob.getBytes(1, length);
+        decodedBytes = Base64.getDecoder().decode(bytes);
+        blob.free();
+      } catch (final SQLException e) {
+        log.error("SQL Exception when trying to encode league logo", e);
+      }
+    }
+
+    return Base64.getEncoder().encodeToString(decodedBytes);
+  }
 
   private List<PerSeasonStats> buildPerSeasonStatsList(final League league) {
     final List<PerSeasonStats> perSeasonStatsList = new ArrayList<>();

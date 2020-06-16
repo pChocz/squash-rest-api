@@ -1,32 +1,24 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.util.MatchExtractorUtil;
-import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  *
@@ -42,42 +34,39 @@ public class MatchController {
   @Autowired
   private SetResultRepository setResultRepository;
 
+
   @GetMapping(value = "/{matchId}")
   @ResponseBody
-  MatchDto byMatchId(@PathVariable final Long matchId) {
-    final List<SetResult> setResults = setResultRepository.fetchByMatchId(matchId);
-    final Match match = EntityGraphBuildUtil.reconstructMatch(setResults, matchId);
+  MatchDto getMatch(@PathVariable final Long matchId) {
+    final long startTime = System.nanoTime();
+    final Match match = matchRepository.findMatchById(matchId);
     final MatchDto matchDto = new MatchDto(match);
+    TimeLogUtil.logFinishWithJsonPrint(startTime, matchDto);
     return matchDto;
   }
 
-  /**
-   * EXAMPLE:
-   *  localhost:8080/matches/updateMatch?matchId=402&setNumber=1&p1score=11&p2score=4
-   *
-   */
-  @RequestMapping(
-          value = "/updateMatch",
-          params = {"matchId", "setNumber", "p1score", "p2score"},
-          method = POST)
+
+  @PutMapping(value = "/{matchId}/set/{setNumber}")
   @ResponseBody
   @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR') " +
-          "or " +
-          "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
-  Object updateFinishedMatch(
-          @RequestParam("matchId") final Long matchId,
-          @RequestParam("setNumber") final int setNumber,
+                "or " +
+                "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
+  MatchDto updateFinishedMatch(
+          @PathVariable("matchId") final Long matchId,
+          @PathVariable("setNumber") final int setNumber,
           @RequestParam("p1score") final int p1score,
           @RequestParam("p2score") final int p2score) {
+    final long startTime = System.nanoTime();
 
-    final Match matchToModify = matchRepository.getOne(matchId);
+    final Match matchToModify = matchRepository.findMatchById(matchId);
+
     final String initialMatchResult = matchToModify.toString();
     final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
 
     try {
 
       if (setToModify.getFirstPlayerScore() != 0
-              || setToModify.getSecondPlayerScore() != 0) {
+          || setToModify.getSecondPlayerScore() != 0) {
         throw new IllegalArgumentException();
       }
 
@@ -97,33 +86,35 @@ public class MatchController {
       setResultRepository.save(setToModify);
 
       final String message = "\nSuccesfully updated the match!" +
-              "\n\t-> " + initialMatchResult + "\t- earlier" +
-              "\n\t-> " + matchToModify + "\t- now";
+                             "\n\t-> " + initialMatchResult + "\t- earlier" +
+                             "\n\t-> " + matchToModify + "\t- now";
       log.info(message);
 
-      return new SetDto(setToModify);
 
     } catch (final IllegalArgumentException e) {
       final String message = "\nDoes not look like a valid match result after the update!" +
-              "\n\t-> " + matchToModify + "\t- tried to update to look like this" +
-              "\n\t-> " + initialMatchResult + "\t- leaving the old result like this.";
+                             "\n\t-> " + matchToModify + "\t- tried to update to look like this" +
+                             "\n\t-> " + initialMatchResult + "\t- leaving the old result like this.";
       log.error(message);
-      return message;
     }
+
+    final MatchDto matchDto = new MatchDto(matchToModify);
+    TimeLogUtil.logFinishWithJsonPrint(startTime, matchDto);
+    return matchDto;
   }
 
-  @RequestMapping(
-          value = "/clearSet",
-          params = {"matchId", "setNumber"},
-          method = POST)
+
+  @DeleteMapping(value = "/{matchId}/set/{setNumber}")
   @ResponseBody
   @PreAuthorize("hasRoleForMatch(#matchId, 'MODERATOR') " +
-          "or " +
-          "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
-  SetDto clearSet(
-          @RequestParam("matchId") final Long matchId,
-          @RequestParam("setNumber") final int setNumber) {
-    final Match matchToModify = matchRepository.getOne(matchId);
+                "or " +
+                "(hasRoleForMatch(#matchId, 'PLAYER') and isRoundOfMatchInProgress(#matchId))")
+  MatchDto clearSet(
+          @PathVariable("matchId") final Long matchId,
+          @PathVariable("setNumber") final int setNumber) {
+    final long startTime = System.nanoTime();
+
+    final Match matchToModify = matchRepository.findMatchById(matchId);
 
     final SetResult setToModify = matchToModify
             .getSetResults()
@@ -140,11 +131,13 @@ public class MatchController {
     setResultRepository.save(setToModify);
 
     final String message = "\nSuccesfully updated the match!" +
-            "\n\t-> " + initialMatchResult + "\t- earlier" +
-            "\n\t-> " + matchToModify + "\t- now";
+                           "\n\t-> " + initialMatchResult + "\t- earlier" +
+                           "\n\t-> " + matchToModify + "\t- now";
     log.info(message);
 
-    return new SetDto(setToModify);
+    final MatchDto matchDto = new MatchDto(matchToModify);
+    TimeLogUtil.logFinishWithJsonPrint(startTime, matchDto);
+    return matchDto;
   }
 
 }

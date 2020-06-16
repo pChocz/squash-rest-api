@@ -27,7 +27,7 @@ public class EntireLeagueScoreboard {
     final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(league);
 
     this.numberOfMatches = matches.size();
-    this.leagueName = "dupa";
+    this.leagueName = league.getName();
 
     final RoundGroupScoreboard roundGroupScoreboard = new RoundGroupScoreboard(matches);
 

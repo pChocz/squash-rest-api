@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Match;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +20,14 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
               WHERE m.id = :matchId
           """)
   Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
+
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  Match findMatchById(Long id);
 
 }
 
