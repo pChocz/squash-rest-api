@@ -10,7 +10,6 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 /**
  *
  */
-@SuppressWarnings("unused")
 @Getter
 @JsonInclude(NON_NULL)
 public class SetDto {
@@ -26,14 +25,18 @@ public class SetDto {
   }
 
   @JsonIgnore
-  public boolean isEmpty() {
-    return firstPlayerScore == 0
-            && secondPlayerScore == 0;
+  public boolean isNotEmpty() {
+    return !isEmpty();
   }
 
   @JsonIgnore
-  public boolean isNotEmpty() {
-    return !isEmpty();
+  public boolean isEmpty() {
+    return firstPlayerScore == 0 && secondPlayerScore == 0;
+  }
+
+  @JsonIgnore
+  public boolean isRegularSet() {
+    return !isTieBreak();
   }
 
   @JsonIgnore
@@ -42,22 +45,17 @@ public class SetDto {
     return greaterScore == 9;
   }
 
-  @JsonIgnore
-  public boolean isRegularSet() {
-    return !isTieBreak();
-  }
-
   private int getGreaterScore() {
     return firstPlayerScore > secondPlayerScore
             ? firstPlayerScore
-            : secondPlayerScore > firstPlayerScore
+            : firstPlayerScore < secondPlayerScore
             ? secondPlayerScore
             : 0;
   }
 
   @Override
   public String toString() {
-    return firstPlayerScore + ":" + secondPlayerScore;
+    return "set " + setNumber + " -> " + firstPlayerScore + ":" + secondPlayerScore;
   }
 
 }

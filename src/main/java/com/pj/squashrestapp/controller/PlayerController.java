@@ -1,68 +1,97 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
-import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RoleForLeague;
+import com.pj.squashrestapp.model.dto.UserBasicInfoDto;
+import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import java.util.stream.Collectors;
 
 /**
  *
  */
 @Slf4j
 @RestController
-@Secured("ROLE_ADMIN")
 @RequestMapping("/players")
-@CrossOrigin(origins = "http://localhost:4200")
 public class PlayerController {
 
   @Autowired
   private PlayerRepository playerRepository;
 
-  @RequestMapping(
-          value = "/byLeagueId",
-          params = {"id", "role"},
-          method = GET)
+  @Autowired
+  private LeagueRepository leagueRepository;
+
+  @Autowired
+  private RoleForLeagueRepository roleForLeagueRepository;
+
+
+  @GetMapping(value = "/{playerId}")
   @ResponseBody
-  List<PlayerDetailedDto> byLeagueId(@RequestParam("id") final Long id,
-                                     @RequestParam("role") final LeagueRole role) {
-    final List<PlayerDetailedDto> players = playerRepository.findByLeague(id, role);
-    return players;
+  @PreAuthorize("isAdmin()")
+  UserBasicInfoDto onePlayerInfoById(@PathVariable final Long playerId) {
+    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
+    final UserBasicInfoDto userBasicInfo = new UserBasicInfoDto(player);
+    return userBasicInfo;
   }
 
-  @RequestMapping(
-          value = "/getRoles",
-          params = {"id", "leagueId"},
-          method = GET)
+
+  @GetMapping
   @ResponseBody
-  List<LeagueRole> getRoles(@RequestParam("id") final Long id,
-                            @RequestParam("leagueId") final Long leagueId) {
-    final List<LeagueRole> rolesForUserByLeague = playerRepository.findRolesForUserByLeague(id, leagueId);
-    return rolesForUserByLeague;
+  @PreAuthorize("isAdmin()")
+  List<UserBasicInfoDto> allPlayersInfo() {
+    final List<Player> players = playerRepository.fetchForAuthorizationAll();
+    final List<UserBasicInfoDto> usersBasicInfo = players
+            .stream()
+            .map(UserBasicInfoDto::new)
+            .collect(Collectors.toList());
+    return usersBasicInfo;
   }
 
-  @RequestMapping(
-          value = "/getAuthorityTypes",
-          params = {"id"},
-          method = GET)
+
+  @GetMapping(value = "/league/{leagueId}")
   @ResponseBody
-  List<AuthorityType> getAuthorityTypes(@RequestParam("id") final Long id) {
-    final List<AuthorityType> authorityTypes = playerRepository.findAuthoritiesForUser(id);
-    return authorityTypes;
+  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  List<UserBasicInfoDto> byLeagueId(@PathVariable("leagueId") final Long leagueId) {
+    final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
+    final List<UserBasicInfoDto> usersBasicInfo = players
+            .stream()
+            .map(UserBasicInfoDto::new)
+            .collect(Collectors.toList());
+    return usersBasicInfo;
   }
 
+
+  @PutMapping(value = "/{playerId}")
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  UserBasicInfoDto assignLeagueRole(
+          @PathVariable("playerId") final Long playerId,
+          @RequestParam("leagueId") final Long leagueId,
+          @RequestParam("leagueRole") final LeagueRole leagueRole) {
+
+    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
+    final League league = leagueRepository.findById(leagueId).get();
+    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    player.addRole(roleForLeague);
+
+    playerRepository.save(player);
+
+    return new UserBasicInfoDto(player);
+  }
 
 }

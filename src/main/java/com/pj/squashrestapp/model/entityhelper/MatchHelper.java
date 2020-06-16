@@ -76,8 +76,8 @@ public class MatchHelper {
   }
 
   private boolean isFinishedAfterTwoSets(final SetResult setResult1, final SetResult setResult2) {
-    final Player winner1 = setResult1.getWinner();
-    final Player winner2 = setResult2.getWinner();
+    final Player winner1 = setResult1.checkWinner();
+    final Player winner2 = setResult2.checkWinner();
     return winner1.equals(winner2);
   }
 

@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "set_results")
@@ -80,10 +79,12 @@ public class SetResult implements Identifiable {
     return firstPlayerScore + ":" + secondPlayerScore;
   }
 
-  public Player getWinner() {
+  public Player checkWinner() {
     return firstPlayerScore > secondPlayerScore
             ? match.getFirstPlayer()
-            : match.getSecondPlayer();
+            : firstPlayerScore < secondPlayerScore
+            ? match.getSecondPlayer()
+            : null;
   }
 
 }

@@ -61,6 +61,10 @@ public class CustomMethodSecurityExpressionRoot
     this.target = target;
   }
 
+  public boolean isAdmin() {
+    return principal.isAdmin();
+  }
+
   public boolean hasRoleForLeague(final Long leagueId, final String role) {
     if (principal.isAdmin()) {
       return true;
