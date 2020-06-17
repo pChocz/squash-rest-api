@@ -4,27 +4,27 @@ import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ *
+ */
 @Getter
-@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto> {
 
   @EqualsAndHashCode.Include
-  PlayerDto player;
-
-  Map<Integer, Integer> roundNumberToXpMap;
-
-  int bonusPoints;
-  int average;
-  int attendices;
-  int totalPoints;
-  int countedPoints;
+  private final PlayerDto player;
+  private final Map<Integer, Integer> roundNumberToXpMap;
+  private final int bonusPoints;
+  private int average;
+  private int attendices;
+  private int totalPoints;
+  private int countedPoints;
+  private int eightBestPoints;
 
   public SeasonScoreboardRowDto(final PlayerDto player, final AtomicLongMap<Long> bonusPointsAggregatedPerPlayer) {
     this.player = player;
@@ -38,13 +38,15 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.roundNumberToXpMap.put(roundNumber, xpEarned);
   }
 
-  public void calculateFinishedRow(final int finishedRounds) {
+  public void calculateFinishedRow(final int finishedRounds, final int countedRounds) {
     final int totalPointsForRounds = getTotalPointsForRounds();
     this.totalPoints = totalPointsForRounds + bonusPoints;
 
-    final int numberOfRoundsThatCount = getNumberOfRoundsThatCount(finishedRounds);
-    final int countedPointsForRounds = getCountedPointsForRounds(numberOfRoundsThatCount);
+    final int numberOfRoundsThatCount = countedRounds;
+    final int countedPointsForRounds = getPointsForNumberOfRounds(numberOfRoundsThatCount);
+    final int eightBestPointsForRounds = getPointsForNumberOfRounds(8);
     this.countedPoints = countedPointsForRounds + bonusPoints;
+    this.eightBestPoints = eightBestPointsForRounds + bonusPoints;
 
     this.attendices = roundNumberToXpMap.size();
     this.average = totalPoints / attendices;
@@ -58,24 +60,12 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
             .sum();
   }
 
-  private int getNumberOfRoundsThatCount(final int finishedRounds) {
-    final int numberOfRoundsThatCount;
-    if (finishedRounds <= 4) {
-      numberOfRoundsThatCount = finishedRounds;
-    } else if (finishedRounds <= 8) {
-      numberOfRoundsThatCount = finishedRounds - 1;
-    } else {
-      numberOfRoundsThatCount = finishedRounds - 2;
-    }
-    return numberOfRoundsThatCount;
-  }
-
-  private int getCountedPointsForRounds(final int numberOfRoundsThatCount) {
+  private int getPointsForNumberOfRounds(final int numberOfRounds) {
     return roundNumberToXpMap
             .values()
             .stream()
             .sorted(Comparator.reverseOrder())
-            .limit(numberOfRoundsThatCount)
+            .limit(numberOfRounds)
             .mapToInt(points -> points)
             .sum();
   }

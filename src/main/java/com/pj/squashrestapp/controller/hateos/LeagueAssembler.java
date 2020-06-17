@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.controller.hateos;
 
 import com.pj.squashrestapp.controller.LeagueController;
-import com.pj.squashrestapp.controller.SeasonController;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Season;
 import org.springframework.hateoas.server.mvc.RepresentationModelAssemblerSupport;
@@ -51,10 +50,11 @@ public class LeagueAssembler extends RepresentationModelAssemblerSupport<League,
                     .number(season.getNumber())
                     .startDate(season.getStartDate())
                     .build()
-                    .add(linkTo(
-                            methodOn(SeasonController.class)
-                                    .overalScoreboard(season.getId()))
-                            .withSelfRel()))
+//                    .add(linkTo(
+//                            methodOn(SeasonController.class)
+//                                    .overalScoreboard(season.getId()))
+//                            .withSelfRel())
+            )
             .sorted(Comparator.comparingInt(SeasonModel::getNumber))
             .collect(Collectors.toList());
   }

@@ -1,24 +1,20 @@
 package com.pj.squashrestapp.model.dto.leaguestats;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.dto.SetDto;
-import com.pj.squashrestapp.model.dto.MatchDto;
-import com.pj.squashrestapp.util.MatchExtractorUtil;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.Multimap;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  *
  */
 @Getter
-@SuppressWarnings("FieldMayBeFinal")
 public class OveralStats {
 
-  private int seasons;
+  private final int seasons;
+  private final int players;
+  private final int allAttendices;
   private int rounds;
   private int matches;
   private int sets;
@@ -30,13 +26,18 @@ public class OveralStats {
     this.matches = 0;
     this.sets = 0;
     this.points = 0;
+
+    final Multimap<Long, Long> overalPlayersAttendicesMap = LinkedHashMultimap.create();
     for (final PerSeasonStats perSeasonStats : perSeasonStatsList) {
       this.rounds += perSeasonStats.getRounds();
       this.matches += perSeasonStats.getMatches();
       this.sets += perSeasonStats.getRegularSets();
       this.sets += perSeasonStats.getTieBreaks();
       this.points += perSeasonStats.getPoints();
+      overalPlayersAttendicesMap.putAll(perSeasonStats.getPlayersAttendicesMap());
     }
+    this.players = overalPlayersAttendicesMap.keySet().size();
+    this.allAttendices = overalPlayersAttendicesMap.size();
   }
 
 }

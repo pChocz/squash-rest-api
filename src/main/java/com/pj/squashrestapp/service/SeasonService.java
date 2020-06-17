@@ -2,7 +2,6 @@ package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.util.concurrent.AtomicLongMap;
-import com.pj.squashrestapp.controller.XpPointsService;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -83,7 +82,7 @@ public class SeasonService {
     }
 
     for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds());
+      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
     }
 
     seasonScoreboardDto.sortRows();

@@ -1,19 +1,18 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.XpPointsForRound;
+import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  *
@@ -26,9 +25,7 @@ public class XpPointsController {
   @Autowired
   private XpPointsService xpPointsService;
 
-  @RequestMapping(
-          value = "/allMultimap",
-          method = GET)
+  @GetMapping
   @ResponseBody
   Map<String, Collection<Integer>> allMultimap() {
     final long startTime = System.nanoTime();
@@ -39,12 +36,9 @@ public class XpPointsController {
     return multimap;
   }
 
-  @RequestMapping(
-          value = "/listForSplit",
-          params = {"split"},
-          method = GET)
+  @GetMapping(value = "/{split}")
   @ResponseBody
-  List<Integer> listForSplit(@RequestParam("split") final String split) {
+  List<Integer> listForSplit(@PathVariable("split") final String split) {
     final long startTime = System.nanoTime();
 
     final List<Integer> list = xpPointsService.buildForGivenSplit(split);
@@ -53,17 +47,17 @@ public class XpPointsController {
     return list;
   }
 
-  @RequestMapping(
-          value = "/allNativeObject",
-          method = GET)
-  @ResponseBody
-  List<XpPointsForRound> allNativeObject() {
-    final long startTime = System.nanoTime();
-
-    final List<XpPointsForRound> xpPointsForRoundList = xpPointsService.buildAllAsNativeObject();
-
-    TimeLogUtil.logFinish(startTime);
-    return xpPointsForRoundList;
-  }
+//  @RequestMapping(
+//          value = "/allNativeObject",
+//          method = GET)
+//  @ResponseBody
+//  List<XpPointsForRound> allNativeObject() {
+//    final long startTime = System.nanoTime();
+//
+//    final List<XpPointsForRound> xpPointsForRoundList = xpPointsService.buildAllAsNativeObject();
+//
+//    TimeLogUtil.logFinish(startTime);
+//    return xpPointsForRoundList;
+//  }
 
 }

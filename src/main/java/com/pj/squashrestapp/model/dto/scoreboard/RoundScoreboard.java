@@ -21,13 +21,10 @@ public class RoundScoreboard {
   private final String leagueName;
   private final Long roundId;
   private final int roundNumber;
-
   @JsonFormat(pattern = "yyyy-MM-dd")
   private final Date roundDate;
-
   @JsonIgnore
   private final List<Integer> playersPerGroup;
-
   private final List<RoundGroupScoreboard> roundGroupScoreboards;
 
   public RoundScoreboard(final Round round) {

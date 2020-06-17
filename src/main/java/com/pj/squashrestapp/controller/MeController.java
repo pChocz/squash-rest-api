@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.dto.UserBasicInfoDto;
+import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -23,10 +23,10 @@ public class MeController {
 
   @GetMapping
   @ResponseBody
-  UserBasicInfoDto aboutMe() {
+  PlayerDetailedDto aboutMe() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).get();
-    final UserBasicInfoDto userBasicInfo = new UserBasicInfoDto(player);
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }
 

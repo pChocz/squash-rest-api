@@ -3,6 +3,7 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,11 +13,11 @@ import java.util.List;
 /**
  *
  */
+@Slf4j
 @Getter
 public class RoundGroupScoreboard {
 
   private final List<ScoreboardRow> scoreboardRows;
-
   private final Collection<MatchDto> matches;
 
   public RoundGroupScoreboard(final Collection<MatchDto> matches) {

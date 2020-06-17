@@ -4,19 +4,18 @@ import com.pj.squashrestapp.model.Player;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 
 /**
  *
  */
-@Value
+@Getter
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerDto {
 
   @EqualsAndHashCode.Include
-  Long id;
-  String username;
+  private final Long id;
+  private final String username;
 
   public PlayerDto(final Player player) {
     this.id = player.getId();

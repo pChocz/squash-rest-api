@@ -5,14 +5,17 @@ import lombok.Getter;
 
 import java.util.List;
 
+/**
+ *
+ */
 @Getter
 public class PlayerLeagueXpOveral {
 
-  PlayerDto player;
-  int totalPoints;
-  int countedPoints;
-  int attendices;
-  int average;
+  private final PlayerDto player;
+  private int totalPoints;
+  private int countedPoints;
+  private int attendices;
+  private final int average;
 
   public PlayerLeagueXpOveral(final List<SeasonScoreboardRowDto> playerDtoCollection) {
     this.player = playerDtoCollection.get(0).getPlayer();

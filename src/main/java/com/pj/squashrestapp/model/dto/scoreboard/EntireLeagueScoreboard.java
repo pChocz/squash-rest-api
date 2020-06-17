@@ -20,7 +20,6 @@ public class EntireLeagueScoreboard {
 
   private final String leagueName;
   private final int numberOfMatches;
-
   private final List<EntireLeagueScoreboardRow> rows;
 
   public EntireLeagueScoreboard(final League league, final List<PlayerLeagueXpOveral> playerLeagueXpOveralList) {

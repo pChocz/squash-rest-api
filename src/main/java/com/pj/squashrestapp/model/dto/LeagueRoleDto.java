@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 @Getter
 public class LeagueRoleDto {
 
-  Long leagueId;
-  String leagueName;
-  LeagueRole leagueRole;
+  private final Long leagueId;
+  private final String leagueName;
+  private final LeagueRole leagueRole;
 
   public LeagueRoleDto(final RoleForLeague role) {
     this.leagueId = role.getLeague().getId();

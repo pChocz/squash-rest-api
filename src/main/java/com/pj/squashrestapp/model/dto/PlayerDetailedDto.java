@@ -15,9 +15,8 @@ import java.util.List;
  *
  */
 @Getter
-@Setter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class UserBasicInfoDto {
+public class PlayerDetailedDto {
 
   @EqualsAndHashCode.Include
   final Long id;
@@ -26,7 +25,7 @@ public class UserBasicInfoDto {
   final List<AuthorityType> authorities;
   final List<LeagueRoleDto> leagueRoles;
 
-  public UserBasicInfoDto(final Player player) {
+  public PlayerDetailedDto(final Player player) {
     this.id = player.getId();
     this.username = player.getUsername();
     this.email = player.getEmail();

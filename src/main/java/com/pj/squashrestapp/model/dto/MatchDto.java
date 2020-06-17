@@ -8,10 +8,8 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Value;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -19,27 +17,26 @@ import java.util.List;
  *
  */
 @Getter
-@Value
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MatchDto {
 
   @EqualsAndHashCode.Include
-  Long matchId;
-  PlayerDto firstPlayer;
-  PlayerDto secondPlayer;
+  private final Long matchId;
+  private final PlayerDto firstPlayer;
+  private final PlayerDto secondPlayer;
 
-  Long roundGroupId;
-  int roundGroupNumber;
+  private final Long roundGroupId;
+  private final int roundGroupNumber;
 
-  Long roundId;
-  int roundNumber;
+  private final Long roundId;
+  private final int roundNumber;
   @JsonFormat(pattern = "yyyy-MM-dd")
-  Date roundDate;
+  private final Date roundDate;
 
-  Long seasonId;
-  int seasonNumber;
+  private final Long seasonId;
+  private final int seasonNumber;
 
-  List<SetDto> sets;
+  private final List<SetDto> sets;
 
   public MatchDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();

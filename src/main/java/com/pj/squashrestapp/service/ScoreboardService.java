@@ -12,15 +12,16 @@ import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-
 /**
  *
  */
+@Slf4j
 @Service
 public class ScoreboardService {
 
@@ -29,6 +30,7 @@ public class ScoreboardService {
 
   @Autowired
   private XpPointsRepository xpPointsRepository;
+
 
   public RoundScoreboard buildScoreboardForRound(final Long roundId) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundId);
@@ -47,15 +49,6 @@ public class ScoreboardService {
     return roundScoreboard;
   }
 
-  public Scoreboard buildScoreboardForLeague(final Long leagueId) {
-    final List<SetResult> setResults = setResultRepository.fetchByLeagueId(leagueId);
-    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-    final Scoreboard leagueScoreboard = new Scoreboard(matches);
-
-    return leagueScoreboard;
-  }
 
   public Scoreboard buildScoreboardForLeagueForPlayers(final Long leagueId, final Long[] playersIds) {
     final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueId, playersIds);

@@ -4,7 +4,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
-import com.pj.squashrestapp.model.dto.UserBasicInfoDto;
+import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
@@ -43,9 +43,9 @@ public class PlayerController {
   @GetMapping(value = "/{playerId}")
   @ResponseBody
   @PreAuthorize("isAdmin()")
-  UserBasicInfoDto onePlayerInfoById(@PathVariable final Long playerId) {
+  PlayerDetailedDto onePlayerInfoById(@PathVariable final Long playerId) {
     final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
-    final UserBasicInfoDto userBasicInfo = new UserBasicInfoDto(player);
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }
 
@@ -53,11 +53,11 @@ public class PlayerController {
   @GetMapping
   @ResponseBody
   @PreAuthorize("isAdmin()")
-  List<UserBasicInfoDto> allPlayersInfo() {
+  List<PlayerDetailedDto> allPlayersInfo() {
     final List<Player> players = playerRepository.fetchForAuthorizationAll();
-    final List<UserBasicInfoDto> usersBasicInfo = players
+    final List<PlayerDetailedDto> usersBasicInfo = players
             .stream()
-            .map(UserBasicInfoDto::new)
+            .map(PlayerDetailedDto::new)
             .collect(Collectors.toList());
     return usersBasicInfo;
   }
@@ -66,11 +66,11 @@ public class PlayerController {
   @GetMapping(value = "/league/{leagueId}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  List<UserBasicInfoDto> byLeagueId(@PathVariable("leagueId") final Long leagueId) {
+  List<PlayerDetailedDto> byLeagueId(@PathVariable("leagueId") final Long leagueId) {
     final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
-    final List<UserBasicInfoDto> usersBasicInfo = players
+    final List<PlayerDetailedDto> usersBasicInfo = players
             .stream()
-            .map(UserBasicInfoDto::new)
+            .map(PlayerDetailedDto::new)
             .collect(Collectors.toList());
     return usersBasicInfo;
   }
@@ -79,7 +79,7 @@ public class PlayerController {
   @PutMapping(value = "/{playerId}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  UserBasicInfoDto assignLeagueRole(
+  PlayerDetailedDto assignLeagueRole(
           @PathVariable("playerId") final Long playerId,
           @RequestParam("leagueId") final Long leagueId,
           @RequestParam("leagueRole") final LeagueRole leagueRole) {
@@ -91,7 +91,7 @@ public class PlayerController {
 
     playerRepository.save(player);
 
-    return new UserBasicInfoDto(player);
+    return new PlayerDetailedDto(player);
   }
 
 }

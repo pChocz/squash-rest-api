@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.controller;
+package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.model.XpPointsForPlace;
