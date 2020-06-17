@@ -3,6 +3,8 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.util.TimeLogUtil;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.encoders.Base64;
@@ -52,10 +54,11 @@ public class LeagueController {
 //    return responseEntity;
 //  }
 
+  @ApiOperation(value = "Extract league statistics", authorizations = {@Authorization(value = "jwtToken")})
   @GetMapping(value = "{leagueId}/stats")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
-  LeagueStatsWrapper leagueStats(@PathVariable final Long leagueId) {
+  LeagueStatsWrapper extractLeagueStatistics(@PathVariable final Long leagueId) {
     final long startTime = System.nanoTime();
     final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueId);
     TimeLogUtil.logFinishWithJsonPrint(startTime, leagueStatsWrapper);
@@ -63,11 +66,12 @@ public class LeagueController {
   }
 
 
+  @ApiOperation(value = "Update league logo", authorizations = {@Authorization(value = "jwtToken")})
   @PutMapping(value = "{leagueId}/logo")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  String updateLogo(@PathVariable final Long leagueId,
-                    @RequestParam("file") final MultipartFile file) throws IOException {
+  String updateLeagueLogo(@PathVariable final Long leagueId,
+                          @RequestParam("file") final MultipartFile file) throws IOException {
     final byte[] encode = Base64.encode(file.getBytes());
     final String logoBase64 = IOUtils.toString(encode, Charset.defaultCharset().name());
 

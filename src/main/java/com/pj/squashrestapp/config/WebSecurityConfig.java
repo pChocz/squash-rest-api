@@ -13,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -61,6 +62,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     http.exceptionHandling()
             .authenticationEntryPoint(AuthenticationExceptionHandler::new)
             .accessDeniedHandler(AccessDeniedExceptionHandler::new);
+  }
+
+  @Override
+  public void configure(final WebSecurity web) throws Exception {
+    web
+            .ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**")
+            .and()
+            .ignoring().mvcMatchers("/swagger-ui.html/**", "/configuration/**", "/swagger-resources/**", "/v2/api-docs", "/webjars/**");
   }
 
   @Bean
