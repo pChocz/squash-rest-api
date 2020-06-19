@@ -8,11 +8,13 @@ import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
+import com.pj.squashrestapp.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,11 +41,32 @@ public class PlayerController {
   @Autowired
   private RoleForLeagueRepository roleForLeagueRepository;
 
+  @Autowired
+  private PlayerService playerService;
+
+
+  @PostMapping(value = "/sign-up")
+  @ResponseBody
+  PlayerDetailedDto signUpPlayer(
+          @RequestParam("username") final String username,
+          @RequestParam("email") final String email,
+          @RequestParam("password") final String password) {
+
+    final boolean isValid = playerService.isValidSignupData(username, email, password);
+    if (isValid) {
+      final Player newPlayer = playerService.registerNewUser(username, email, password);
+      return new PlayerDetailedDto(newPlayer);
+    }
+    return null;
+  }
+
 
   @GetMapping(value = "/{playerId}")
   @ResponseBody
   @PreAuthorize("isAdmin()")
-  PlayerDetailedDto onePlayerInfoById(@PathVariable final Long playerId) {
+  PlayerDetailedDto onePlayerInfoById(
+          @PathVariable final Long playerId) {
+
     final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
@@ -54,6 +77,7 @@ public class PlayerController {
   @ResponseBody
   @PreAuthorize("isAdmin()")
   List<PlayerDetailedDto> allPlayersInfo() {
+
     final List<Player> players = playerRepository.fetchForAuthorizationAll();
     final List<PlayerDetailedDto> usersBasicInfo = players
             .stream()
@@ -66,7 +90,9 @@ public class PlayerController {
   @GetMapping(value = "/league/{leagueId}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  List<PlayerDetailedDto> byLeagueId(@PathVariable("leagueId") final Long leagueId) {
+  List<PlayerDetailedDto> byLeagueId(
+          @PathVariable("leagueId") final Long leagueId) {
+
     final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
     final List<PlayerDetailedDto> usersBasicInfo = players
             .stream()

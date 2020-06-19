@@ -15,6 +15,13 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
   Season findSeasonByNumberAndLeagueId(int number, Long leagueId);
 
   @Query("""
+          SELECT l.id FROM Season s
+           JOIN League l ON s.league = l
+              WHERE s.id = :seasonId
+          """)
+  Long retrieveLeagueIdOfSeason(@Param("seasonId") Long seasonId);
+
+  @Query("""
           SELECT r.id FROM Round r
           JOIN Season s ON r.season = s
             WHERE s.id = :id

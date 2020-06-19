@@ -38,7 +38,7 @@ public class ScoreboardController {
 
   @GetMapping(value = "/leagues/{leagueId}")
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#id, 'PLAYER')")
+  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
   EntireLeagueScoreboard scoreboardForLeague(
           @PathVariable final Long leagueId) {
 

@@ -2,6 +2,7 @@ package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import org.aopalliance.intercept.MethodInvocation;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
@@ -31,6 +32,7 @@ public class CustomMethodSecurityExpressionHandler
     root.setRoleHierarchy(getRoleHierarchy());
     root.setMatchRepository(applicationContext.getBean(MatchRepository.class));
     root.setRoundRepository(applicationContext.getBean(RoundRepository.class));
+    root.setSeasonRepository(applicationContext.getBean(SeasonRepository.class));
     return root;
   }
 

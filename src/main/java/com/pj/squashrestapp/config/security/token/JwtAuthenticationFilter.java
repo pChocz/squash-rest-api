@@ -3,8 +3,6 @@ package com.pj.squashrestapp.config.security.token;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPIRATION_TIME;
@@ -30,7 +27,6 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PR
 @Slf4j
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-  private final static String WRONG_CREDENTIALS_FORMAT_MESSAGE = "Wrong format of credentials received";
   private final AuthenticationManager authenticationManager;
   private final SecretKeyHolder secretKeyHolder;
 
@@ -44,20 +40,20 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   public Authentication attemptAuthentication(final HttpServletRequest req,
                                               final HttpServletResponse res) throws AuthenticationException {
     try {
-      final String reqInput = IOUtils.toString(req.getInputStream());
-      final byte[] decode = Base64.getDecoder().decode(reqInput);
-      final String[] credentials = new String(decode).split(":");
-      if (credentials.length != 2) {
-        log.warn(WRONG_CREDENTIALS_FORMAT_MESSAGE);
-        throw new AuthenticationCredentialsNotFoundException(WRONG_CREDENTIALS_FORMAT_MESSAGE);
+      final int numberOfParams = req.getParameterMap().size();
+      final String usernameOrEmail = req.getParameter("usernameOrEmail");
+      final String password = req.getParameter("password");
+
+      if (numberOfParams != 2 || usernameOrEmail == null || password == null) {
+        throw new WrongCredentialsFormatException("Wrong format of credentials received");
       }
-      final var authentication = new UsernamePasswordAuthenticationToken(credentials[0], credentials[1], new ArrayList<>());
+
+      final var authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
       final Authentication authenticate = authenticationManager.authenticate(authentication);
       return authenticate;
 
-    } catch (final IOException | IllegalArgumentException | AuthenticationException e) {
-      log.warn(e.getMessage());
-      throw new AuthenticationCredentialsNotFoundException(e.getMessage());
+    } catch (final AuthenticationException e) {
+      throw new WrongCredentialsFormatException(e.getMessage());
     }
   }
 

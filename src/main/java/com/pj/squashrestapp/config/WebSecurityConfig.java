@@ -41,32 +41,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   SecretKeyHolder secretKeyHolder;
 
   @Override
-  protected void configure(final HttpSecurity http) throws Exception {
+  protected void configure(final HttpSecurity httpSecurity) throws Exception {
 
     // disables cross-origin-resource-sharing and cross-site-request-forgery protection
-    http.cors().and().csrf().disable();
+    httpSecurity.cors().and().csrf().disable();
 
     // set up of endpoints permissions
-    http.authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/users/sign-up").permitAll()
+    httpSecurity.authorizeRequests()
+            .antMatchers(HttpMethod.POST, "/players/sign-up").permitAll()
             .anyRequest().authenticated();
 
     // authentication and authorization filters
-    http.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
+    httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder));
 
     // this disables session creation on Spring Security
-    http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // exception handling for unauthenticated/unathorized accesses
-    http.exceptionHandling()
+    httpSecurity.exceptionHandling()
             .authenticationEntryPoint(AuthenticationExceptionHandler::new)
             .accessDeniedHandler(AccessDeniedExceptionHandler::new);
   }
 
   @Override
-  public void configure(final WebSecurity web) throws Exception {
-    web
+  public void configure(final WebSecurity webSecurity) throws Exception {
+    webSecurity
             .ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**")
             .and()
             .ignoring().mvcMatchers("/swagger-ui.html/**", "/configuration/**", "/swagger-resources/**", "/v2/api-docs", "/webjars/**");

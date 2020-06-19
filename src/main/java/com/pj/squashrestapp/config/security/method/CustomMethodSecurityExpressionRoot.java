@@ -8,6 +8,7 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ public class CustomMethodSecurityExpressionRoot
 
   private MatchRepository matchRepository;
   private RoundRepository roundRepository;
+  private SeasonRepository seasonRepository;
 
   private Object target;
   private Object filterObject;
@@ -72,11 +74,11 @@ public class CustomMethodSecurityExpressionRoot
     return principal.hasRoleForLeague(leagueId, role);
   }
 
-  public boolean hasRoleForMatch(final Long matchId, final String role) {
+  public boolean hasRoleForSeason(final Long seasonId, final String role) {
     if (principal.isAdmin()) {
       return true;
     }
-    final Long leagueId = matchRepository.retrieveLeagueIdOfMatch(matchId);
+    final Long leagueId = seasonRepository.retrieveLeagueIdOfSeason(seasonId);
     return principal.hasRoleForLeague(leagueId, role);
   }
 
@@ -85,6 +87,14 @@ public class CustomMethodSecurityExpressionRoot
       return true;
     }
     final Long leagueId = roundRepository.retrieveLeagueIdOfRound(roundId);
+    return principal.hasRoleForLeague(leagueId, role);
+  }
+
+  public boolean hasRoleForMatch(final Long matchId, final String role) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    final Long leagueId = matchRepository.retrieveLeagueIdOfMatch(matchId);
     return principal.hasRoleForLeague(leagueId, role);
   }
 
