@@ -34,22 +34,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class RoundControllerTest {
 
   @Autowired
+  private MockMvc mockMvc;
+
+  @Autowired
   private WebApplicationContext context;
 
   @MockBean
   private RoundService roundService;
 
-  @MockBean
-  private RoundController roundController;
-
-  @Autowired
-  private MockMvc mockMvc;
-
   @Test
-  @WithMockUser(
-          username = "user_regular",
-          authorities = {"ROLE_USER"},
-          roles = {"USER"})
+  @WithMockUser(username = "user_regular", authorities = {"ROLE_USER"})
   void testRegularUser() throws Exception {
     final int value = 5;
 

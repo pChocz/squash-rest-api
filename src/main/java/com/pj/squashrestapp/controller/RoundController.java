@@ -7,7 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -68,7 +73,9 @@ public class RoundController {
   @ResponseBody
   int dummyGetEndpoint(@PathVariable final int value) {
     final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    log.info(authentication.toString());
+    final String username = authentication.getName();
+    final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+    log.info("user info: \n USER:\t{} \n ROLES:\t{}", username, authorities);
 
     return value * 2;
   }
