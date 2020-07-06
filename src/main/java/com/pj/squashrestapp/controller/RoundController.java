@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,11 +60,17 @@ public class RoundController {
   }
 
 
-  @GetMapping(value = "dummyEndpoint/{booleanValue}")
+  /**
+   * TEST - dummy method just to verify that testing of Spring Security works
+   */
+  @GetMapping(value = "dummyEndpoint/{value}")
   @PreAuthorize("isAdmin()")
   @ResponseBody
-  boolean dummyGetEndpoint(@PathVariable final boolean booleanValue) throws IOException {
-    return booleanValue;
+  int dummyGetEndpoint(@PathVariable final int value) {
+    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    log.info(authentication.toString());
+
+    return value * 2;
   }
 
 }

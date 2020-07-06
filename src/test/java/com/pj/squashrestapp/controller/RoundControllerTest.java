@@ -23,6 +23,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Testing:
  * {@link RoundController}
+ *
+ * TODO: still not working - preauthorization validation is not invoked in the controller method
+ *
  */
 @ContextConfiguration(classes = {RoundController.class})
 @AutoConfigureMockMvc
@@ -36,13 +39,19 @@ class RoundControllerTest {
   @MockBean
   private RoundService roundService;
 
+  @MockBean
+  private RoundController roundController;
+
   @Autowired
   private MockMvc mockMvc;
 
   @Test
-  @WithMockUser(username = "user_regular", authorities = {"ROLE_USER"})
-  void testStuff() throws Exception {
-    final boolean value = false;
+  @WithMockUser(
+          username = "user_regular",
+          authorities = {"ROLE_USER"},
+          roles = {"USER"})
+  void testRegularUser() throws Exception {
+    final int value = 5;
 
     mockMvc = MockMvcBuilders
             .webAppContextSetup(context)
@@ -51,41 +60,15 @@ class RoundControllerTest {
 
     final MvcResult result = mockMvc
             .perform(MockMvcRequestBuilders.get("/rounds/dummyEndpoint/" + value)
-            .contentType(MediaType.APPLICATION_JSON)
-            .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNonAuthoritativeInformation())
             .andReturn();
 
     final String responseContent = result.getResponse().getContentAsString();
-    final boolean responseValue = Boolean.valueOf(responseContent);
+    final int responseValue = Integer.valueOf(responseContent);
 
-    assertEquals(value, responseValue);
+    assertEquals(value * 2, responseValue);
   }
-
-//  private UserDetailsImpl mockRegularUser() {
-//    final Player player = new Player();
-//    player.setUsername("regular_user");
-//
-//    final Authority authorityUser = new Authority();
-//    authorityUser.setType(AuthorityType.ROLE_USER);
-//    player.addAuthority(authorityUser);
-//
-//    return new UserDetailsImpl(player);
-//  }
-//
-//  private UserDetailsImpl mockAdmin() {
-//    final Player player = new Player();
-//    player.setUsername("admin");
-//
-//    final Authority authorityUser = new Authority();
-//    authorityUser.setType(AuthorityType.ROLE_USER);
-//    player.addAuthority(authorityUser);
-//
-//    final Authority authorityAdmin = new Authority();
-//    authorityAdmin.setType(AuthorityType.ROLE_ADMIN);
-//    player.addAuthority(authorityAdmin);
-//
-//    return new UserDetailsImpl(player);
-//  }
 
 }
