@@ -26,10 +26,10 @@ jwt:
 
 # #######
 # Logging
-logging:
-  level:
-    org:
-      hibernate:
+#logging:
+#  level:
+#    org:
+#      hibernate:
 #        stat: debug
 
 
