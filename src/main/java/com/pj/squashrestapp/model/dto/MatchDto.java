@@ -9,8 +9,8 @@ import com.pj.squashrestapp.model.SetResult;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,7 +31,7 @@ public class MatchDto {
   private final Long roundId;
   private final int roundNumber;
   @JsonFormat(pattern = "yyyy-MM-dd")
-  private final Date roundDate;
+  private final LocalDate roundDate;
 
   private final Long seasonId;
   private final int seasonNumber;

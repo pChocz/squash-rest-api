@@ -8,8 +8,8 @@ import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.Getter;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -21,8 +21,8 @@ public class RoundScoreboard {
   private final String leagueName;
   private final Long roundId;
   private final int roundNumber;
-  @JsonFormat(pattern = "yyyy-MM-dd")
-  private final Date roundDate;
+  @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
+  private final LocalDate roundDate;
   @JsonIgnore
   private final List<Integer> playersPerGroup;
   private final List<RoundGroupScoreboard> roundGroupScoreboards;

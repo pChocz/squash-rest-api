@@ -19,7 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +69,7 @@ public class Season implements Identifiable {
 
   @Setter
   @Column(name = "start_date")
-  private Date startDate;
+  private LocalDate startDate;
 
   @Setter
   @OneToMany(

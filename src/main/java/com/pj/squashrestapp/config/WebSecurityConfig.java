@@ -5,6 +5,7 @@ import com.pj.squashrestapp.config.security.accessexceptionhandler.Authenticatio
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
+import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -38,6 +39,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   UserDetailsService userDetailsService;
 
   @Autowired
+  BlacklistedTokensRepository blacklistedTokensRepository;
+
+  @Autowired
   SecretKeyHolder secretKeyHolder;
 
   @Override
@@ -53,7 +57,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // authentication and authorization filters
     httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokensRepository));
 
     // this disables session creation on Spring Security
     httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

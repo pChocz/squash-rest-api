@@ -5,7 +5,7 @@ import com.pj.squashrestapp.model.Season;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  *
@@ -19,7 +19,7 @@ public class SeasonDto {
   private final Long seasonId;
   private final int seasonNumber;
   @JsonFormat(pattern = "yyyy-MM-dd")
-  private final Date seasonStartDate;
+  private final LocalDate seasonStartDate;
 
   public SeasonDto(final Season season) {
     this.leagueId = season.getLeague().getId();

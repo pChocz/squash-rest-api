@@ -9,6 +9,8 @@ spring:
         dialect: org.hibernate.dialect.MySQL57InnoDBDialect
         generate_statistics: true
 #        format_sql: true
+        jdbc:
+          time_zone: UTC
     show-sql: true
   datasource:
     # TODO: database credentials should be externalized later anyway!

@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.model.BlacklistedToken;
+import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -27,13 +29,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final UserDetailsService userDetailsService;
   private final SecretKeyHolder secretKeyHolder;
+  private final BlacklistedTokensRepository blacklistedTokensRepository;
 
   public JwtAuthorizationFilter(final AuthenticationManager authManager,
                                 final UserDetailsService userDetailsService,
-                                final SecretKeyHolder secretKeyHolder) {
+                                final SecretKeyHolder secretKeyHolder,
+                                final BlacklistedTokensRepository blacklistedTokensRepository) {
     super(authManager);
     this.userDetailsService = userDetailsService;
     this.secretKeyHolder = secretKeyHolder;
+    this.blacklistedTokensRepository = blacklistedTokensRepository;
   }
 
   @Override
@@ -59,6 +64,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
    * - UsernameNotFoundException  -> Token is valid but username does not exist
    * - ExpiredJwtException        -> Token has expired, obviously
    * - MalformedJsonException     -> Token has wrong JSON syntax
+   * - TokenBlacklistedException  -> Token has been blacklisted
    * </pre>
    */
   @SuppressWarnings("ProhibitedExceptionCaught")
@@ -70,7 +76,14 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
+
     try {
+      // checking if token is on the blacklist
+      final BlacklistedToken tokenFromBlacklist = blacklistedTokensRepository.findByToken(token);
+      if (tokenFromBlacklist != null) {
+        throw new TokenBlacklistedException("Token has been blacklisted, it cannot be authenticated");
+      }
+
       final Claims claims = Jwts
               .parserBuilder()
               .setSigningKey(secretKeyHolder.getSecretKey())

@@ -19,10 +19,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(name = "rounds")
@@ -68,7 +67,7 @@ public class Round implements Identifiable {
 
   @Setter
   @Column(name = "date")
-  private Date date;
+  private LocalDate date;
 
   @Setter
   @OneToMany(
@@ -92,7 +91,7 @@ public class Round implements Identifiable {
   @Column(name = "split")
   private String split;
 
-  public Round(final int number, final Date date, final Season season) {
+  public Round(final int number, final LocalDate date, final Season season) {
     this.number = number;
     this.date = date;
     this.season = season;

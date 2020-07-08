@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -75,7 +74,7 @@ public class RoundService {
 
     final Round round = new Round();
     round.setNumber(roundNumber);
-    round.setDate(Date.valueOf(roundDate));
+    round.setDate(roundDate);
 
     final List<Integer> countPerRound = playersPerGroup
             .stream()

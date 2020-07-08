@@ -56,7 +56,7 @@ class RoundControllerTest {
             .perform(MockMvcRequestBuilders.get("/rounds/dummyEndpoint/" + value)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNonAuthoritativeInformation())
+            .andExpect(status().isOk())
             .andReturn();
 
     final String responseContent = result.getResponse().getContentAsString();

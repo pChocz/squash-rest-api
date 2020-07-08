@@ -1,10 +1,14 @@
 package com.pj.squashrestapp.service;
 
+import com.google.gson.Gson;
+import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.controller.WrongSignupDataException;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.BlacklistedToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.AuthorityRepository;
+import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
@@ -14,8 +18,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 /**
@@ -30,6 +39,9 @@ public class PlayerService {
 
   @Autowired
   private AuthorityRepository authorityRepository;
+
+  @Autowired
+  private BlacklistedTokensRepository blacklistedTokensRepository;
 
   @SuppressWarnings("OverlyComplexMethod")
   public boolean isValidSignupData(final String username, final String email, final String password) throws WrongSignupDataException {
@@ -85,6 +97,33 @@ public class PlayerService {
     playerRepository.save(player);
 
     return player;
+  }
+
+  public void blacklistToken(final String bearerToken) {
+    final String token = bearerToken.replace(TokenConstants.TOKEN_PREFIX, "");
+    final String tokenPayload = token.split("\\.")[1];
+    final String tokenPayloadDecoded = new String(Base64.getDecoder().decode(tokenPayload));
+    final Properties tokenProperties = new Gson().fromJson(tokenPayloadDecoded, Properties.class);
+    final String expAsString = tokenProperties.getProperty(TokenConstants.EXPIRATION_PREFIX);
+    final long expSeconds = Long.valueOf(expAsString);
+    final LocalDateTime expirationDateTime = LocalDateTime.ofInstant(
+            Instant.ofEpochSecond(expSeconds),
+            TimeZone.getTimeZone("UTC").toZoneId());
+
+    final BlacklistedToken tokenToBlacklist = new BlacklistedToken();
+    tokenToBlacklist.setToken(token);
+    tokenToBlacklist.setExpirationDateTime(expirationDateTime);
+    blacklistedTokensRepository.save(tokenToBlacklist);
+  }
+
+  public int removeBlacklistedTokensFromDb() {
+    final LocalDateTime now = LocalDateTime.now(TimeZone.getTimeZone("UTC").toZoneId());
+
+    final List<BlacklistedToken> expiredTokensToRemoveFromDb = blacklistedTokensRepository.findAllByExpirationDateTimeBefore(now);
+    final int tokensCount = expiredTokensToRemoveFromDb.size();
+    blacklistedTokensRepository.deleteAll(expiredTokensToRemoveFromDb);
+
+    return tokensCount;
   }
 
 }

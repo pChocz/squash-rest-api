@@ -7,7 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 /**
  *
@@ -25,7 +26,7 @@ public class AuthenticationExceptionHandler {
       writer.write(new JSONObject()
               .appendField("response", HttpServletResponse.SC_FORBIDDEN)
               .appendField("user", "ANONYMOUS USER")
-              .appendField("timestamp", new Date(System.currentTimeMillis()))
+              .appendField("timestamp", LocalDateTime.now(ZoneOffset.UTC).toString())
               .appendField("message", "NOT AUTHENTICATED")
               .toString());
     }

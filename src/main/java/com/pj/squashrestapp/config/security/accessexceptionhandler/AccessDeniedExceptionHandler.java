@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  *
@@ -32,7 +32,7 @@ public class AccessDeniedExceptionHandler {
               .appendField("response", HttpServletResponse.SC_FORBIDDEN)
               .appendField("user", username)
               .appendField("authorities", authorities)
-              .appendField("timestamp", new Date(System.currentTimeMillis()))
+              .appendField("timestamp", LocalDate.now())
               .appendField("message", "FORBIDDEN")
               .toString());
     }

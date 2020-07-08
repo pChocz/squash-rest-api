@@ -8,7 +8,7 @@ import java.security.Key;
 /**
  * Several constants related to the token authentication.
  */
-final class TokenConstants {
+public final class TokenConstants {
 
   /**
    * Expiration time in miliseconds.
@@ -20,8 +20,10 @@ final class TokenConstants {
    * */
   static final long EXPIRATION_TIME = 860_400_000; // 10 days
 
-  static final String TOKEN_PREFIX = "Bearer ";
+  public static final String TOKEN_PREFIX = "Bearer ";
 
-  static final String HEADER_STRING = "Authorization";
+  public static final String HEADER_STRING = "Authorization";
+
+  public static final String EXPIRATION_PREFIX = "exp";
 
 }

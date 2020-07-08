@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
@@ -12,10 +13,12 @@ import com.pj.squashrestapp.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,6 +46,23 @@ public class PlayerController {
 
   @Autowired
   private PlayerService playerService;
+
+
+  @DeleteMapping(value = "/cleanBlacklistedTokens")
+  @ResponseBody
+  @PreAuthorize("isAdmin()")
+  void cleanBlacklistedTokens() {
+    final int removedTokens = playerService.removeBlacklistedTokensFromDb();
+    log.info("Removed {} expired tokens.", removedTokens);
+  }
+
+
+  @PostMapping(value = "/logout")
+  @ResponseBody
+  void logout(@RequestHeader(name = TokenConstants.HEADER_STRING) final String bearerToken) {
+    playerService.blacklistToken(bearerToken);
+    log.info("Logged-out");
+  }
 
 
   @PostMapping(value = "/sign-up")

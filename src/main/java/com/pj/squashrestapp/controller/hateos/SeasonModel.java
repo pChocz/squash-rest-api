@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.server.core.Relation;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -29,7 +29,7 @@ public class SeasonModel extends RepresentationModel<SeasonModel> {
 
   private Long id;
   private int number;
-  private Date startDate;
+  private LocalDate startDate;
   private LeagueModel league;
 
 }
