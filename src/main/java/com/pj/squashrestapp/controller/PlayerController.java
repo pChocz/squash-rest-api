@@ -1,14 +1,10 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.security.token.TokenConstants;
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
-import com.pj.squashrestapp.repository.LeagueRepository;
-import com.pj.squashrestapp.repository.PlayerRepository;
-import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -36,24 +31,35 @@ import java.util.stream.Collectors;
 public class PlayerController {
 
   @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private LeagueRepository leagueRepository;
-
-  @Autowired
-  private RoleForLeagueRepository roleForLeagueRepository;
-
-  @Autowired
   private PlayerService playerService;
+
+  @Autowired
+  private EmailSendConfig emailSendConfig;
+
+  @PostMapping(value = "/email")
+  @ResponseBody
+  @PreAuthorize("isAdmin()")
+  void sendEmail() {
+    final String receiver = "p.j.choczynski@wp.pl";
+    final String subject = "test subject";
+    final String messageContent = "DUPA DUPA DUPA \nDUPA";
+    emailSendConfig.sendEmail(receiver, subject, messageContent);
+  }
+
+  @GetMapping(value = "/me")
+  @ResponseBody
+  PlayerDetailedDto aboutMe() {
+    final PlayerDetailedDto aboutMeInfo = playerService.getAboutMeInfo();
+    return aboutMeInfo;
+  }
 
 
   @DeleteMapping(value = "/cleanBlacklistedTokens")
   @ResponseBody
   @PreAuthorize("isAdmin()")
   void cleanBlacklistedTokens() {
-    final int removedTokens = playerService.removeBlacklistedTokensFromDb();
-    log.info("Removed {} expired tokens.", removedTokens);
+    final int numberOfRemovedTokens = playerService.removeExpiredBlacklistedTokensFromDb();
+    log.info("Removed {} expired tokens.", numberOfRemovedTokens);
   }
 
 
@@ -87,9 +93,8 @@ public class PlayerController {
   PlayerDetailedDto onePlayerInfoById(
           @PathVariable final Long playerId) {
 
-    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
-    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
-    return userBasicInfo;
+    final PlayerDetailedDto usersBasicInfo = playerService.getPlayerInfo(playerId);
+    return usersBasicInfo;
   }
 
 
@@ -97,12 +102,7 @@ public class PlayerController {
   @ResponseBody
   @PreAuthorize("isAdmin()")
   List<PlayerDetailedDto> allPlayersInfo() {
-
-    final List<Player> players = playerRepository.fetchForAuthorizationAll();
-    final List<PlayerDetailedDto> usersBasicInfo = players
-            .stream()
-            .map(PlayerDetailedDto::new)
-            .collect(Collectors.toList());
+    final List<PlayerDetailedDto> usersBasicInfo = playerService.getAllPlayers();
     return usersBasicInfo;
   }
 
@@ -113,11 +113,7 @@ public class PlayerController {
   List<PlayerDetailedDto> byLeagueId(
           @PathVariable("leagueId") final Long leagueId) {
 
-    final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
-    final List<PlayerDetailedDto> usersBasicInfo = players
-            .stream()
-            .map(PlayerDetailedDto::new)
-            .collect(Collectors.toList());
+    final List<PlayerDetailedDto> usersBasicInfo = playerService.getLeaguePlayers(leagueId);
     return usersBasicInfo;
   }
 
@@ -130,14 +126,8 @@ public class PlayerController {
           @RequestParam("leagueId") final Long leagueId,
           @RequestParam("leagueRole") final LeagueRole leagueRole) {
 
-    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
-    final League league = leagueRepository.findById(leagueId).get();
-    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-    player.addRole(roleForLeague);
-
-    playerRepository.save(player);
-
-    return new PlayerDetailedDto(player);
+    final PlayerDetailedDto playerDetailedDto = playerService.assignLeagueRole(playerId, leagueId, leagueRole);
+    return playerDetailedDto;
   }
 
 }

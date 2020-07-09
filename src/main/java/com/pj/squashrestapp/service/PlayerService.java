@@ -6,15 +6,23 @@ import com.pj.squashrestapp.controller.WrongSignupDataException;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BlacklistedToken;
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RoleForLeague;
+import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
+import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -38,7 +46,13 @@ public class PlayerService {
   private PlayerRepository playerRepository;
 
   @Autowired
+  private LeagueRepository leagueRepository;
+
+  @Autowired
   private AuthorityRepository authorityRepository;
+
+  @Autowired
+  private RoleForLeagueRepository roleForLeagueRepository;
 
   @Autowired
   private BlacklistedTokensRepository blacklistedTokensRepository;
@@ -116,7 +130,7 @@ public class PlayerService {
     blacklistedTokensRepository.save(tokenToBlacklist);
   }
 
-  public int removeBlacklistedTokensFromDb() {
+  public int removeExpiredBlacklistedTokensFromDb() {
     final LocalDateTime now = LocalDateTime.now(TimeZone.getTimeZone("UTC").toZoneId());
 
     final List<BlacklistedToken> expiredTokensToRemoveFromDb = blacklistedTokensRepository.findAllByExpirationDateTimeBefore(now);
@@ -124,6 +138,47 @@ public class PlayerService {
     blacklistedTokensRepository.deleteAll(expiredTokensToRemoveFromDb);
 
     return tokensCount;
+  }
+
+  public PlayerDetailedDto getAboutMeInfo() {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).get();
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
+    return userBasicInfo;
+  }
+
+  public List<PlayerDetailedDto> getLeaguePlayers(final Long leagueId) {
+    final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
+    return players
+            .stream()
+            .map(PlayerDetailedDto::new)
+            .collect(Collectors.toList());
+  }
+
+  public List<PlayerDetailedDto> getAllPlayers() {
+    final List<Player> players = playerRepository.fetchForAuthorizationAll();
+    return players
+            .stream()
+            .map(PlayerDetailedDto::new)
+            .collect(Collectors.toList());
+  }
+
+  public PlayerDetailedDto getPlayerInfo(final Long playerId) {
+    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
+    return userBasicInfo;
+  }
+
+  public PlayerDetailedDto assignLeagueRole(final Long playerId, final Long leagueId, final LeagueRole leagueRole) {
+    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
+    final League league = leagueRepository.findById(leagueId).get();
+    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    player.addRole(roleForLeague);
+
+    playerRepository.save(player);
+
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
   }
 
 }

@@ -53,6 +53,10 @@ public class Player {
   private String password;
 
   @Setter
+  @Column(name = "enabled")
+  private boolean enabled;
+
+  @Setter
   @Column(name = "email", unique = true)
   private String email;
 
@@ -71,6 +75,7 @@ public class Player {
   public Player(final String username, final String email) {
     this.username = username;
     this.email = email;
+    this.enabled = false;
   }
 
   public void addRole(final RoleForLeague roleForLeague) {
