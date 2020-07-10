@@ -5,7 +5,7 @@ import com.pj.squashrestapp.config.security.accessexceptionhandler.Authenticatio
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
-import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
+import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -39,7 +39,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   UserDetailsService userDetailsService;
 
   @Autowired
-  BlacklistedTokensRepository blacklistedTokensRepository;
+  BlacklistedTokenRepository blacklistedTokenRepository;
 
   @Autowired
   SecretKeyHolder secretKeyHolder;
@@ -52,12 +52,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // set up of endpoints permissions
     httpSecurity.authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/players/sign-up").permitAll()
+            .antMatchers(HttpMethod.POST, "/players/signUp").permitAll()
+            .antMatchers(HttpMethod.GET, "/players/confirmRegistration**").permitAll()
+            .antMatchers(HttpMethod.GET, "/players/resetPassword**").permitAll()
+            .antMatchers(HttpMethod.GET, "/players/requestPasswordReset**").permitAll()
             .anyRequest().authenticated();
 
     // authentication and authorization filters
     httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokensRepository));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokenRepository));
 
     // this disables session creation on Spring Security
     httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

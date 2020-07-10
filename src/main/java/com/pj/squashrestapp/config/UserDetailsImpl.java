@@ -10,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -25,23 +26,25 @@ public class UserDetailsImpl implements UserDetails {
   private final String password;
   private final Set<GrantedAuthority> authorities;
   private final Multimap<Long, String> rolesForLeagues;
+  private final boolean enabled;
+  private final LocalDateTime lastPasswordChangeDateTime;
 
   private final boolean accountNonExpired;
   private final boolean accountNonLocked;
   private final boolean credentialsNonExpired;
-  private final boolean enabled;
 
   public UserDetailsImpl(final Player player) {
     this.username = player.getUsername();
     this.password = player.getPassword();
     this.authorities = extractAuthorities(player.getAuthorities());
     this.rolesForLeagues = extractRolesForLeagues(player.getRoles());
+    this.enabled = player.isEnabled();
+    this.lastPasswordChangeDateTime = player.getLastPasswordChangeDateTime();
 
     // todo: check what to do with it later
     this.accountNonExpired = true;
     this.accountNonLocked = true;
     this.credentialsNonExpired = true;
-    this.enabled = true;
   }
 
   private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {

@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -60,6 +61,10 @@ public class Player {
   @Column(name = "email", unique = true)
   private String email;
 
+  @Setter
+  @Column(name = "last_password_change_date_time")
+  private LocalDateTime lastPasswordChangeDateTime;
+
   @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
@@ -76,6 +81,7 @@ public class Player {
     this.username = username;
     this.email = email;
     this.enabled = false;
+    this.lastPasswordChangeDateTime = LocalDateTime.now();
   }
 
   public void addRole(final RoleForLeague roleForLeague) {

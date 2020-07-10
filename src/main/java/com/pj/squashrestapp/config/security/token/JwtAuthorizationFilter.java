@@ -2,7 +2,8 @@ package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.BlacklistedToken;
-import com.pj.squashrestapp.repository.BlacklistedTokensRepository;
+import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
+import com.pj.squashrestapp.util.GeneralUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.TimeZone;
 
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
@@ -29,16 +32,16 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final UserDetailsService userDetailsService;
   private final SecretKeyHolder secretKeyHolder;
-  private final BlacklistedTokensRepository blacklistedTokensRepository;
+  private final BlacklistedTokenRepository blacklistedTokenRepository;
 
   public JwtAuthorizationFilter(final AuthenticationManager authManager,
                                 final UserDetailsService userDetailsService,
                                 final SecretKeyHolder secretKeyHolder,
-                                final BlacklistedTokensRepository blacklistedTokensRepository) {
+                                final BlacklistedTokenRepository blacklistedTokenRepository) {
     super(authManager);
     this.userDetailsService = userDetailsService;
     this.secretKeyHolder = secretKeyHolder;
-    this.blacklistedTokensRepository = blacklistedTokensRepository;
+    this.blacklistedTokenRepository = blacklistedTokenRepository;
   }
 
   @Override
@@ -79,7 +82,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
     try {
       // checking if token is on the blacklist
-      final BlacklistedToken tokenFromBlacklist = blacklistedTokensRepository.findByToken(token);
+      final BlacklistedToken tokenFromBlacklist = blacklistedTokenRepository.findByToken(token);
       if (tokenFromBlacklist != null) {
         throw new TokenBlacklistedException("Token has been blacklisted, it cannot be authenticated");
       }
@@ -98,6 +101,19 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
               claims.getExpiration());
 
       final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+
+      // checking if the account is activated
+      if (!userDetailsImpl.isEnabled()) {
+        throw new AccountNotActivatedException("Account has not been activated, maybe you should check your emails!");
+      }
+
+      // checking if token has not been created after last password change
+      final LocalDateTime tokenIssuedDateTime = GeneralUtil.toLocalDateTimeUtc(claims.getIssuedAt());
+      final LocalDateTime lastPasswordChangeDateTime = userDetailsImpl.getLastPasswordChangeDateTime();
+      if (tokenIssuedDateTime.isBefore(lastPasswordChangeDateTime)) {
+        throw new RuntimeException("Token is invalid as it has been issued before most recent password modification.");
+      }
+
       final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
               userDetailsImpl,
               userDetailsImpl.getPassword(),

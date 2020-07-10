@@ -6,6 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import javax.annotation.PostConstruct;
 import java.util.TimeZone;
 
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE;
+
 /**
  * Entry Point for the entire application.
  */
@@ -19,7 +21,7 @@ public class Application {
 
   @PostConstruct
   void setUtcTimezone() {
-    TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    TimeZone.setDefault(UTC_ZONE);
   }
 
 }

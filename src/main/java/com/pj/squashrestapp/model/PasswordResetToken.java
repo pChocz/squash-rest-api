@@ -14,10 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
@@ -25,12 +22,12 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
  *
  */
 @Entity
-@Table(name = "verification_tokens")
+@Table(name = "password_reset_tokens")
 @Getter
 @NoArgsConstructor
-public class VerificationToken {
+public class PasswordResetToken {
 
-  private static final long EXPIRATION_TIME_DAYS = 1;
+  private static final long EXPIRATION_TIME_HOURS = 1;
 
   @Id
   @Column(name = "id",
@@ -59,10 +56,10 @@ public class VerificationToken {
           updatable = false)
   private LocalDateTime expirationDateTime;
 
-  public VerificationToken(final String token, final Player player) {
+  public PasswordResetToken(final String token, final Player player) {
     this.token = token;
     this.player = player;
-    this.expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusDays(EXPIRATION_TIME_DAYS);
+    this.expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusHours(EXPIRATION_TIME_HOURS);
   }
 
 }
