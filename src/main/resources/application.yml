@@ -30,8 +30,9 @@ jwt:
 # Email
 # TODO: email credentials should be externalized later anyway!
 email:
-  sender_email_adress: testowy.pjoter@gmail.com
-  password: test123!@#
+  sender_email_adress: dziadoliga@gmail.com
+  sender_name: Dziadoliga Squash App
+  password: Squash123!@#
   smtp_host: smtp.gmail.com
   smtp_port: 587
 

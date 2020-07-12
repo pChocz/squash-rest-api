@@ -44,20 +44,6 @@ public class PlayerController {
   private EmailSendConfig emailSendConfig;
 
 
-  /**
-   * TODO: just testing, remove later!
-   */
-  @PostMapping(value = "/email")
-  @ResponseBody
-  @PreAuthorize("isAdmin()")
-  void sendEmail() {
-    final String receiver = "p.j.choczynski@wp.pl";
-    final String subject = "test subject";
-    final String messageContent = "DUPA DUPA DUPA \nDUPA";
-    emailSendConfig.sendEmail(receiver, subject, messageContent);
-  }
-
-
   @GetMapping(value = "/me")
   @ResponseBody
   PlayerDetailedDto aboutMe() {

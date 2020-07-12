@@ -15,6 +15,7 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
 /**
@@ -30,6 +31,9 @@ public class EmailSendConfig {
   @Value(value = "${sender_email_adress:}")
   private String senderEmailAdress;
 
+  @Value(value = "${sender_name:}")
+  private String senderName;
+
   @Value(value = "${password:}")
   private String password;
 
@@ -40,7 +44,7 @@ public class EmailSendConfig {
   private String smtpPort;
 
 
-  public void sendEmail(final String receiver, final String subject, final String content) {
+  public void sendEmail(final String receiver, final String subject, final Object content) {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
 
@@ -49,7 +53,7 @@ public class EmailSendConfig {
       Transport.send(message);
       log.info("Email sent succesfully");
 
-    } catch (final MessagingException e) {
+    } catch (final MessagingException | UnsupportedEncodingException e) {
       log.error("Email not sent!", e);
     }
   }
@@ -75,15 +79,15 @@ public class EmailSendConfig {
   }
 
   private Message prepareMessage(final Session session, final String receiver,
-                                 final String subject, final String content) throws MessagingException {
+                                 final String subject, final Object content) throws MessagingException, UnsupportedEncodingException {
     final Message message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(senderEmailAdress));
+    message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
     message.setRecipients(
             Message.RecipientType.TO,
             InternetAddress.parse(receiver)
     );
     message.setSubject(subject);
-    message.setText(content);
+    message.setContent(content, "text/html");
     return message;
   }
 
