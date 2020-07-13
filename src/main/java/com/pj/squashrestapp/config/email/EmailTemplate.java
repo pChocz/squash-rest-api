@@ -31,9 +31,7 @@ public class EmailTemplate {
   private final String endContent;
 
   public final String createHtmlContent() {
-    final ClassPathResource classPathResource = new ClassPathResource(
-            TEMPLATE_PATH,
-            this.getClass().getClassLoader());
+    final ClassPathResource classPathResource = new ClassPathResource(TEMPLATE_PATH);
 
     String entireMessage = "";
     try (final InputStream inputStream = classPathResource.getInputStream()) {

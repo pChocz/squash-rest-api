@@ -45,12 +45,12 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
             .buttonLink(passwordResetUrl)
             .beginContent("""
                     Hi,
-                    <br/>It seems that you have requested password reset for your account.
-                    <br/>To finish the process please click the following link and follow on-screen instructions.
+                    <br>It seems that you have requested password reset for your account.
+                    <br>To finish the process please click the following link and follow on-screen instructions.
                     """)
             .endContent("""
                     If it wasn't you, just ignore this email.
-                    <br/>Link will expire after 1h.
+                    <br>Link will expire after 1h.
                     """)
             .build()
             .createHtmlContent();

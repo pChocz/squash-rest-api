@@ -5,6 +5,7 @@ import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Comparator;
 
 /**
  *
@@ -68,13 +71,22 @@ public class ScoreboardController {
 
   @GetMapping(value = "/seasons/{seasonId}")
   @ResponseBody
-  SeasonScoreboardDto overalScoreboard(
+  SeasonScoreboardDto seasonScoreboard(
           @PathVariable("seasonId") final Long seasonId) {
-
     final long startTime = System.nanoTime();
-
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonId);
+    TimeLogUtil.logFinishWithJsonPrint(startTime, seasonScoreboardDto);
+    return seasonScoreboardDto;
+  }
 
+
+  @GetMapping(value = "/seasons-pretenders/{seasonId}")
+  @ResponseBody
+  SeasonScoreboardDto seasonPretendentsScoreboard(
+          @PathVariable("seasonId") final Long seasonId) {
+    final long startTime = System.nanoTime();
+    final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonId);
+    seasonScoreboardDto.getSeasonScoreboardRows().sort(Comparator.comparing(SeasonScoreboardRowDto::getCountedPointsPretenders).reversed());
     TimeLogUtil.logFinishWithJsonPrint(startTime, seasonScoreboardDto);
     return seasonScoreboardDto;
   }

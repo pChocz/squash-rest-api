@@ -42,12 +42,12 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
             .buttonLink(confirmationUrl)
             .beginContent("""
                     Hi,
-                    <br/>It seems that you have created an account in our App.
-                    <br/>To finish the registration process please click the following link:  
+                    <br>It seems that you have created an account in our App.
+                    <br>To finish the registration process please click the following link:  
                     """)
             .endContent("""
                     If it wasn't you, just ignore this email. 
-                    <br/>Link will expire after 24h.
+                    <br>Link will expire after 24h.
                     """)
             .build()
             .createHtmlContent();
