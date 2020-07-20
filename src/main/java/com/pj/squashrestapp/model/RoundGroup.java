@@ -16,10 +16,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,15 +50,7 @@ public class RoundGroup implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -79,6 +70,10 @@ public class RoundGroup implements Identifiable {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "round_id")
   private Round round;
+
+  public RoundGroup(final int number) {
+    this.number = number;
+  }
 
   public void addMatch(final Match match) {
     this.matches.add(match);

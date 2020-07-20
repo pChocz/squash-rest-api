@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.service.BonusPointsAggregatedForSeason;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -28,13 +29,13 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private int countedPointsPretenders;
   private int eightBestPoints;
 
-  public SeasonScoreboardRowDto(final PlayerDto player, final AtomicLongMap<Long> bonusPointsAggregatedPerPlayer) {
+  public SeasonScoreboardRowDto(final PlayerDto player, final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
     this.player = player;
     this.roundNumberToXpMapAll = new HashMap<>();
     this.roundNumberToXpMapPretenders = new HashMap<>();
 
     final Long currentPlayerId = player.getId();
-    this.bonusPoints = (int) bonusPointsAggregatedPerPlayer.get(currentPlayerId);
+    this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(player.getId());
   }
 
   public void addXpForRound(final int roundNumber, final Integer xpEarned) {

@@ -37,7 +37,7 @@ public class ScoreboardService {
     final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
 
     final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
-    for (final RoundGroup roundGroup : round.getRoundGroups()) {
+    for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
       roundScoreboard.addRoundGroupNew(roundGroup);
     }
 
@@ -56,6 +56,19 @@ public class ScoreboardService {
 
     final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
     final Scoreboard scoreboard = new Scoreboard(matches);
+
+    return scoreboard;
+  }
+
+
+
+  public Scoreboard buildScoreboardForLeagueForSinglePlayer(final Long leagueId, final Long playerId) {
+    final List<SetResult> setResults = setResultRepository.fetchByOnePlayerIdAndLeagueId(leagueId, playerId);
+    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
+
+    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
+    final Scoreboard scoreboard = new Scoreboard(matches);
+    scoreboard.makeItSinglePlayerScoreboard(playerId);
 
     return scoreboard;
   }

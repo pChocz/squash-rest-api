@@ -2,11 +2,11 @@ package com.pj.squashrestapp.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,10 +19,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,15 +31,7 @@ import java.util.Set;
 public class Authority {
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @JsonIgnore
@@ -49,10 +40,14 @@ public class Authority {
           joinColumns = @JoinColumn(name = "authorities_id"),
           inverseJoinColumns = @JoinColumn(name = "player_id")
   )
-  private Set<Player> players = new HashSet<>();
+  private final Set<Player> players = new HashSet<>();
 
   @Setter
   @Enumerated(EnumType.STRING)
   private AuthorityType type;
+
+  public Authority(final AuthorityType type) {
+    this.type = type;
+  }
 
 }

@@ -19,6 +19,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 public class Match implements Identifiable {
+
+  private static final int DEFAULT_NUMBER_OF_SETS = 3;
 
   public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Match.class) {
   };
@@ -53,15 +56,7 @@ public class Match implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -80,13 +75,18 @@ public class Match implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<SetResult> setResults = new ArrayList<>();
+  private List<SetResult> setResults = new ArrayList<>(DEFAULT_NUMBER_OF_SETS);
 
   @JsonIgnore
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "round_group_id")
   private RoundGroup roundGroup;
+
+  public Match(final Player firstPlayer, final Player secondPlayer) {
+    this.firstPlayer = firstPlayer;
+    this.secondPlayer = secondPlayer;
+  }
 
   public void addSetResult(final SetResult setResult) {
     this.setResults.add(setResult);

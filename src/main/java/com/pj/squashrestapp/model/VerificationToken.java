@@ -13,11 +13,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
 
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
@@ -33,15 +31,7 @@ public class VerificationToken {
   private static final long EXPIRATION_TIME_DAYS = 1;
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter

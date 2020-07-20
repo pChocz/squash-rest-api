@@ -20,7 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -33,26 +35,31 @@ public class SeasonService {
   private SetResultRepository setResultRepository;
 
   @Autowired
+  private BonusPointService bonusPointService;
+
+  @Autowired
   private XpPointsService xpPointsService;
 
   public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
     final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
-    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit);
+
+    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointService.extractBonusPointsAggregatedForSeason(seasonId);
+
+    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
     return seasonScoreboardDto;
   }
 
   public SeasonScoreboardDto getSeasonScoreboardDto(final Season season,
-                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit) {
-
-    final AtomicLongMap<Long> bonusPointsAggregatedPerPlayer = extractBonusPointsPerPlayer(season);
+                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+                                                    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
     final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
-    for (final Round round : season.getRounds()) {
+    for (final Round round : season.getRoundsOrdered()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
-      for (final RoundGroup roundGroup : round.getRoundGroups()) {
+      for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
         roundScoreboard.addRoundGroupNew(roundGroup);
       }
 
@@ -70,7 +77,7 @@ public class SeasonService {
                   .stream()
                   .filter(p -> p.getPlayer().equals(player))
                   .findFirst()
-                  .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedPerPlayer));
+                  .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedForSeason));
 
           // if it's not the first group, count pretenders points as well
           if (scoreboardRow.getPlaceInGroup() != scoreboardRow.getPlaceInRound()) {
@@ -92,17 +99,6 @@ public class SeasonService {
 
     seasonScoreboardDto.sortRows();
     return seasonScoreboardDto;
-  }
-
-  private AtomicLongMap<Long> extractBonusPointsPerPlayer(final Season season) {
-    final AtomicLongMap<Long> bonusPointsAggregatedPerPlayer = AtomicLongMap.create();
-
-    for (final BonusPoint bonusPoint : season.getBonusPoints()) {
-      final Long playerId = bonusPoint.getPlayer().getId();
-      final int points = bonusPoint.getPoints();
-      bonusPointsAggregatedPerPlayer.getAndAdd(playerId, points);
-    }
-    return bonusPointsAggregatedPerPlayer;
   }
 
 }

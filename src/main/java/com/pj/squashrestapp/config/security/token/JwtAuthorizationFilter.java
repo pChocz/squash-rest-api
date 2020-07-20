@@ -2,8 +2,9 @@ package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.BlacklistedToken;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
-import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.repository.PlayerRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +19,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.TimeZone;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
@@ -33,15 +34,18 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   private final UserDetailsService userDetailsService;
   private final SecretKeyHolder secretKeyHolder;
   private final BlacklistedTokenRepository blacklistedTokenRepository;
+  private final PlayerRepository playerRepository;
 
   public JwtAuthorizationFilter(final AuthenticationManager authManager,
                                 final UserDetailsService userDetailsService,
                                 final SecretKeyHolder secretKeyHolder,
-                                final BlacklistedTokenRepository blacklistedTokenRepository) {
+                                final BlacklistedTokenRepository blacklistedTokenRepository,
+                                final PlayerRepository playerRepository) {
     super(authManager);
     this.userDetailsService = userDetailsService;
     this.secretKeyHolder = secretKeyHolder;
     this.blacklistedTokenRepository = blacklistedTokenRepository;
+    this.playerRepository = playerRepository;
   }
 
   @Override
@@ -93,25 +97,32 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
               .build()
               .parseClaimsJws(token)
               .getBody();
-      final String username = claims.getSubject();
 
-      log.info("\nToken Info:\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
-              username,
+      final String playerUuidAsString = claims.get("uid", String.class);
+      final UUID playerUuid = UUID.fromString(playerUuidAsString);
+
+      final Player player = playerRepository
+              .fetchForAuthorizationByUuid(playerUuid)
+              .orElseThrow(() -> new RuntimeException("User with given UUID does not exist!"));
+
+      log.info("\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
+              player.getUuid(),
+              player.getUsername(),
               claims.getIssuedAt(),
               claims.getExpiration());
 
-      final UserDetailsImpl userDetailsImpl = (UserDetailsImpl) userDetailsService.loadUserByUsername(username);
+      final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);
 
       // checking if the account is activated
       if (!userDetailsImpl.isEnabled()) {
         throw new AccountNotActivatedException("Account has not been activated, maybe you should check your emails!");
       }
 
-      // checking if token has not been created after last password change
-      final LocalDateTime tokenIssuedDateTime = GeneralUtil.toLocalDateTimeUtc(claims.getIssuedAt());
-      final LocalDateTime lastPasswordChangeDateTime = userDetailsImpl.getLastPasswordChangeDateTime();
-      if (tokenIssuedDateTime.isBefore(lastPasswordChangeDateTime)) {
-        throw new RuntimeException("Token is invalid as it has been issued before most recent password modification.");
+      // checking if password session UUID matches
+      final String tokenPasswordSessionUuid = claims.get("pid", String.class);
+      final String userPasswordSessionUuid = userDetailsImpl.getPasswordSessionUuid();
+      if (!tokenPasswordSessionUuid.equals(userPasswordSessionUuid)) {
+        throw new RuntimeException("Password Session Token is invalid (which means that the password has been changed recently).");
       }
 
       final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(

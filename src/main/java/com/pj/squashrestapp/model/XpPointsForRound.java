@@ -16,11 +16,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 
 @Entity
@@ -33,15 +33,7 @@ public class XpPointsForRound implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter

@@ -14,6 +14,6 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN League l ON l.leagueLogo = ll
             WHERE l.id = :leagueId
           """)
-  Blob extractLogoBlob(@Param("leagueId") Long leagueId);
+  byte[] extractLogoBlob(@Param("leagueId") Long leagueId);
 
 }

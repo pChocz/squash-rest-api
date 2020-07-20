@@ -18,10 +18,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "rounds")
@@ -50,15 +53,7 @@ public class Round implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -91,10 +86,9 @@ public class Round implements Identifiable {
   @Column(name = "split")
   private String split;
 
-  public Round(final int number, final LocalDate date, final Season season) {
+  public Round(final int number, final LocalDate date) {
     this.number = number;
     this.date = date;
-    this.season = season;
   }
 
   @Override
@@ -105,6 +99,14 @@ public class Round implements Identifiable {
   public void addRoundGroup(final RoundGroup roundGroup) {
     this.roundGroups.add(roundGroup);
     roundGroup.setRound(this);
+  }
+
+  public List<RoundGroup> getRoundGroupsOrdered() {
+    return this
+            .getRoundGroups()
+            .stream()
+            .sorted(Comparator.comparingInt(RoundGroup::getNumber))
+            .collect(Collectors.toList());
   }
 
 }

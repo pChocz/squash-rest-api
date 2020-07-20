@@ -15,6 +15,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -24,15 +25,7 @@ import javax.persistence.Table;
 public class BonusPoint {
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @JsonIgnore
@@ -48,6 +41,11 @@ public class BonusPoint {
 
   @Setter
   private int points;
+
+  public BonusPoint(final Player player, final int points) {
+    this.player = player;
+    this.points = points;
+  }
 
   @Override
   public String toString() {

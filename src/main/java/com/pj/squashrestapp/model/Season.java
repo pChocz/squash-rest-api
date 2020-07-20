@@ -18,12 +18,15 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "seasons")
@@ -52,15 +55,7 @@ public class Season implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -93,6 +88,11 @@ public class Season implements Identifiable {
   @JoinColumn(name = "league_id")
   private League league;
 
+  public Season(final int number, final LocalDate startDate) {
+    this.number = number;
+    this.startDate = startDate;
+  }
+
   public void addRound(final Round round) {
     this.rounds.add(round);
     round.setSeason(this);
@@ -106,6 +106,14 @@ public class Season implements Identifiable {
   @Override
   public String toString() {
     return "Season " + number + " | start date: " + startDate;
+  }
+
+  public List<Round> getRoundsOrdered() {
+    return this
+            .getRounds()
+            .stream()
+            .sorted(Comparator.comparingInt(Round::getNumber))
+            .collect(Collectors.toList());
   }
 
 }

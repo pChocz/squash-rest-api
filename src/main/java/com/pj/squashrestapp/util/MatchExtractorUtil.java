@@ -18,13 +18,13 @@ public class MatchExtractorUtil {
 
   public List<MatchDto> extractAllMatches(final League league) {
     return league
-            .getSeasons()
+            .getSeasonsOrdered()
             .stream()
             .flatMap(season -> season
-                    .getRounds()
+                    .getRoundsOrdered()
                     .stream())
             .flatMap(round -> round
-                    .getRoundGroups()
+                    .getRoundGroupsOrdered()
                     .stream())
             .flatMap(roundGroup -> roundGroup
                     .getMatches()
@@ -35,10 +35,10 @@ public class MatchExtractorUtil {
 
   public List<MatchDto> extractAllMatches(final Season season) {
     return season
-            .getRounds()
+            .getRoundsOrdered()
             .stream()
             .flatMap(round -> round
-                    .getRoundGroups()
+                    .getRoundGroupsOrdered()
                     .stream())
             .flatMap(roundGroup -> roundGroup
                     .getMatches()
@@ -50,7 +50,7 @@ public class MatchExtractorUtil {
 
   public List<MatchDto> extractAllMatches(final Round round) {
     return round
-            .getRoundGroups()
+            .getRoundGroupsOrdered()
             .stream()
             .flatMap(roundGroup -> roundGroup
                     .getMatches()

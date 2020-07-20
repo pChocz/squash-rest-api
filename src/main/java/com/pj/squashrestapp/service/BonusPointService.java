@@ -30,8 +30,41 @@ public class BonusPointService {
   private BonusPointRepository bonusPointRepository;
 
   public List<BonusPoint> extractBonusPoints(final Long playerId, final Long seasonId) {
+
+    TESTextractBonusPointsForSeason();
+
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerIdAndSeasonId(playerId, seasonId);
     return bonusPoints;
+  }
+
+  public BonusPointsAggregatedForSeason extractBonusPointsAggregatedForSeason(final Long seasonId) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonId(seasonId);
+    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonId, bonusPoints);
+    return bonusPointsAggregatedForSeason;
+  }
+
+  public BonusPointsAggregatedForLeague extractBonusPointsAggregatedForLeague(final Long leagueId) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueId(leagueId);
+    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = new BonusPointsAggregatedForLeague(leagueId, bonusPoints);
+    return bonusPointsAggregatedForLeague;
+  }
+
+  public void TESTextractBonusPointsForSeason() {
+
+//    final Long seasonId = 2L;
+//    final List<BonusPoint> bonusPointsS = bonusPointRepository.findBySeasonId(seasonId);
+//    final var bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonId, bonusPointsS);
+
+    final Long leagueId = 1L;
+    final List<BonusPoint> bonusPointsL = bonusPointRepository.findByLeagueId(leagueId);
+    final var bonusPointsAggregatedForLeague = new BonusPointsAggregatedForLeague(leagueId, bonusPointsL);
+
+    final int p1 = bonusPointsAggregatedForLeague.forSeason(1L).forPlayer(2L);
+    final int p2 = bonusPointsAggregatedForLeague.forSeason(1L).forPlayer(3L);
+    final int p3 = bonusPointsAggregatedForLeague.forSeason(2L).forPlayer(3L);
+
+
+    log.info("dupa");
   }
 
   public List<BonusPoint> applyPoints(final Long winnerId, final Long looserId, final Long seasonId, final int points) {

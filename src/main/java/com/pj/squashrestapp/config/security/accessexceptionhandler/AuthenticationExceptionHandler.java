@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
+import com.pj.squashrestapp.util.GeneralUtil;
 import net.minidev.json.JSONObject;
 import org.springframework.security.core.AuthenticationException;
 
@@ -9,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
 /**
  *
@@ -26,7 +29,7 @@ public class AuthenticationExceptionHandler {
       writer.write(new JSONObject()
               .appendField("response", HttpServletResponse.SC_FORBIDDEN)
               .appendField("user", "ANONYMOUS USER")
-              .appendField("timestamp", LocalDateTime.now(ZoneOffset.UTC).toString())
+              .appendField("timestamp", LocalDateTime.now(UTC_ZONE_ID).toString())
               .appendField("message", "NOT AUTHENTICATED")
               .toString());
     }

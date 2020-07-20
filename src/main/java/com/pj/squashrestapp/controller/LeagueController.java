@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.util.TimeLogUtil;
@@ -10,9 +11,12 @@ import org.apache.commons.io.IOUtils;
 import org.bouncycastle.util.encoders.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -54,6 +58,14 @@ public class LeagueController {
 //    return responseEntity;
 //  }
 
+  @PostMapping(value = "")
+  @ResponseBody
+  void createNewLeague(@RequestParam("leagueName") final String leagueName) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = (Player) auth.getPrincipal();
+    leagueService.createNewLeague(leagueName, player);
+  }
+
   @ApiOperation(value = "Extract league statistics", authorizations = {@Authorization(value = "jwtToken")})
   @GetMapping(value = "{leagueId}/stats")
   @ResponseBody
@@ -70,14 +82,10 @@ public class LeagueController {
   @PutMapping(value = "{leagueId}/logo")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  String updateLeagueLogo(@PathVariable final Long leagueId,
+  void updateLeagueLogo(@PathVariable final Long leagueId,
                           @RequestParam("file") final MultipartFile file) throws IOException {
-    final byte[] encode = Base64.encode(file.getBytes());
-    final String logoBase64 = IOUtils.toString(encode, Charset.defaultCharset().name());
-
-    leagueService.saveLogoForLeague(leagueId, logoBase64);
-
-    return "dupa";
+    final byte[] logoBytes = file.getBytes();
+    leagueService.saveLogoForLeague(leagueId, logoBytes);
   }
 
 }

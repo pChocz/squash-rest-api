@@ -23,14 +23,17 @@ public class ScoreboardRow implements Comparable<ScoreboardRow> {
   private int pointsWon;
   private int pointsLost;
   private int pointsBalance;
+  private int pointsPlayed;
 
   private int setsWon;
   private int setsLost;
   private int setsBalance;
+  private int setsPlayed;
 
   private int matchesWon;
   private int matchesLost;
   private int matchesBalance;
+  private int matchesPlayed;
 
   @Setter
   private Integer xpEarned;
@@ -100,6 +103,10 @@ public class ScoreboardRow implements Comparable<ScoreboardRow> {
     pointsBalance = pointsWon - pointsLost;
     setsBalance = setsWon - setsLost;
     matchesBalance = matchesWon - matchesLost;
+
+    pointsPlayed = pointsWon + pointsLost;
+    setsPlayed = setsWon + setsLost;
+    matchesPlayed = matchesWon + matchesLost;
   }
 
   @Override

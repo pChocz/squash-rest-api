@@ -1,22 +1,29 @@
 # ###### ##########
 # Spring Properties
 spring:
+  jackson:
+    serialization:
+      WRITE_DATES_AS_TIMESTAMPS: false
   jpa:
+    database: POSTGRESQL
     hibernate:
       ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQL57InnoDBDialect
-        generate_statistics: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+#        generate_statistics: true
 #        format_sql: true
         jdbc:
           time_zone: UTC
     show-sql: true
   datasource:
+    platform: postgres
+    driver-class-name: org.postgresql.Driver
     # TODO: database credentials should be externalized later anyway!
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/squash_league_second
-    username: squashuser
+#    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/squash_league_second
+    url: jdbc:postgresql://localhost:5432/squashdb
+    username: postgres
     password: squash123!@#
 
 

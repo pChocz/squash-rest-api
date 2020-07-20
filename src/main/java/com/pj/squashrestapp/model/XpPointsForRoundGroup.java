@@ -18,6 +18,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,15 +50,7 @@ public class XpPointsForRoundGroup implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -78,7 +71,7 @@ public class XpPointsForRoundGroup implements Identifiable {
   @JoinColumn(name = "xp_points_for_round_id", referencedColumnName = "id")
   private XpPointsForRound xpPointsForRound;
 
-  public XpPointsForRoundGroup(final int roundGroupNumber, final int[][] allPoints, XpPointsForRound xpPointsForRound) {
+  public XpPointsForRoundGroup(final int roundGroupNumber, final int[][] allPoints, final XpPointsForRound xpPointsForRound) {
     this.roundGroupNumber = roundGroupNumber;
     this.xpPointsForRound = xpPointsForRound;
 
@@ -88,8 +81,8 @@ public class XpPointsForRoundGroup implements Identifiable {
     }
 
     this.xpPointsForPlaces = new ArrayList<>();
-    for (int i = 1; i <= allPoints[roundGroupNumber-1].length; i++) {
-      this.xpPointsForPlaces.add(new XpPointsForPlace(i, placesInAllRoundsBefore, allPoints[roundGroupNumber-1][i-1], this));
+    for (int i = 1; i <= allPoints[roundGroupNumber - 1].length; i++) {
+      this.xpPointsForPlaces.add(new XpPointsForPlace(i, placesInAllRoundsBefore, allPoints[roundGroupNumber - 1][i - 1], this));
     }
   }
 

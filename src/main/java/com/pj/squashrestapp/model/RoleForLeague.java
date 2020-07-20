@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,10 +18,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -32,15 +30,7 @@ import java.util.Set;
 public class RoleForLeague {
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @JsonIgnore
@@ -55,12 +45,16 @@ public class RoleForLeague {
           joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
           inverseJoinColumns = @JoinColumn(name = "player_id")
   )
-  private Set<Player> players = new HashSet<>();
+  private final Set<Player> players = new HashSet<>();
 
   @Setter
-  @Column(name="league_role")
+  @Column(name = "league_role")
   @Enumerated(EnumType.STRING)
   private LeagueRole leagueRole;
+
+  public RoleForLeague(final LeagueRole leagueRole) {
+    this.leagueRole = leagueRole;
+  }
 
   @Override
   public String toString() {

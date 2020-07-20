@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  *
@@ -15,9 +16,10 @@ import java.util.Optional;
 @SuppressWarnings({"unused", "JavaDoc"})
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 
+  Player findByUsername(@Param("username") String username);
+
   @Query("SELECT p FROM Player p WHERE p.id IN :ids")
   List<Player> findByIds(@Param("ids") Long[] ids);
-
 
   @EntityGraph(attributePaths = {
           "authorities",
@@ -35,6 +37,15 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   })
   @Query("SELECT p FROM Player p WHERE p.id = :playerId")
   Optional<Player> fetchForAuthorizationById(@Param("playerId") Long playerId);
+
+
+  @EntityGraph(attributePaths = {
+          "authorities",
+          "roles",
+          "roles.league",
+  })
+  @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
+  Optional<Player> fetchForAuthorizationByUuid(@Param("uuid") UUID uuid);
 
 
   @EntityGraph(attributePaths = {

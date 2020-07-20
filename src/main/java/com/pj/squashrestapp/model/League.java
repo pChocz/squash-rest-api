@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
+import org.simpleframework.xml.ElementList;
+import org.simpleframework.xml.Root;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,9 +19,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "leagues")
@@ -31,15 +36,7 @@ public class League implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -64,14 +61,14 @@ public class League implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<RoleForLeague> rolesForLeague = new ArrayList<>();
+  private final List<RoleForLeague> rolesForLeague = new ArrayList<>();
 
   @OneToMany(
           mappedBy = "league",
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<HallOfFameSeason> hallOfFameSeasons = new ArrayList<>();
+  private final List<HallOfFameSeason> hallOfFameSeasons = new ArrayList<>();
 
   public League(final String name) {
     this.name = name;
@@ -95,6 +92,14 @@ public class League implements Identifiable {
   @Override
   public String toString() {
     return name + " (" + seasons.size() + " seasons)";
+  }
+
+  public List<Season> getSeasonsOrdered() {
+    return this
+            .getSeasons()
+            .stream()
+            .sorted(Comparator.comparingInt(Season::getNumber))
+            .collect(Collectors.toList());
   }
 
 }

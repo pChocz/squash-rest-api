@@ -14,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
@@ -23,15 +24,7 @@ import javax.persistence.Table;
 public class HallOfFameSeason {
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @JsonIgnore
@@ -71,5 +64,13 @@ public class HallOfFameSeason {
   @Setter
   @Column(name = "super_cup")
   private String superCupWinner;
+
+  @Setter
+  @Column(name = "pretenders_cup")
+  private String pretendersCupWinner;
+
+  public HallOfFameSeason(final int seasonNumber) {
+    this.seasonNumber = seasonNumber;
+  }
 
 }

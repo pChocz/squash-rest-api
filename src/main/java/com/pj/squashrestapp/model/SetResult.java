@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,15 +45,7 @@ public class SetResult implements Identifiable {
   };
 
   @Id
-  @Column(name = "id",
-          nullable = false,
-          updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
@@ -73,12 +66,18 @@ public class SetResult implements Identifiable {
   @JoinColumn(name = "match_id")
   private Match match;
 
+  public SetResult(final int number, final int firstPlayerScore, final int secondPlayerScore) {
+    this.number = number;
+    this.firstPlayerScore = firstPlayerScore;
+    this.secondPlayerScore = secondPlayerScore;
+  }
 
   @Override
   public String toString() {
     return firstPlayerScore + ":" + secondPlayerScore;
   }
 
+  // todo: move somewhere else later
   public Player checkWinner() {
     return firstPlayerScore > secondPlayerScore
             ? match.getFirstPlayer()

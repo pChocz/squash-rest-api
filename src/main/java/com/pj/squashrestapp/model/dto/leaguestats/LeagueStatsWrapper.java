@@ -17,7 +17,7 @@ import java.util.List;
 public class LeagueStatsWrapper {
 
   private final String leagueName;
-  private final String logo64encoded;
+  private final byte[] logoBytes;
   private final OveralStats overalStats;
   private final List<PerSeasonStats> perSeasonStats;
   private final EntireLeagueScoreboard scoreboard;

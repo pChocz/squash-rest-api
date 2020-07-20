@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,8 +19,8 @@ import java.util.stream.Collectors;
 public class Scoreboard {
 
   private final int numberOfMatches;
-  private final List<MatchDto> matches;
   private final List<ScoreboardRow> scoreboardRows;
+  private final List<MatchDto> matches;
 
   public Scoreboard(final Collection<MatchDto> matches) {
     this.matches = getSortedMatches(matches);
@@ -57,6 +58,17 @@ public class Scoreboard {
       scoreboardRows.add(scoreboardRowFirst);
     }
     return scoreboardRowFirst;
+  }
+
+  public void makeItSinglePlayerScoreboard(final Long playerId) {
+    final Iterator<ScoreboardRow> iterator = this.scoreboardRows.iterator();
+    while (iterator.hasNext()) {
+      final ScoreboardRow scoreboardRow = iterator.next();
+      final Long currentPlayerId = scoreboardRow.getPlayer().getId();
+      if (currentPlayerId != playerId) {
+        iterator.remove();
+      }
+    }
   }
 
 }

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -27,11 +28,13 @@ public class UserDetailsImpl implements UserDetails {
   private final Set<GrantedAuthority> authorities;
   private final Multimap<Long, String> rolesForLeagues;
   private final boolean enabled;
-  private final LocalDateTime lastPasswordChangeDateTime;
+  private final String uuid;
+  private final String passwordSessionUuid;
 
-  private final boolean accountNonExpired;
-  private final boolean accountNonLocked;
-  private final boolean credentialsNonExpired;
+  // not used
+  private final boolean accountNonExpired = true;
+  private final boolean accountNonLocked = true;
+  private final boolean credentialsNonExpired = true;
 
   public UserDetailsImpl(final Player player) {
     this.username = player.getUsername();
@@ -39,12 +42,8 @@ public class UserDetailsImpl implements UserDetails {
     this.authorities = extractAuthorities(player.getAuthorities());
     this.rolesForLeagues = extractRolesForLeagues(player.getRoles());
     this.enabled = player.isEnabled();
-    this.lastPasswordChangeDateTime = player.getLastPasswordChangeDateTime();
-
-    // todo: check what to do with it later
-    this.accountNonExpired = true;
-    this.accountNonLocked = true;
-    this.credentialsNonExpired = true;
+    this.uuid = player.getUuid().toString();
+    this.passwordSessionUuid = player.getPasswordSessionUuid().toString();
   }
 
   private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {

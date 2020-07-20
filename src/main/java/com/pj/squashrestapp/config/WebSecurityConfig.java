@@ -6,6 +6,7 @@ import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
+import com.pj.squashrestapp.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -20,6 +21,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -42,6 +44,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   BlacklistedTokenRepository blacklistedTokenRepository;
 
   @Autowired
+  PlayerRepository playerRepository;
+
+  @Autowired
   SecretKeyHolder secretKeyHolder;
 
   @Override
@@ -56,11 +61,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/players/confirmRegistration**").permitAll()
             .antMatchers(HttpMethod.GET, "/players/resetPassword**").permitAll()
             .antMatchers(HttpMethod.GET, "/players/requestPasswordReset**").permitAll()
+            .antMatchers(HttpMethod.POST, "/db-initializers/**").permitAll()
             .anyRequest().authenticated();
 
     // authentication and authorization filters
     httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokenRepository));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokenRepository, playerRepository));
 
     // this disables session creation on Spring Security
     httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
@@ -89,7 +95,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+    return new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
   }
 
   @Override

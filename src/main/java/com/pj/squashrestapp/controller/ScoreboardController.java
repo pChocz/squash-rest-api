@@ -57,12 +57,14 @@ public class ScoreboardController {
 
   @GetMapping(value = "/leagues/{leagueId}/players/{playersIds}")
   @ResponseBody
-  Scoreboard scoreboardForLeagueForSeveralPlayers(
+  Scoreboard scoreboardForLeagueForOneOrSeveralPlayers(
           @PathVariable final Long leagueId,
           @PathVariable final Long[] playersIds) {
     final long startTime = System.nanoTime();
 
-    final Scoreboard scoreboard = scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
+    final Scoreboard scoreboard = (playersIds.length == 1)
+            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueId, playersIds[0])
+            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
 
     TimeLogUtil.logFinishWithJsonPrint(startTime, scoreboard);
     return scoreboard;

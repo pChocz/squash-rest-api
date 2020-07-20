@@ -33,15 +33,11 @@ public class SeasonScoreboardDto {
   }
 
   private int getNumberOfRoundsThatCount() {
-    final int numberOfRoundsThatCount;
-    if (finishedRounds <= 4) {
-      numberOfRoundsThatCount = finishedRounds;
-    } else if (finishedRounds <= 8) {
-      numberOfRoundsThatCount = finishedRounds - 1;
-    } else {
-      numberOfRoundsThatCount = finishedRounds - 2;
-    }
-    return numberOfRoundsThatCount;
+    return (finishedRounds <= 4)
+            ? finishedRounds
+            : (finishedRounds <= 8)
+            ? finishedRounds - 1
+            : finishedRounds - 2;
   }
 
   public void sortRows() {

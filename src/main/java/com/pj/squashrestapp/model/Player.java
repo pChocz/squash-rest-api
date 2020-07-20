@@ -1,30 +1,23 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
 @Entity
 @Table(name = "players")
@@ -33,16 +26,14 @@ import java.util.stream.Collectors;
 public class Player {
 
   @Id
-  @Column(name = "id",
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  @Setter
+  @Column(name = "uuid",
           nullable = false,
           updatable = false)
-  @GeneratedValue(
-          strategy = GenerationType.AUTO,
-          generator = "native")
-  @GenericGenerator(
-          name = "native",
-          strategy = "native")
-  private Long id;
+  private UUID uuid = UUID.randomUUID();
 
   @Setter
   @Column(name = "username", unique = true)
@@ -62,26 +53,26 @@ public class Player {
   private String email;
 
   @Setter
-  @Column(name = "last_password_change_date_time")
-  private LocalDateTime lastPasswordChangeDateTime;
+  @Column(name = "password_session_uuid")
+  private UUID passwordSessionUuid;
 
   @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)
-  private Set<Authority> authorities = new HashSet<>();
+  private final Set<Authority> authorities = new HashSet<>();
 
   @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)
-  private Set<RoleForLeague> roles = new HashSet<>();
+  private final Set<RoleForLeague> roles = new HashSet<>();
 
   public Player(final String username, final String email) {
     this.username = username;
     this.email = email;
     this.enabled = false;
-    this.lastPasswordChangeDateTime = LocalDateTime.now();
+    this.passwordSessionUuid = UUID.randomUUID();
   }
 
   public void addRole(final RoleForLeague roleForLeague) {

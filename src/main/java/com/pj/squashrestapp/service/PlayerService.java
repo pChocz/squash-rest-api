@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -40,6 +41,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
@@ -129,7 +131,7 @@ public class PlayerService {
   }
 
   public Player registerNewUser(final String username, final String email, final String password) {
-    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
     final String hashedPassword = bCryptPasswordEncoder.encode(password);
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
 
@@ -226,10 +228,10 @@ public class PlayerService {
 
     } else {
       final Player player = passwordResetToken.getPlayer();
-      final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+      final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
       final String hashedPassword = bCryptPasswordEncoder.encode(newPassword);
       player.setPassword(hashedPassword);
-      player.setLastPasswordChangeDateTime(LocalDateTime.now(UTC_ZONE_ID));
+      player.setPasswordSessionUuid(UUID.randomUUID());
 
       playerRepository.save(player);
       passwordResetTokenRepository.delete(passwordResetToken);
