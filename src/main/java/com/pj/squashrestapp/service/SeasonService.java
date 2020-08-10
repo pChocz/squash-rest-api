@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.util.concurrent.AtomicLongMap;
-import com.pj.squashrestapp.model.BonusPoint;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
@@ -13,14 +12,15 @@ import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +33,9 @@ public class SeasonService {
 
   @Autowired
   private SetResultRepository setResultRepository;
+
+  @Autowired
+  private PlayerRepository playerRepository;
 
   @Autowired
   private BonusPointService bonusPointService;
@@ -97,8 +100,35 @@ public class SeasonService {
       seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
     }
 
-    seasonScoreboardDto.sortRows();
+    seasonScoreboardDto.sortByCountedPoints();
     return seasonScoreboardDto;
+  }
+
+  public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final Long seasonId) {
+    // first - get all the players that have already played in the season (need to extract entire season scoreboard)
+    final SeasonScoreboardDto seasonScoreboardDto = overalScoreboard(seasonId);
+    seasonScoreboardDto.sortByTotalPoints();
+    final List<PlayerDto> seasonPlayersSorted = seasonScoreboardDto
+            .getSeasonScoreboardRows()
+            .stream()
+            .map(SeasonScoreboardRowDto::getPlayer)
+            .collect(Collectors.toList());
+
+    // second - get all the players from entire League
+    final Long leagueId = seasonScoreboardDto.getSeason().getLeagueId();
+    final List<Player> leaguePlayers = playerRepository.fetchGeneralInfoSorted(leagueId, Sort.by(Sort.Direction.ASC, "username"));
+    final List<PlayerDto> leaguePlayersDtos = leaguePlayers
+            .stream()
+            .map(PlayerDto::new)
+            .collect(Collectors.toList());
+
+    for (final PlayerDto player : leaguePlayersDtos) {
+      if (!seasonPlayersSorted.contains(player)) {
+        seasonPlayersSorted.add(player);
+      }
+    }
+
+    return seasonPlayersSorted;
   }
 
 }

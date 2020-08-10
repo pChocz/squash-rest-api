@@ -35,7 +35,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.roundNumberToXpMapPretenders = new HashMap<>();
 
     final Long currentPlayerId = player.getId();
-    this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(player.getId());
+    this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerId);
   }
 
   public void addXpForRound(final int roundNumber, final Integer xpEarned) {

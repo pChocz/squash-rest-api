@@ -6,11 +6,8 @@ import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import lombok.experimental.UtilityClass;
 
-import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -36,8 +33,7 @@ public class FakeLeagueHallOfFame {
             .map(SeasonScoreboardRowDto::getPlayer)
             .collect(Collectors.toList());
 
-    final List<PlayerDto> threeRandomPlayersFromTopFive = pickThreeRandomPlayersFromTopFive(playersOrderedByCountedPoints);
-
+    final List<PlayerDto> threeRandomPlayersFromTopFive = FakeUtil.pickThreeRandomPlayersFromTopFive(playersOrderedByCountedPoints);
 
     final HallOfFameSeason hallOfFameSeason = new HallOfFameSeason(seasonNumber);
 
@@ -53,27 +49,17 @@ public class FakeLeagueHallOfFame {
 
     final PlayerDto superCupWinner;
     if (playersOrderedByCountedPoints.get(0).equals(threeRandomPlayersFromTopFive.get(0))) {
-      superCupWinner = randBetween(0, 1) == 0
+      superCupWinner = FakeUtil.randomBetweenTwoIntegers(0, 1) == 0
               ? threeRandomPlayersFromTopFive.get(0)
               : threeRandomPlayersFromTopFive.get(1);
     } else {
-      superCupWinner = randBetween(0, 1) == 0
+      superCupWinner = FakeUtil.randomBetweenTwoIntegers(0, 1) == 0
               ? playersOrderedByCountedPoints.get(0)
               : threeRandomPlayersFromTopFive.get(0);
     }
 
     hallOfFameSeason.setSuperCupWinner(superCupWinner.getUsername());
     return hallOfFameSeason;
-  }
-
-  private List<PlayerDto> pickThreeRandomPlayersFromTopFive(final List<PlayerDto> players) {
-    final List<PlayerDto> copy = new LinkedList<>(players.subList(0, 5));
-    Collections.shuffle(copy);
-    return copy.subList(0, 3);
-  }
-
-  private int randBetween(final int min, final int max) {
-    return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
 
 }

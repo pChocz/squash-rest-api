@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.dto.XpPointsForTable;
 import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,20 @@ public class XpPointsController {
     TimeLogUtil.logFinish(startTime);
     return list;
   }
+
+  @GetMapping(value = "/all-for-table")
+  @ResponseBody
+  List<XpPointsForTable> listForSplit() {
+    final long startTime = System.nanoTime();
+
+    final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
+
+    TimeLogUtil.logFinish(startTime);
+    return xpPointsForTableList;
+  }
+
+
+//  buildXpPointsForTable
 
 //  @RequestMapping(
 //          value = "/allNativeObject",

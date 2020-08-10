@@ -148,7 +148,7 @@ public class PlayerController {
   @GetMapping(value = "/league/{leagueId}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  List<PlayerDetailedDto> byLeagueId(
+  List<PlayerDetailedDto> playersDetailedByLeagueId(
           @PathVariable("leagueId") final Long leagueId) {
 
     final List<PlayerDetailedDto> usersBasicInfo = playerService.getLeaguePlayers(leagueId);

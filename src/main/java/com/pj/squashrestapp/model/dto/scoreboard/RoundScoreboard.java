@@ -19,6 +19,10 @@ import java.util.List;
 public class RoundScoreboard {
 
   private final String leagueName;
+
+  private final Long seasonId;
+  private final int seasonNumber;
+
   private final Long roundId;
   private final int roundNumber;
   @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
@@ -29,6 +33,10 @@ public class RoundScoreboard {
 
   public RoundScoreboard(final Round round) {
     this.leagueName = round.getSeason().getLeague().getName();
+
+    this.seasonId = round.getSeason().getId();
+    this.seasonNumber = round.getSeason().getNumber();
+
     this.roundId = round.getId();
     this.roundNumber = round.getNumber();
     this.roundDate = round.getDate();

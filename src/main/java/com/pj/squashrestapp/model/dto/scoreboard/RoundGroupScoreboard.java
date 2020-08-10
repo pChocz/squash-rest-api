@@ -17,11 +17,18 @@ import java.util.List;
 @Getter
 public class RoundGroupScoreboard {
 
+  private final int roundGroupNumber;
   private final List<ScoreboardRow> scoreboardRows;
   private final Collection<MatchDto> matches;
 
   public RoundGroupScoreboard(final Collection<MatchDto> matches) {
     this.matches = matches;
+
+    this.roundGroupNumber = matches
+            .stream()
+            .findFirst()
+            .map(MatchDto::getRoundGroupNumber)
+            .orElse(0);
 
     this.scoreboardRows = new ArrayList<>();
 

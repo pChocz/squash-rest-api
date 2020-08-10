@@ -11,7 +11,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeMatch {
 
-  public Match create(final Player firstPlayer, final Player secondPlayer) {
+  Match create(final Player firstPlayer, final Player secondPlayer) {
     final Match match = new Match(firstPlayer, secondPlayer);
 
     match.addSetResult(FakeSetResult.create(1));

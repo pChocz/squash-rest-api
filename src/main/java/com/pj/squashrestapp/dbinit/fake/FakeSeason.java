@@ -10,7 +10,6 @@ import lombok.experimental.UtilityClass;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  *
@@ -30,7 +29,7 @@ public class FakeSeason {
     LocalDate roundDate = seasonStartDate;
     for (int roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
       Collections.shuffle(allPlayers);
-      final int numberOfRoundPlayers = randBetween(minNumberOfAttendingPlayers, maxNumberOfAttendingPlayers);
+      final int numberOfRoundPlayers = FakeUtil.randomBetweenTwoIntegers(minNumberOfAttendingPlayers, maxNumberOfAttendingPlayers);
       final List<Player> roundPlayers = allPlayers.subList(0, numberOfRoundPlayers);
       final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = FakePlayersSelector.select(roundPlayers);
       final Round round = FakeRound.create(roundNumber, roundDate, attendingPlayersGrouped);
@@ -48,10 +47,6 @@ public class FakeSeason {
     }
 
     return season;
-  }
-
-  private int randBetween(final int min, final int max) {
-    return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
 
 }

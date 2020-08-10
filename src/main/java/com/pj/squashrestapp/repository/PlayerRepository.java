@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Player;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -68,5 +69,12 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
               WHERE r.league.id = :leagueId
           """)
   List<Player> fetchForAuthorizationForLeague(@Param("leagueId") Long leagueId);
+
+  @Query("""
+          SELECT DISTINCT p FROM Player p
+            JOIN p.roles r
+              WHERE r.league.id = :leagueId
+          """)
+  List<Player> fetchGeneralInfoSorted(@Param("leagueId") Long leagueId, Sort sort);
 
 }

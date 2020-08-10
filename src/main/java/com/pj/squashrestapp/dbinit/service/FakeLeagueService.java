@@ -73,9 +73,10 @@ public class FakeLeagueService {
                           final LocalDate startDate,
                           final byte[] logoBytes) throws IOException {
 
+    log.info("-- START --");
     final long veryStartTime = System.nanoTime();
 
-    log.info("Creating new League and assigning roles and logo - START");
+    log.info("Creating new League and assigning roles and logo...");
     long startTime = System.nanoTime();
 
     final League league = new League(leagueName);
@@ -89,20 +90,17 @@ public class FakeLeagueService {
     league.addRoleForLeague(moderatorRole);
     league.addRoleForLeague(playerRole);
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
-
-    log.info("Creating new League and assigning roles and logo - END");
     TimeLogUtil.logFinish(startTime);
 
 
-    log.info("Creating {} players (including password hashing) and assigning roles/authorities - START", numberOfAllPlayers);
+    log.info("Creating {} players (including password hashing) and assigning roles/authorities...", numberOfAllPlayers);
     startTime = System.nanoTime();
     final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers);
     FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
-    log.info("Creating {} players (including password hashing) and assigning roles/authorities - START", numberOfAllPlayers);
     TimeLogUtil.logFinish(startTime);
 
 
-    log.info("Creating {} complete seasons (incl. Bonus Points) - START", numberOfCompletedSeasons);
+    log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);
     startTime = System.nanoTime();
     LocalDate seasonStartDate = startDate;
     for (int seasonNumber = 1; seasonNumber <= numberOfCompletedSeasons; seasonNumber++) {
@@ -127,18 +125,17 @@ public class FakeLeagueService {
               maxNumberOfAttendingPlayers);
       league.addSeason(season);
     }
-    log.info("Creating {} complete seasons (incl. Bonus Points) - END", numberOfCompletedSeasons);
     TimeLogUtil.logFinish(startTime);
 
-    log.info("Persisting bunch of items into DB - START");
+
+    log.info("Persisting {} items (seasons/rounds/roundGroups/matches/sets + players) to PostreSQL DB...", extractNumberOfEntities(league, players));
     startTime = System.nanoTime();
     playerRepository.saveAll(players);
     leagueRepository.save(league);
-    log.info("Persisting bunch of items into DB - END");
     TimeLogUtil.logFinish(startTime);
 
 
-    log.info("Calculating scoreboards to fill the Hall of Fame - START");
+    log.info("Calculating scoreboards to fill the Hall of Fame...");
     startTime = System.nanoTime();
     // only after persisting the league we can calculate the scoreboard (as some of the logic is based on the Id)
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
@@ -151,35 +148,76 @@ public class FakeLeagueService {
         for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
           seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
         }
-        seasonScoreboardDto.sortRows();
+        seasonScoreboardDto.sortByCountedPoints();
 
         final HallOfFameSeason hallOfFameForSeason = FakeLeagueHallOfFame.create(seasonScoreboardDto);
         league.addHallOfFameSeason(hallOfFameForSeason);
       }
     }
     hallOfFameSeasonRepository.saveAll(league.getHallOfFameSeasons());
-    log.info("Calculating scoreboards to fill the Hall of Fame - END");
     TimeLogUtil.logFinish(startTime);
 
 
     log.info("-- FINISHED --");
-    log.info("Total time:");
     TimeLogUtil.logFinish(veryStartTime);
     log.info(extractLeagueDetails(league));
   }
 
+  private int extractNumberOfEntities(final League league, final List<Player> players) {
+    return extractNumberOfSeasons(league)
+           + extractNumberOfRounds(league)
+           + extractNumberOfRoundGroups(league)
+           + extractNumberOfMatches(league)
+           + extractNumberOfSets(league)
+           + players.size();
+  }
+
   private String extractLeagueDetails(final League league) {
-    final int numberOfSeasons = league
+    final int numberOfSeasons = extractNumberOfSeasons(league);
+    final int numberOfRounds = extractNumberOfRounds(league);
+    final int numberOfMatches = extractNumberOfMatches(league);
+
+    return new StringBuilder()
+            .append("\n\t Details of league " + league.getName() + "\n")
+            .append("\t\t League ID:\t " + league.getId() + "\n")
+            .append("\t\t Seasons:\t " + numberOfSeasons + "\n")
+            .append("\t\t Rounds:\t " + numberOfRounds + "\n")
+            .append("\t\t Matches:\t " + numberOfMatches + "\n")
+            .toString();
+  }
+
+  private int extractNumberOfSeasons(final League league) {
+    return league
             .getSeasons()
             .size();
+  }
 
-    final int numberOfRounds = league
+  private int extractNumberOfRounds(final League league) {
+    return league
             .getSeasons()
             .stream()
-            .mapToInt(season -> season.getRounds().size())
+            .mapToInt(season -> season
+                    .getRounds()
+                    .size())
             .sum();
+  }
 
-    final int numberOfMatches = league
+  private int extractNumberOfRoundGroups(final League league) {
+    return league
+            .getSeasons()
+            .stream()
+            .mapToInt(season -> season
+                    .getRounds()
+                    .stream()
+                    .mapToInt(round -> round
+                            .getRoundGroups()
+                            .size())
+                    .sum())
+            .sum();
+  }
+
+  private int extractNumberOfMatches(final League league) {
+    return league
             .getSeasons()
             .stream()
             .mapToInt(season -> season
@@ -194,14 +232,28 @@ public class FakeLeagueService {
                             .sum())
                     .sum())
             .sum();
+  }
 
-    return new StringBuilder()
-            .append("\n\t Details of league " + league.getName() + "\n")
-            .append("\t\t League ID:\t " + league.getId() + "\n")
-            .append("\t\t Seasons:\t " + numberOfSeasons + "\n")
-            .append("\t\t Rounds:\t " + numberOfRounds + "\n")
-            .append("\t\t Matches:\t " + numberOfMatches + "\n")
-            .toString();
+  private int extractNumberOfSets(final League league) {
+    return league
+            .getSeasons()
+            .stream()
+            .mapToInt(season -> season
+                    .getRounds()
+                    .stream()
+                    .mapToInt(round -> round
+                            .getRoundGroups()
+                            .stream()
+                            .mapToInt(roundGroup -> roundGroup
+                                    .getMatches()
+                                    .stream()
+                                    .mapToInt(match -> match
+                                            .getSetResults()
+                                            .size())
+                                    .sum())
+                            .sum())
+                    .sum())
+            .sum();
   }
 
 }

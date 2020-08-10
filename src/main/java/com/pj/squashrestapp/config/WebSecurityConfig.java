@@ -62,7 +62,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/players/resetPassword**").permitAll()
             .antMatchers(HttpMethod.GET, "/players/requestPasswordReset**").permitAll()
             .antMatchers(HttpMethod.POST, "/db-initializers/**").permitAll()
-            .anyRequest().authenticated();
+            .anyRequest().permitAll();
 
     // authentication and authorization filters
     httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))

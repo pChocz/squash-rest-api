@@ -11,7 +11,9 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.dto.LeagueDto;
 import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.model.dto.SetDto;
@@ -31,6 +33,7 @@ import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -253,5 +256,32 @@ public class LeagueService {
 
     return playerLeagueXpOveralList;
   }
+
+  public List<LeagueDto> buildGeneralInfoForAllLeagues() {
+    final List<League> leagues = leagueRepository.findAll();
+    final List<LeagueLogo> leagueLogos = leagueLogoRepository.findAll();
+    final List<LeagueDto> leaguesDtos = leagues.stream().map(LeagueDto::new).collect(Collectors.toList());
+
+    for (final LeagueDto leagueDto : leaguesDtos) {
+      final LeagueLogo leagueLogo = leagueLogos.stream().filter(leagueLogo1 -> leagueLogo1.getLeague().getId().equals(leagueDto.getLeagueId())).findFirst().orElse(null);
+      if (leagueLogo != null) {
+        leagueDto.setLeagueLogo(leagueLogo.getPicture());
+      }
+    }
+
+    return leaguesDtos;
+  }
+
+  public List<PlayerDto> extractLeaguePlayersGeneral(final Long leagueId) {
+    final List<Player> players = playerRepository.fetchGeneralInfoSorted(leagueId, Sort.by(Sort.Direction.ASC, "username"));
+
+    final List<PlayerDto> playersDtos = players
+            .stream()
+            .map(PlayerDto::new)
+            .collect(Collectors.toList());
+
+    return playersDtos;
+  }
+
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @UtilityClass
 public class FakeRoundGroup {
 
-  public RoundGroup create(final int roundGroupNumber, final List<Player> players) {
+  RoundGroup create(final int roundGroupNumber, final List<Player> players) {
     final RoundGroup roundGroup = new RoundGroup(roundGroupNumber);
     for (int i = 0; i < players.size(); i++) {
       for (int j = i + 1; j < players.size(); j++) {

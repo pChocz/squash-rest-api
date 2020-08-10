@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class FakeRound {
 
-  public Round create(final int roundNumber,
-                      final LocalDate roundDate,
-                      final ArrayListMultimap<Integer, Player> roundGroupNumberToPlayersMultimap) {
+  Round create(final int roundNumber,
+               final LocalDate roundDate,
+               final ArrayListMultimap<Integer, Player> roundGroupNumberToPlayersMultimap) {
 
     final Round round = new Round(roundNumber, roundDate);
 

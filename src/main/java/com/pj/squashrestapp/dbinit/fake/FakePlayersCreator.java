@@ -16,17 +16,16 @@ import java.util.List;
 @UtilityClass
 public class FakePlayersCreator {
 
+  private final PasswordEncoder PASSWORD_ENCODER = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
+
   public List<Player> create(final int numberOfAllPlayers) {
 
     final List<Player> players = new ArrayList<>();
 
-    for (int i=0; i<numberOfAllPlayers; i++) {
+    for (int i = 0; i < numberOfAllPlayers; i++) {
       final String name = LoremIpsum.getInstance().getNameMale();
       final String email = name.replace(" ", "_").toLowerCase() + "@gmail.com";
-
-      final PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
-      final String firstNameLowercase = name.substring(0, name.indexOf(" ")).toLowerCase();
-      final String passwordEncoded = bCryptPasswordEncoder.encode(firstNameLowercase);
+      final String passwordEncoded = encodePassword(name);
 
       final Player player = new Player(name, email);
       player.setPassword(passwordEncoded);
@@ -36,6 +35,11 @@ public class FakePlayersCreator {
     }
 
     return players;
+  }
+
+  private String encodePassword(final String name) {
+    final String firstNameLowercase = name.substring(0, name.indexOf(" ")).toLowerCase();
+    return PASSWORD_ENCODER.encode(firstNameLowercase);
   }
 
 }
