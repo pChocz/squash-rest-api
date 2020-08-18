@@ -31,6 +31,28 @@ public class MatchService {
     return matchDto;
   }
 
+  public void modifySingleScore(final Long matchId, final int setNumber, final String player, final int newScore) {
+    final Match matchToModify = matchRepository.findMatchById(matchId);
+
+    final String initialMatchResult = matchToModify.toString();
+    final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
+
+    if (player.equals("FIRST")) {
+      setToModify.setFirstPlayerScore(newScore);
+
+    } else if (player.equals("SECOND")) {
+      setToModify.setSecondPlayerScore(newScore);
+
+    }
+
+    setResultRepository.save(setToModify);
+
+    final String message = "\nSuccesfully updated the match!" +
+                           "\n\t-> " + initialMatchResult + "\t- earlier" +
+                           "\n\t-> " + matchToModify + "\t- now";
+    log.info(message);
+  }
+
   public MatchDto modifyMatch(final Long matchId, final int setNumber, final int p1score, final int p2score) {
     final Match matchToModify = matchRepository.findMatchById(matchId);
 

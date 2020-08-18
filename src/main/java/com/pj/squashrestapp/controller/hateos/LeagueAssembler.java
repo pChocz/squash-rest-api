@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -40,7 +41,7 @@ public class LeagueAssembler extends RepresentationModelAssemblerSupport<League,
     return leagueModel;
   }
 
-  private List<SeasonModel> toSeasonsModel(final List<Season> seasons) {
+  private List<SeasonModel> toSeasonsModel(final Set<Season> seasons) {
     return seasons.isEmpty()
             ? Collections.emptyList()
             : seasons

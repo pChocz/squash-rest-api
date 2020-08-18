@@ -21,13 +21,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "xp_points_for_round_group")
 @Getter
 @NoArgsConstructor
-public class XpPointsForRoundGroup implements Identifiable {
+public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsForRoundGroup> {
 
   public static EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR_FINAL = new EntityVisitor<>(XpPointsForRoundGroup.class) {
   };
@@ -39,13 +42,13 @@ public class XpPointsForRoundGroup implements Identifiable {
     }
 
     @Override
-    public List<XpPointsForRoundGroup> getChildren(final XpPointsForRound parent) {
+    public Set<XpPointsForRoundGroup> getChildren(final XpPointsForRound parent) {
       return parent.getXpPointsForRoundGroups();
     }
 
     @Override
     public void setChildren(final XpPointsForRound parent) {
-      parent.setXpPointsForRoundGroups(new ArrayList<XpPointsForRoundGroup>());
+      parent.setXpPointsForRoundGroups(new TreeSet<XpPointsForRoundGroup>());
     }
   };
 
@@ -63,7 +66,7 @@ public class XpPointsForRoundGroup implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<XpPointsForPlace> xpPointsForPlaces;
+  private Set<XpPointsForPlace> xpPointsForPlaces;
 
   @JsonIgnore
   @Setter
@@ -77,13 +80,21 @@ public class XpPointsForRoundGroup implements Identifiable {
 
     int placesInAllRoundsBefore = 0;
     for (int i = 1; i < roundGroupNumber; i++) {
-      placesInAllRoundsBefore += allPoints[i].length;
+      placesInAllRoundsBefore += allPoints[i-1].length;
     }
 
-    this.xpPointsForPlaces = new ArrayList<>();
+    this.xpPointsForPlaces = new TreeSet<>();
     for (int i = 1; i <= allPoints[roundGroupNumber - 1].length; i++) {
-      this.xpPointsForPlaces.add(new XpPointsForPlace(i, placesInAllRoundsBefore, allPoints[roundGroupNumber - 1][i - 1], this));
+      final XpPointsForPlace xpPointsForPlace = new XpPointsForPlace(i, placesInAllRoundsBefore, allPoints[roundGroupNumber - 1][i - 1], this);
+      this.xpPointsForPlaces.add(xpPointsForPlace);
     }
+  }
+
+  @Override
+  public int compareTo(final XpPointsForRoundGroup that) {
+    return Comparator
+            .comparingInt(XpPointsForRoundGroup::getRoundGroupNumber)
+            .compare(this, that);
   }
 
 }

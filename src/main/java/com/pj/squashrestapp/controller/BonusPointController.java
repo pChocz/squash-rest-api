@@ -4,6 +4,7 @@ import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Slf4j
 @RestController
 @RequestMapping("/bonusPoints")
+@CrossOrigin(origins = "http://localhost:4200")
 public class BonusPointController {
 
   @Autowired

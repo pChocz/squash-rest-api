@@ -6,13 +6,14 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 
 /**
  *
  */
 @Slf4j
 @Getter
-public class SeasonDto {
+public class SeasonDto implements Comparable<SeasonDto> {
 
   private final Long leagueId;
   private final String leagueName;
@@ -27,6 +28,13 @@ public class SeasonDto {
     this.seasonId = season.getId();
     this.seasonNumber = season.getNumber();
     this.seasonStartDate = season.getStartDate();
+  }
+
+  @Override
+  public int compareTo(final SeasonDto that) {
+    return Comparator
+            .comparingInt(SeasonDto::getSeasonNumber)
+            .compare(this, that);
   }
 
 }

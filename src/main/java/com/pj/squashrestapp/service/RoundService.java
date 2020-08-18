@@ -13,6 +13,7 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -40,6 +41,35 @@ public class RoundService {
     roundRepository.delete(roundToDelete);
   }
 
+  @Transactional
+  public Round createRound(final int roundNumber, final LocalDate roundDate, final Long seasonId, final List<Long[]> playersIds) {
+    final Long[] allPlayersIds = playersIds.stream().flatMap(Arrays::stream).toArray(Long[]::new);
+
+    // repos queries from DB
+    final List<Player> allPlayers = playerRepository.findByIds(allPlayersIds);
+    final Season season = seasonRepository.findById(seasonId).orElse(null);
+
+    final List<List<Player>> playersPerGroup = playersIds
+            .stream()
+            .map(playersId -> Arrays
+                    .stream(playersId)
+                    .collect(Collectors.toList()))
+            .map(idsForCurrentGroup -> allPlayers
+                    .stream()
+                    .filter(player -> idsForCurrentGroup.contains(player.getId()))
+                    .collect(Collectors.toList()))
+            .collect(Collectors.toList());
+
+    final Round round = createRoundForSeasonWithGivenPlayers(roundNumber, roundDate, playersPerGroup);
+    season.addRound(round);
+
+    // saving to DB
+    roundRepository.save(round);
+
+    return round;
+  }
+
+  // this one will be deleted later
   public Round createRound(final int roundNumber, final LocalDate roundDate, final int seasonNumber, final Long leagueId, final List<Long[]> playersIds) {
     final Long[] allPlayersIds = playersIds.stream().flatMap(Arrays::stream).toArray(Long[]::new);
 
@@ -96,12 +126,15 @@ public class RoundService {
     final int groupNumber = i + 1;
     roundGroup.setNumber(groupNumber);
 
-    final List<Player> groupPlayers = playersPerGroup.get(0);
+    int matchNumber = 1;
+
+    final List<Player> groupPlayers = playersPerGroup.get(i);
     for (int j = 0; j < groupPlayers.size(); j++) {
       for (int k = j + 1; k < groupPlayers.size(); k++) {
         final Match match = new Match();
         match.setFirstPlayer(groupPlayers.get(j));
         match.setSecondPlayer(groupPlayers.get(k));
+        match.setNumber(matchNumber++);
 
         for (int l = 0; l < 3; l++) {
           final SetResult setResult = new SetResult();

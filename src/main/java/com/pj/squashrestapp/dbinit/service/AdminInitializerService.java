@@ -121,7 +121,8 @@ public class AdminInitializerService {
     for (final XpPointsForRoundDto xpPointsForRoundDto : xpPointsDto.getXpPointsForRound()) {
       final int[] players = xpPointsForRoundDto.buildPlayerSplitArray();
       final int[][] points = xpPointsForRoundDto.buildXpPointsArray();
-      xpPoints.add(new XpPointsForRound(players, points));
+      final XpPointsForRound xpPointsForRound = new XpPointsForRound(players, points);
+      xpPoints.add(xpPointsForRound);
     }
 
     xpPointsRepository.saveAll(xpPoints);
@@ -194,8 +195,10 @@ public class AdminInitializerService {
         for (final XmlGroup xmlGroup : xmlRound.getGroups()) {
           final RoundGroup roundGroup = FromXmlConstructUtil.constructRoundGroup(xmlGroup);
 
+          int matchNumber = 1;
           for (final XmlMatch xmlMatch : xmlGroup.getMatches()) {
             final Match match = FromXmlConstructUtil.constructMatch(xmlMatch, players);
+            match.setNumber(matchNumber++);
 
             for (int i = 0; i < xmlMatch.getSets().size(); i++) {
               final int setNumber = i + 1;

@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,30 +32,45 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/rounds")
+@CrossOrigin(origins = "http://localhost:4200")
 public class RoundController {
 
   @Autowired
   private RoundService roundService;
 
-
   @PostMapping
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  Round newRound(
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  Long newRound(
           @RequestBody
           @RequestParam("roundNumber") final int roundNumber,
           @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
-          @RequestParam("seasonNumber") final int seasonNumber,
-          @RequestParam("leagueId") final Long leagueId,
+          @RequestParam("seasonId") final Long seasonId,
           @RequestParam("playersIds") final List<Long[]> playersIds) {
-    final Round round = roundService.createRound(roundNumber, roundDate, seasonNumber, leagueId, playersIds);
-    return round;
+    final Round round = roundService.createRound(roundNumber, roundDate, seasonId, playersIds);
+    log.info("created round {}", round.getId());
+    return round.getId();
   }
+
+  // this one will be deleted later
+//  @PostMapping
+//  @ResponseBody
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+//  Round newRound(
+//          @RequestBody
+//          @RequestParam("roundNumber") final int roundNumber,
+//          @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
+//          @RequestParam("seasonNumber") final int seasonNumber,
+//          @RequestParam("leagueId") final Long leagueId,
+//          @RequestParam("playersIds") final List<Long[]> playersIds) {
+//    final Round round = roundService.createRound(roundNumber, roundDate, seasonNumber, leagueId, playersIds);
+//    return round;
+//  }
 
 
   @DeleteMapping(value = "/{roundId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForRound(#roundId, 'MODERATOR')")
+//  @PreAuthorize("hasRoleForRound(#roundId, 'MODERATOR')")
   void deleteRound(@PathVariable final Long roundId) {
     roundService.deleteRound(roundId);
     log.info("Round {} has been deleted", roundId);

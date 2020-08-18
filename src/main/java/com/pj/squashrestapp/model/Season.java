@@ -26,13 +26,14 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "seasons")
 @Getter
 @NoArgsConstructor
-public class Season implements Identifiable {
+public class Season implements Identifiable, Comparable<Season> {
 
   public static EntityVisitor<Season, League> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Season.class) {
   };
@@ -44,13 +45,13 @@ public class Season implements Identifiable {
     }
 
     @Override
-    public List<Season> getChildren(final League parent) {
+    public Set<Season> getChildren(final League parent) {
       return parent.getSeasons();
     }
 
     @Override
     public void setChildren(final League parent) {
-      parent.setSeasons(new ArrayList<Season>());
+      parent.setSeasons(new TreeSet<Season>());
     }
   };
 
@@ -72,7 +73,7 @@ public class Season implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<Round> rounds = new ArrayList<>();
+  private Set<Round> rounds = new TreeSet<>();
 
   @Setter
   @OneToMany(
@@ -114,6 +115,13 @@ public class Season implements Identifiable {
             .stream()
             .sorted(Comparator.comparingInt(Round::getNumber))
             .collect(Collectors.toList());
+  }
+
+  @Override
+  public int compareTo(final Season that) {
+    return Comparator
+            .comparingInt(Season::getNumber)
+            .compare(this, that);
   }
 
 }

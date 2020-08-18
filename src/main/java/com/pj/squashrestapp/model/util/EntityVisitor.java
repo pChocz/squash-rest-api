@@ -2,7 +2,7 @@ package com.pj.squashrestapp.model.util;
 
 import lombok.Getter;
 
-import java.util.List;
+import java.util.Set;
 
 @Getter
 @SuppressWarnings({"unchecked", "MethodWithMoreThanThreeNegations", "JavaDoc"})
@@ -28,7 +28,7 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
       if (!entityContext.isVisited(parentClassId)) {
         setChildren(parent);
       }
-      final List<T> children = getChildren(parent);
+      final Set<T> children = getChildren(parent);
       if (!objectVisited) {
         children.add(object);
       }
@@ -44,7 +44,7 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
     throw new UnsupportedOperationException();
   }
 
-  public List<T> getChildren(final P parent) {
+  public Set<T> getChildren(final P parent) {
     throw new UnsupportedOperationException();
   }
 

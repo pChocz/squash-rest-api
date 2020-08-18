@@ -21,13 +21,16 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "round_groups")
 @Getter
 @NoArgsConstructor
-public class RoundGroup implements Identifiable {
+public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
   public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(RoundGroup.class) {
   };
@@ -39,13 +42,13 @@ public class RoundGroup implements Identifiable {
     }
 
     @Override
-    public List<RoundGroup> getChildren(final Round parent) {
+    public Set<RoundGroup> getChildren(final Round parent) {
       return parent.getRoundGroups();
     }
 
     @Override
     public void setChildren(final Round parent) {
-      parent.setRoundGroups(new ArrayList<RoundGroup>());
+      parent.setRoundGroups(new TreeSet<RoundGroup>());
     }
   };
 
@@ -63,7 +66,7 @@ public class RoundGroup implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<Match> matches = new ArrayList<>();
+  private Set<Match> matches = new TreeSet<>();
 
   @JsonIgnore
   @Setter
@@ -83,6 +86,13 @@ public class RoundGroup implements Identifiable {
   @Override
   public String toString() {
     return "Round " + round.getNumber() + " | Group " + number;
+  }
+
+  @Override
+  public int compareTo(final RoundGroup that) {
+    return Comparator
+            .comparingInt(RoundGroup::getNumber)
+            .compare(this, that);
   }
 
 }

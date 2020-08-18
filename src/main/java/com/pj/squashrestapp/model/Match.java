@@ -6,7 +6,6 @@ import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,10 +18,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -31,7 +32,7 @@ import java.util.List;
 @Table(name = "matches")
 @Getter
 @NoArgsConstructor
-public class Match implements Identifiable {
+public class Match implements Identifiable, Comparable<Match> {
 
   private static final int DEFAULT_NUMBER_OF_SETS = 3;
 
@@ -45,19 +46,23 @@ public class Match implements Identifiable {
     }
 
     @Override
-    public List<Match> getChildren(final RoundGroup parent) {
+    public Set<Match> getChildren(final RoundGroup parent) {
       return parent.getMatches();
     }
 
     @Override
     public void setChildren(final RoundGroup parent) {
-      parent.setMatches(new ArrayList<Match>());
+      parent.setMatches(new TreeSet<Match>());
     }
   };
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Setter
+  @Column(name = "number")
+  private int number;
 
   @Setter
   @OneToOne(fetch = FetchType.LAZY)
@@ -75,7 +80,7 @@ public class Match implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<SetResult> setResults = new ArrayList<>(DEFAULT_NUMBER_OF_SETS);
+  private Set<SetResult> setResults = new TreeSet<SetResult>();
 
   @JsonIgnore
   @Setter
@@ -96,6 +101,13 @@ public class Match implements Identifiable {
   @Override
   public String toString() {
     return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResults;
+  }
+
+  @Override
+  public int compareTo(final Match that) {
+    return Comparator
+            .comparingLong(Match::getNumber)
+            .compare(this, that);
   }
 
 }

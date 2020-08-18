@@ -13,7 +13,6 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.LeagueDto;
 import com.pj.squashrestapp.model.dto.MatchDto;
-import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.model.dto.SetDto;
@@ -35,6 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -255,6 +255,19 @@ public class LeagueService {
             .collect(Collectors.toList());
 
     return playerLeagueXpOveralList;
+  }
+
+  @Transactional
+  public LeagueDto buildGeneralInfoForLeague(final Long leagueId) {
+    final League league = leagueRepository.findById(leagueId).orElse(null);
+    final LeagueLogo leagueLogo = leagueLogoRepository.findById(leagueId).orElse(null);
+    final LeagueDto leagueDto = new LeagueDto(league);
+
+    if (leagueLogo != null) {
+      leagueDto.setLeagueLogo(leagueLogo.getPicture());
+    }
+
+    return leagueDto;
   }
 
   public List<LeagueDto> buildGeneralInfoForAllLeagues() {

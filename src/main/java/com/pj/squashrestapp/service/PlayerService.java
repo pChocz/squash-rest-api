@@ -219,6 +219,7 @@ public class PlayerService {
 
     if (passwordResetToken == null) {
       log.warn("It seems that we do not have matching token!");
+      throw new RuntimeException("It seems that we do not have matching token!");
 
     } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
       log.warn("Password reset token has already expired. You must request new one!");

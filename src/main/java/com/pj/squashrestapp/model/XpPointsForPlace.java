@@ -6,7 +6,6 @@ import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,16 +15,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @Table(name = "xp_points_for_place")
 @Getter
 @NoArgsConstructor
-public class XpPointsForPlace implements Identifiable {
+public class XpPointsForPlace implements Identifiable, Comparable<XpPointsForPlace> {
 
   public static EntityVisitor<XpPointsForPlace, XpPointsForRoundGroup> ENTITY_VISITOR = new EntityVisitor<>(XpPointsForPlace.class) {
     @Override
@@ -34,13 +33,13 @@ public class XpPointsForPlace implements Identifiable {
     }
 
     @Override
-    public List<XpPointsForPlace> getChildren(final XpPointsForRoundGroup parent) {
+    public Set<XpPointsForPlace> getChildren(final XpPointsForRoundGroup parent) {
       return parent.getXpPointsForPlaces();
     }
 
     @Override
     public void setChildren(final XpPointsForRoundGroup parent) {
-      parent.setXpPointsForPlaces(new ArrayList<XpPointsForPlace>());
+      parent.setXpPointsForPlaces(new TreeSet<XpPointsForPlace>());
     }
   };
 
@@ -71,6 +70,18 @@ public class XpPointsForPlace implements Identifiable {
     this.placeInRoundGroup = place;
     this.points = points;
     this.xpPointsForRoundGroup = xpPointsForRoundGroup;
+  }
+
+  @Override
+  public String toString() {
+    return "P: " + points + " | R: " + placeInRound + " | G: " + placeInRoundGroup;
+  }
+
+  @Override
+  public int compareTo(final XpPointsForPlace that) {
+    return Comparator
+            .comparingInt(XpPointsForPlace::getPlaceInRound)
+            .compare(this, that);
   }
 
 }

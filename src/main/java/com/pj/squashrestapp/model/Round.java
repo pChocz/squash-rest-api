@@ -24,13 +24,15 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "rounds")
 @Getter
 @NoArgsConstructor
-public class Round implements Identifiable {
+public class Round implements Identifiable, Comparable<Round> {
 
   public static EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {
   };
@@ -42,13 +44,13 @@ public class Round implements Identifiable {
     }
 
     @Override
-    public List<Round> getChildren(final Season parent) {
+    public Set<Round> getChildren(final Season parent) {
       return parent.getRounds();
     }
 
     @Override
     public void setChildren(final Season parent) {
-      parent.setRounds(new ArrayList<Round>());
+      parent.setRounds(new TreeSet<Round>());
     }
   };
 
@@ -70,7 +72,7 @@ public class Round implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<RoundGroup> roundGroups = new ArrayList<>();
+  private Set<RoundGroup> roundGroups = new TreeSet<>();
 
   @JsonIgnore
   @Setter
@@ -107,6 +109,13 @@ public class Round implements Identifiable {
             .stream()
             .sorted(Comparator.comparingInt(RoundGroup::getNumber))
             .collect(Collectors.toList());
+  }
+
+  @Override
+  public int compareTo(final Round that) {
+    return Comparator
+            .comparingInt(Round::getNumber)
+            .compare(this, that);
   }
 
 }

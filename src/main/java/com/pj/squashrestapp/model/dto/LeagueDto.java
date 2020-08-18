@@ -6,6 +6,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 /**
@@ -19,7 +21,7 @@ public class LeagueDto {
   private final String leagueName;
   @Setter
   private byte[] leagueLogo;
-  private final List<SeasonDto> seasons;
+  private final Set<SeasonDto> seasons;
 
   public LeagueDto(final League league) {
     this.leagueId = league.getId();
@@ -29,7 +31,7 @@ public class LeagueDto {
             .getSeasons()
             .stream()
             .map(SeasonDto::new)
-            .collect(Collectors.toList());
+            .collect(Collectors.toCollection(TreeSet::new));
   }
 
 }

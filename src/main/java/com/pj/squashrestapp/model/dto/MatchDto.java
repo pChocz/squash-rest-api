@@ -6,6 +6,9 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.entityhelper.MatchHelper;
+import com.pj.squashrestapp.model.entityhelper.MatchStatus;
+import com.pj.squashrestapp.model.entityhelper.MatchValidator;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -38,6 +41,8 @@ public class MatchDto {
 
   private final List<SetDto> sets;
 
+  private final MatchStatus status;
+
   public MatchDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
     final Round round = roundGroup.getRound();
@@ -58,6 +63,8 @@ public class MatchDto {
     for (final SetResult setResult : match.getSetResults()) {
       this.sets.add(new SetDto(setResult));
     }
+
+    this.status = new MatchValidator(match).checkStatus();
   }
 
   @Override

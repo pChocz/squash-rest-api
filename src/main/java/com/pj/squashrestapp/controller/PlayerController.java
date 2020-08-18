@@ -11,7 +11,9 @@ import com.pj.squashrestapp.service.PlayerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +35,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/players")
+@CrossOrigin(origins = "http://localhost:4200")
 public class PlayerController {
 
   @Autowired
@@ -107,8 +111,8 @@ public class PlayerController {
   }
 
 
-  @GetMapping(value = "/resetPassword")
-  @ResponseBody
+  @PostMapping(value = "/resetPassword")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   void confirmResetPassword(
           @RequestParam("token") final String token,
           @RequestParam("newPassword") final String newPassword,

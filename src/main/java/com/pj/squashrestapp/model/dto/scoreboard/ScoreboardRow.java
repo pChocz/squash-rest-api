@@ -113,10 +113,9 @@ public class ScoreboardRow implements Comparable<ScoreboardRow> {
   public int compareTo(final ScoreboardRow that) {
     return Comparator
             .comparingInt(ScoreboardRow::getMatchesBalance)
-            .thenComparingInt(ScoreboardRow::getMatchesWon)
             .thenComparingInt(ScoreboardRow::getSetsBalance)
-            .thenComparingInt(ScoreboardRow::getSetsWon)
             .thenComparingInt(ScoreboardRow::getPointsBalance)
+            .thenComparingInt(ScoreboardRow::getSetsWon)
             .thenComparingInt(ScoreboardRow::getPointsWon)
             .reversed()
             .compare(this, that);

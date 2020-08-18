@@ -66,9 +66,19 @@ public class LeagueController {
     leagueService.createNewLeague(leagueName, player);
   }
 
+  @GetMapping(value = "/general-info/{leagueId}")
+  @ResponseBody
+  LeagueDto extractLeagueGeneralInfo(
+          @PathVariable("leagueId") final Long leagueId) {
+    final long startTime = System.nanoTime();
+    final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueId);
+    TimeLogUtil.logFinish(startTime);
+    return leagueGeneralInfo;
+  }
+
   @GetMapping(value = "/general-info")
   @ResponseBody
-  List<LeagueDto> extractLeagueStatistics() {
+  List<LeagueDto> extractAllLeaguesGeneralInfo() {
     final long startTime = System.nanoTime();
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
     TimeLogUtil.logFinish(startTime);

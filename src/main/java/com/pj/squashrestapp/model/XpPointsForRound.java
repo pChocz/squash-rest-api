@@ -20,14 +20,18 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 
 @Entity
 @Table(name = "xp_points_for_round")
 @Getter
 @NoArgsConstructor
-public class XpPointsForRound implements Identifiable {
+public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRound> {
 
   public static EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(XpPointsForRound.class) {
   };
@@ -50,15 +54,23 @@ public class XpPointsForRound implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<XpPointsForRoundGroup> xpPointsForRoundGroups;
+  private Set<XpPointsForRoundGroup> xpPointsForRoundGroups;
 
   public XpPointsForRound(final int[] splitAsArray, final int[][] points) {
     this.numberOfPlayers = Arrays.stream(splitAsArray).sum();
     this.split = GeneralUtil.intArrayToString(splitAsArray);
-    this.xpPointsForRoundGroups = new ArrayList<>(splitAsArray.length);
+    this.xpPointsForRoundGroups = new TreeSet<XpPointsForRoundGroup>();
     for (int i = 1; i <= points.length; i++) {
-      this.xpPointsForRoundGroups.add(new XpPointsForRoundGroup(i, points, this));
+      final XpPointsForRoundGroup xpPointsForRoundGroup = new XpPointsForRoundGroup(i, points, this);
+      this.xpPointsForRoundGroups.add(xpPointsForRoundGroup);
     }
+  }
+
+  @Override
+  public int compareTo(final XpPointsForRound that) {
+    return Comparator
+            .comparingInt(XpPointsForRound::getNumberOfPlayers)
+            .compare(this, that);
   }
 
 }

@@ -24,6 +24,8 @@ import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 @Entity
@@ -54,7 +56,7 @@ public class League implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private List<Season> seasons = new ArrayList<>();
+  private Set<Season> seasons = new TreeSet<>();
 
   @OneToMany(
           mappedBy = "league",

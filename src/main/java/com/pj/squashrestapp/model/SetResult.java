@@ -6,7 +6,6 @@ import com.pj.squashrestapp.model.util.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,16 +15,19 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "set_results")
 @Getter
 @NoArgsConstructor
-public class SetResult implements Identifiable {
+public class SetResult implements Identifiable, Comparable<SetResult> {
 
   public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
     @Override
@@ -34,13 +36,13 @@ public class SetResult implements Identifiable {
     }
 
     @Override
-    public List<SetResult> getChildren(final Match parent) {
+    public Set<SetResult> getChildren(final Match parent) {
       return parent.getSetResults();
     }
 
     @Override
     public void setChildren(final Match parent) {
-      parent.setSetResults(new ArrayList<SetResult>());
+      parent.setSetResults(new TreeSet<SetResult>());
     }
   };
 
@@ -84,6 +86,13 @@ public class SetResult implements Identifiable {
             : firstPlayerScore < secondPlayerScore
             ? match.getSecondPlayer()
             : null;
+  }
+
+  @Override
+  public int compareTo(final SetResult that) {
+    return Comparator
+            .comparingInt(SetResult::getNumber)
+            .compare(this, that);
   }
 
 }

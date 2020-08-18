@@ -7,12 +7,14 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
@@ -20,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +45,9 @@ public class SeasonService {
 
   @Autowired
   private XpPointsService xpPointsService;
+
+  @Autowired
+  private SeasonRepository seasonRepository;
 
   public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
@@ -129,6 +135,13 @@ public class SeasonService {
     }
 
     return seasonPlayersSorted;
+  }
+
+  @Transactional
+  public SeasonDto extractSeasonDtoById(final Long seasonId) {
+    final Season season = seasonRepository.findSeasonById(seasonId);
+    final SeasonDto seasonDto = new SeasonDto(season);
+    return seasonDto;
   }
 
 }
