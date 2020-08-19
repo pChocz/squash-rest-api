@@ -20,7 +20,7 @@ public class FakeMatch {
     if (isDrawAfterTwoSets(match)) {
       match.addSetResult(FakeSetResult.create(3));
     } else {
-      match.addSetResult(FakeSetResult.createEmpty(3));
+      match.addSetResult(FakeSetResult.createNullSet(3));
     }
 
     return match;

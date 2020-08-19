@@ -53,8 +53,8 @@ public class ScoreboardRow implements Comparable<ScoreboardRow> {
       int currentMatchSetsLost = 0;
 
       for (final SetDto set : match.getSets()) {
-        final int currentSetPointsWon = set.getFirstPlayerScore();
-        final int currentSetPointsLost = set.getSecondPlayerScore();
+        final int currentSetPointsWon = set.getFirstPlayerScoreNullSafe();
+        final int currentSetPointsLost = set.getSecondPlayerScoreNullSafe();
         if (currentSetPointsWon > currentSetPointsLost) {
           currentMatchSetsWon++;
         } else if (currentSetPointsWon < currentSetPointsLost) {
@@ -79,8 +79,8 @@ public class ScoreboardRow implements Comparable<ScoreboardRow> {
       int currentMatchSetsLost = 0;
 
       for (final SetDto set : match.getSets()) {
-        final int currentSetPointsWon = set.getSecondPlayerScore();
-        final int currentSetPointsLost = set.getFirstPlayerScore();
+        final int currentSetPointsWon = set.getSecondPlayerScoreNullSafe();
+        final int currentSetPointsLost = set.getFirstPlayerScoreNullSafe();
         if (currentSetPointsWon > currentSetPointsLost) {
           currentMatchSetsWon++;
         } else if (currentSetPointsWon < currentSetPointsLost) {

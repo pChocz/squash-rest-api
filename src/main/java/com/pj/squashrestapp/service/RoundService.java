@@ -139,8 +139,8 @@ public class RoundService {
         for (int l = 0; l < 3; l++) {
           final SetResult setResult = new SetResult();
           setResult.setNumber(l + 1);
-          setResult.setFirstPlayerScore(0);
-          setResult.setSecondPlayerScore(0);
+          setResult.setFirstPlayerScore(null);
+          setResult.setSecondPlayerScore(null);
 
           match.addSetResult(setResult);
         }

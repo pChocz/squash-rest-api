@@ -1,3 +1,9 @@
+# ######
+# Server
+server:
+  port: _REPLACE_
+
+
 # ###### ##########
 # Spring Properties
 spring:
@@ -5,61 +11,37 @@ spring:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
   jpa:
-    database: POSTGRESQL
+    database: _REPLACE_
     hibernate:
       ddl-auto: update
     open-in-view: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-#        generate_statistics: true
-#        format_sql: true
+        dialect: _REPLACE_
+        generate_statistics: _REPLACE_
+        format_sql: _REPLACE_
         jdbc:
           time_zone: UTC
-    show-sql: true
+    show-sql: _REPLACE_
   datasource:
-    platform: postgres
-    driver-class-name: org.postgresql.Driver
-    # TODO: database credentials should be externalized later anyway!
-#    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/squash_league_second
-    url: jdbc:postgresql://localhost:5432/squashdb
-    username: postgres
-    password: squash123!@#
+    platform: _REPLACE_
+    driver-class-name: _REPLACE_
+    url: _REPLACE_
+    username: _REPLACE_
+    password: _REPLACE_
 
 
 # #####
 # Token
-# TODO: secret should be externalized later anyway!
 jwt:
-  secret: QLTIh5c0pedaXdRzckPnlr1OCHuMcBmhHGzACijWJ0zlJ7Ua5LFkiRwX0e2TMIHo1tQLNHk6INSFc6JXY2g6letWJClMHYp2XO1f
+  secret: _REPLACE_
 
 
 # #####
 # Email
-# TODO: email credentials should be externalized later anyway!
 email:
-  sender_email_adress: dziadoliga@gmail.com
-  sender_name: Dziadoliga Squash App
-  password: Squash123!@#
-  smtp_host: smtp.gmail.com
-  smtp_port: 587
-
-
-# #######
-# Logging
-#logging:
-#  level:
-#    org:
-#      hibernate:
-#        stat: debug
-
-
-# May be useful later
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        jdbc:
-#          core:
-#            JdbcTemplate: DEBUG
-#            StatementCreatorUtils: TRACE
+  sender_email_adress: _REPLACE_
+  sender_name: _REPLACE_
+  password: _REPLACE_
+  smtp_host: _REPLACE_
+  smtp_port: _REPLACE_

@@ -86,8 +86,8 @@ public class FromXmlConstructUtil {
   public SetResult constructEmptySetResult(final int setNumber) {
     final SetResult setResult = new SetResult();
     setResult.setNumber(setNumber);
-    setResult.setFirstPlayerScore(0);
-    setResult.setSecondPlayerScore(0);
+    setResult.setFirstPlayerScore(null);
+    setResult.setSecondPlayerScore(null);
     return setResult;
   }
 

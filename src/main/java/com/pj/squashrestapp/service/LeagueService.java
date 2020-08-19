@@ -196,8 +196,8 @@ public class LeagueService {
         playersAttendicesMap.put(match.getFirstPlayer().getId(), match.getRoundId());
         playersAttendicesMap.put(match.getSecondPlayer().getId(), match.getRoundId());
         for (final SetDto set : match.getSets()) {
-          points += set.getFirstPlayerScore();
-          points += set.getSecondPlayerScore();
+          points += set.getFirstPlayerScoreNullSafe();
+          points += set.getSecondPlayerScoreNullSafe();
           if (!set.isEmpty()) {
             if (set.isTieBreak()) {
               tieBreaks++;

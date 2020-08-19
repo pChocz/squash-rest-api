@@ -56,7 +56,7 @@ public class MatchController {
           @RequestParam("matchId") final Long matchId,
           @RequestParam("setNumber") final int setNumber,
           @RequestParam("player") final String player,
-          @RequestParam("newScore") final int newScore) {
+          @RequestParam("newScore") final Integer newScore) {
 
     matchService.modifySingleScore(matchId, setNumber, player, newScore);
   }

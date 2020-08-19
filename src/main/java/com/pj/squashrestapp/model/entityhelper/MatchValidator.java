@@ -35,7 +35,7 @@ public class MatchValidator {
     } else if (isFinished()) {
       return MatchStatus.FINISHED;
 
-    } else if (anySetError() || missingSet() || toManySets()) {
+    } else if (anySetError() || toManySets()) {
       return MatchStatus.ERROR;
 
     } else {
@@ -61,11 +61,6 @@ public class MatchValidator {
       return false;
 
     }
-  }
-
-  private boolean missingSet() {
-    //todo: implement
-    return false;
   }
 
   private boolean allSetsEmpty() {

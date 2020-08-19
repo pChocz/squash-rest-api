@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.pj.squashrestapp.model.dto.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.entityhelper.MatchStatus;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,10 +35,12 @@ public class RoundGroupScoreboard {
 
     for (final MatchDto match : matches) {
       final ScoreboardRow scoreboardRowFirst = getScoreboardRow(match.getFirstPlayer());
-      scoreboardRowFirst.applyMatch(match);
-
       final ScoreboardRow scoreboardRowSecond = getScoreboardRow(match.getSecondPlayer());
-      scoreboardRowSecond.applyMatch(match);
+
+      if (match.getStatus() == MatchStatus.FINISHED) {
+        scoreboardRowFirst.applyMatch(match);
+        scoreboardRowSecond.applyMatch(match);
+      }
     }
 
     Collections.sort(scoreboardRows);

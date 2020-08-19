@@ -14,15 +14,21 @@ public class SetValidator {
 
   public SetStatus checkStatus() {
     final int setNumber = setResult.getNumber();
-    final int firstScore = setResult.getFirstPlayerScore();
-    final int secondScore = setResult.getSecondPlayerScore();
+    final Integer firstScore = setResult.getFirstPlayerScore();
+    final Integer secondScore = setResult.getSecondPlayerScore();
+
+    if (firstScore == null && secondScore == null) {
+      return SetStatus.EMPTY;
+
+    } else if (firstScore == null || secondScore == null) {
+      return SetStatus.IN_PROGRESS;
+
+    }
+
     final int high = Math.max(firstScore, secondScore);
     final int low = Math.min(firstScore, secondScore);
 
-    if (high == 0 && low == 0) {
-      return SetStatus.EMPTY;
-
-    } else if (isValidSet(setNumber, high, low)) {
+    if (isValidSet(setNumber, high, low)) {
       return checkWinner();
 
     } else {

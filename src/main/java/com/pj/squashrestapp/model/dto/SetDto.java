@@ -11,12 +11,11 @@ import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
  *
  */
 @Getter
-@JsonInclude(NON_NULL)
 public class SetDto {
 
   private final int setNumber;
-  private final int firstPlayerScore;
-  private final int secondPlayerScore;
+  private final Integer firstPlayerScore;
+  private final Integer secondPlayerScore;
 
   public SetDto(final SetResult setResult) {
     this.setNumber = setResult.getNumber();
@@ -31,7 +30,8 @@ public class SetDto {
 
   @JsonIgnore
   public boolean isEmpty() {
-    return firstPlayerScore == 0 && secondPlayerScore == 0;
+    return firstPlayerScore == null
+           && secondPlayerScore == null;
   }
 
   @JsonIgnore
@@ -56,6 +56,20 @@ public class SetDto {
   @Override
   public String toString() {
     return "set " + setNumber + " -> " + firstPlayerScore + ":" + secondPlayerScore;
+  }
+
+  @JsonIgnore
+  public Integer getFirstPlayerScoreNullSafe() {
+    return firstPlayerScore == null
+            ? 0
+            : firstPlayerScore;
+  }
+
+  @JsonIgnore
+  public Integer getSecondPlayerScoreNullSafe() {
+    return secondPlayerScore == null
+            ? 0
+            : secondPlayerScore;
   }
 
 }

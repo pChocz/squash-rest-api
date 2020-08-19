@@ -31,7 +31,7 @@ public class MatchService {
     return matchDto;
   }
 
-  public void modifySingleScore(final Long matchId, final int setNumber, final String player, final int newScore) {
+  public void modifySingleScore(final Long matchId, final int setNumber, final String player, final Integer newScore) {
     final Match matchToModify = matchRepository.findMatchById(matchId);
 
     final String initialMatchResult = matchToModify.toString();

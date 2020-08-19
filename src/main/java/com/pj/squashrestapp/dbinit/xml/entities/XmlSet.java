@@ -11,10 +11,10 @@ import org.simpleframework.xml.Root;
 @NoArgsConstructor
 public class XmlSet {
 
-  @Element
-  private int firstPlayerResult;
+  @Element(required = false)
+  private Integer firstPlayerResult;
 
-  @Element
-  private int secondPlayerResult;
+  @Element(required = false)
+  private Integer secondPlayerResult;
 
 }

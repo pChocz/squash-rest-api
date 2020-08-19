@@ -56,11 +56,11 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
 
   @Setter
   @Column(name = "first_player_score")
-  private int firstPlayerScore;
+  private Integer firstPlayerScore;
 
   @Setter
   @Column(name = "second_player_score")
-  private int secondPlayerScore;
+  private Integer secondPlayerScore;
 
   @JsonIgnore
   @Setter
@@ -68,7 +68,7 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
   @JoinColumn(name = "match_id")
   private Match match;
 
-  public SetResult(final int number, final int firstPlayerScore, final int secondPlayerScore) {
+  public SetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
     this.secondPlayerScore = secondPlayerScore;

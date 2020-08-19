@@ -51,8 +51,8 @@ public class FakeSetResult {
             : FakeUtil.randomBetweenTwoIntegers(0, WINNING_TIE_BREAK_SCORE - 1);
   }
 
-  SetResult createEmpty(final int setNumber) {
-    return new SetResult(setNumber, 0, 0);
+  SetResult createNullSet(final int setNumber) {
+    return new SetResult(setNumber, null, null);
   }
 
 }
