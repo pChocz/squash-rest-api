@@ -29,7 +29,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/scoreboards")
-@CrossOrigin(origins = "http://localhost:4200")
 public class ScoreboardController {
 
   @Autowired

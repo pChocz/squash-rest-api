@@ -33,7 +33,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/leagues")
-@CrossOrigin(origins = "http://localhost:4200")
 public class LeagueController {
 
   @Autowired

@@ -24,7 +24,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @Slf4j
 @RestController
 @RequestMapping("/bonusPoints")
-@CrossOrigin(origins = "http://localhost:4200")
 public class BonusPointController {
 
   @Autowired

@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/matches")
-@CrossOrigin(origins = "http://localhost:4200")
 public class MatchController {
 
   @Autowired

@@ -22,7 +22,6 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/xpPoints")
-@CrossOrigin(origins = "http://localhost:4200")
 public class XpPointsController {
 
   @Autowired

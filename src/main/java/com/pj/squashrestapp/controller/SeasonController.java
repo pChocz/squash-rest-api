@@ -22,7 +22,6 @@ import java.util.Collection;
 @Slf4j
 @RestController
 @RequestMapping("/seasons")
-@CrossOrigin(origins = "http://localhost:4200")
 public class SeasonController {
 
   @Autowired
