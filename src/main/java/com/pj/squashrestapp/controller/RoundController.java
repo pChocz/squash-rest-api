@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.service.RoundService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,14 @@ public class RoundController {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonId, playersIds);
     log.info("created round {}", round.getId());
     return round.getId();
+  }
+
+  @GetMapping("/backup/{roundId}")
+  @ResponseBody
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  String backupRound(@PathVariable final Long roundId) {
+    final String roundXml = roundService.backupRound(roundId);
+    return roundXml;
   }
 
   // this one will be deleted later

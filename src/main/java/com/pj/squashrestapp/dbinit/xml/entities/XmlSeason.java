@@ -6,6 +6,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Root(name = "season")
@@ -20,9 +21,9 @@ public class XmlSeason {
   private String startDate;
 
   @ElementList
-  private List<XmlBonus> bonusPoints;
+  private ArrayList<XmlBonus> bonusPoints;
 
   @ElementList
-  private List<XmlRound> rounds;
+  private ArrayList<XmlRound> rounds;
 
 }

@@ -6,6 +6,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Root(name = "round")
@@ -20,6 +21,6 @@ public class XmlRound {
   private String date;
 
   @ElementList
-  private List<XmlGroup> groups;
+  private ArrayList<XmlGroup> groups;
 
 }

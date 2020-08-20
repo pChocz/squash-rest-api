@@ -6,6 +6,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Root(name = "group")
@@ -17,9 +18,9 @@ public class XmlGroup {
   int id;
 
   @ElementList
-  private List<XmlPlayer> players;
+  private ArrayList<XmlPlayer> players;
 
   @ElementList
-  private List<XmlMatch> matches;
+  private ArrayList<XmlMatch> matches;
 
 }

@@ -6,6 +6,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Root(name = "league")
@@ -20,9 +21,9 @@ public class XmlLeague {
   private String logoBase64;
 
   @ElementList
-  private List<XmlHallOfFameSeason> hallOfFameSeasons;
+  private ArrayList<XmlHallOfFameSeason> hallOfFameSeasons;
 
   @ElementList
-  private List<XmlSeason> seasons;
+  private ArrayList<XmlSeason> seasons;
 
 }
