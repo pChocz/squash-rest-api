@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,7 +47,17 @@ public class RoundService {
     final Long[] allPlayersIds = playersIds.stream().flatMap(Arrays::stream).toArray(Long[]::new);
 
     // repos queries from DB
-    final List<Player> allPlayers = playerRepository.findByIds(allPlayersIds);
+    final List<Player> allPlayersOrderedById = playerRepository.findByIds(allPlayersIds);
+
+    final List<Player> allPlayersOrderedProperly = Arrays
+            .stream(allPlayersIds)
+            .map(id -> allPlayersOrderedById
+                    .stream()
+                    .filter(p -> p.getId() == id)
+                    .findFirst()
+                    .orElse(null))
+            .collect(Collectors.toList());
+
     final Season season = seasonRepository.findById(seasonId).orElse(null);
 
     final List<List<Player>> playersPerGroup = playersIds
@@ -54,7 +65,7 @@ public class RoundService {
             .map(playersId -> Arrays
                     .stream(playersId)
                     .collect(Collectors.toList()))
-            .map(idsForCurrentGroup -> allPlayers
+            .map(idsForCurrentGroup -> allPlayersOrderedProperly
                     .stream()
                     .filter(player -> idsForCurrentGroup.contains(player.getId()))
                     .collect(Collectors.toList()))
