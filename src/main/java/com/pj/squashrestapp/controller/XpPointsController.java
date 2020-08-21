@@ -56,7 +56,8 @@ public class XpPointsController {
 
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
 
-    TimeLogUtil.logFinish(startTime);
+    TimeLogUtil.logFinish(startTime, "QUERY: XP points");
+
     return xpPointsForTableList;
   }
 

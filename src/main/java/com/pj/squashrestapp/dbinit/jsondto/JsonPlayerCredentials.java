@@ -1,31 +1,19 @@
-package com.pj.squashrestapp.dbinit.dto;
+package com.pj.squashrestapp.dbinit.jsondto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
-/**
- *
- */
-@Getter
-@Root(name = "player")
+@Data
 @NoArgsConstructor
-public class InitPlayer {
+public class JsonPlayerCredentials {
 
-  @Element
   private String username;
-
-  @Element
   private String passwordHashed;
-
-  @Element
   private String email;
-
-  @Element
   private String uuid;
-
-  @Element
   private String passwordSessionUuid;
 
 }

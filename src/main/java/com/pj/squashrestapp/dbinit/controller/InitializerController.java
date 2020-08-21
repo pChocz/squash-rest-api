@@ -59,9 +59,9 @@ public class InitializerController {
             logoBytes);
   }
 
-  @PostMapping(value = "/xml")
+  @PostMapping(value = "/json")
   @ResponseBody
-  void updateLeagueLogo(
+  void createInitialDatabaseStructure(
           @RequestParam("init-admin") final MultipartFile initAdminXmlFile,
           @RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
           @RequestParam("init-league") final MultipartFile initLeagueFile) throws Exception {

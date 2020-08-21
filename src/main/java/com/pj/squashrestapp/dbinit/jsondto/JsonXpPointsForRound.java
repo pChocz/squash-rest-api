@@ -1,5 +1,6 @@
-package com.pj.squashrestapp.dbinit.dto;
+package com.pj.squashrestapp.dbinit.jsondto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.simpleframework.xml.Element;
@@ -12,15 +13,11 @@ import java.util.List;
 /**
  *
  */
-@Getter
+@Data
 @NoArgsConstructor
-@Root(name = "xpPointsForRound")
-public class XpPointsForRoundDto {
+public class JsonXpPointsForRound {
 
-  @Element
   private String numberOfPlayersCsv;
-
-  @ElementList(inline = true, entry = "pointsCsv")
   private List<String> pointsCsv;
 
   public int[] buildPlayerSplitArray() {

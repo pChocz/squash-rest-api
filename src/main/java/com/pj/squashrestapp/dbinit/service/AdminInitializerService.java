@@ -1,18 +1,19 @@
 package com.pj.squashrestapp.dbinit.service;
 
-import com.pj.squashrestapp.dbinit.dto.InitPlayer;
-import com.pj.squashrestapp.dbinit.dto.InitXpPoints;
-import com.pj.squashrestapp.dbinit.dto.XpPointsForRoundDto;
-import com.pj.squashrestapp.dbinit.xml.FromXmlConstructUtil;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlBonus;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlGroup;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlHallOfFameSeason;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlLeague;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlMatch;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlPlayer;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlRound;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlSeason;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlSet;
+import com.google.gson.Gson;
+import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
+import com.pj.squashrestapp.dbinit.jsondto.JsonXpPoints;
+import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
+import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
+import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
+import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
+import com.pj.squashrestapp.dbinit.jsondto.JsonHallOfFameSeason;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
+import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
+import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
+import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
+import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
+import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
@@ -33,7 +34,6 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
@@ -74,6 +74,7 @@ public class AdminInitializerService {
                          final String initLeagueXmlContent) throws Exception {
 
     final Player adminPlayer = playerRepository.findByUsername("Admin");
+
     if (adminPlayer != null) {
       // means that Admin already exists so we cannot initialize it again
       return false;
@@ -96,8 +97,7 @@ public class AdminInitializerService {
   }
 
   private void persistAdminFromXml(final String initAdminXmlContent) throws Exception {
-    final InitPlayer adminDto = new InitPlayer();
-    new Persister().read(adminDto, initAdminXmlContent);
+    final JsonPlayerCredentials adminDto = new Gson().fromJson(initAdminXmlContent, JsonPlayerCredentials.class);
 
     final Player adminPlayer = new Player();
     adminPlayer.setEnabled(true);
@@ -114,13 +114,12 @@ public class AdminInitializerService {
   }
 
   private void persistXpPointsFromXml(final String initXpPointsXmlContent) throws Exception {
-    final InitXpPoints xpPointsDto = new InitXpPoints();
-    new Persister().read(xpPointsDto, initXpPointsXmlContent);
+    final JsonXpPoints xpPointsDto = new Gson().fromJson(initXpPointsXmlContent, JsonXpPoints.class);
 
     final List<XpPointsForRound> xpPoints = new ArrayList<>();
-    for (final XpPointsForRoundDto xpPointsForRoundDto : xpPointsDto.getXpPointsForRound()) {
-      final int[] players = xpPointsForRoundDto.buildPlayerSplitArray();
-      final int[][] points = xpPointsForRoundDto.buildXpPointsArray();
+    for (final JsonXpPointsForRound jsonXpPointsForRound : xpPointsDto.getXpPointsForRound()) {
+      final int[] players = jsonXpPointsForRound.buildPlayerSplitArray();
+      final int[][] points = jsonXpPointsForRound.buildXpPointsArray();
       final XpPointsForRound xpPointsForRound = new XpPointsForRound(players, points);
       xpPoints.add(xpPointsForRound);
     }
@@ -129,26 +128,25 @@ public class AdminInitializerService {
   }
 
   private void persistEntireLeague(final String initLeagueXmlContent) throws Exception {
-    final XmlLeague xmlLeague = new XmlLeague();
-    new Persister().read(xmlLeague, initLeagueXmlContent);
+    final JsonLeague jsonLeague = new Gson().fromJson(initLeagueXmlContent, JsonLeague.class);
 
-    final List<Player> players = buildPlayersList(xmlLeague);
+    final List<Player> players = buildPlayersList(jsonLeague);
     playerRepository.saveAll(players);
 
-    final League league = buildLeague(xmlLeague, players);
+    final League league = buildLeague(jsonLeague, players);
     leagueRepository.save(league);
 
     createAndAssignLeagueRoles(players, league);
     assignAuthoritiesForPlayers(players);
   }
 
-  private List<Player> buildPlayersList(final XmlLeague xmlLeague) {
-    final Set<XmlPlayer> xmlPlayers = new LinkedHashSet<>();
+  private List<Player> buildPlayersList(final JsonLeague jsonLeague) {
+    final Set<JsonPlayer> jsonPlayers = new LinkedHashSet<>();
 
-    for (final XmlSeason season : xmlLeague.getSeasons()) {
-      for (final XmlRound round : season.getRounds()) {
-        for (final XmlGroup group : round.getGroups()) {
-          xmlPlayers.addAll(group.getPlayers());
+    for (final JsonSeason season : jsonLeague.getSeasons()) {
+      for (final JsonRound round : season.getRounds()) {
+        for (final JsonRoundGroup group : round.getGroups()) {
+          jsonPlayers.addAll(group.getPlayers());
         }
       }
     }
@@ -156,9 +154,9 @@ public class AdminInitializerService {
     final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
 
     final List<Player> players = new ArrayList<>();
-    for (final XmlPlayer xmlPlayer : xmlPlayers) {
-      final String username = xmlPlayer.getName();
-      final String email = xmlPlayer.getName().replace(" ", "_").toLowerCase() + "@gmail.com";
+    for (final JsonPlayer jsonPlayer : jsonPlayers) {
+      final String username = jsonPlayer.getName();
+      final String email = jsonPlayer.getName().replace(" ", "_").toLowerCase() + "@gmail.com";
       final Player player = new Player(username, email);
 
       final String firstNameLowercase = username.contains(" ")
@@ -173,42 +171,42 @@ public class AdminInitializerService {
     return players;
   }
 
-  private League buildLeague(final XmlLeague xmlLeague, final List<Player> players) {
-    final League league = FromXmlConstructUtil.constructLeague(xmlLeague);
+  private League buildLeague(final JsonLeague jsonLeague, final List<Player> players) {
+    final League league = JsonImportUtil.constructLeague(jsonLeague);
 
-    for (final XmlHallOfFameSeason xmlHallOfFameSeason : xmlLeague.getHallOfFameSeasons()) {
-      final HallOfFameSeason hallOfFameSeason = FromXmlConstructUtil.constructHallOfFameSeason(xmlHallOfFameSeason);
+    for (final JsonHallOfFameSeason jsonHallOfFameSeason : jsonLeague.getHallOfFameSeasons()) {
+      final HallOfFameSeason hallOfFameSeason = JsonImportUtil.constructHallOfFameSeason(jsonHallOfFameSeason);
       league.addHallOfFameSeason(hallOfFameSeason);
     }
 
-    for (final XmlSeason xmlSeason : xmlLeague.getSeasons()) {
-      final Season season = FromXmlConstructUtil.constructSeason(xmlSeason);
+    for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {
+      final Season season = JsonImportUtil.constructSeason(jsonSeason);
 
-      for (final XmlBonus xmlBonus : xmlSeason.getBonusPoints()) {
-        final BonusPoint bonusPoint = FromXmlConstructUtil.constructBonusPoints(xmlBonus, players);
+      for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
+        final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
         season.addBonusPoint(bonusPoint);
       }
 
-      for (final XmlRound xmlRound : xmlSeason.getRounds()) {
-        final Round round = FromXmlConstructUtil.constructRound(xmlRound);
+      for (final JsonRound jsonRound : jsonSeason.getRounds()) {
+        final Round round = JsonImportUtil.constructRound(jsonRound);
 
-        for (final XmlGroup xmlGroup : xmlRound.getGroups()) {
-          final RoundGroup roundGroup = FromXmlConstructUtil.constructRoundGroup(xmlGroup);
+        for (final JsonRoundGroup jsonRoundGroup : jsonRound.getGroups()) {
+          final RoundGroup roundGroup = JsonImportUtil.constructRoundGroup(jsonRoundGroup);
 
           int matchNumber = 1;
-          for (final XmlMatch xmlMatch : xmlGroup.getMatches()) {
-            final Match match = FromXmlConstructUtil.constructMatch(xmlMatch, players);
+          for (final JsonMatch jsonMatch : jsonRoundGroup.getMatches()) {
+            final Match match = JsonImportUtil.constructMatch(jsonMatch, players);
             match.setNumber(matchNumber++);
 
-            for (int i = 0; i < xmlMatch.getSets().size(); i++) {
+            for (int i = 0; i < jsonMatch.getSets().size(); i++) {
               final int setNumber = i + 1;
-              final XmlSet xmlSet = xmlMatch.getSets().get(i);
-              final SetResult setResult = FromXmlConstructUtil.constructSetResult(setNumber, xmlSet);
+              final JsonSetResult jsonSetResult = jsonMatch.getSets().get(i);
+              final SetResult setResult = JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
               match.addSetResult(setResult);
             }
 
-            if (xmlMatch.getSets().size() == 2) {
-              final SetResult setResult = FromXmlConstructUtil.constructEmptySetResult(3);
+            if (jsonMatch.getSets().size() == 2) {
+              final SetResult setResult = JsonImportUtil.constructEmptySetResult(3);
               match.addSetResult(setResult);
             }
 
@@ -216,7 +214,7 @@ public class AdminInitializerService {
           }
           round.addRoundGroup(roundGroup);
         }
-        FromXmlConstructUtil.setSplitForRound(round);
+        JsonImportUtil.setSplitForRound(round);
         season.addRound(round);
       }
       league.addSeason(season);

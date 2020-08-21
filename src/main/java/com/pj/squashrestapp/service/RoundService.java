@@ -1,10 +1,11 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.dbinit.xml.entities.XmlGroup;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlMatch;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlPlayer;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlRound;
-import com.pj.squashrestapp.dbinit.xml.entities.XmlSet;
+import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
+import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
+import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
+import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
+import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
+import com.pj.squashrestapp.dbinit.jsondto.util.JsonExportUtil;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -25,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.OutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -178,68 +178,11 @@ public class RoundService {
     return round;
   }
 
-  public String backupRound(final Long roundId) {
+  public String roundToJson(final Long roundId) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundId);
     final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
-
-    final XmlRound xmlRound = new XmlRound();
-    xmlRound.setDate(round.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-    xmlRound.setNumber(round.getNumber());
-
-    final ArrayList<XmlGroup> xmlGroups = new ArrayList<>();
-    for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
-      final XmlGroup xmlGroup = new XmlGroup();
-      xmlGroup.setId(roundGroup.getNumber());
-
-      final Set<XmlPlayer> xmlPlayers = new LinkedHashSet<>();
-      for (final Match match : roundGroup.getMatches()) {
-        final XmlPlayer xmlPlayer1 = new XmlPlayer();
-        xmlPlayer1.setName(match.getFirstPlayer().getUsername());
-        xmlPlayers.add(xmlPlayer1);
-
-        final XmlPlayer xmlPlayer2 = new XmlPlayer();
-        xmlPlayer2.setName(match.getSecondPlayer().getUsername());
-        xmlPlayers.add(xmlPlayer2);
-      }
-      xmlGroup.setPlayers(new ArrayList<>(xmlPlayers));
-
-      final ArrayList<XmlMatch> xmlMatches = new ArrayList<>();
-      for (final Match match : roundGroup.getMatches()) {
-        final XmlMatch xmlMatch = new XmlMatch();
-        xmlMatch.setFirstPlayer(match.getFirstPlayer().getUsername());
-        xmlMatch.setSecondPlayer(match.getSecondPlayer().getUsername());
-
-        final ArrayList<XmlSet> xmlSets = new ArrayList<>();
-        for (final SetResult setResult : match.getSetResults()) {
-          final XmlSet xmlSet = new XmlSet();
-          xmlSet.setFirstPlayerResult(setResult.getFirstPlayerScore());
-          xmlSet.setSecondPlayerResult(setResult.getSecondPlayerScore());
-
-          xmlSets.add(xmlSet);
-        }
-        xmlMatch.setSets(xmlSets);
-
-
-        xmlMatches.add(xmlMatch);
-      }
-      xmlGroup.setMatches(xmlMatches);
-
-
-      xmlGroups.add(xmlGroup);
-    }
-    xmlRound.setGroups(xmlGroups);
-
-    final Serializer serializer = new Persister();
-    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    String roundAsXmlString = "";
-    try {
-      serializer.write(xmlRound, outputStream);
-      roundAsXmlString = outputStream.toString("UTF8");
-    } catch (final Exception exception) {
-      log.error("Serializing went wrong!", exception);
-    }
-
-    return roundAsXmlString;
+    final String roundJson = JsonExportUtil.backupRoundToJson(round);
+    return roundJson;
   }
 
 }

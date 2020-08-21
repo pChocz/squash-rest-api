@@ -6,6 +6,7 @@ import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.ScoreboardService;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -66,7 +68,15 @@ public class ScoreboardController {
     final Scoreboard scoreboard = (playersIds.length == 1)
             ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueId, playersIds[0])
             : scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
-    TimeLogUtil.logFinish(startTime);
+
+    final String playersCommaSeparated = scoreboard
+            .getScoreboardRows()
+            .stream()
+            .map(ScoreboardRow::getPlayer)
+            .map(PlayerDto::getUsername)
+            .collect(Collectors.joining(", ", "[", "]"));
+
+    TimeLogUtil.logFinish(startTime, "QUERY: Players stats: " + playersCommaSeparated);
 
     return scoreboard;
   }
@@ -110,7 +120,11 @@ public class ScoreboardController {
 
     final long startTime = System.nanoTime();
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonId);
-    TimeLogUtil.logFinish(startTime);
+
+    final String seasonScoreboardDescription = "S: " + seasonScoreboardDto.getSeason().getSeasonNumber()
+                                              + "\t| " + seasonScoreboardDto.getSeason().getLeagueName();
+
+    TimeLogUtil.logFinish(startTime, "QUERY: Season Scoreboard: " + seasonScoreboardDescription);
 
     return seasonScoreboardDto;
   }
@@ -137,7 +151,13 @@ public class ScoreboardController {
 
     final long startTime = System.nanoTime();
     final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundId);
-    TimeLogUtil.logFinish(startTime);
+
+    final String roundScoreboardDescription = "R: "
+                                              + roundScoreboard.getRoundNumber()
+                                              + "\t| S: " + roundScoreboard.getSeasonNumber()
+                                              + "\t| " + roundScoreboard.getLeagueName();
+
+    TimeLogUtil.logFinish(startTime, "QUERY: Round Scoreboard: " + roundScoreboardDescription);
 
     return roundScoreboard;
   }

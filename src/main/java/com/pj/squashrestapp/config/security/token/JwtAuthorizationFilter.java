@@ -105,7 +105,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
               .fetchForAuthorizationByUuid(playerUuid)
               .orElseThrow(() -> new RuntimeException("User with given UUID does not exist!"));
 
-      log.info("\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
+      log.debug("\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
               player.getUuid(),
               player.getUsername(),
               claims.getIssuedAt(),
