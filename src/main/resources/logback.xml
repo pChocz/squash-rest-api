@@ -1,0 +1,40 @@
+<!-- configuration file -->
+
+<configuration>
+
+    <property name="PATTERN" value="%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"/>
+
+
+
+<!-- logging everything above below specified threshold  -->
+    <property name="LOG-THRESHOLD" value="INFO"/>
+<!--    <property name="LOG-THRESHOLD" value="DEBUG"/>-->
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LOG-THRESHOLD}</level>
+        </filter>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="OUT-LOG" class="ch.qos.logback.core.FileAppender">
+        <file>out.log</file>
+        <append>true</append>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>${LOG-THRESHOLD}</level>
+        </filter>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="ALL">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="OUT-LOG"/>
+    </root>
+<!--    -->
+
+
+</configuration>
