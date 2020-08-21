@@ -46,30 +46,34 @@ public class MatchService {
     if (player.equals("FIRST")) {
       setToModify.setFirstPlayerScore(newScore);
 
-      if (setNumber < 3) {
-        if (newScore < 10) {
-          setToModify.setSecondPlayerScore(11);
-        } else if (newScore < 12) {
-          setToModify.setSecondPlayerScore(12);
-        }
-      } else {
-        if (newScore < 9) {
-          setToModify.setSecondPlayerScore(9);
+      if (newScore != null) {
+        if (setNumber < 3) {
+          if (newScore < 10) {
+            setToModify.setSecondPlayerScore(11);
+          } else if (newScore < 12) {
+            setToModify.setSecondPlayerScore(12);
+          }
+        } else {
+          if (newScore < 9) {
+            setToModify.setSecondPlayerScore(9);
+          }
         }
       }
 
     } else if (player.equals("SECOND")) {
       setToModify.setSecondPlayerScore(newScore);
 
-      if (setNumber < 3) {
-        if (newScore < 10) {
-          setToModify.setFirstPlayerScore(11);
-        } else if (newScore < 12) {
-          setToModify.setFirstPlayerScore(12);
-        }
-      } else {
-        if (newScore < 9) {
-          setToModify.setFirstPlayerScore(9);
+      if (newScore != null) {
+        if (setNumber < 3) {
+          if (newScore < 10) {
+            setToModify.setFirstPlayerScore(11);
+          } else if (newScore < 12) {
+            setToModify.setFirstPlayerScore(12);
+          }
+        } else {
+          if (newScore < 9) {
+            setToModify.setFirstPlayerScore(9);
+          }
         }
       }
 
