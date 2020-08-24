@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPIRATION_TIME;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPOSE_HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
@@ -74,6 +75,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .compact();
 
     res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
+    res.addHeader(EXPOSE_HEADER_STRING, HEADER_STRING);
   }
 
 }

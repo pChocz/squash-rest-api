@@ -24,6 +24,8 @@ public final class TokenConstants {
 
   public static final String HEADER_STRING = "Authorization";
 
+  public static final String EXPOSE_HEADER_STRING = "Access-Control-Expose-Headers";
+
   public static final String EXPIRATION_PREFIX = "exp";
 
 }

@@ -5,7 +5,6 @@ import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +55,7 @@ public class XpPointsController {
 
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
 
-    TimeLogUtil.logFinish(startTime, "QUERY: XP points");
+    TimeLogUtil.logQuery(startTime, "XP points");
 
     return xpPointsForTableList;
   }

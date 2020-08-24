@@ -64,13 +64,20 @@ public class InitializerController {
   void createInitialDatabaseStructure(
           @RequestParam("init-admin") final MultipartFile initAdminXmlFile,
           @RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
-          @RequestParam("init-league") final MultipartFile initLeagueFile) throws Exception {
+          @RequestParam("init-league") final MultipartFile initLeagueFile,
+          @RequestParam("init-credentials") final MultipartFile initCredentialsFile) throws Exception {
 
-    final String initAdminXmlContent = IOUtils.toString(initAdminXmlFile.getInputStream(), Charset.defaultCharset());
-    final String initXpPointsXmlContent = IOUtils.toString(initXpPointsFile.getInputStream(), Charset.defaultCharset());
-    final String initLeagueXmlContent = IOUtils.toString(initLeagueFile.getInputStream(), Charset.defaultCharset());
+    final String initAdminJsonContent = IOUtils.toString(initAdminXmlFile.getInputStream(), Charset.defaultCharset());
+    final String initXpPointsJsonContent = IOUtils.toString(initXpPointsFile.getInputStream(), Charset.defaultCharset());
+    final String initLeagueJsonContent = IOUtils.toString(initLeagueFile.getInputStream(), Charset.defaultCharset());
+    final String initCredentialsJsonContent = IOUtils.toString(initCredentialsFile.getInputStream(), Charset.defaultCharset());
 
-    final boolean initialized = adminInitializerService.initialize(initAdminXmlContent, initXpPointsXmlContent, initLeagueXmlContent);
+    final boolean initialized = adminInitializerService.initialize(
+            initAdminJsonContent,
+            initXpPointsJsonContent,
+            initLeagueJsonContent,
+            initCredentialsJsonContent);
+
     if (initialized) {
       log.info("Database initialized properly");
     } else {

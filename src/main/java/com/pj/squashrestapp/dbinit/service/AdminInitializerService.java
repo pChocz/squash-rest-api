@@ -1,7 +1,11 @@
 package com.pj.squashrestapp.dbinit.service;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
+import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerSimpleCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPoints;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
@@ -38,9 +42,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,9 +74,10 @@ public class AdminInitializerService {
   private RoleForLeagueRepository roleForLeagueRepository;
 
 
-  public boolean initialize(final String initAdminXmlContent,
-                         final String initXpPointsXmlContent,
-                         final String initLeagueXmlContent) throws Exception {
+  public boolean initialize(final String initAdminJsonContent,
+                            final String initXpPointsJsonContent,
+                            final String initLeagueJsonContent,
+                            final String initCredentialsJsonContent) throws Exception {
 
     final Player adminPlayer = playerRepository.findByUsername("Admin");
 
@@ -81,9 +87,10 @@ public class AdminInitializerService {
 
     } else {
       persistStandardAuthorities();
-      persistAdminFromXml(initAdminXmlContent);
-      persistXpPointsFromXml(initXpPointsXmlContent);
-      persistEntireLeague(initLeagueXmlContent);
+      persistAdminFromJson(initAdminJsonContent);
+      persistXpPointsFromJson(initXpPointsJsonContent);
+      persistEntireLeagueFromJson(initLeagueJsonContent);
+      persistCredentials(initCredentialsJsonContent);
       return true;
     }
   }
@@ -96,8 +103,8 @@ public class AdminInitializerService {
     authorityRepository.save(userAuthority);
   }
 
-  private void persistAdminFromXml(final String initAdminXmlContent) throws Exception {
-    final JsonPlayerCredentials adminDto = new Gson().fromJson(initAdminXmlContent, JsonPlayerCredentials.class);
+  private void persistAdminFromJson(final String initAdminJsonContent) throws Exception {
+    final JsonPlayerCredentials adminDto = new Gson().fromJson(initAdminJsonContent, JsonPlayerCredentials.class);
 
     final Player adminPlayer = new Player();
     adminPlayer.setEnabled(true);
@@ -113,8 +120,8 @@ public class AdminInitializerService {
     authorityRepository.save(adminAuthority);
   }
 
-  private void persistXpPointsFromXml(final String initXpPointsXmlContent) throws Exception {
-    final JsonXpPoints xpPointsDto = new Gson().fromJson(initXpPointsXmlContent, JsonXpPoints.class);
+  private void persistXpPointsFromJson(final String initXpPointsJsonContent) throws Exception {
+    final JsonXpPoints xpPointsDto = new Gson().fromJson(initXpPointsJsonContent, JsonXpPoints.class);
 
     final List<XpPointsForRound> xpPoints = new ArrayList<>();
     for (final JsonXpPointsForRound jsonXpPointsForRound : xpPointsDto.getXpPointsForRound()) {
@@ -127,8 +134,8 @@ public class AdminInitializerService {
     xpPointsRepository.saveAll(xpPoints);
   }
 
-  private void persistEntireLeague(final String initLeagueXmlContent) throws Exception {
-    final JsonLeague jsonLeague = new Gson().fromJson(initLeagueXmlContent, JsonLeague.class);
+  private void persistEntireLeagueFromJson(final String initLeagueJsonContent) throws Exception {
+    final JsonLeague jsonLeague = new Gson().fromJson(initLeagueJsonContent, JsonLeague.class);
 
     final List<Player> players = buildPlayersList(jsonLeague);
     playerRepository.saveAll(players);
@@ -136,8 +143,31 @@ public class AdminInitializerService {
     final League league = buildLeague(jsonLeague, players);
     leagueRepository.save(league);
 
-    createAndAssignLeagueRoles(players, league);
-    assignAuthoritiesForPlayers(players);
+    createLeagueRoles(league);
+  }
+
+  private void persistCredentials(final String initCredentialsJsonContent) throws Exception {
+    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonPlayerSimpleCredentials>>() {
+    }.getType();
+    final List<JsonPlayerSimpleCredentials> jsonSimpleCredentials = new Gson().fromJson(initCredentialsJsonContent, listOfMyClassObject);
+
+    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
+
+    for (final JsonPlayerSimpleCredentials simpleCredentials : jsonSimpleCredentials) {
+      final String username = simpleCredentials.getUsername();
+      final String email = simpleCredentials.getEmail();
+      final String passwordPlain = simpleCredentials.getPassword();
+      final String passwordHashed = bCryptPasswordEncoder.encode(passwordPlain);
+
+      final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(username).orElse(null);
+      player.setEmail(email);
+      player.setPassword(passwordHashed);
+
+      persistLeagueRoles(simpleCredentials, player);
+      persistAuthorities(simpleCredentials, player);
+
+      playerRepository.save(player);
+    }
   }
 
   private List<Player> buildPlayersList(final JsonLeague jsonLeague) {
@@ -222,37 +252,40 @@ public class AdminInitializerService {
     return league;
   }
 
-  private void createAndAssignLeagueRoles(final List<Player> players, final League league) {
+  private void createLeagueRoles(final League league) {
     final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
     league.addRoleForLeague(playerRole);
+    roleForLeagueRepository.save(playerRole);
 
     final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
     league.addRoleForLeague(moderatorRole);
-
-    for (final Player player : players) {
-      player.addRole(playerRole);
-      if (Arrays.asList("Maniak", "Dziad", "Siwy").contains(player.getUsername())) {
-        player.addRole(moderatorRole);
-      }
-    }
-
-    roleForLeagueRepository.save(playerRole);
     roleForLeagueRepository.save(moderatorRole);
   }
 
-  private void assignAuthoritiesForPlayers(final List<Player> players) {
-    final Authority adminAuthority = authorityRepository.findByType(AuthorityType.ROLE_ADMIN);
-    final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
+  private void persistLeagueRoles(final JsonPlayerSimpleCredentials simpleCredentials, final Player player) {
+    final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
+    for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
+      final String leagueName = jsonLeagueRole.getLeague();
+      final String roleAsString = jsonLeagueRole.getRole();
 
-    for (final Player player : players) {
-      player.addAuthority(userAuthority);
-      if (player.getUsername().equals("Maniak")) {
-        player.addAuthority(adminAuthority);
-      }
+      final League league = leagueRepository.findByName(leagueName);
+      final LeagueRole role = LeagueRole.valueOf(roleAsString);
+
+      final RoleForLeague leagueRole = roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
+      player.addRole(leagueRole);
+      roleForLeagueRepository.save(leagueRole);
     }
+  }
 
-    authorityRepository.save(adminAuthority);
-    authorityRepository.save(userAuthority);
+  private void persistAuthorities(final JsonPlayerSimpleCredentials simpleCredentials, final Player player) {
+    final List<JsonAuthorities> jsonAuthorities = simpleCredentials.getAuthorities();
+    for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
+      final String authorityAsString = jsonAuthority.getAuthority();
+      final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);
+      final Authority authority = authorityRepository.findByType(authorityType);
+      player.addAuthority(authority);
+      authorityRepository.save(authority);
+    }
   }
 
 }

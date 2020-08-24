@@ -15,7 +15,6 @@ import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,7 +75,7 @@ public class ScoreboardController {
             .map(PlayerDto::getUsername)
             .collect(Collectors.joining(", ", "[", "]"));
 
-    TimeLogUtil.logFinish(startTime, "QUERY: Players stats: " + playersCommaSeparated);
+    TimeLogUtil.logQuery(startTime, "Players stats: " + playersCommaSeparated);
 
     return scoreboard;
   }
@@ -124,7 +123,7 @@ public class ScoreboardController {
     final String seasonScoreboardDescription = "S: " + seasonScoreboardDto.getSeason().getSeasonNumber()
                                               + "\t| " + seasonScoreboardDto.getSeason().getLeagueName();
 
-    TimeLogUtil.logFinish(startTime, "QUERY: Season Scoreboard: " + seasonScoreboardDescription);
+    TimeLogUtil.logQuery(startTime, "Season Scoreboard: " + seasonScoreboardDescription);
 
     return seasonScoreboardDto;
   }
@@ -157,7 +156,7 @@ public class ScoreboardController {
                                               + "\t| S: " + roundScoreboard.getSeasonNumber()
                                               + "\t| " + roundScoreboard.getLeagueName();
 
-    TimeLogUtil.logFinish(startTime, "QUERY: Round Scoreboard: " + roundScoreboardDescription);
+    TimeLogUtil.logQuery(startTime, "Round Scoreboard: " + roundScoreboardDescription);
 
     return roundScoreboard;
   }

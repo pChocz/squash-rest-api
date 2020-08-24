@@ -15,4 +15,6 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   })
   List<League> findAll();
 
+  League findByName(String name);
+
 }

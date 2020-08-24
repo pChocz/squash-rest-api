@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -71,7 +70,7 @@ public class LeagueController {
           @PathVariable("leagueId") final Long leagueId) {
     final long startTime = System.nanoTime();
     final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueId);
-    TimeLogUtil.logFinish(startTime, "QUERY: Single league general info: " + leagueGeneralInfo.getLeagueName());
+    TimeLogUtil.logQuery(startTime, "Single league general info: " + leagueGeneralInfo.getLeagueName());
     return leagueGeneralInfo;
   }
 
@@ -80,7 +79,7 @@ public class LeagueController {
   List<LeagueDto> extractAllLeaguesGeneralInfo() {
     final long startTime = System.nanoTime();
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
-    TimeLogUtil.logFinish(startTime, "QUERY: All leagues general info");
+    TimeLogUtil.logQuery(startTime, "All leagues general info");
     return allLeaguesGeneralInfo;
   }
 
@@ -100,7 +99,7 @@ public class LeagueController {
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final Long leagueId) {
     final long startTime = System.nanoTime();
     final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueId);
-    TimeLogUtil.logFinish(startTime, "QUERY: League Stats: " + leagueStatsWrapper.getLeagueName());
+    TimeLogUtil.logQuery(startTime, "League Stats: " + leagueStatsWrapper.getLeagueName());
     return leagueStatsWrapper;
   }
 

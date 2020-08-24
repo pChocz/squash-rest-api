@@ -2,8 +2,14 @@ package com.pj.squashrestapp.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  *
@@ -17,16 +23,32 @@ public class TimeLogUtil {
     log.info("{} seconds", durationSecondsRounded);
   }
 
-  public void logFinish(final long startTime, final String message) {
-    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
-    log.info("{} s\t-> {}", durationSecondsRounded, message);
-  }
-
   private double getDurationSecondsRounded(final long startTime) {
     final long endTime = System.nanoTime();
     final long duration = endTime - startTime;
     final double durationSeconds = (double) duration / 1_000_000_000;
     return (double) Math.round(durationSeconds * 100d) / 100d;
+  }
+
+  public void logQuery(final long startTime, final String query) {
+    final String username = extractSessionUsername();
+    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
+    final String durationFormatted = getFormatted(durationSecondsRounded);
+    log.info("QUERY: {}\t{}\t{}", username, durationFormatted, query);
+  }
+
+  private String extractSessionUsername() {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return userDetails.getUsername();
+  }
+
+  private String getFormatted(final double durationSecondsRounded) {
+    final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+    final DecimalFormat decimalFormat = new DecimalFormat();
+    decimalFormat.setDecimalFormatSymbols(symbols);
+    decimalFormat.setMinimumFractionDigits(2);
+    decimalFormat.setMaximumFractionDigits(2);
+    return decimalFormat.format(durationSecondsRounded);
   }
 
 //  public <T> void logFinish(final long startTime, final T objectToPrint) {
