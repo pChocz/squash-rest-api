@@ -8,15 +8,16 @@ import org.springframework.data.repository.query.Param;
 
 import java.sql.Blob;
 import java.util.List;
+import java.util.UUID;
 
 public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
 
   @Query("""
           SELECT ll.picture FROM LeagueLogo ll
             JOIN League l ON l.leagueLogo = ll
-            WHERE l.id = :leagueId
+            WHERE l.uuid = :leagueUuid
           """)
-  byte[] extractLogoBlob(@Param("leagueId") Long leagueId);
+  byte[] extractLogoBlob(@Param("leagueUuid") UUID leagueUuid);
 
   @EntityGraph(attributePaths = {
           "league.id",

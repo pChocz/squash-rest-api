@@ -8,11 +8,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @SuppressWarnings({"JavaDoc", "unused"})
 public interface RoundRepository extends JpaRepository<Round, Long> {
 
   Round findRoundById(Long id);
+
+  Round findRoundByUuid(UUID uuid);
 
   @Query("""
           SELECT l.id FROM Round r
@@ -29,5 +33,13 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
               WHERE m.id = :matchId
           """)
   Round findRoundByMatchId(@Param("matchId") Long matchId);
+
+  Optional<Round> findBySeasonAndNumber(Season season, int number);
+
+  @Query("""
+          SELECT r.id FROM Round r
+              WHERE r.uuid = :roundUuid
+          """)
+  Long findIdByUuid(UUID roundUuid);
 
 }

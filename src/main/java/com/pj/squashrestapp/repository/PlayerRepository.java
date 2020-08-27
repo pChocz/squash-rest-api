@@ -73,8 +73,8 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   @Query("""
           SELECT DISTINCT p FROM Player p
             JOIN p.roles r
-              WHERE r.league.id = :leagueId
+              WHERE r.league.uuid = :leagueUuid
           """)
-  List<Player> fetchGeneralInfoSorted(@Param("leagueId") Long leagueId, Sort sort);
+  List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
 
 }

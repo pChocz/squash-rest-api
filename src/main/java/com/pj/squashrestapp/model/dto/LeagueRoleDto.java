@@ -5,6 +5,8 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.UUID;
+
 /**
  *
  */
@@ -13,11 +15,13 @@ import lombok.extern.slf4j.Slf4j;
 public class LeagueRoleDto {
 
   private final Long leagueId;
+  private final UUID leagueUuid;
   private final String leagueName;
   private final LeagueRole leagueRole;
 
   public LeagueRoleDto(final RoleForLeague role) {
     this.leagueId = role.getLeague().getId();
+    this.leagueUuid = role.getLeague().getUuid();
     this.leagueName = role.getLeague().getName();
     this.leagueRole = role.getLeagueRole();
   }

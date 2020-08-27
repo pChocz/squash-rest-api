@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -128,12 +129,12 @@ public class LeagueService {
   }
 
 
-  public LeagueStatsWrapper buildStatsForLeagueId(final Long leagueId) {
-    final League league = fetchEntireLeague(leagueId);
+  public LeagueStatsWrapper buildStatsForLeagueId(final UUID leagueUuid) {
+    final League league = fetchEntireLeague(leagueUuid);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
     // logo
-    final byte[] logoBytes = leagueLogoRepository.extractLogoBlob(leagueId);
+    final byte[] logoBytes = leagueLogoRepository.extractLogoBlob(leagueUuid);
 
     // per season stats
     final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);
@@ -158,8 +159,9 @@ public class LeagueService {
             .build();
   }
 
-  public League fetchEntireLeague(final Long leagueId) {
-    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueId);
+  public League fetchEntireLeague(final UUID leagueUuid) {
+    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueUuid);
+    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueId);
   }
 
@@ -258,7 +260,8 @@ public class LeagueService {
   }
 
   @Transactional
-  public LeagueDto buildGeneralInfoForLeague(final Long leagueId) {
+  public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
+    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
     final League league = leagueRepository.findById(leagueId).orElse(null);
     final LeagueLogo leagueLogo = leagueLogoRepository.findById(leagueId).orElse(null);
     final LeagueDto leagueDto = new LeagueDto(league);
@@ -285,8 +288,8 @@ public class LeagueService {
     return leaguesDtos;
   }
 
-  public List<PlayerDto> extractLeaguePlayersGeneral(final Long leagueId) {
-    final List<Player> players = playerRepository.fetchGeneralInfoSorted(leagueId, Sort.by(Sort.Direction.ASC, "username"));
+  public List<PlayerDto> extractLeaguePlayersGeneral(final UUID leagueUuid) {
+    final List<Player> players = playerRepository.fetchGeneralInfoSorted(leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
 
     final List<PlayerDto> playersDtos = players
             .stream()

@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 public class LeagueDto {
 
   private final Long leagueId;
+  private final UUID leagueUuid;
   private final String leagueName;
   @Setter
   private byte[] leagueLogo;
@@ -25,6 +27,7 @@ public class LeagueDto {
 
   public LeagueDto(final League league) {
     this.leagueId = league.getId();
+    this.leagueUuid = league.getUuid();
     this.leagueName = league.getName();
 
     this.seasons = league

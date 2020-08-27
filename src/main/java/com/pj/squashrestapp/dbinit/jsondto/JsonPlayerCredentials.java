@@ -6,14 +6,19 @@ import lombok.NoArgsConstructor;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.util.List;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 public class JsonPlayerCredentials {
 
   private String username;
-  private String passwordHashed;
+  private String password;
   private String email;
-  private String uuid;
-  private String passwordSessionUuid;
+  private UUID uuid;
+  private UUID passwordSessionUuid;
+  private List<JsonLeagueRoles> leagueRoles;
+  private List<JsonAuthorities> authorities;
 
 }

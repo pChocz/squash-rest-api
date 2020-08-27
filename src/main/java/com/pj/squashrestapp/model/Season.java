@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
@@ -58,6 +59,12 @@ public class Season implements Identifiable, Comparable<Season> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Setter
+  @Column(name = "uuid",
+          nullable = false,
+          updatable = false)
+  private UUID uuid = UUID.randomUUID();
 
   @Setter
   @Column(name = "number")

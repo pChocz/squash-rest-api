@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -54,13 +55,13 @@ public class RoundService {
   @Autowired
   private RoundRepository roundRepository;
 
-  public void deleteRound(final Long roundId) {
-    final Round roundToDelete = roundRepository.findRoundById(roundId);
+  public void deleteRound(final UUID roundUuid) {
+    final Round roundToDelete = roundRepository.findRoundByUuid(roundUuid);
     roundRepository.delete(roundToDelete);
   }
 
   @Transactional
-  public Round createRound(final int roundNumber, final LocalDate roundDate, final Long seasonId, final List<Long[]> playersIds) {
+  public Round createRound(final int roundNumber, final LocalDate roundDate, final UUID seasonUuid, final List<Long[]> playersIds) {
     final Long[] allPlayersIds = playersIds.stream().flatMap(Arrays::stream).toArray(Long[]::new);
 
     // repos queries from DB
@@ -75,7 +76,7 @@ public class RoundService {
                     .orElse(null))
             .collect(Collectors.toList());
 
-    final Season season = seasonRepository.findById(seasonId).orElse(null);
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid);
 
     final List<List<Player>> playersPerGroup = playersIds
             .stream()
@@ -178,8 +179,9 @@ public class RoundService {
     return round;
   }
 
-  public String roundToJson(final Long roundId) {
-    final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundId);
+  public String roundToJson(final UUID roundUuid) {
+    final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
+    final Long roundId = roundRepository.findIdByUuid(roundUuid);
     final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
     final String roundJson = JsonExportUtil.backupRoundToJson(round);
     return roundJson;

@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -39,22 +40,22 @@ public class RoundController {
   @PostMapping
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  Long newRound(
+  UUID newRound(
           @RequestBody
           @RequestParam("roundNumber") final int roundNumber,
           @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
-          @RequestParam("seasonId") final Long seasonId,
+          @RequestParam("seasonUuid") final UUID seasonUuid,
           @RequestParam("playersIds") final List<Long[]> playersIds) {
-    final Round round = roundService.createRound(roundNumber, roundDate, seasonId, playersIds);
-    log.info("created round {}", round.getId());
-    return round.getId();
+    final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersIds);
+    log.info("created round {}", round.getUuid());
+    return round.getUuid();
   }
 
   @GetMapping("/backup/{roundId}")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  String backupRound(@PathVariable final Long roundId) {
-    final String roundJson = roundService.roundToJson(roundId);
+  String backupRound(@PathVariable final UUID roundUuid) {
+    final String roundJson = roundService.roundToJson(roundUuid);
     return roundJson;
   }
 
@@ -74,12 +75,12 @@ public class RoundController {
 //  }
 
 
-  @DeleteMapping(value = "/{roundId}")
+  @DeleteMapping(value = "/{roundUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
 //  @PreAuthorize("hasRoleForRound(#roundId, 'MODERATOR')")
-  void deleteRound(@PathVariable final Long roundId) {
-    roundService.deleteRound(roundId);
-    log.info("Round {} has been deleted", roundId);
+  void deleteRound(@PathVariable final UUID roundUuid) {
+    roundService.deleteRound(roundUuid);
+    log.info("Round {} has been deleted", roundUuid);
   }
 
 

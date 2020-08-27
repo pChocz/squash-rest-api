@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings({"JavaDoc", "unused"})
 public interface SeasonRepository extends JpaRepository<Season, Long> {
 
   Season findSeasonById(Long id);
+
+  Season findSeasonByUuid(UUID uuid);
 
   Season findSeasonByNumberAndLeagueId(int number, Long leagueId);
 
@@ -29,5 +32,11 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
               ORDER BY r.id
           """)
   List<Long> retrieveFinishedGroupIdsBySeasonId(@Param("id") Long id);
+
+  @Query("""
+          SELECT s.id FROM Season s
+              WHERE s.uuid = :seasonUuid
+          """)
+  Long findIdByUuid(UUID seasonUuid);
 
 }

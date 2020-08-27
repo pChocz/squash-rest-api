@@ -52,11 +52,10 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
 
     final int numberOfRoundsThatCount = countedRounds;
     final int countedPointsForRounds = getPointsForNumberOfRounds(roundNumberToXpMapAll, numberOfRoundsThatCount);
-    final int countedPointsForRoundsPretendents = getPointsForNumberOfRounds(roundNumberToXpMapPretenders, numberOfRoundsThatCount);
+    this.countedPointsPretenders = getPointsForNumberOfRounds(roundNumberToXpMapPretenders, numberOfRoundsThatCount);
 
     final int eightBestPointsForRounds = getPointsForNumberOfRounds(roundNumberToXpMapAll, 8);
     this.countedPoints = countedPointsForRounds + bonusPoints;
-    this.countedPointsPretenders = countedPointsForRoundsPretendents + bonusPoints;
     this.eightBestPoints = eightBestPointsForRounds + bonusPoints;
 
     this.attendices = roundNumberToXpMapAll.size();
@@ -86,6 +85,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     return Comparator
             .comparingInt(SeasonScoreboardRowDto::getCountedPoints)
             .thenComparingInt(SeasonScoreboardRowDto::getTotalPoints)
+            .thenComparingInt(SeasonScoreboardRowDto::getAverage)
             .reversed()
             .compare(this, that);
   }

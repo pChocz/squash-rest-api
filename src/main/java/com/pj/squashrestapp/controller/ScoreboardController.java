@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -42,14 +43,14 @@ public class ScoreboardController {
   private SeasonService seasonService;
 
 
-  @GetMapping(value = "/leagues/{leagueId}")
+  @GetMapping(value = "/leagues/{leagueUuid}")
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
   EntireLeagueScoreboard scoreboardForLeague(
-          @PathVariable final Long leagueId) {
+          @PathVariable final UUID leagueUuid) {
 
     final long startTime = System.nanoTime();
-    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueId);
+    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueUuid);
     final EntireLeagueScoreboard entireLeagueScoreboard = leagueStatsWrapper.getScoreboard();
     TimeLogUtil.logFinish(startTime);
 
@@ -57,16 +58,16 @@ public class ScoreboardController {
   }
 
 
-  @GetMapping(value = "/leagues/{leagueId}/players/{playersIds}")
+  @GetMapping(value = "/leagues/{leagueUuid}/players/{playersIds}")
   @ResponseBody
   Scoreboard scoreboardForLeagueForOneOrSeveralPlayers(
-          @PathVariable final Long leagueId,
+          @PathVariable final UUID leagueUuid,
           @PathVariable final Long[] playersIds) {
 
     final long startTime = System.nanoTime();
     final Scoreboard scoreboard = (playersIds.length == 1)
-            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueId, playersIds[0])
-            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
+            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueUuid, playersIds[0])
+            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueUuid, playersIds);
 
     final String playersCommaSeparated = scoreboard
             .getScoreboardRows()
@@ -81,44 +82,44 @@ public class ScoreboardController {
   }
 
 
-  /**
-   * TODO: ONLY FOR TESTING PURPOSES!!
-   */
-  @GetMapping(value = "/matches/leagues/{leagueId}/players/{playersIds}")
-  @ResponseBody
-  List<MatchDto> matchOnlyForLeagueForOneOrSeveralPlayers(
-          @PathVariable final Long leagueId,
-          @PathVariable final Long[] playersIds) {
+//  /**
+//   * TODO: ONLY FOR TESTING PURPOSES!!
+//   */
+//  @GetMapping(value = "/matches/leagues/{leagueUuid}/players/{playersIds}")
+//  @ResponseBody
+//  List<MatchDto> matchOnlyForLeagueForOneOrSeveralPlayers(
+//          @PathVariable final UUID leagueUuid,
+//          @PathVariable final Long[] playersIds) {
+//
+//    final long startTime = System.nanoTime();
+//    final Scoreboard scoreboard = (playersIds.length == 1)
+//            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueUuid, playersIds[0])
+//            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueUuid, playersIds);
+//    TimeLogUtil.logFinish(startTime);
+//
+//    return scoreboard.getMatches();
+//  }
 
-    final long startTime = System.nanoTime();
-    final Scoreboard scoreboard = (playersIds.length == 1)
-            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueId, playersIds[0])
-            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueId, playersIds);
-    TimeLogUtil.logFinish(startTime);
 
-    return scoreboard.getMatches();
-  }
-
-
-  @GetMapping(value = "/seasons/{seasonId}/players-sorted")
+  @GetMapping(value = "/seasons/{seasonUuid}/players-sorted")
   @ResponseBody
   List<PlayerDto> leaguePlayersSeasonSorted(
-          @PathVariable("seasonId") final Long seasonId) {
+          @PathVariable("seasonUuid") final UUID seasonUuid) {
 
     final long startTime = System.nanoTime();
-    final List<PlayerDto> players = seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonId);
+    final List<PlayerDto> players = seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonUuid);
     TimeLogUtil.logFinish(startTime);
 
     return players;
   }
 
-  @GetMapping(value = "/seasons/{seasonId}")
+  @GetMapping(value = "/seasons/{seasonUuid}")
   @ResponseBody
   SeasonScoreboardDto seasonScoreboard(
-          @PathVariable("seasonId") final Long seasonId) {
+          @PathVariable("seasonUuid") final UUID seasonUuid) {
 
     final long startTime = System.nanoTime();
-    final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonId);
+    final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonUuid);
 
     final String seasonScoreboardDescription = "S: " + seasonScoreboardDto.getSeason().getSeasonNumber()
                                               + "\t| " + seasonScoreboardDto.getSeason().getLeagueName();
@@ -129,13 +130,13 @@ public class ScoreboardController {
   }
 
 
-  @GetMapping(value = "/seasons-pretenders/{seasonId}")
+  @GetMapping(value = "/seasons-pretenders/{seasonUuid}")
   @ResponseBody
   SeasonScoreboardDto seasonPretendentsScoreboard(
-          @PathVariable("seasonId") final Long seasonId) {
+          @PathVariable("seasonUuid") final UUID seasonUuid) {
 
     final long startTime = System.nanoTime();
-    final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonId);
+    final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonUuid);
     seasonScoreboardDto.sortByPretendersPoints();
     TimeLogUtil.logFinish(startTime);
 
@@ -143,13 +144,13 @@ public class ScoreboardController {
   }
 
 
-  @GetMapping(value = "/rounds/{roundId}")
+  @GetMapping(value = "/rounds/{roundUuid}")
   @ResponseBody
   RoundScoreboard scoreboardForRound(
-          @PathVariable final Long roundId) {
+          @PathVariable final UUID roundUuid) {
 
     final long startTime = System.nanoTime();
-    final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundId);
+    final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
 
     final String roundScoreboardDescription = "R: "
                                               + roundScoreboard.getRoundNumber()

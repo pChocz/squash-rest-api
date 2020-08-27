@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
-import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerSimpleCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPoints;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
@@ -42,7 +41,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -74,7 +72,7 @@ public class AdminInitializerService {
   private RoleForLeagueRepository roleForLeagueRepository;
 
 
-  public boolean initialize(final String initAdminJsonContent,
+  public boolean initialize(final String initDefaultUsersJsonContent,
                             final String initXpPointsJsonContent,
                             final String initLeagueJsonContent,
                             final String initCredentialsJsonContent) throws Exception {
@@ -87,7 +85,7 @@ public class AdminInitializerService {
 
     } else {
       persistStandardAuthorities();
-      persistAdminFromJson(initAdminJsonContent);
+      persistDefaultUsersFromJson(initDefaultUsersJsonContent);
       persistXpPointsFromJson(initXpPointsJsonContent);
       persistEntireLeagueFromJson(initLeagueJsonContent);
       persistCredentials(initCredentialsJsonContent);
@@ -103,21 +101,27 @@ public class AdminInitializerService {
     authorityRepository.save(userAuthority);
   }
 
-  private void persistAdminFromJson(final String initAdminJsonContent) throws Exception {
-    final JsonPlayerCredentials adminDto = new Gson().fromJson(initAdminJsonContent, JsonPlayerCredentials.class);
+  private void persistDefaultUsersFromJson(final String initDefaultUsersJsonContent) throws Exception {
+    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonPlayerCredentials>>() {}.getType();
+    final List<JsonPlayerCredentials> jsonDefaultUsersCredentials = new Gson().fromJson(initDefaultUsersJsonContent, listOfMyClassObject);
 
-    final Player adminPlayer = new Player();
-    adminPlayer.setEnabled(true);
-    adminPlayer.setUsername(adminDto.getUsername());
-    adminPlayer.setUuid(UUID.fromString(adminDto.getUuid()));
-    adminPlayer.setPasswordSessionUuid(UUID.fromString(adminDto.getPasswordSessionUuid()));
-    adminPlayer.setPassword(adminDto.getPasswordHashed());
-    adminPlayer.setEmail(adminDto.getEmail());
-    final Authority adminAuthority = authorityRepository.findByType(AuthorityType.ROLE_ADMIN);
-    adminPlayer.addAuthority(adminAuthority);
+    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
 
-    playerRepository.save(adminPlayer);
-    authorityRepository.save(adminAuthority);
+    for (final JsonPlayerCredentials credentials : jsonDefaultUsersCredentials) {
+      final String username = credentials.getUsername();
+      final String email = credentials.getEmail();
+      final String passwordPlain = credentials.getPassword();
+      final String passwordHashed = bCryptPasswordEncoder.encode(passwordPlain);
+
+      final Player player = new Player(username, email);
+      player.setPassword(passwordHashed);
+      player.setUuid(credentials.getUuid());
+      player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
+      player.setEnabled(true);
+
+      playerRepository.save(player);
+      persistAuthorities(credentials, player);
+    }
   }
 
   private void persistXpPointsFromJson(final String initXpPointsJsonContent) throws Exception {
@@ -147,24 +151,25 @@ public class AdminInitializerService {
   }
 
   private void persistCredentials(final String initCredentialsJsonContent) throws Exception {
-    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonPlayerSimpleCredentials>>() {
-    }.getType();
-    final List<JsonPlayerSimpleCredentials> jsonSimpleCredentials = new Gson().fromJson(initCredentialsJsonContent, listOfMyClassObject);
+    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonPlayerCredentials>>() {}.getType();
+    final List<JsonPlayerCredentials> jsonSimpleCredentials = new Gson().fromJson(initCredentialsJsonContent, listOfMyClassObject);
 
     final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
 
-    for (final JsonPlayerSimpleCredentials simpleCredentials : jsonSimpleCredentials) {
-      final String username = simpleCredentials.getUsername();
-      final String email = simpleCredentials.getEmail();
-      final String passwordPlain = simpleCredentials.getPassword();
+    for (final JsonPlayerCredentials credentials : jsonSimpleCredentials) {
+      final String username = credentials.getUsername();
+      final String email = credentials.getEmail();
+      final String passwordPlain = credentials.getPassword();
       final String passwordHashed = bCryptPasswordEncoder.encode(passwordPlain);
 
       final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(username).orElse(null);
       player.setEmail(email);
       player.setPassword(passwordHashed);
+      player.setUuid(credentials.getUuid());
+      player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
 
-      persistLeagueRoles(simpleCredentials, player);
-      persistAuthorities(simpleCredentials, player);
+      persistLeagueRoles(credentials, player);
+      persistAuthorities(credentials, player);
 
       playerRepository.save(player);
     }
@@ -262,7 +267,7 @@ public class AdminInitializerService {
     roleForLeagueRepository.save(moderatorRole);
   }
 
-  private void persistLeagueRoles(final JsonPlayerSimpleCredentials simpleCredentials, final Player player) {
+  private void persistLeagueRoles(final JsonPlayerCredentials simpleCredentials, final Player player) {
     final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
     for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
       final String leagueName = jsonLeagueRole.getLeague();
@@ -277,8 +282,8 @@ public class AdminInitializerService {
     }
   }
 
-  private void persistAuthorities(final JsonPlayerSimpleCredentials simpleCredentials, final Player player) {
-    final List<JsonAuthorities> jsonAuthorities = simpleCredentials.getAuthorities();
+  private void persistAuthorities(final JsonPlayerCredentials credentials, final Player player) {
+    final List<JsonAuthorities> jsonAuthorities = credentials.getAuthorities();
     for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
       final String authorityAsString = jsonAuthority.getAuthority();
       final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);

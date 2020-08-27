@@ -31,8 +31,7 @@ public class Player {
 
   @Setter
   @Column(name = "uuid",
-          nullable = false,
-          updatable = false)
+          nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter

@@ -15,6 +15,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -32,11 +33,12 @@ public class MatchDto {
   private final int roundGroupNumber;
 
   private final Long roundId;
+  private final UUID roundUuid;
   private final int roundNumber;
   @JsonFormat(pattern = "yyyy-MM-dd")
   private final LocalDate roundDate;
 
-  private final Long seasonId;
+  private final UUID seasonUuid;
   private final int seasonNumber;
 
   private final List<SetDto> sets;
@@ -55,8 +57,9 @@ public class MatchDto {
     this.roundGroupNumber = roundGroup.getNumber();
     this.roundDate = round.getDate();
     this.roundId = round.getId();
+    this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
-    this.seasonId = season.getId();
+    this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
 
     this.sets = new ArrayList<>();

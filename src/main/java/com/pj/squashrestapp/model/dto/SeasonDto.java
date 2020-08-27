@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.UUID;
 
 /**
  *
@@ -16,16 +17,20 @@ import java.util.Comparator;
 public class SeasonDto implements Comparable<SeasonDto> {
 
   private final Long leagueId;
+  private final UUID leagueUuid;
   private final String leagueName;
   private final Long seasonId;
+  private final UUID seasonUuid;
   private final int seasonNumber;
   @JsonFormat(pattern = "yyyy-MM-dd")
   private final LocalDate seasonStartDate;
 
   public SeasonDto(final Season season) {
     this.leagueId = season.getLeague().getId();
+    this.leagueUuid = season.getLeague().getUuid();
     this.leagueName = season.getLeague().getName();
     this.seasonId = season.getId();
+    this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
     this.seasonStartDate = season.getStartDate();
   }

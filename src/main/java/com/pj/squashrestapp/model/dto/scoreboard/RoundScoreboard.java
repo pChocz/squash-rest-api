@@ -11,6 +11,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -20,24 +21,45 @@ public class RoundScoreboard {
 
   private final String leagueName;
 
-  private final Long seasonId;
+  private final UUID seasonUuid;
   private final int seasonNumber;
 
-  private final Long roundId;
+  private final UUID roundUuid;
   private final int roundNumber;
   @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
   private final LocalDate roundDate;
+
+  private UUID previousRoundUuid;
+  private UUID nextRoundUuid;
+
   @JsonIgnore
   private final List<Integer> playersPerGroup;
   private final List<RoundGroupScoreboard> roundGroupScoreboards;
 
+  public RoundScoreboard(final Round round, final UUID previousRoundUuid, final UUID nextRoundUuid) {
+    this.previousRoundUuid = previousRoundUuid;
+    this.nextRoundUuid = nextRoundUuid;
+
+    this.leagueName = round.getSeason().getLeague().getName();
+
+    this.seasonUuid = round.getSeason().getUuid();
+    this.seasonNumber = round.getSeason().getNumber();
+
+    this.roundUuid = round.getUuid();
+    this.roundNumber = round.getNumber();
+    this.roundDate = round.getDate();
+
+    this.roundGroupScoreboards = new ArrayList<>();
+    this.playersPerGroup = new ArrayList<>();
+  }
+
   public RoundScoreboard(final Round round) {
     this.leagueName = round.getSeason().getLeague().getName();
 
-    this.seasonId = round.getSeason().getId();
+    this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();
 
-    this.roundId = round.getId();
+    this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
     this.roundDate = round.getDate();
 

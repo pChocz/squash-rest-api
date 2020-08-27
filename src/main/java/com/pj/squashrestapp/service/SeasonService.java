@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -49,8 +50,9 @@ public class SeasonService {
   @Autowired
   private SeasonRepository seasonRepository;
 
-  public SeasonScoreboardDto overalScoreboard(final Long seasonId) {
-    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonId);
+  public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
+    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonUuid);
+    final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
     final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
@@ -110,9 +112,9 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
-  public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final Long seasonId) {
+  public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
     // first - get all the players that have already played in the season (need to extract entire season scoreboard)
-    final SeasonScoreboardDto seasonScoreboardDto = overalScoreboard(seasonId);
+    final SeasonScoreboardDto seasonScoreboardDto = overalScoreboard(seasonUuid);
     seasonScoreboardDto.sortByTotalPoints();
     final List<PlayerDto> seasonPlayersSorted = seasonScoreboardDto
             .getSeasonScoreboardRows()
@@ -121,8 +123,8 @@ public class SeasonService {
             .collect(Collectors.toList());
 
     // second - get all the players from entire League
-    final Long leagueId = seasonScoreboardDto.getSeason().getLeagueId();
-    final List<Player> leaguePlayers = playerRepository.fetchGeneralInfoSorted(leagueId, Sort.by(Sort.Direction.ASC, "username"));
+    final UUID leagueUuid = seasonScoreboardDto.getSeason().getLeagueUuid();
+    final List<Player> leaguePlayers = playerRepository.fetchGeneralInfoSorted(leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
     final List<PlayerDto> leaguePlayersDtos = leaguePlayers
             .stream()
             .map(PlayerDto::new)

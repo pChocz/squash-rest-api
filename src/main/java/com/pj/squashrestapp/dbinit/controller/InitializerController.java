@@ -62,18 +62,18 @@ public class InitializerController {
   @PostMapping(value = "/json")
   @ResponseBody
   void createInitialDatabaseStructure(
-          @RequestParam("init-admin") final MultipartFile initAdminXmlFile,
+          @RequestParam("init-default-users") final MultipartFile initDefaultUsersFile,
           @RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
           @RequestParam("init-league") final MultipartFile initLeagueFile,
           @RequestParam("init-credentials") final MultipartFile initCredentialsFile) throws Exception {
 
-    final String initAdminJsonContent = IOUtils.toString(initAdminXmlFile.getInputStream(), Charset.defaultCharset());
+    final String initDefaultUsersJsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
     final String initXpPointsJsonContent = IOUtils.toString(initXpPointsFile.getInputStream(), Charset.defaultCharset());
     final String initLeagueJsonContent = IOUtils.toString(initLeagueFile.getInputStream(), Charset.defaultCharset());
     final String initCredentialsJsonContent = IOUtils.toString(initCredentialsFile.getInputStream(), Charset.defaultCharset());
 
     final boolean initialized = adminInitializerService.initialize(
-            initAdminJsonContent,
+            initDefaultUsersJsonContent,
             initXpPointsJsonContent,
             initLeagueJsonContent,
             initCredentialsJsonContent);

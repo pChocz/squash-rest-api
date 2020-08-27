@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -64,12 +65,12 @@ public class LeagueController {
     leagueService.createNewLeague(leagueName, player);
   }
 
-  @GetMapping(value = "/general-info/{leagueId}")
+  @GetMapping(value = "/general-info/{leagueUuid}")
   @ResponseBody
   LeagueDto extractLeagueGeneralInfo(
-          @PathVariable("leagueId") final Long leagueId) {
+          @PathVariable("leagueUuid") final UUID leagueUuid) {
     final long startTime = System.nanoTime();
-    final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueId);
+    final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
     TimeLogUtil.logQuery(startTime, "Single league general info: " + leagueGeneralInfo.getLeagueName());
     return leagueGeneralInfo;
   }
@@ -83,22 +84,22 @@ public class LeagueController {
     return allLeaguesGeneralInfo;
   }
 
-  @GetMapping(value = "/{leagueId}/players-general")
+  @GetMapping(value = "/{leagueUuid}/players-general")
   @ResponseBody
   List<PlayerDto> playersGeneralByLeagueId(
-          @PathVariable("leagueId") final Long leagueId) {
+          @PathVariable("leagueUuid") final UUID leagueUuid) {
 
-    final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueId);
+    final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
   }
 
   @ApiOperation(value = "Extract league statistics", authorizations = {@Authorization(value = "jwtToken")})
-  @GetMapping(value = "/{leagueId}/stats")
+  @GetMapping(value = "/{leagueUuid}/stats")
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
-  LeagueStatsWrapper extractLeagueStatistics(@PathVariable final Long leagueId) {
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
+  LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
     final long startTime = System.nanoTime();
-    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueId);
+    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueUuid);
     TimeLogUtil.logQuery(startTime, "League Stats: " + leagueStatsWrapper.getLeagueName());
     return leagueStatsWrapper;
   }
