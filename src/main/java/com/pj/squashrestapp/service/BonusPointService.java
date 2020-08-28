@@ -9,6 +9,7 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,6 +68,7 @@ public class BonusPointService {
     log.info("dupa");
   }
 
+  @Transactional
   public List<BonusPoint> applyPoints(final Long winnerId, final Long looserId, final Long seasonId, final int points) {
     final Season season = seasonRepository.findById(seasonId).get();
     final Player winner = playerRepository.findById(winnerId).get();
