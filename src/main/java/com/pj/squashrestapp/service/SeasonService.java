@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -66,7 +67,20 @@ public class SeasonService {
                                                     final ArrayListMultimap<String, Integer> xpPointsPerSplit,
                                                     final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
-    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
+    final int currentSeasonNumber = season.getNumber();
+    final League currentLeague = season.getLeague();
+
+    final UUID previousSeasonUuid = seasonRepository
+            .findByLeagueAndNumber(currentLeague, currentSeasonNumber - 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    final UUID nextSeasonUuid = seasonRepository
+            .findByLeagueAndNumber(currentLeague, currentSeasonNumber + 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
 
     for (final Round round : season.getRoundsOrdered()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);

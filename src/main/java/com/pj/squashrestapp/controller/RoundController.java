@@ -51,7 +51,7 @@ public class RoundController {
     return round.getUuid();
   }
 
-  @GetMapping("/backup/{roundId}")
+  @GetMapping("/backup/{roundUuid}")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
   String backupRound(@PathVariable final UUID roundUuid) {

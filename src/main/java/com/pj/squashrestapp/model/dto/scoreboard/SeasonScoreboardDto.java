@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -25,9 +26,15 @@ public class SeasonScoreboardDto {
   private final List<SeasonScoreboardRowDto> seasonScoreboardRows;
   private final List<RoundDto> rounds;
 
-  public SeasonScoreboardDto(final Season season) {
+  private final UUID previousSeasonUuid;
+  private final UUID nextSeasonUuid;
+
+  public SeasonScoreboardDto(final Season season, final UUID previousSeasonUuid, final UUID nextSeasonUuid) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
+
+    this.previousSeasonUuid = previousSeasonUuid;
+    this.nextSeasonUuid = nextSeasonUuid;
 
     this.finishedRounds = (int) season
             .getRounds()
