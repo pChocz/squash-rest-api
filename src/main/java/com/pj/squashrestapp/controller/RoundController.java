@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -49,6 +50,15 @@ public class RoundController {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersIds);
     log.info("created round {}", round.getUuid());
     return round.getUuid();
+  }
+
+  @PutMapping
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  void updateRoundFinishState(
+          @RequestParam("roundUuid") final UUID roundUuid,
+          @RequestParam("finishedState") final boolean finishedState) {
+    roundService.updateRoundFinishedState(roundUuid, finishedState);
+    log.info("update round {}: finished state: {}", roundUuid, finishedState);
   }
 
   @GetMapping("/backup/{roundUuid}")

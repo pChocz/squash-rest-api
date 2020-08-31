@@ -29,6 +29,8 @@ public class RoundScoreboard {
   @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
   private final LocalDate roundDate;
 
+  private boolean finishedState;
+
   private UUID previousRoundUuid;
   private UUID nextRoundUuid;
 
@@ -48,6 +50,7 @@ public class RoundScoreboard {
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
     this.roundDate = round.getDate();
+    this.finishedState = round.isFinished();
 
     this.roundGroupScoreboards = new ArrayList<>();
     this.playersPerGroup = new ArrayList<>();

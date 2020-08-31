@@ -187,4 +187,10 @@ public class RoundService {
     return roundJson;
   }
 
+  public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
+    final Round round = roundRepository.findRoundByUuid(roundUuid);
+    round.setFinished(finishedState);
+    roundRepository.save(round);
+  }
+
 }
