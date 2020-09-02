@@ -238,7 +238,7 @@ public class LeagueService {
     final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
     for (final Season season : league.getSeasons()) {
       final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointsAggregatedForLeague.forSeason(season.getId());
-      final SeasonScoreboardDto scoreboardDto = seasonService.getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+      final SeasonScoreboardDto scoreboardDto = seasonService.getSeasonScoreboardDtoForLeagueStats(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
       seasonScoreboardDtoList.add(scoreboardDto);
     }
 

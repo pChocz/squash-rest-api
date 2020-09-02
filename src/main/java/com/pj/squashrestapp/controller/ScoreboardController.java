@@ -43,6 +43,7 @@ public class ScoreboardController {
   private SeasonService seasonService;
 
 
+  // TODO: can be removed I guess!
   @GetMapping(value = "/leagues/{leagueUuid}")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")

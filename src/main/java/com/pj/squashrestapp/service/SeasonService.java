@@ -51,36 +51,17 @@ public class SeasonService {
   @Autowired
   private SeasonRepository seasonRepository;
 
-  public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
-    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonUuid);
-    final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
-    final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
-
-    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointService.extractBonusPointsAggregatedForSeason(seasonId);
-
-    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
-    return seasonScoreboardDto;
+  public SeasonScoreboardDto getSeasonScoreboardDtoForLeagueStats(final Season season,
+                                                                  final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+                                                                  final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
+    return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
-  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season,
-                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-                                                    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
-
-    final int currentSeasonNumber = season.getNumber();
-    final League currentLeague = season.getLeague();
-
-    final UUID previousSeasonUuid = seasonRepository
-            .findByLeagueAndNumber(currentLeague, currentSeasonNumber - 1)
-            .map(Season::getUuid)
-            .orElse(null);
-
-    final UUID nextSeasonUuid = seasonRepository
-            .findByLeagueAndNumber(currentLeague, currentSeasonNumber + 1)
-            .map(Season::getUuid)
-            .orElse(null);
-
-    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
+  public SeasonScoreboardDto buildSeasonScoreboardDto(final SeasonScoreboardDto seasonScoreboardDto,
+                                                      final Season season,
+                                                      final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+                                                      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
     for (final Round round : season.getRoundsOrdered()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
@@ -151,6 +132,40 @@ public class SeasonService {
     }
 
     return seasonPlayersSorted;
+  }
+
+  public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
+    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonUuid);
+    final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
+    final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+
+    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointService.extractBonusPointsAggregatedForSeason(seasonId);
+
+    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+    return seasonScoreboardDto;
+  }
+
+  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season,
+                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+                                                    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+
+    final int currentSeasonNumber = season.getNumber();
+    final League currentLeague = season.getLeague();
+
+    final UUID previousSeasonUuid = seasonRepository
+            .findByLeagueAndNumber(currentLeague, currentSeasonNumber - 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    final UUID nextSeasonUuid = seasonRepository
+            .findByLeagueAndNumber(currentLeague, currentSeasonNumber + 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
+
+    return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
   @Transactional

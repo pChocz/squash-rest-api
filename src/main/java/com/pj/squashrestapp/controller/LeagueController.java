@@ -93,7 +93,6 @@ public class LeagueController {
     return playersGeneralInfo;
   }
 
-  @ApiOperation(value = "Extract league statistics", authorizations = {@Authorization(value = "jwtToken")})
   @GetMapping(value = "/{leagueUuid}/stats")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")

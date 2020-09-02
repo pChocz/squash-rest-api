@@ -29,6 +29,28 @@ public class SeasonScoreboardDto {
   private final UUID previousSeasonUuid;
   private final UUID nextSeasonUuid;
 
+  public SeasonScoreboardDto(final Season season) {
+    this.season = new SeasonDto(season);
+    this.seasonScoreboardRows = new ArrayList<>();
+
+    this.previousSeasonUuid = null;
+    this.nextSeasonUuid = null;
+
+    this.finishedRounds = (int) season
+            .getRounds()
+            .stream()
+            .filter(Round::isFinished)
+            .count();
+
+    this.countedRounds = getNumberOfRoundsThatCount();
+
+    this.rounds = season
+            .getRounds()
+            .stream()
+            .map(RoundDto::new)
+            .collect(Collectors.toList());
+  }
+
   public SeasonScoreboardDto(final Season season, final UUID previousSeasonUuid, final UUID nextSeasonUuid) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
