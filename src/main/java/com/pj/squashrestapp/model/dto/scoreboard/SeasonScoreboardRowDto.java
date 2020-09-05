@@ -29,6 +29,18 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private int countedPointsPretenders;
   private int eightBestPoints;
 
+  private int pointsWon;
+  private int pointsLost;
+  private int pointsBalance;
+
+  private int setsWon;
+  private int setsLost;
+  private int setsBalance;
+
+  private int matchesWon;
+  private int matchesLost;
+  private int matchesBalance;
+
   public SeasonScoreboardRowDto(final PlayerDto player, final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
     this.player = player;
     this.roundNumberToXpMapAll = new HashMap<>();
@@ -88,6 +100,20 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
             .thenComparingInt(SeasonScoreboardRowDto::getAverage)
             .reversed()
             .compare(this, that);
+  }
+
+  public void addScoreboardRow(final ScoreboardRow scoreboardRow) {
+    this.pointsWon += scoreboardRow.getPointsWon();
+    this.pointsLost += scoreboardRow.getPointsLost();
+    this.pointsBalance += scoreboardRow.getPointsBalance();
+
+    this.setsWon += scoreboardRow.getSetsWon();
+    this.setsLost += scoreboardRow.getSetsLost();
+    this.setsBalance += scoreboardRow.getSetsBalance();
+
+    this.matchesWon += scoreboardRow.getMatchesWon();
+    this.matchesLost += scoreboardRow.getMatchesLost();
+    this.matchesBalance += scoreboardRow.getMatchesBalance();
   }
 
 }

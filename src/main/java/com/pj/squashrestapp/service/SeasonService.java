@@ -85,6 +85,8 @@ public class SeasonService {
                   .findFirst()
                   .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedForSeason));
 
+          seasonScoreboardRowDto.addScoreboardRow(scoreboardRow);
+
           // if it's not the first group, count pretenders points as well
           if (scoreboardRow.getPlaceInGroup() != scoreboardRow.getPlaceInRound()) {
             seasonScoreboardRowDto.addXpForRoundPretendents(round.getNumber(), scoreboardRow.getXpEarned());
