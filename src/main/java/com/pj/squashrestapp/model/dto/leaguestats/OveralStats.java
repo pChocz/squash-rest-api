@@ -2,8 +2,10 @@ package com.pj.squashrestapp.model.dto.leaguestats;
 
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -14,7 +16,7 @@ public class OveralStats {
 
   private final int seasons;
   private final int players;
-  private final int allAttendices;
+  private final BigDecimal averagePlayers;
   private int rounds;
   private int matches;
   private int sets;
@@ -30,14 +32,16 @@ public class OveralStats {
     final Multimap<Long, Long> overalPlayersAttendicesMap = LinkedHashMultimap.create();
     for (final PerSeasonStats perSeasonStats : perSeasonStatsList) {
       this.rounds += perSeasonStats.getRounds();
-      this.matches += perSeasonStats.getMatches();
-      this.sets += perSeasonStats.getRegularSets();
-      this.sets += perSeasonStats.getTieBreaks();
+      this.matches += perSeasonStats.getRegularMatches() + perSeasonStats.getTieBreakMatches();
+      this.sets += perSeasonStats.getRegularMatches() * 2;
+      this.sets += perSeasonStats.getTieBreakMatches();
       this.points += perSeasonStats.getPoints();
       overalPlayersAttendicesMap.putAll(perSeasonStats.getPlayersAttendicesMap());
     }
     this.players = overalPlayersAttendicesMap.keySet().size();
-    this.allAttendices = overalPlayersAttendicesMap.size();
+
+    final float averagePlayers = (float) overalPlayersAttendicesMap.size() / this.rounds;
+    this.averagePlayers = RoundingUtil.round(averagePlayers, 1);
   }
 
 }

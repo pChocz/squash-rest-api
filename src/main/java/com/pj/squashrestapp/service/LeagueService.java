@@ -30,12 +30,14 @@ import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
+import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -209,18 +211,21 @@ public class LeagueService {
           }
         }
       }
-      final int tieBreaksPercents = 100 * tieBreaks / matches;
-      final int rounds = season.getRounds().size();
+
+      final float tieBreakMatchesPercents = (float) 100 * tieBreaks / matches;
+      final BigDecimal tieBreakMatchesPercentsRounded = RoundingUtil.round(tieBreakMatchesPercents, 1);
+
+      final float playersAverage = (float) playersAttendicesMap.size() / season.getRounds().size();
+      final BigDecimal playersAverageRounded = RoundingUtil.round(playersAverage, 1);
 
       perSeasonStatsList.add(PerSeasonStats.builder()
               .seasonNumber(season.getNumber())
-              .rounds(rounds)
-              .matches(matches)
-              .regularSets(regularSets)
-              .tieBreaks(tieBreaks)
-              .tieBreaksPercents(tieBreaksPercents)
+              .rounds(season.getRounds().size())
+              .regularMatches(matches - tieBreaks)
+              .tieBreakMatches(tieBreaks)
+              .tieBreakMatchesPercents(tieBreakMatchesPercentsRounded)
               .points(points)
-              .allAttendices(playersAttendicesMap.size())
+              .playersAverage(playersAverageRounded)
               .players(playersAttendicesMap.keySet().size())
               .playersAttendicesMap(playersAttendicesMap)
               .build());

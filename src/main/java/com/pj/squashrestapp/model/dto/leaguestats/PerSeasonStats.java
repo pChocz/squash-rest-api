@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.math.BigDecimal;
+
 /**
  *
  */
@@ -15,13 +17,12 @@ public class PerSeasonStats {
 
   private final int seasonNumber;
   private final int rounds;
-  private final int matches;
-  private final int regularSets;
-  private final int tieBreaks;
-  private final int tieBreaksPercents;
+  private final int regularMatches;
+  private final int tieBreakMatches;
+  private final BigDecimal tieBreakMatchesPercents;
   private final int points;
   private final int players;
-  private final int allAttendices;
+  private final BigDecimal playersAverage;
 
   @JsonIgnore
   private final Multimap<Long, Long> playersAttendicesMap;

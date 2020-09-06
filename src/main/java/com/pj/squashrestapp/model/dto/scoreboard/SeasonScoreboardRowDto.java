@@ -3,9 +3,11 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.service.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,7 +24,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private final Map<Integer, Integer> roundNumberToXpMapAll;
   private final Map<Integer, Integer> roundNumberToXpMapPretenders;
   private final int bonusPoints;
-  private int average;
+  private BigDecimal average;
   private int attendices;
   private int totalPoints;
   private int countedPoints;
@@ -71,7 +73,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.eightBestPoints = eightBestPointsForRounds + bonusPoints;
 
     this.attendices = roundNumberToXpMapAll.size();
-    this.average = totalPoints / attendices;
+    this.average = RoundingUtil.round((float) totalPoints / attendices, 1);
   }
 
   private int getTotalPointsForRounds(final Map<Integer, Integer> roundNumberToXpMap) {
@@ -97,9 +99,13 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     return Comparator
             .comparingInt(SeasonScoreboardRowDto::getCountedPoints)
             .thenComparingInt(SeasonScoreboardRowDto::getTotalPoints)
-            .thenComparingInt(SeasonScoreboardRowDto::getAverage)
+            .thenComparingDouble(SeasonScoreboardRowDto::getAverageAsDouble)
             .reversed()
             .compare(this, that);
+  }
+
+  private static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {
+    return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
   }
 
   public void addScoreboardRow(final ScoreboardRow scoreboardRow) {
