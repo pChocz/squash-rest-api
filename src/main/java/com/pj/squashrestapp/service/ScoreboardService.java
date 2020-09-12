@@ -16,9 +16,11 @@ import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.ArrayStack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -76,6 +78,11 @@ public class ScoreboardService {
 
   public Scoreboard buildScoreboardForLeagueForPlayers(final UUID leagueUuid, final Long[] playersIds) {
     final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersIds);
+
+    if (setResults.isEmpty()) {
+      return new Scoreboard(new ArrayList<>());
+    }
+
     final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
     final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
 

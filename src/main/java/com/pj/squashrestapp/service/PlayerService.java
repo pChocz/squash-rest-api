@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.service;
 
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.google.gson.Gson;
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.controller.WrongSignupDataException;
 import com.pj.squashrestapp.model.Authority;
@@ -125,7 +127,7 @@ public class PlayerService {
     verificationTokenRepository.save(verificationToken);
   }
 
-  public void createAndPersistPasswordResetToken(final String token, final Player user) {
+  public void createAndPersistPasswordResetToken(final UUID token, final Player user) {
     final PasswordResetToken passwordResetToken = new PasswordResetToken(token, user);
     passwordResetTokenRepository.save(passwordResetToken);
   }
@@ -214,7 +216,7 @@ public class PlayerService {
     return playerDetailedDto;
   }
 
-  public void changePlayerPassword(final String token, final String newPassword) {
+  public void changePlayerPassword(final UUID token, final String newPassword) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
     if (passwordResetToken == null) {
@@ -222,10 +224,10 @@ public class PlayerService {
       throw new RuntimeException("It seems that we do not have matching token!");
 
     } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
-      log.warn("Password reset token has already expired. You must request new one!");
+      throw new RuntimeException("Password reset token has already expired. You must request new one!");
 
     } else if (!PasswordStrengthValidator.isValid(newPassword)) {
-      throw new RuntimeException("Password is too weak. It must contain at least 5 characters, at least one upper case letter and at least one lower case letter. Whitespace characters are not allowed");
+      throw new RuntimeException("Password is too weak. It must contain at least 5 characters.");
 
     } else {
       final Player player = passwordResetToken.getPlayer();
@@ -246,9 +248,11 @@ public class PlayerService {
 
     if (verificationToken == null) {
       log.warn("It seems that we do not have matching token!");
+      throw new RuntimeException("No matching token!");
 
     } else if (LocalDateTime.now(UTC_ZONE_ID).isAfter(verificationToken.getExpirationDateTime())) {
       log.warn("Activation token has already expired. You must request sending new one!");
+      throw new RuntimeException("Token has expired!");
 
     } else {
       final Player player = verificationToken.getPlayer();
@@ -258,5 +262,11 @@ public class PlayerService {
       log.info("User {} has been succesfully activated.", player.getUsername());
     }
   }
+
+  public String extractSessionUsername() {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return userDetails.getUsername();
+  }
+
 
 }

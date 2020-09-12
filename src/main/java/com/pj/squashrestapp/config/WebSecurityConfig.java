@@ -57,10 +57,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // set up of endpoints permissions
     httpSecurity.authorizeRequests()
-            .antMatchers(HttpMethod.POST, "/players/signUp").permitAll()
             .antMatchers(HttpMethod.GET, "/players/confirmRegistration**").permitAll()
-            .antMatchers(HttpMethod.GET, "/players/resetPassword**").permitAll()
-            .antMatchers(HttpMethod.GET, "/players/requestPasswordReset**").permitAll()
+            .antMatchers(HttpMethod.GET, "/token/passwordReset/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/players/signUp").permitAll()
+            .antMatchers(HttpMethod.POST, "/players/requestPasswordReset").permitAll()
+            .antMatchers(HttpMethod.POST, "/players/resetPassword").permitAll()
+            .antMatchers(HttpMethod.POST, "/players/confirmRegistration").permitAll()
             .antMatchers(HttpMethod.POST, "/db-initializers/**").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
             .anyRequest().authenticated();

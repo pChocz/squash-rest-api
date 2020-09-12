@@ -34,7 +34,7 @@ public class AccessDeniedExceptionHandler {
 
     try (final PrintWriter writer = response.getWriter()) {
       writer.write(new JSONObject()
-              .appendField("response", HttpServletResponse.SC_FORBIDDEN)
+              .appendField("status", HttpServletResponse.SC_FORBIDDEN)
               .appendField("user", username)
               .appendField("authorities", authorities)
               .appendField("timestamp", LocalDateTime.now(UTC_ZONE_ID).toString())

@@ -163,8 +163,8 @@ public class LeagueService {
 
   public League fetchEntireLeague(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueUuid);
-    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
-    return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueId);
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
   }
 
 //  private String extractLeagueLogo(final Blob blob) {
@@ -266,11 +266,10 @@ public class LeagueService {
 
   @Transactional
   public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
-    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
-    final League league = leagueRepository.findById(leagueId).orElse(null);
-    final LeagueLogo leagueLogo = leagueLogoRepository.findById(leagueId).orElse(null);
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final LeagueDto leagueDto = new LeagueDto(league);
 
+    final LeagueLogo leagueLogo = league.getLeagueLogo();
     if (leagueLogo != null) {
       leagueDto.setLeagueLogo(leagueLogo.getPicture());
     }

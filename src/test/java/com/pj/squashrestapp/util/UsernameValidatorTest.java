@@ -4,7 +4,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.pj.squashrestapp.util.UsernameValidator.*;
+import static com.pj.squashrestapp.util.UsernameValidator.isValid;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -22,7 +22,16 @@ class UsernameValidatorTest {
             () -> assertTrue(isValid("ABCDEF ghijkl")),
             () -> assertTrue(isValid("ABC_DEF")),
             () -> assertTrue(isValid("ABC-def")),
-            () -> assertTrue(isValid("Abc Def"))
+            () -> assertTrue(isValid("Abc Def")),
+            () -> assertTrue(isValid("ęśąćż")),
+            () -> assertTrue(isValid("Paweł")),
+            () -> assertTrue(isValid("sørina_Ś")),
+            () -> assertTrue(isValid("Seán P")),
+            () -> assertTrue(isValid("Mathéo")),
+            () -> assertTrue(isValid("Mát-yás")),
+            () -> assertTrue(isValid("Renée")),
+            () -> assertTrue(isValid("Adrián")),
+            () -> assertTrue(isValid("Günther"))
     );
   }
 

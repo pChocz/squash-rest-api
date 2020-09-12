@@ -47,7 +47,7 @@ public class ExpiredTokenService {
       blacklistedTokenRepository.deleteAll(expiredBlacklistedTokens);
       verificationTokenRepository.deleteAll(expiredVerificationTokens);
       passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
-      log.info("Succesfully removed {} expried tokens.", tokensCount);
+      log.info("Succesfully removed {} expired tokens.", tokensCount);
 
     } else {
       log.info("No expired tokens to remove this time");

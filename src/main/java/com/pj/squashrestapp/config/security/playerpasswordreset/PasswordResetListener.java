@@ -31,21 +31,21 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
   }
 
   private void confirmPasswordReset(final OnPasswordResetEvent event) {
-    final String token = UUID.randomUUID().toString();
+    final UUID token = UUID.randomUUID();
     final Player player = event.getPlayer();
     playerService.createAndPersistPasswordResetToken(token, player);
 
     final String receiver = player.getEmail();
     final String subject = "Password reset request";
-    final String passwordResetUrl = "http://localhost:8080" + event.getAppUrl() + "/players/resetPassword?token=" + token;
+    final String passwordResetUrl = event.getFrontendUrl() + "reset-password/" + token;
 
     final String htmlContent = EmailTemplate.builder()
             .title(subject)
+            .username(player.getUsername())
             .buttonLabel("Reset Password")
             .buttonLink(passwordResetUrl)
             .beginContent("""
-                    Hi,
-                    <br>It seems that you have requested password reset for your account.
+                    It seems that you have requested password reset for your account.
                     <br>To finish the process please click the following link and follow on-screen instructions.
                     """)
             .endContent("""

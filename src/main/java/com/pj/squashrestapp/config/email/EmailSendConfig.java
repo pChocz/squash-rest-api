@@ -87,7 +87,7 @@ public class EmailSendConfig {
             InternetAddress.parse(receiver)
     );
     message.setSubject(subject);
-    message.setContent(content, "text/html");
+    message.setContent(content, "text/html; charset=UTF-8");
     return message;
   }
 

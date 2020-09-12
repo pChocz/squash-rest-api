@@ -16,6 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
@@ -36,7 +37,7 @@ public class PasswordResetToken {
 
   @Setter
   @Column(name = "token")
-  private String token;
+  private UUID token;
 
   @Setter
   @OneToOne(targetEntity = Player.class, fetch = FetchType.EAGER)
@@ -49,7 +50,7 @@ public class PasswordResetToken {
           updatable = false)
   private LocalDateTime expirationDateTime;
 
-  public PasswordResetToken(final String token, final Player player) {
+  public PasswordResetToken(final UUID token, final Player player) {
     this.token = token;
     this.player = player;
     this.expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusHours(EXPIRATION_TIME_HOURS);

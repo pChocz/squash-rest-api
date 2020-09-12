@@ -1,19 +1,10 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.MatchDto;
-import com.pj.squashrestapp.model.entityhelper.MatchHelper;
-import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
-import com.pj.squashrestapp.repository.MatchRepository;
-import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.service.MatchService;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/matches")
 public class MatchController {
 
-  @Autowired
-  private MatchService matchService;
+  private final MatchService matchService;
+
+  public MatchController(final MatchService matchService) {
+    this.matchService = matchService;
+  }
 
 
   @GetMapping(value = "/{matchId}")

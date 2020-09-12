@@ -14,15 +14,15 @@ import java.util.Locale;
 @Setter
 public class OnRegistrationCompleteEvent extends ApplicationEvent {
 
-  private String appUrl;
+  private String frontendUrl;
   private Locale locale;
   private Player player;
 
-  public OnRegistrationCompleteEvent(final Player player, final Locale locale, final String appUrl) {
+  public OnRegistrationCompleteEvent(final Player player, final Locale locale, final String frontendUrl) {
     super(player);
     this.player = player;
     this.locale = locale;
-    this.appUrl = appUrl;
+    this.frontendUrl = frontendUrl;
   }
 
 }

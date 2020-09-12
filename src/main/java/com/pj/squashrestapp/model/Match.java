@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.UUID;
 
 /**
  *
@@ -59,6 +60,12 @@ public class Match implements Identifiable, Comparable<Match> {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Setter
+  @Column(name = "uuid",
+          nullable = false,
+          updatable = false)
+  private UUID uuid = UUID.randomUUID();
 
   @Setter
   @Column(name = "number")

@@ -14,15 +14,15 @@ import java.util.Locale;
 @Setter
 public class OnPasswordResetEvent extends ApplicationEvent {
 
-  private String appUrl;
+  private String frontendUrl;
   private Locale locale;
   private Player player;
 
-  public OnPasswordResetEvent(final Player player, final Locale locale, final String appUrl) {
+  public OnPasswordResetEvent(final Player player, final Locale locale, final String frontendUrl) {
     super(player);
     this.player = player;
     this.locale = locale;
-    this.appUrl = appUrl;
+    this.frontendUrl = frontendUrl;
   }
 
 }

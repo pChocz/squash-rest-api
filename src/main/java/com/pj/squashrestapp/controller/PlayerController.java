@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.security.playerpasswordreset.OnPasswordResetEvent;
 import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCompleteEvent;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -66,9 +69,11 @@ public class PlayerController {
 
   @PostMapping(value = "/logout")
   @ResponseBody
-  void logout(@RequestHeader(name = TokenConstants.HEADER_STRING) final String bearerToken) {
-    playerService.blacklistToken(bearerToken);
-    log.info("Logged-out");
+  void logout(
+          @RequestParam final String token) {
+
+    playerService.blacklistToken(token);
+    log.info("User [{}] has logged out. Token has been blacklisted", playerService.extractSessionUsername());
   }
 
 
@@ -78,31 +83,30 @@ public class PlayerController {
           @RequestParam("username") final String username,
           @RequestParam("email") final String email,
           @RequestParam("password") final String password,
+          @RequestParam("frontendUrl") final String frontendUrl,
           final HttpServletRequest request) {
 
     final boolean isValid = playerService.isValidSignupData(username, email, password);
     if (isValid) {
       final Player newPlayer = playerService.registerNewUser(username, email, password);
-      final String appUrl = request.getContextPath();
-      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), appUrl));
-
+      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), frontendUrl));
       return new PlayerDetailedDto(newPlayer);
     }
     return null;
   }
 
 
-  @GetMapping(value = "/requestPasswordReset")
+  @PostMapping(value = "/requestPasswordReset")
   @ResponseBody
   void requestResetPassword(
           @RequestParam("usernameOrEmail") final String usernameOrEmail,
+          @RequestParam("frontendUrl") final String frontendUrl,
           final HttpServletRequest request) {
 
     final Player player = playerService.getPlayer(usernameOrEmail);
 
     if (player != null) {
-      final String appUrl = request.getContextPath();
-      eventPublisher.publishEvent(new OnPasswordResetEvent(player, request.getLocale(), appUrl));
+      eventPublisher.publishEvent(new OnPasswordResetEvent(player, request.getLocale(), frontendUrl));
 
     } else {
       throw new RuntimeException("Account does not exist!");
@@ -113,17 +117,18 @@ public class PlayerController {
   @PostMapping(value = "/resetPassword")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   void confirmResetPassword(
-          @RequestParam("token") final String token,
-          @RequestParam("newPassword") final String newPassword,
+          @RequestParam final UUID token,
+          @RequestParam final String newPassword,
           final HttpServletRequest request) {
 
     playerService.changePlayerPassword(token, newPassword);
   }
 
 
-  @GetMapping("/confirmRegistration")
-  @ResponseBody
-  void confirmRegistration(@RequestParam("token") final String token) {
+  @PostMapping("/confirmRegistration")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void confirmRegistration(
+          @RequestParam final String token) {
     playerService.activateUserWithToken(token);
   }
 
@@ -152,7 +157,7 @@ public class PlayerController {
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
   List<PlayerDetailedDto> playersDetailedByLeagueId(
-          @PathVariable("leagueId") final Long leagueId) {
+          @PathVariable final Long leagueId) {
 
     final List<PlayerDetailedDto> usersBasicInfo = playerService.getLeaguePlayers(leagueId);
     return usersBasicInfo;
@@ -163,9 +168,9 @@ public class PlayerController {
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
   PlayerDetailedDto assignLeagueRole(
-          @PathVariable("playerId") final Long playerId,
-          @RequestParam("leagueId") final Long leagueId,
-          @RequestParam("leagueRole") final LeagueRole leagueRole) {
+          @PathVariable final Long playerId,
+          @RequestParam final Long leagueId,
+          @RequestParam final LeagueRole leagueRole) {
 
     final PlayerDetailedDto playerDetailedDto = playerService.assignLeagueRole(playerId, leagueId, leagueRole);
     return playerDetailedDto;

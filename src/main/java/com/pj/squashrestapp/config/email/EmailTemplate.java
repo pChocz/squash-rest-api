@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.config.email;
 
-import com.pj.squashrestapp.config.security.playerpasswordreset.PasswordResetListener;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -19,11 +18,13 @@ public class EmailTemplate {
   private final static String TEMPLATE_PATH = "templates" + File.separator + "email_template.html";
 
   private final static String TITLE_PLACEHOLDER = "_Title_";
+  private final static String USERNAME_PLACEHOLDER = "_Username_";
   private final static String BUTTON_LABEL_PLACEHOLDER = "_Button_label_";
   private final static String BUTTON_LINK_PLACEHOLDER = "_Button_link_";
   private final static String BEGIN_CONTENT_PLACEHOLDER = "_Begin_";
   private final static String END_CONTENT_PLACEHOLDER = "_End_";
 
+  private final String username;
   private final String title;
   private final String buttonLabel;
   private final String buttonLink;
@@ -44,7 +45,7 @@ public class EmailTemplate {
             .replace(TITLE_PLACEHOLDER, title)
             .replace(BUTTON_LABEL_PLACEHOLDER, buttonLabel)
             .replace(BUTTON_LINK_PLACEHOLDER, buttonLink)
-            .replace(BEGIN_CONTENT_PLACEHOLDER, beginContent)
+            .replace(BEGIN_CONTENT_PLACEHOLDER, "Hi " + username + ", <br>" + beginContent)
             .replace(END_CONTENT_PLACEHOLDER, endContent);
   }
 

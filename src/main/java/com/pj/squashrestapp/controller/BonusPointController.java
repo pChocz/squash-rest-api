@@ -26,8 +26,12 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/bonusPoints")
 public class BonusPointController {
 
-  @Autowired
-  private BonusPointService bonusPointService;
+  private final BonusPointService bonusPointService;
+
+  public BonusPointController(final BonusPointService bonusPointService) {
+    this.bonusPointService = bonusPointService;
+  }
+
 
   @GetMapping(value = "/seasons/{seasonId}/players/{playerId}")
   @ResponseBody
@@ -36,6 +40,7 @@ public class BonusPointController {
     final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(playerId, seasonId);
     return bonusPoints;
   }
+
 
   @PostMapping(
           value = "/apply",

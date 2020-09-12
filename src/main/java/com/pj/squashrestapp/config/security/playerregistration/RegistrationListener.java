@@ -34,20 +34,20 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
 
     final String receiver = player.getEmail();
     final String subject = "Confirm registration";
-    final String confirmationUrl = "http://localhost:8080" + event.getAppUrl() + "/players/confirmRegistration?token=" + token;
+    final String confirmationUrl = event.getFrontendUrl() + "confirm-registration/" + token;
 
     final String htmlContent = EmailTemplate.builder()
             .title(subject)
+            .username(player.getUsername())
             .buttonLabel("Confirm Registration")
             .buttonLink(confirmationUrl)
             .beginContent("""
-                    Hi,
-                    <br>It seems that you have created an account in our App.
+                    It seems that you have created an account in our App.
                     <br>To finish the registration process please click the following link:  
                     """)
             .endContent("""
                     If it wasn't you, just ignore this email. 
-                    <br>Link will expire after 24h.
+                    <br>Link will expire after 24h and the account will be deleted.
                     """)
             .build()
             .createHtmlContent();

@@ -26,6 +26,7 @@ public class BlacklistedToken {
 
   @Setter
   @Column(name = "token",
+          length = 500,
           nullable = false,
           updatable = false)
   private String token;

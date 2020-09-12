@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface LeagueRepository extends JpaRepository<League, Long> {
@@ -18,6 +19,8 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   List<League> findAll();
 
   League findByName(String name);
+
+  Optional<League> findByUuid(UUID uuid);
 
   @Query("""
           SELECT l.id FROM League l
