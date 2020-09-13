@@ -34,23 +34,13 @@ public class ScheduledTasks {
   @Autowired
   private ExpiredTokenService expiredTokenService;
 
-//  @Scheduled(cron = CRON_EVERY_FULL_MINUTE, zone = "UTC")
-//  public void cronScheduledEveryMinute() {
-//    log.info("CRON every minute");
-//  }
-
   /**
    * Permanently removes all expired temporary tokens from database.
-   * It is performed at the begining of each hour.
+   * It is performed at midnight every day.
    */
-  @Scheduled(cron = CRON_EVERY_FULL_HOUR, zone = "UTC")
-  public void removeExpiredTokens() {
-    expiredTokenService.removeExpiredTokensFromDb();
-  }
-
   @Scheduled(cron = CRON_EVERYDAY_AT_MIDNIGHT, zone = "UTC")
   public void cronScheduledEveryday() {
-    log.info("CRON everyday at midnight");
+    expiredTokenService.removeExpiredTokensFromDb();
   }
 
 }

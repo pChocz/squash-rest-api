@@ -177,7 +177,7 @@ public class PlayerService {
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).get();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }
