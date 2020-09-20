@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.Getter;
 
@@ -20,7 +20,7 @@ public class Scoreboard {
 
   private final int numberOfMatches;
   private final List<ScoreboardRow> scoreboardRows;
-  private final List<MatchDto> matches;
+  private List<MatchDto> matches;
 
   public Scoreboard(final Collection<MatchDto> matches) {
     this.matches = getSortedMatches(matches);
@@ -69,6 +69,10 @@ public class Scoreboard {
         iterator.remove();
       }
     }
+  }
+
+  public void removeMatches() {
+    this.matches = null;
   }
 
 }

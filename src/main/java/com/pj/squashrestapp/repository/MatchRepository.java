@@ -1,15 +1,28 @@
 package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Match;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.UUID;
 
 @SuppressWarnings({"JavaDoc", "unused"})
 public interface MatchRepository extends JpaRepository<Match, Long> {
+
+  String SELECT_FETCH_LEAGUE = """
+          SELECT m FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+                    
+          """;
+
 
   @Query("""
           SELECT l.id FROM Match m
@@ -21,6 +34,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           """)
   Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
 
+
   @EntityGraph(attributePaths = {
           "firstPlayer",
           "secondPlayer",
@@ -29,7 +43,108 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   })
   Match findMatchById(Long id);
 
+
+  @Query(SELECT_FETCH_LEAGUE + """
+            WHERE l.uuid = :leagueUuid
+              AND m.firstPlayer.id IN :playersIds 
+              AND m.secondPlayer.id IN :playersIds
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  List<Match> fetchBySeveralPlayersIdsAndLeagueId(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playersIds") Long[] playersIds);
+
+
+  @Query(SELECT_FETCH_LEAGUE + """
+            WHERE l.uuid = :leagueUuid
+              AND m.firstPlayer.id IN :playersIds 
+              AND m.secondPlayer.id IN :playersIds
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  Page<Match> fetchPageBySeveralPlayersIdsAndLeagueId(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playersIds") Long[] playersIds,
+          Pageable pageable);
+
+
+
+
+  @Query("""
+          SELECT m.id FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+            WHERE l.uuid = :leagueUuid
+              AND m.firstPlayer.id IN :playersIds 
+              AND m.secondPlayer.id IN :playersIds
+          """)
+  Page<Long> findIdsMultiple(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playersIds") Long[] playersIds,
+          Pageable pageable);
+
+
+  @Query("""
+          SELECT m.id FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+            WHERE l.uuid = :leagueUuid
+              AND (m.firstPlayer.id = :playerId 
+               OR m.secondPlayer.id = :playerId)
+          """)
+  Page<Long> findIdsSingle(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerId") Long playerId,
+          Pageable pageable);
+
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  List<Match> findByIdIn(List<Long> matchIds);
+
+
+  @Query(SELECT_FETCH_LEAGUE + """
+            WHERE l.uuid = :leagueUuid
+              AND (m.firstPlayer.id = :playerId 
+               OR m.secondPlayer.id = :playerId)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  List<Match> fetchByOnePlayerIdAndLeagueId(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerId") Long playerId);
+
 }
 
-
-
+//  @Query(SELECT_FETCH_LEAGUE + """
+//          WHERE l.uuid = :leagueUuid
+//            AND (m.firstPlayer.id = :playerId
+//             OR m.secondPlayer.id = :playerId)
+//          """)
+//  @EntityGraph(attributePaths = {
+//          "match.firstPlayer",
+//          "match.secondPlayer",
+//  })
+//  List<SetResult> fetchByOnePlayerIdAndLeagueId(
+//          @Param("leagueUuid") UUID leagueUuid,
+//          @Param("playerId") Long playerId);

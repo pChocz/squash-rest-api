@@ -12,7 +12,7 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.LeagueDto;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.model.dto.SetDto;
@@ -187,7 +187,7 @@ public class LeagueService {
     final List<PerSeasonStats> perSeasonStatsList = new ArrayList<>();
 
     for (final Season season : league.getSeasons()) {
-      final List<MatchDto> matchesForSeason = MatchExtractorUtil.extractAllMatches(season);
+      final List<MatchDetailedDto> matchesForSeason = MatchExtractorUtil.extractAllMatches(season);
 
       int matches = 0;
       int regularSets = 0;
@@ -195,7 +195,7 @@ public class LeagueService {
       int points = 0;
 
       final Multimap<Long, Long> playersAttendicesMap = LinkedHashMultimap.create();
-      for (final MatchDto match : matchesForSeason) {
+      for (final MatchDetailedDto match : matchesForSeason) {
         matches++;
         playersAttendicesMap.put(match.getFirstPlayer().getId(), match.getRoundId());
         playersAttendicesMap.put(match.getSecondPlayer().getId(), match.getRoundId());

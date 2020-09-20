@@ -104,7 +104,7 @@ public class PlayerService {
       message = "Email is not valid!";
 
     } else if (!PasswordStrengthValidator.isValid(password)) {
-      message = "Password is too weak. It must contain at least 5 characters, at least one upper case letter and at least one lower case letter. Whitespace characters are not allowed";
+      message = "Password is too weak. It must contain at least 5 characters.";
 
     } else {
       message = "";
@@ -119,7 +119,7 @@ public class PlayerService {
   }
 
   public Player getPlayer(final String usernameOrEmail) {
-    return playerRepository.fetchForAuthorizationByUsernameOrEmail(usernameOrEmail).orElse(null);
+    return playerRepository.fetchForAuthorizationByUsernameOrEmail(usernameOrEmail.toUpperCase()).orElse(null);
   }
 
   public void createAndPersistVerificationToken(final String token, final Player user) {
@@ -177,7 +177,7 @@ public class PlayerService {
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName()).orElseThrow();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName().toUpperCase()).orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }

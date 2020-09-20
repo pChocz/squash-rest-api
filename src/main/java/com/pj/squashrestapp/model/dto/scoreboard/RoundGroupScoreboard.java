@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.entityhelper.MatchStatus;
 import lombok.Getter;
@@ -20,20 +20,20 @@ public class RoundGroupScoreboard {
 
   private final int roundGroupNumber;
   private final List<ScoreboardRow> scoreboardRows;
-  private final Collection<MatchDto> matches;
+  private final Collection<MatchDetailedDto> matches;
 
-  public RoundGroupScoreboard(final Collection<MatchDto> matches) {
+  public RoundGroupScoreboard(final Collection<MatchDetailedDto> matches) {
     this.matches = matches;
 
     this.roundGroupNumber = matches
             .stream()
             .findFirst()
-            .map(MatchDto::getRoundGroupNumber)
+            .map(MatchDetailedDto::getRoundGroupNumber)
             .orElse(0);
 
     this.scoreboardRows = new ArrayList<>();
 
-    for (final MatchDto match : matches) {
+    for (final MatchDetailedDto match : matches) {
       final ScoreboardRow scoreboardRowFirst = getScoreboardRow(match.getFirstPlayer());
       final ScoreboardRow scoreboardRowSecond = getScoreboardRow(match.getSecondPlayer());
 

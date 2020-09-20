@@ -1,15 +1,23 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.model.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -25,10 +33,10 @@ public class MatchService {
   private SetResultRepository setResultRepository;
 
 
-  public MatchDto getMatch(final Long matchId) {
+  public MatchDetailedDto getMatch(final Long matchId) {
     final Match match = matchRepository.findMatchById(matchId);
-    final MatchDto matchDto = new MatchDto(match);
-    return matchDto;
+    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(match);
+    return matchDetailedDto;
   }
 
   public void modifySingleScore(final Long matchId, final int setNumber, final String player, final Integer newScore) {
@@ -87,7 +95,7 @@ public class MatchService {
     log.info(message);
   }
 
-  public MatchDto modifyMatch(final Long matchId, final int setNumber, final int p1score, final int p2score) {
+  public MatchDetailedDto modifyMatch(final Long matchId, final int setNumber, final int p1score, final int p2score) {
     final Match matchToModify = matchRepository.findMatchById(matchId);
 
     final String initialMatchResult = matchToModify.toString();
@@ -128,11 +136,11 @@ public class MatchService {
       log.error(message);
     }
 
-    final MatchDto matchDto = new MatchDto(matchToModify);
-    return matchDto;
+    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(matchToModify);
+    return matchDetailedDto;
   }
 
-  public MatchDto clearSingleSetOfMatch(final Long matchId, final int setNumber) {
+  public MatchDetailedDto clearSingleSetOfMatch(final Long matchId, final int setNumber) {
     final Match matchToModify = matchRepository.findMatchById(matchId);
 
     final SetResult setToModify = matchToModify
@@ -154,8 +162,34 @@ public class MatchService {
                            "\n\t-> " + matchToModify + "\t- now";
     log.info(message);
 
-    final MatchDto matchDto = new MatchDto(matchToModify);
-    return matchDto;
+    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(matchToModify);
+    return matchDetailedDto;
+  }
+
+  public MatchesSimplePaginated getMatchesPaginatedForOnePlayer(final Pageable pageable, final UUID leagueUuid, final Long playerId) {
+    final Page<Long> matchIds = matchRepository.findIdsSingle(leagueUuid, playerId, pageable);
+    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
+
+    final List<MatchSimpleDto> matchesDtos = matches
+            .stream()
+            .map(MatchSimpleDto::new)
+            .collect(Collectors.toList());
+
+    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
+    return matchesDtoPage;
+  }
+
+  public MatchesSimplePaginated getMatchesPaginatedForMultiplePlayers(final Pageable pageable, final UUID leagueUuid, final Long[] playersIds) {
+    final Page<Long> matchIds = matchRepository.findIdsMultiple(leagueUuid, playersIds, pageable);
+    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
+
+    final List<MatchSimpleDto> matchesDtos = matches
+            .stream()
+            .map(MatchSimpleDto::new)
+            .collect(Collectors.toList());
+
+    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
+    return matchesDtoPage;
   }
 
 }

@@ -1,15 +1,22 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,8 +56,13 @@ public class ScoreboardController {
 
     final long startTime = System.nanoTime();
     final Scoreboard scoreboard = (playersIds.length == 1)
-            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueUuid, playersIds[0])
-            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueUuid, playersIds);
+//            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueUuid, playersIds[0])
+//            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueUuid, playersIds);
+            ? scoreboardService.buildScoreboardForLeagueForSinglePlayerNEW(leagueUuid, playersIds[0])
+            : scoreboardService.buildScoreboardForLeagueForPlayersNEW(leagueUuid, playersIds);
+
+    // workaround! applying pagination
+    scoreboard.removeMatches();
 
     final String playersCommaSeparated = scoreboard
             .getScoreboardRows()

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.Getter;
 
@@ -71,7 +71,7 @@ public class RoundScoreboard {
   }
 
   public void addRoundGroupNew(final RoundGroup roundGroup) {
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
+    final List<MatchDetailedDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
     final RoundGroupScoreboard scoreboard = new RoundGroupScoreboard(matches);
     roundGroupScoreboards.add(scoreboard);
     playersPerGroup.add(scoreboard.getScoreboardRows().size());

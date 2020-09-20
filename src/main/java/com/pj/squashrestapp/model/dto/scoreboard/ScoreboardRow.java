@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
 import lombok.Getter;

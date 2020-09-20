@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.dto.MatchDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
@@ -23,7 +23,7 @@ public class EntireLeagueScoreboard {
   private final List<EntireLeagueScoreboardRow> rows;
 
   public EntireLeagueScoreboard(final League league, final List<PlayerLeagueXpOveral> playerLeagueXpOveralList) {
-    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(league);
+    final List<MatchDetailedDto> matches = MatchExtractorUtil.extractAllMatches(league);
 
     this.numberOfMatches = matches.size();
     this.leagueName = league.getName();

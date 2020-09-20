@@ -27,7 +27,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles",
           "roles.league",
   })
-  @Query("SELECT p FROM Player p WHERE (p.username = :usernameOrEmail OR p.email = :usernameOrEmail)")
+  @Query("SELECT p FROM Player p WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)")
   Optional<Player> fetchForAuthorizationByUsernameOrEmail(@Param("usernameOrEmail") String usernameOrEmail);
 
 

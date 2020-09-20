@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.util;
 
 import lombok.experimental.UtilityClass;
+import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -56,6 +57,25 @@ public class GeneralUtil {
             .stream(integerList)
             .boxed()
             .collect(Collectors.toList());
+  }
+
+  public String buildProperUsername(final String username) {
+    return capitalize(username
+                    .trim()
+                    .replaceAll(" +", " "));
+  }
+
+  private String capitalize(final String string) {
+    final int sl = string.length();
+    final StringBuilder sb = new StringBuilder(sl);
+    boolean lod = false;
+    for(int s = 0; s < sl; s++) {
+      final int cp = string.codePointAt(s);
+      sb.appendCodePoint(lod ? Character.toLowerCase(cp) : Character.toUpperCase(cp));
+      lod = Character.isLetterOrDigit(cp);
+      if(!Character.isBmpCodePoint(cp)) s++;
+    }
+    return sb.toString();
   }
 
 }

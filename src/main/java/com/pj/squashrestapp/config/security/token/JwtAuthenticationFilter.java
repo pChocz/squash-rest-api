@@ -3,13 +3,11 @@ package com.pj.squashrestapp.config.security.token;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -42,9 +40,11 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   @Override
   public Authentication attemptAuthentication(final HttpServletRequest req,
                                               final HttpServletResponse res) throws AuthenticationException {
+
+    final String usernameOrEmail = req.getParameter("usernameOrEmail");
+
     try {
       final int numberOfParams = req.getParameterMap().size();
-      final String usernameOrEmail = req.getParameter("usernameOrEmail");
       final String password = req.getParameter("password");
 
       if (numberOfParams != 2 || usernameOrEmail == null || password == null) {
@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       return authenticate;
 
     } catch (final AuthenticationException e) {
-      throw new WrongCredentialsFormatException(e.getMessage());
+      throw new WrongCredentialsFormatException(e.getMessage() + " | User: [" + usernameOrEmail + "]");
     }
   }
 

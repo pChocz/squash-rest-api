@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model.dto;
+package com.pj.squashrestapp.model.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Match;
@@ -6,7 +6,8 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.entityhelper.MatchHelper;
+import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.entityhelper.MatchStatus;
 import com.pj.squashrestapp.model.entityhelper.MatchValidator;
 import lombok.EqualsAndHashCode;
@@ -22,7 +23,7 @@ import java.util.UUID;
  */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class MatchDto {
+public class MatchDetailedDto implements MatchDto {
 
   @EqualsAndHashCode.Include
   private final Long matchId;
@@ -45,7 +46,7 @@ public class MatchDto {
 
   private final MatchStatus status;
 
-  public MatchDto(final Match match) {
+  public MatchDetailedDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
     final Round round = roundGroup.getRound();
     final Season season = round.getSeason();

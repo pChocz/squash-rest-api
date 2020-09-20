@@ -9,12 +9,14 @@ import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,9 +88,12 @@ public class PlayerController {
           @RequestParam("frontendUrl") final String frontendUrl,
           final HttpServletRequest request) {
 
-    final boolean isValid = playerService.isValidSignupData(username, email, password);
+    final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
+    final String lowerCaseEmailAdress = email.toLowerCase();
+
+    final boolean isValid = playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
     if (isValid) {
-      final Player newPlayer = playerService.registerNewUser(username, email, password);
+      final Player newPlayer = playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
       eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), frontendUrl));
       return new PlayerDetailedDto(newPlayer);
     }

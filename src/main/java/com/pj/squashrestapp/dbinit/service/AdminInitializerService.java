@@ -162,7 +162,7 @@ public class AdminInitializerService {
       final String passwordPlain = credentials.getPassword();
       final String passwordHashed = bCryptPasswordEncoder.encode(passwordPlain);
 
-      final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(username).orElse(null);
+      final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(username.toUpperCase()).orElseThrow();
       player.setEmail(email);
       player.setPassword(passwordHashed);
       player.setUuid(credentials.getUuid());
