@@ -11,6 +11,8 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForLeague;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.model.dto.LeagueDto;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
@@ -31,6 +33,7 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -49,34 +52,19 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class LeagueService {
 
-  @Autowired
-  private LeagueRepository leagueRepository;
+  private final XpPointsService xpPointsService;
+  private final BonusPointService bonusPointService;
+  private final SeasonService seasonService;
 
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private LeagueLogoRepository leagueLogoRepository;
-
-  @Autowired
-  private RoleForLeagueRepository roleForLeagueRepository;
-
-  @Autowired
-  private SetResultRepository setResultRepository;
-
-  @Autowired
-  private XpPointsService xpPointsService;
-
-  @Autowired
-  private BonusPointService bonusPointService;
-
-  @Autowired
-  private SeasonService seasonService;
-
-  @Autowired
-  private HallOfFameSeasonRepository hallOfFameSeasonRepository;
+  private final LeagueRepository leagueRepository;
+  private final PlayerRepository playerRepository;
+  private final LeagueLogoRepository leagueLogoRepository;
+  private final RoleForLeagueRepository roleForLeagueRepository;
+  private final SetResultRepository setResultRepository;
+  private final HallOfFameSeasonRepository hallOfFameSeasonRepository;
 
   /**
    * This method creates the league itself as well as both roles (USER, MODERATOR)

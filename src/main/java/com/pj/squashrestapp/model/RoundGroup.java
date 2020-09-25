@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,7 +28,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @Entity
-@Table(name = "round_groups")
+@Table(
+        name = "round_groups",
+        uniqueConstraints={
+                @UniqueConstraint(columnNames = {"round_id", "number"})})
 @Getter
 @NoArgsConstructor
 public class RoundGroup implements Identifiable, Comparable<RoundGroup> {

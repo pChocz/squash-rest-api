@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,7 +32,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "seasons")
+@Table(
+        name = "seasons",
+        uniqueConstraints={
+                @UniqueConstraint(columnNames = {"league_id", "number"})})
 @Getter
 @NoArgsConstructor
 public class Season implements Identifiable, Comparable<Season> {

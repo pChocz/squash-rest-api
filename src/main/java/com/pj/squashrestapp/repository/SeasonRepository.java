@@ -3,6 +3,7 @@ package com.pj.squashrestapp.repository;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,16 +17,20 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
 
   Season findSeasonById(Long id);
 
-  Season findSeasonByUuid(UUID uuid);
+  @EntityGraph(attributePaths = {
+          "rounds",
+          "league"
+  })
+  Optional<Season> findSeasonByUuid(UUID uuid);
 
   Season findSeasonByNumberAndLeagueId(int number, Long leagueId);
 
   @Query("""
-          SELECT l.id FROM Season s
+          SELECT l.uuid FROM Season s
            JOIN League l ON s.league = l
-              WHERE s.id = :seasonId
+              WHERE s.uuid = :seasonUuid
           """)
-  Long retrieveLeagueIdOfSeason(@Param("seasonId") Long seasonId);
+  UUID retrieveLeagueUuidOfSeason(@Param("seasonUuid") UUID seasonUuid);
 
   @Query("""
           SELECT r.id FROM Round r

@@ -3,38 +3,35 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForLeague;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class BonusPointService {
 
-  @Autowired
-  private PlayerRepository playerRepository;
+  private final PlayerRepository playerRepository;
+  private final SeasonRepository seasonRepository;
+  private final BonusPointRepository bonusPointRepository;
 
-  @Autowired
-  private SeasonRepository seasonRepository;
 
-  @Autowired
-  private BonusPointRepository bonusPointRepository;
-
-  public List<BonusPoint> extractBonusPoints(final Long playerId, final Long seasonId) {
-
-    TESTextractBonusPointsForSeason();
-
-    final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerIdAndSeasonId(playerId, seasonId);
+  public List<BonusPoint> extractBonusPoints(final UUID playerUuid, final UUID seasonUuid) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerUuidAndSeasonUuid(playerUuid, seasonUuid);
     return bonusPoints;
   }
 
@@ -50,29 +47,12 @@ public class BonusPointService {
     return bonusPointsAggregatedForLeague;
   }
 
-  public void TESTextractBonusPointsForSeason() {
-
-//    final Long seasonId = 2L;
-//    final List<BonusPoint> bonusPointsS = bonusPointRepository.findBySeasonId(seasonId);
-//    final var bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonId, bonusPointsS);
-
-    final Long leagueId = 1L;
-    final List<BonusPoint> bonusPointsL = bonusPointRepository.findByLeagueId(leagueId);
-    final var bonusPointsAggregatedForLeague = new BonusPointsAggregatedForLeague(leagueId, bonusPointsL);
-
-    final int p1 = bonusPointsAggregatedForLeague.forSeason(1L).forPlayer(2L);
-    final int p2 = bonusPointsAggregatedForLeague.forSeason(1L).forPlayer(3L);
-    final int p3 = bonusPointsAggregatedForLeague.forSeason(2L).forPlayer(3L);
-
-
-    log.info("dupa");
-  }
-
   @Transactional
-  public List<BonusPoint> applyPoints(final Long winnerId, final Long looserId, final Long seasonId, final int points) {
-    final Season season = seasonRepository.findById(seasonId).get();
-    final Player winner = playerRepository.findById(winnerId).get();
-    final Player looser = playerRepository.findById(looserId).get();
+  public List<BonusPoint> applyBonusPointsForTwoPlayers(final UUID winnerUuid, final UUID looserUuid,
+                                                        final UUID seasonUuid, final int points) {
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+    final Player winner = playerRepository.findByUuid(winnerUuid);
+    final Player looser = playerRepository.findByUuid(looserUuid);
 
     final BonusPoint bonusPointForWinner = new BonusPoint();
     bonusPointForWinner.setPlayer(winner);

@@ -36,6 +36,7 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -54,22 +55,14 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class AdminInitializerService {
 
-  @Autowired
-  private XpPointsRepository xpPointsRepository;
-
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private LeagueRepository leagueRepository;
-
-  @Autowired
-  private AuthorityRepository authorityRepository;
-
-  @Autowired
-  private RoleForLeagueRepository roleForLeagueRepository;
+  private final XpPointsRepository xpPointsRepository;
+  private final PlayerRepository playerRepository;
+  private final LeagueRepository leagueRepository;
+  private final AuthorityRepository authorityRepository;
+  private final RoleForLeagueRepository roleForLeagueRepository;
 
 
   public boolean initialize(final String initDefaultUsersJsonContent,

@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dbinit.controller;
 
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +25,11 @@ import java.time.LocalDate;
 @Slf4j
 @RestController
 @RequestMapping("/db-initializers")
+@RequiredArgsConstructor
 public class InitializerController {
 
-  @Autowired
-  private FakeLeagueService fakeLeagueService;
-
-  @Autowired
-  private AdminInitializerService adminInitializerService;
+  private final FakeLeagueService fakeLeagueService;
+  private final AdminInitializerService adminInitializerService;
 
 
   @PostMapping(value = "/leagues")

@@ -3,6 +3,8 @@ package com.pj.squashrestapp.config;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.model.Authority;
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import lombok.Getter;
@@ -26,10 +28,10 @@ public class UserDetailsImpl implements UserDetails {
   private final String username;
   private final String password;
   private final Set<GrantedAuthority> authorities;
-  private final Multimap<Long, String> rolesForLeagues;
+  private final Multimap<UUID, LeagueRole> rolesForLeagues;
   private final boolean enabled;
-  private final String uuid;
-  private final String passwordSessionUuid;
+  private final UUID uuid;
+  private final UUID passwordSessionUuid;
 
   // not used
   private final boolean accountNonExpired = true;
@@ -42,8 +44,8 @@ public class UserDetailsImpl implements UserDetails {
     this.authorities = extractAuthorities(player.getAuthorities());
     this.rolesForLeagues = extractRolesForLeagues(player.getRoles());
     this.enabled = player.isEnabled();
-    this.uuid = player.getUuid().toString();
-    this.passwordSessionUuid = player.getPasswordSessionUuid().toString();
+    this.uuid = player.getUuid();
+    this.passwordSessionUuid = player.getPasswordSessionUuid();
   }
 
   private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {
@@ -53,10 +55,10 @@ public class UserDetailsImpl implements UserDetails {
             .collect(Collectors.toSet());
   }
 
-  private Multimap<Long, String> extractRolesForLeagues(final Set<RoleForLeague> roles) {
-    final Multimap<Long, String> multimap = HashMultimap.create();
+  private Multimap<UUID, LeagueRole> extractRolesForLeagues(final Set<RoleForLeague> roles) {
+    final Multimap<UUID, LeagueRole> multimap = HashMultimap.create();
     for (final RoleForLeague role : roles) {
-      multimap.put(role.getLeague().getId(), role.getLeagueRole().name());
+      multimap.put(role.getLeague().getUuid(), role.getLeagueRole());
     }
     return multimap;
   }
@@ -65,8 +67,8 @@ public class UserDetailsImpl implements UserDetails {
     return authorities.contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
   }
 
-  public boolean hasRoleForLeague(final Long leagueId, final String role) {
-    final Collection<String> rolesForLeague = rolesForLeagues.get(leagueId);
+  public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
+    final Collection<LeagueRole> rolesForLeague = rolesForLeagues.get(leagueUuid);
     return (rolesForLeague == null)
             ? false
             : rolesForLeague.contains(role);

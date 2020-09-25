@@ -9,6 +9,7 @@ import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
@@ -26,19 +27,13 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class TokenService {
 
-  @Autowired
-  private BlacklistedTokenRepository blacklistedTokenRepository;
-
-  @Autowired
-  private VerificationTokenRepository verificationTokenRepository;
-
-  @Autowired
-  private PasswordResetTokenRepository passwordResetTokenRepository;
-
-  @Autowired
-  private PlayerRepository playerRepository;
+  private final BlacklistedTokenRepository blacklistedTokenRepository;
+  private final VerificationTokenRepository verificationTokenRepository;
+  private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final PlayerRepository playerRepository;
 
 
   /**
@@ -54,6 +49,28 @@ public class TokenService {
     final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
 
     return playerDetailedDto;
+  }
+
+  /**
+   * Finds all expired temporary tokens in the database and removes them permanently.
+   */
+  public void removeExpiredTokensFromDb() {
+    final LocalDateTime now = LocalDateTime.now(UTC_ZONE_ID);
+
+    final List<BlacklistedToken> expiredBlacklistedTokens = blacklistedTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final List<VerificationToken> expiredVerificationTokens = verificationTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final List<PasswordResetToken> expiredPasswordResetTokens = passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final int tokensCount = expiredBlacklistedTokens.size() + expiredBlacklistedTokens.size() + expiredPasswordResetTokens.size();
+
+    if (tokensCount > 0) {
+      blacklistedTokenRepository.deleteAll(expiredBlacklistedTokens);
+      verificationTokenRepository.deleteAll(expiredVerificationTokens);
+      passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
+      log.info("Succesfully removed {} expired tokens.", tokensCount);
+
+    } else {
+      log.info("No expired tokens to remove this time");
+    }
   }
 
 }

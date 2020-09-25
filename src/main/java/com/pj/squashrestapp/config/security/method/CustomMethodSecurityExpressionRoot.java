@@ -1,20 +1,21 @@
 package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
+
+import java.util.UUID;
 
 /**
  * Main class that provides access to specific Entities. It provides
@@ -67,45 +68,45 @@ public class CustomMethodSecurityExpressionRoot
     return principal.isAdmin();
   }
 
-  public boolean hasRoleForLeague(final Long leagueId, final String role) {
+  public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
     if (principal.isAdmin()) {
       return true;
     }
-    return principal.hasRoleForLeague(leagueId, role);
+    return principal.hasRoleForLeague(leagueUuid, role);
   }
 
-  public boolean hasRoleForSeason(final Long seasonId, final String role) {
+  public boolean hasRoleForSeason(final UUID seasonUuid, final LeagueRole role) {
     if (principal.isAdmin()) {
       return true;
     }
-    final Long leagueId = seasonRepository.retrieveLeagueIdOfSeason(seasonId);
-    return principal.hasRoleForLeague(leagueId, role);
+    final UUID leagueUuid = seasonRepository.retrieveLeagueUuidOfSeason(seasonUuid);
+    return principal.hasRoleForLeague(leagueUuid, role);
   }
 
-  public boolean hasRoleForRound(final Long roundId, final String role) {
+  public boolean hasRoleForRound(final UUID roundUuid, final LeagueRole role) {
     if (principal.isAdmin()) {
       return true;
     }
-    final Long leagueId = roundRepository.retrieveLeagueIdOfRound(roundId);
-    return principal.hasRoleForLeague(leagueId, role);
+    final UUID leagueUuid = roundRepository.retrieveLeagueUuidOfRound(roundUuid);
+    return principal.hasRoleForLeague(leagueUuid, role);
   }
 
-  public boolean hasRoleForMatch(final Long matchId, final String role) {
+  public boolean hasRoleForMatch(final UUID matchUuid, final LeagueRole role) {
     if (principal.isAdmin()) {
       return true;
     }
-    final Long leagueId = matchRepository.retrieveLeagueIdOfMatch(matchId);
-    return principal.hasRoleForLeague(leagueId, role);
+    final UUID leagueUuid = matchRepository.retrieveLeagueUuidOfMatch(matchUuid);
+    return principal.hasRoleForLeague(leagueUuid, role);
   }
 
-  public boolean isRoundOfMatchInProgress(final Long matchId) {
-    final Round round = roundRepository.findRoundByMatchId(matchId);
+  public boolean isRoundOfMatchInProgress(final UUID matchUuid) {
+    final Round round = roundRepository.findRoundByMatchUuid(matchUuid);
     final boolean isRoundFinished = round.isFinished();
     return !isRoundFinished;
   }
 
-  public boolean isMatchEmpty(final Long matchId) {
-    final Match match = matchRepository.findById(matchId).orElse(null);
+  public boolean isMatchEmpty(final UUID matchUuid) {
+    final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
     final MatchHelper matchHelper = new MatchHelper(match);
     final Player winner = matchHelper.getWinner();
     return winner == null;

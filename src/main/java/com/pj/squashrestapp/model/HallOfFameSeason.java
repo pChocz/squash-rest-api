@@ -16,9 +16,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "hall_of_fame_season")
+@Table(
+        name = "hall_of_fame_season",
+        uniqueConstraints={
+                @UniqueConstraint(columnNames = {"league_id", "season_number"})})
+
 @Getter
 @NoArgsConstructor
 public class HallOfFameSeason {

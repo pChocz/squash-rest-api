@@ -7,6 +7,7 @@ import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -31,23 +32,10 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/leagues")
+@RequiredArgsConstructor
 public class LeagueController {
 
   private final LeagueService leagueService;
-
-  public LeagueController(final LeagueService leagueService) {
-    this.leagueService = leagueService;
-  }
-
-//  @PostMapping(value = "")
-//  @ResponseBody
-//  void createNewLeague(
-//          @RequestParam final String leagueName) {
-//
-//    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-//    final Player player = (Player) auth.getPrincipal();
-//    leagueService.createNewLeague(leagueName, player);
-//  }
 
 
   @GetMapping(value = "/general-info/{leagueUuid}")

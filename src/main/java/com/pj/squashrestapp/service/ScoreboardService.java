@@ -16,6 +16,7 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ScoreboardService {
 
   private final LeagueRepository leagueRepository;
@@ -36,17 +38,6 @@ public class ScoreboardService {
   private final SetResultRepository setResultRepository;
   private final XpPointsRepository xpPointsRepository;
 
-  public ScoreboardService(final LeagueRepository leagueRepository,
-                           final RoundRepository roundRepository,
-                           final MatchRepository matchRepository,
-                           final SetResultRepository setResultRepository,
-                           final XpPointsRepository xpPointsRepository) {
-    this.leagueRepository = leagueRepository;
-    this.roundRepository = roundRepository;
-    this.matchRepository = matchRepository;
-    this.setResultRepository = setResultRepository;
-    this.xpPointsRepository = xpPointsRepository;
-  }
 
   public RoundScoreboard buildScoreboardForRound(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);

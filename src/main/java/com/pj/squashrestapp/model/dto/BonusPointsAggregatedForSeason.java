@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.service;
+package com.pj.squashrestapp.model.dto;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.BonusPoint;

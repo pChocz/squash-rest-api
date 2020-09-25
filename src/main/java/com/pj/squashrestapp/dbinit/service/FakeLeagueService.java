@@ -21,10 +21,11 @@ import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.HallOfFameSeasonRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import com.pj.squashrestapp.service.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,29 +40,19 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class FakeLeagueService {
 
   private static final int WEEKS_BETWEEN_SEASONS_STARTS = 12;
   private static final int NUMBER_OF_ROUNDS_COMPLETE = 10;
 
+  private final XpPointsService xpPointsService;
+  private final SeasonService seasonService;
 
-  @Autowired
-  private AuthorityRepository authorityRepository;
-
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private LeagueRepository leagueRepository;
-
-  @Autowired
-  private HallOfFameSeasonRepository hallOfFameSeasonRepository;
-
-  @Autowired
-  private XpPointsService xpPointsService;
-
-  @Autowired
-  private SeasonService seasonService;
+  private final AuthorityRepository authorityRepository;
+  private final PlayerRepository playerRepository;
+  private final LeagueRepository leagueRepository;
+  private final HallOfFameSeasonRepository hallOfFameSeasonRepository;
 
 
   public void buildLeague(final String leagueName,

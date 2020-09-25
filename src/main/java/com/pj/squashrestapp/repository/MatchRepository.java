@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @SuppressWarnings({"JavaDoc", "unused"})
@@ -25,14 +26,14 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
 
   @Query("""
-          SELECT l.id FROM Match m
+          SELECT l.uuid FROM Match m
            JOIN RoundGroup rg ON m.roundGroup = rg
            JOIN Round r ON rg.round = r
            JOIN Season s ON r.season = s
            JOIN League l ON s.league = l
-              WHERE m.id = :matchId
+              WHERE m.uuid = :matchUuid
           """)
-  Long retrieveLeagueIdOfMatch(@Param("matchId") Long matchId);
+  UUID retrieveLeagueUuidOfMatch(@Param("matchUuid") UUID matchUuid);
 
 
   @EntityGraph(attributePaths = {
@@ -42,6 +43,15 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "roundGroup.round.season"
   })
   Match findMatchById(Long id);
+
+
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  Optional<Match> findMatchByUuid(UUID uuid);
 
 
   @Query(SELECT_FETCH_LEAGUE + """

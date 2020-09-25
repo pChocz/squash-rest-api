@@ -3,6 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -28,13 +29,11 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/matches")
+@RequiredArgsConstructor
 public class MatchController {
 
   private final MatchService matchService;
 
-  public MatchController(final MatchService matchService) {
-    this.matchService = matchService;
-  }
 
   @GetMapping(value = "/pageable/leagues/{leagueUuid}/players/{playersIds}")
   @ResponseBody

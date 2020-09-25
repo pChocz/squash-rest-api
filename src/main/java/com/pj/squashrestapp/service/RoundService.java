@@ -18,6 +18,7 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.simpleframework.xml.Serializer;
@@ -41,19 +42,14 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class RoundService {
 
-  @Autowired
-  private SetResultRepository setResultRepository;
+  private final SetResultRepository setResultRepository;
+  private final SeasonRepository seasonRepository;
+  private final PlayerRepository playerRepository;
+  private final RoundRepository roundRepository;
 
-  @Autowired
-  private SeasonRepository seasonRepository;
-
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private RoundRepository roundRepository;
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findRoundByUuid(roundUuid);
@@ -76,7 +72,7 @@ public class RoundService {
                     .orElse(null))
             .collect(Collectors.toList());
 
-    final Season season = seasonRepository.findSeasonByUuid(seasonUuid);
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
 
     final List<List<Player>> playersPerGroup = playersIds
             .stream()
@@ -179,11 +175,11 @@ public class RoundService {
     return round;
   }
 
-  public String roundToJson(final UUID roundUuid) {
+  public JsonRound roundToJson(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);
     final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
-    final String roundJson = JsonExportUtil.backupRoundToJson(round);
+    final JsonRound roundJson = JsonExportUtil.backupRoundToJson(round);
     return roundJson;
   }
 

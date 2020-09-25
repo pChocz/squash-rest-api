@@ -8,14 +8,21 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 public interface BonusPointRepository extends JpaRepository<BonusPoint, Long> {
 
-
+  @Query("""
+          SELECT bp FROM BonusPoint bp
+            JOIN Season s ON bp.season = s
+            JOIN Player p ON bp.player = p
+              WHERE s.uuid = :seasonUuid
+                AND p.uuid = :playerUuid 
+          """)
   @EntityGraph(attributePaths = {
           "player",
   })
-  List<BonusPoint> findByPlayerIdAndSeasonId(Long playerId, Long seasonId);
+  List<BonusPoint> findByPlayerUuidAndSeasonUuid(UUID playerUuid, UUID seasonUuid);
 
 
   @EntityGraph(attributePaths = {

@@ -25,7 +25,7 @@ import java.util.Set;
 @UtilityClass
 public class JsonExportUtil {
 
-  public String backupRoundToJson(final Round round) {
+  public JsonRound backupRoundToJson(final Round round) {
     final JsonRound jsonRound = new JsonRound();
     jsonRound.setDate(round.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
     jsonRound.setNumber(round.getNumber());
@@ -65,18 +65,15 @@ public class JsonExportUtil {
         }
         jsonMatch.setSets(jsonSetResults);
 
-
         jsonMatches.add(jsonMatch);
       }
       jsonRoundGroup.setMatches(jsonMatches);
-
 
       jsonRoundGroups.add(jsonRoundGroup);
     }
     jsonRound.setGroups(jsonRoundGroups);
 
-    final String roundJson = new Gson().toJson(jsonRound);
-    return roundJson;
+    return jsonRound;
   }
 
   private boolean isNotNull(final SetResult setResult) {

@@ -1,7 +1,9 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.service.RoundService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -33,10 +35,11 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/rounds")
+@RequiredArgsConstructor
 public class RoundController {
 
-  @Autowired
-  private RoundService roundService;
+  private final RoundService roundService;
+
 
   @PostMapping
   @ResponseBody
@@ -64,8 +67,8 @@ public class RoundController {
   @GetMapping("/backup/{roundUuid}")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  String backupRound(@PathVariable final UUID roundUuid) {
-    final String roundJson = roundService.roundToJson(roundUuid);
+  JsonRound backupRound(@PathVariable final UUID roundUuid) {
+    final JsonRound roundJson = roundService.roundToJson(roundUuid);
     return roundJson;
   }
 

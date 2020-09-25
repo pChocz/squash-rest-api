@@ -9,6 +9,7 @@ import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,13 +25,11 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class MatchService {
 
-  @Autowired
-  private MatchRepository matchRepository;
-
-  @Autowired
-  private SetResultRepository setResultRepository;
+  private final MatchRepository matchRepository;
+  private final SetResultRepository setResultRepository;
 
 
   public MatchDetailedDto getMatch(final Long matchId) {

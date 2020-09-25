@@ -3,8 +3,8 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.dto.XpPointsForTable;
 import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,10 +21,11 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/xpPoints")
+@RequiredArgsConstructor
 public class XpPointsController {
 
-  @Autowired
-  private XpPointsService xpPointsService;
+  private final XpPointsService xpPointsService;
+
 
   @GetMapping
   @ResponseBody
@@ -59,21 +60,5 @@ public class XpPointsController {
 
     return xpPointsForTableList;
   }
-
-
-//  buildXpPointsForTable
-
-//  @RequestMapping(
-//          value = "/allNativeObject",
-//          method = GET)
-//  @ResponseBody
-//  List<XpPointsForRound> allNativeObject() {
-//    final long startTime = System.nanoTime();
-//
-//    final List<XpPointsForRound> xpPointsForRoundList = xpPointsService.buildAllAsNativeObject();
-//
-//    TimeLogUtil.logFinish(startTime);
-//    return xpPointsForRoundList;
-//  }
 
 }

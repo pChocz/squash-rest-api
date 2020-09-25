@@ -10,6 +10,7 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -40,16 +41,12 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/players")
+@RequiredArgsConstructor
 public class PlayerController {
 
-  @Autowired
-  private ApplicationEventPublisher eventPublisher;
-
-  @Autowired
-  private PlayerService playerService;
-
-  @Autowired
-  private EmailSendConfig emailSendConfig;
+  private final ApplicationEventPublisher eventPublisher;
+  private final PlayerService playerService;
+  private final EmailSendConfig emailSendConfig;
 
 
   @GetMapping(value = "/me")

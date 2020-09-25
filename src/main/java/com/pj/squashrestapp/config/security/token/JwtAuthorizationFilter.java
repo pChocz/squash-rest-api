@@ -119,8 +119,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       }
 
       // checking if password session UUID matches
-      final String tokenPasswordSessionUuid = claims.get("pid", String.class);
-      final String userPasswordSessionUuid = userDetailsImpl.getPasswordSessionUuid();
+      final UUID tokenPasswordSessionUuid = UUID.fromString(claims.get("pid", String.class));
+      final UUID userPasswordSessionUuid = userDetailsImpl.getPasswordSessionUuid();
       if (!tokenPasswordSessionUuid.equals(userPasswordSessionUuid)) {
         throw new RuntimeException("Password Session Token is invalid (which means that the password has been changed recently).");
       }

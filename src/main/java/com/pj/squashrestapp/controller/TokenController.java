@@ -6,6 +6,7 @@ import com.pj.squashrestapp.model.dto.LeagueRoleDto;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,10 +26,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/token")
+@RequiredArgsConstructor
 public class TokenController {
 
-  @Autowired
-  private TokenService tokenService;
+  private final TokenService tokenService;
+
 
   @GetMapping(value = "/passwordReset/{passwordResetToken}")
   @ResponseBody

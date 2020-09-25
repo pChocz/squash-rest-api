@@ -7,6 +7,7 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboard;
@@ -14,17 +15,19 @@ import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,22 +37,17 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class SeasonService {
 
-  @Autowired
-  private SetResultRepository setResultRepository;
+  private final BonusPointService bonusPointService;
+  private final XpPointsService xpPointsService;
 
-  @Autowired
-  private PlayerRepository playerRepository;
+  private final SetResultRepository setResultRepository;
+  private final PlayerRepository playerRepository;
+  private final SeasonRepository seasonRepository;
+  private final LeagueRepository leagueRepository;
 
-  @Autowired
-  private BonusPointService bonusPointService;
-
-  @Autowired
-  private XpPointsService xpPointsService;
-
-  @Autowired
-  private SeasonRepository seasonRepository;
 
   public SeasonScoreboardDto getSeasonScoreboardDtoForLeagueStats(final Season season,
                                                                   final ArrayListMultimap<String, Integer> xpPointsPerSplit,
@@ -139,7 +137,12 @@ public class SeasonService {
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
-    final Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
+
+    Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
+    if (season == null) {
+      season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+    }
+
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
     final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointService.extractBonusPointsAggregatedForSeason(seasonId);
@@ -171,10 +174,19 @@ public class SeasonService {
   }
 
   @Transactional
-  public SeasonDto extractSeasonDtoById(final Long seasonId) {
-    final Season season = seasonRepository.findSeasonById(seasonId);
+  public SeasonDto extractSeasonDtoByUuid(final UUID seasonUuid) {
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
     final SeasonDto seasonDto = new SeasonDto(season);
     return seasonDto;
+  }
+
+  @Transactional
+  public Season createNewSeason(final int seasonNumber, final LocalDate startDate, final UUID leagueUuid) {
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final Season season = new Season(seasonNumber, startDate);
+    league.addSeason(season);
+    leagueRepository.save(league);
+    return season;
   }
 
 }

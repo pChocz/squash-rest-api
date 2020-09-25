@@ -19,20 +19,20 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
   Round findRoundByUuid(UUID uuid);
 
   @Query("""
-          SELECT l.id FROM Round r
+          SELECT l.uuid FROM Round r
            JOIN Season s ON r.season = s
            JOIN League l ON s.league = l
-              WHERE r.id = :roundId
+              WHERE r.uuid = :roundUuid
           """)
-  Long retrieveLeagueIdOfRound(@Param("roundId") Long roundId);
+  UUID retrieveLeagueUuidOfRound(@Param("roundUuid") UUID roundUuid);
 
   @Query("""
           SELECT r FROM Match m
            JOIN RoundGroup rg ON m.roundGroup = rg
            JOIN Round r ON rg.round = r
-              WHERE m.id = :matchId
+              WHERE m.uuid = :matchUuid
           """)
-  Round findRoundByMatchId(@Param("matchId") Long matchId);
+  Round findRoundByMatchUuid(@Param("matchUuid") UUID matchUuid);
 
   Optional<Round> findBySeasonAndNumber(Season season, int number);
 

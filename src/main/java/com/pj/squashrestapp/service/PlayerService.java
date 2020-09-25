@@ -26,6 +26,7 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import jdk.jshell.spi.ExecutionControl;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,28 +54,16 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class PlayerService {
 
-  @Autowired
-  private PlayerRepository playerRepository;
-
-  @Autowired
-  private LeagueRepository leagueRepository;
-
-  @Autowired
-  private AuthorityRepository authorityRepository;
-
-  @Autowired
-  private RoleForLeagueRepository roleForLeagueRepository;
-
-  @Autowired
-  private BlacklistedTokenRepository blacklistedTokenRepository;
-
-  @Autowired
-  private VerificationTokenRepository verificationTokenRepository;
-
-  @Autowired
-  private PasswordResetTokenRepository passwordResetTokenRepository;
+  private final PlayerRepository playerRepository;
+  private final LeagueRepository leagueRepository;
+  private final AuthorityRepository authorityRepository;
+  private final RoleForLeagueRepository roleForLeagueRepository;
+  private final BlacklistedTokenRepository blacklistedTokenRepository;
+  private final VerificationTokenRepository verificationTokenRepository;
+  private final PasswordResetTokenRepository passwordResetTokenRepository;
 
 
   @SuppressWarnings("OverlyComplexMethod")
@@ -267,6 +256,5 @@ public class PlayerService {
     final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     return userDetails.getUsername();
   }
-
 
 }

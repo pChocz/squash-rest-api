@@ -8,6 +8,7 @@ import com.pj.squashrestapp.model.dto.XpPointsDto;
 import com.pj.squashrestapp.model.dto.XpPointsForTable;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,10 +21,10 @@ import java.util.List;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class XpPointsService {
 
-  @Autowired
-  private XpPointsRepository xpPointsRepository;
+  private final XpPointsRepository xpPointsRepository;
 
   public ArrayListMultimap<String, Integer> buildAllAsIntegerMultimap() {
     final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();

@@ -13,6 +13,7 @@ import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.TimeLogUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,19 +34,12 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/scoreboards")
+@RequiredArgsConstructor
 public class ScoreboardController {
 
   private final ScoreboardService scoreboardService;
   private final LeagueService leagueService;
   private final SeasonService seasonService;
-
-  public ScoreboardController(final ScoreboardService scoreboardService,
-                              final LeagueService leagueService,
-                              final SeasonService seasonService) {
-    this.scoreboardService = scoreboardService;
-    this.leagueService = leagueService;
-    this.seasonService = seasonService;
-  }
 
 
   @GetMapping(value = "/leagues/{leagueUuid}/players/{playersIds}")
