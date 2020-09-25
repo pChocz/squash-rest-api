@@ -82,10 +82,17 @@ public class EmailSendConfig {
                                  final String subject, final Object content) throws MessagingException, UnsupportedEncodingException {
     final Message message = new MimeMessage(session);
     message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
-    message.setRecipients(
+
+    message.addRecipients(
             Message.RecipientType.TO,
             InternetAddress.parse(receiver)
     );
+
+    message.addRecipients(
+            Message.RecipientType.BCC,
+            InternetAddress.parse(senderEmailAdress)
+    );
+
     message.setSubject(subject);
     message.setContent(content, "text/html; charset=UTF-8");
     return message;
