@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,11 +66,11 @@ public class RoundController {
   }
 
   @GetMapping("/backup/{roundUuid}")
-  @ResponseBody
+//  @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  JsonRound backupRound(@PathVariable final UUID roundUuid) {
+  ResponseEntity<JsonRound> backupRound(@PathVariable final UUID roundUuid) {
     final JsonRound roundJson = roundService.roundToJson(roundUuid);
-    return roundJson;
+    return new ResponseEntity<JsonRound>(roundJson, HttpStatus.OK);
   }
 
   // this one will be deleted later

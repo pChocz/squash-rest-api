@@ -141,6 +141,7 @@ public class LeagueService {
 
     return LeagueStatsWrapper.builder()
             .leagueName(league.getName())
+            .leagueUuid(league.getUuid())
             .logoBytes(logoBytes)
             .overalStats(overalStats)
             .perSeasonStats(perSeasonStatsList)

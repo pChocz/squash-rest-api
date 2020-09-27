@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -17,6 +18,7 @@ import java.util.List;
 public class LeagueStatsWrapper {
 
   private final String leagueName;
+  private final UUID leagueUuid;
   private final byte[] logoBytes;
   private final OveralStats overalStats;
   private final List<PerSeasonStats> perSeasonStats;
