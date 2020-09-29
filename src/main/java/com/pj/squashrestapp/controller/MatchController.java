@@ -35,17 +35,17 @@ public class MatchController {
   private final MatchService matchService;
 
 
-  @GetMapping(value = "/pageable/leagues/{leagueUuid}/players/{playersIds}")
+  @GetMapping(value = "/pageable/leagues/{leagueUuid}/players/{playersUuids}")
   @ResponseBody
   MatchesSimplePaginated matchesPageable(
           @PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
           @PathVariable final UUID leagueUuid,
-          @PathVariable final Long[] playersIds) {
+          @PathVariable final UUID[] playersUuids) {
 
     final MatchesSimplePaginated matchesPaginated =
-            playersIds.length == 1
-                    ? matchService.getMatchesPaginatedForOnePlayer(pageable, leagueUuid, playersIds[0])
-                    : matchService.getMatchesPaginatedForMultiplePlayers(pageable, leagueUuid, playersIds);
+            playersUuids.length == 1
+                    ? matchService.getMatchesPaginatedForOnePlayer(pageable, leagueUuid, playersUuids[0])
+                    : matchService.getMatchesPaginatedForMultiplePlayers(pageable, leagueUuid, playersUuids);
 
     return matchesPaginated;
   }

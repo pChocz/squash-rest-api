@@ -42,18 +42,18 @@ public class ScoreboardController {
   private final SeasonService seasonService;
 
 
-  @GetMapping(value = "/leagues/{leagueUuid}/players/{playersIds}")
+  @GetMapping(value = "/leagues/{leagueUuid}/players/{playersUuids}")
   @ResponseBody
   Scoreboard scoreboardForLeagueForOneOrSeveralPlayers(
           @PathVariable final UUID leagueUuid,
-          @PathVariable final Long[] playersIds) {
+          @PathVariable final UUID[] playersUuids) {
 
     final long startTime = System.nanoTime();
-    final Scoreboard scoreboard = (playersIds.length == 1)
+    final Scoreboard scoreboard = (playersUuids.length == 1)
 //            ? scoreboardService.buildScoreboardForLeagueForSinglePlayer(leagueUuid, playersIds[0])
 //            : scoreboardService.buildScoreboardForLeagueForPlayers(leagueUuid, playersIds);
-            ? scoreboardService.buildScoreboardForLeagueForSinglePlayerNEW(leagueUuid, playersIds[0])
-            : scoreboardService.buildScoreboardForLeagueForPlayersNEW(leagueUuid, playersIds);
+            ? scoreboardService.buildScoreboardForLeagueForSinglePlayerNEW(leagueUuid, playersUuids[0])
+            : scoreboardService.buildScoreboardForLeagueForPlayersNEW(leagueUuid, playersUuids);
 
     // workaround! applying pagination
     scoreboard.removeMatches();

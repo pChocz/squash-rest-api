@@ -73,6 +73,14 @@ public class RoundController {
     return new ResponseEntity<JsonRound>(roundJson, HttpStatus.OK);
   }
 
+  @GetMapping(value = "{roundUuid}/leagueUuid")
+  @ResponseBody
+  UUID getLeagueUuidFromRoundUuid(
+          @PathVariable final UUID roundUuid) {
+
+    return roundService.extractLeagueUuid(roundUuid);
+  }
+
   // this one will be deleted later
 //  @PostMapping
 //  @ResponseBody

@@ -56,8 +56,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND m.firstPlayer.id IN :playersIds 
-              AND m.secondPlayer.id IN :playersIds
+              AND m.firstPlayer.uuid IN :playersUuids 
+              AND m.secondPlayer.uuid IN :playersUuids
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -67,7 +67,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   })
   List<Match> fetchBySeveralPlayersIdsAndLeagueId(
           @Param("leagueUuid") UUID leagueUuid,
-          @Param("playersIds") Long[] playersIds);
+          @Param("playersUuids") UUID[] playersUuids);
 
 
   @Query(SELECT_FETCH_LEAGUE + """
@@ -96,12 +96,12 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           INNER JOIN r.season s
           INNER JOIN s.league l
             WHERE l.uuid = :leagueUuid
-              AND m.firstPlayer.id IN :playersIds 
-              AND m.secondPlayer.id IN :playersIds
+              AND m.firstPlayer.uuid IN :playersUuids 
+              AND m.secondPlayer.uuid IN :playersUuids
           """)
   Page<Long> findIdsMultiple(
           @Param("leagueUuid") UUID leagueUuid,
-          @Param("playersIds") Long[] playersIds,
+          @Param("playersUuids") UUID[] playersUuids,
           Pageable pageable);
 
 
@@ -112,12 +112,12 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           INNER JOIN r.season s
           INNER JOIN s.league l
             WHERE l.uuid = :leagueUuid
-              AND (m.firstPlayer.id = :playerId 
-               OR m.secondPlayer.id = :playerId)
+              AND (m.firstPlayer.uuid = :playerUuid 
+               OR m.secondPlayer.uuid = :playerUuid)
           """)
   Page<Long> findIdsSingle(
           @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerId") Long playerId,
+          @Param("playerUuid") UUID playerUuid,
           Pageable pageable);
 
   @EntityGraph(attributePaths = {
@@ -131,8 +131,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND (m.firstPlayer.id = :playerId 
-               OR m.secondPlayer.id = :playerId)
+              AND (m.firstPlayer.uuid = :playerUuid 
+               OR m.secondPlayer.uuid = :playerUuid)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -142,7 +142,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   })
   List<Match> fetchByOnePlayerIdAndLeagueId(
           @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerId") Long playerId);
+          @Param("playerUuid") UUID playerId);
 
 }
 

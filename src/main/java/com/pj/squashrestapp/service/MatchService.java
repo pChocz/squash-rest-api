@@ -165,8 +165,8 @@ public class MatchService {
     return matchDetailedDto;
   }
 
-  public MatchesSimplePaginated getMatchesPaginatedForOnePlayer(final Pageable pageable, final UUID leagueUuid, final Long playerId) {
-    final Page<Long> matchIds = matchRepository.findIdsSingle(leagueUuid, playerId, pageable);
+  public MatchesSimplePaginated getMatchesPaginatedForOnePlayer(final Pageable pageable, final UUID leagueUuid, final UUID playerUuid) {
+    final Page<Long> matchIds = matchRepository.findIdsSingle(leagueUuid, playerUuid, pageable);
     final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
 
     final List<MatchSimpleDto> matchesDtos = matches
@@ -178,8 +178,8 @@ public class MatchService {
     return matchesDtoPage;
   }
 
-  public MatchesSimplePaginated getMatchesPaginatedForMultiplePlayers(final Pageable pageable, final UUID leagueUuid, final Long[] playersIds) {
-    final Page<Long> matchIds = matchRepository.findIdsMultiple(leagueUuid, playersIds, pageable);
+  public MatchesSimplePaginated getMatchesPaginatedForMultiplePlayers(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
+    final Page<Long> matchIds = matchRepository.findIdsMultiple(leagueUuid, playersUuids, pageable);
     final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
 
     final List<MatchSimpleDto> matchesDtos = matches

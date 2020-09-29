@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -60,12 +61,12 @@ public class Scoreboard {
     return scoreboardRowFirst;
   }
 
-  public void makeItSinglePlayerScoreboard(final Long playerId) {
+  public void makeItSinglePlayerScoreboard(final UUID playerUuid) {
     final Iterator<ScoreboardRow> iterator = this.scoreboardRows.iterator();
     while (iterator.hasNext()) {
       final ScoreboardRow scoreboardRow = iterator.next();
-      final Long currentPlayerId = scoreboardRow.getPlayer().getId();
-      if (currentPlayerId != playerId) {
+      final UUID currentPlayerUuid = scoreboardRow.getPlayer().getUuid();
+      if (!currentPlayerUuid.equals(playerUuid)) {
         iterator.remove();
       }
     }

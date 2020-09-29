@@ -189,4 +189,8 @@ public class RoundService {
     roundRepository.save(round);
   }
 
+  public UUID extractLeagueUuid(final UUID roundUuid) {
+    return roundRepository.retrieveLeagueUuidOfRound(roundUuid);
+  }
+
 }

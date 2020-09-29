@@ -11,7 +11,7 @@ import java.util.TreeMap;
 @SuppressWarnings({"MagicNumber", "JavaDoc"})
 public class RomanUtil {
 
-  private final TreeMap<Integer, String> map = new TreeMap<Integer, String>();
+  private final TreeMap<Integer, String> map = new TreeMap<>();
 
   static {
     map.put(1000, "M");

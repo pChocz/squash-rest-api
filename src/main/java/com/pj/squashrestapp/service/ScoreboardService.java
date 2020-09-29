@@ -71,8 +71,8 @@ public class ScoreboardService {
   }
 
 
-  public Scoreboard buildScoreboardForLeagueForPlayersNEW(final UUID leagueUuid, final Long[] playersIds) {
-    final List<Match> matches = matchRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersIds);
+  public Scoreboard buildScoreboardForLeagueForPlayersNEW(final UUID leagueUuid, final UUID[] playersUuids) {
+    final List<Match> matches = matchRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersUuids);
 
     final List<MatchDto> matchesDtos = matches
             .stream()
@@ -84,8 +84,8 @@ public class ScoreboardService {
     return scoreboard;
   }
 
-  public Scoreboard buildScoreboardForLeagueForSinglePlayerNEW(final UUID leagueUuid, final Long playerId) {
-    final List<Match> matches = matchRepository.fetchByOnePlayerIdAndLeagueId(leagueUuid, playerId);
+  public Scoreboard buildScoreboardForLeagueForSinglePlayerNEW(final UUID leagueUuid, final UUID playerUuid) {
+    final List<Match> matches = matchRepository.fetchByOnePlayerIdAndLeagueId(leagueUuid, playerUuid);
 
     final List<MatchDto> matchesDtos = matches
             .stream()
@@ -93,7 +93,7 @@ public class ScoreboardService {
             .collect(Collectors.toList());
 
     final Scoreboard scoreboard = new Scoreboard(matchesDtos);
-    scoreboard.makeItSinglePlayerScoreboard(playerId);
+    scoreboard.makeItSinglePlayerScoreboard(playerUuid);
 
     return scoreboard;
   }
