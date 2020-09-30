@@ -7,6 +7,8 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
+import com.pj.squashrestapp.model.entityhelper.MatchStatus;
+import com.pj.squashrestapp.model.entityhelper.MatchValidator;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
@@ -26,6 +28,7 @@ public class MatchSimpleDto implements MatchDto {
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate roundDate;
   private final List<SetDto> sets;
+  private final MatchStatus status;
 
   public MatchSimpleDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
@@ -39,6 +42,8 @@ public class MatchSimpleDto implements MatchDto {
     for (final SetResult setResult : match.getSetResults().stream().sorted().collect(Collectors.toList())) {
       this.sets.add(new SetDto(setResult));
     }
+
+    this.status = new MatchValidator(match).checkStatus();
   }
 
 }

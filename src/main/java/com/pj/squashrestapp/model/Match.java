@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -107,7 +108,15 @@ public class Match implements Identifiable, Comparable<Match> {
 
   @Override
   public String toString() {
-    return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResults;
+    return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
+  }
+
+  private List<SetResult> setResultsOrderedNonNull() {
+    return setResults
+            .stream()
+            .filter(SetResult::nonNull)
+            .sorted()
+            .collect(Collectors.toList());
   }
 
   @Override
