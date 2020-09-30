@@ -2,7 +2,7 @@ package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +18,7 @@ public class RoundDto {
 
   private final UUID roundUuid;
   private final int roundNumber;
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate roundDate;
   private final boolean isFinished;
 

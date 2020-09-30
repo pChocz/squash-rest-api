@@ -7,6 +7,7 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -22,7 +23,7 @@ public class MatchSimpleDto implements MatchDto {
 
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate roundDate;
   private final List<SetDto> sets;
 

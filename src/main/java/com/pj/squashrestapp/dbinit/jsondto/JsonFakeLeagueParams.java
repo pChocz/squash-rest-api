@@ -6,16 +6,21 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 @Data
 @NoArgsConstructor
-public class JsonSeason {
+public class JsonFakeLeagueParams {
 
-  private int number;
+  private String leagueName;
+  private String logoBase64;
+
+  private int numberOfCompletedSeasons;
+  private int numberOfRoundsInLastSeason;
+  private int numberOfAllPlayers;
+  private int minNumberOfAttendingPlayers;
+  private int maxNumberOfAttendingPlayers;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
-  private ArrayList<JsonBonusPoint> bonusPoints;
-  private ArrayList<JsonRound> rounds;
 
 }

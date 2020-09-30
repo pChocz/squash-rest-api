@@ -34,20 +34,14 @@ public class JsonImportUtil {
   public Season constructSeason(final JsonSeason jsonSeason) {
     final Season season = new Season();
     season.setNumber(jsonSeason.getNumber());
-    season.setStartDate(constructLocalDate(jsonSeason.getStartDate()));
+    season.setStartDate(jsonSeason.getStartDate());
     return season;
-  }
-
-  private LocalDate constructLocalDate(final String dateAsString) {
-    final String[] partsOfDate = dateAsString.split("\\.");
-    final String properDateString = partsOfDate[2] + "-" + partsOfDate[1] + "-" + partsOfDate[0];
-    return LocalDate.parse(properDateString);
   }
 
   public Round constructRound(final JsonRound jsonRound) {
     final Round round = new Round();
     round.setNumber(jsonRound.getNumber());
-    round.setDate(constructLocalDate(jsonRound.getDate()));
+    round.setDate(jsonRound.getDate());
     round.setFinished(true);
     return round;
   }

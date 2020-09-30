@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.Getter;
 
@@ -26,7 +27,7 @@ public class RoundScoreboard {
 
   private final UUID roundUuid;
   private final int roundNumber;
-  @JsonFormat(pattern = "yyyy-MM-dd", timezone = "UTC")
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT, timezone = "UTC")
   private final LocalDate roundDate;
 
   private boolean finishedState;

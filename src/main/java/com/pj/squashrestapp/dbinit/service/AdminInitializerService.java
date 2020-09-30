@@ -36,6 +36,7 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
+import com.pj.squashrestapp.util.GsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +133,7 @@ public class AdminInitializerService {
   }
 
   private void persistEntireLeagueFromJson(final String initLeagueJsonContent) throws Exception {
-    final JsonLeague jsonLeague = new Gson().fromJson(initLeagueJsonContent, JsonLeague.class);
+    final JsonLeague jsonLeague = GsonUtil.gsonWithDate().fromJson(initLeagueJsonContent, JsonLeague.class);
 
     final List<Player> players = buildPlayersList(jsonLeague);
     playerRepository.saveAll(players);

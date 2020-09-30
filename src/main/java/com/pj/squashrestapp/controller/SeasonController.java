@@ -3,15 +3,10 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.service.SeasonService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.UUID;
 
 /**
@@ -40,7 +34,7 @@ public class SeasonController {
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   SeasonDto createNewSeason(@RequestParam final int seasonNumber,
-                            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate startDate,
+                            @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
                             @RequestParam final UUID leagueUuid) {
 
     final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid);

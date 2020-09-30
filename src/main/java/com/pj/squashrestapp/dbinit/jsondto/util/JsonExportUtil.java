@@ -27,7 +27,7 @@ public class JsonExportUtil {
 
   public JsonRound backupRoundToJson(final Round round) {
     final JsonRound jsonRound = new JsonRound();
-    jsonRound.setDate(round.getDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+    jsonRound.setDate(round.getDate());
     jsonRound.setNumber(round.getNumber());
 
     final ArrayList<JsonRoundGroup> jsonRoundGroups = new ArrayList<>();

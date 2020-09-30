@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.util;
 
 import lombok.experimental.UtilityClass;
-import org.springframework.util.StringUtils;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -18,8 +17,9 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class GeneralUtil {
 
-  public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
-  public static final ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
+  public final static String DATE_FORMAT = "yyyy-MM-dd";
+  public final static TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
+  public final static ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
 
   public LocalDateTime toLocalDateTimeUtc(final Date date) {
     return LocalDateTime.ofInstant(
@@ -61,19 +61,19 @@ public class GeneralUtil {
 
   public String buildProperUsername(final String username) {
     return capitalize(username
-                    .trim()
-                    .replaceAll(" +", " "));
+            .trim()
+            .replaceAll(" +", " "));
   }
 
   private String capitalize(final String string) {
     final int sl = string.length();
     final StringBuilder sb = new StringBuilder(sl);
     boolean lod = false;
-    for(int s = 0; s < sl; s++) {
+    for (int s = 0; s < sl; s++) {
       final int cp = string.codePointAt(s);
       sb.appendCodePoint(lod ? Character.toLowerCase(cp) : Character.toUpperCase(cp));
       lod = Character.isLetterOrDigit(cp);
-      if(!Character.isBmpCodePoint(cp)) s++;
+      if (!Character.isBmpCodePoint(cp)) s++;
     }
     return sb.toString();
   }

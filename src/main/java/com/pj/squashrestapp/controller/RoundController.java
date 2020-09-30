@@ -3,9 +3,9 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.service.RoundService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +48,7 @@ public class RoundController {
   UUID newRound(
           @RequestBody
           @RequestParam("roundNumber") final int roundNumber,
-          @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
+          @RequestParam("roundDate") @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
           @RequestParam("seasonUuid") final UUID seasonUuid,
           @RequestParam("playersIds") final List<Long[]> playersIds) {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersIds);
@@ -80,22 +80,6 @@ public class RoundController {
 
     return roundService.extractLeagueUuid(roundUuid);
   }
-
-  // this one will be deleted later
-//  @PostMapping
-//  @ResponseBody
-//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-//  Round newRound(
-//          @RequestBody
-//          @RequestParam("roundNumber") final int roundNumber,
-//          @RequestParam("roundDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate roundDate,
-//          @RequestParam("seasonNumber") final int seasonNumber,
-//          @RequestParam("leagueId") final Long leagueId,
-//          @RequestParam("playersIds") final List<Long[]> playersIds) {
-//    final Round round = roundService.createRound(roundNumber, roundDate, seasonNumber, leagueId, playersIds);
-//    return round;
-//  }
-
 
   @DeleteMapping(value = "/{roundUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)

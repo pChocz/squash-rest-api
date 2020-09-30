@@ -1,12 +1,13 @@
 package com.pj.squashrestapp.dbinit.controller;
 
+import com.google.gson.reflect.TypeToken;
+import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
+import com.pj.squashrestapp.util.GsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,8 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -31,32 +34,20 @@ public class InitializerController {
   private final FakeLeagueService fakeLeagueService;
   private final AdminInitializerService adminInitializerService;
 
-
   @PostMapping(value = "/leagues")
   @ResponseBody
   @PreAuthorize("isAdmin()")
   void createFakeLeague(
-          @RequestParam("leagueName") final String leagueName,
-          @RequestParam("numberOfCompletedSeasons") final int numberOfCompletedSeasons,
-          @RequestParam("numberOfRoundsInLastSeason") final int numberOfRoundsInLastSeason,
-          @RequestParam("numberOfAllPlayers") final int numberOfAllPlayers,
-          @RequestParam("minNumberOfAttendingPlayers") final int minNumberOfAttendingPlayers,
-          @RequestParam("maxNumberOfAttendingPlayers") final int maxNumberOfAttendingPlayers,
-          @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate startDate,
-          @RequestParam("logo") final MultipartFile logoFile) throws IOException {
+          @RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile)
+          throws IOException {
 
-    final byte[] logoBytes = logoFile.getBytes();
+    final String jsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
+    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {}.getType();
+    final List<JsonFakeLeagueParams> fakeLeagueParams = GsonUtil.gsonWithDate().fromJson(jsonContent, listOfMyClassObject);
 
-    fakeLeagueService.buildLeague(
-            leagueName,
-            numberOfCompletedSeasons,
-            numberOfRoundsInLastSeason,
-            numberOfAllPlayers,
-            minNumberOfAttendingPlayers,
-            maxNumberOfAttendingPlayers,
-            startDate,
-            logoBytes);
+    fakeLeagueService.buildLeagues(fakeLeagueParams);
   }
+
 
   @PostMapping(value = "/json")
   @ResponseBody

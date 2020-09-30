@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.RomanUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
   private final UUID seasonUuid;
   private final int seasonNumber;
   private final String seasonNumberRoman;
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate seasonStartDate;
 
   public SeasonDto(final Season season) {

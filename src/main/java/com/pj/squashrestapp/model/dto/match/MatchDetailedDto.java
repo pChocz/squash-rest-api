@@ -10,6 +10,7 @@ import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.entityhelper.MatchStatus;
 import com.pj.squashrestapp.model.entityhelper.MatchValidator;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -36,7 +37,7 @@ public class MatchDetailedDto implements MatchDto {
   private final Long roundId;
   private final UUID roundUuid;
   private final int roundNumber;
-  @JsonFormat(pattern = "yyyy-MM-dd")
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate roundDate;
 
   private final UUID seasonUuid;

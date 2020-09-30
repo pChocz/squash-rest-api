@@ -5,6 +5,7 @@ import com.pj.squashrestapp.dbinit.fake.FakeLeagueHallOfFame;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersCreator;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersRoleAssigner;
 import com.pj.squashrestapp.dbinit.fake.FakeSeason;
+import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
@@ -15,24 +16,24 @@ import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.HallOfFameSeasonRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 /**
@@ -54,18 +55,28 @@ public class FakeLeagueService {
   private final LeagueRepository leagueRepository;
   private final HallOfFameSeasonRepository hallOfFameSeasonRepository;
 
+  public void buildLeagues(final List<JsonFakeLeagueParams> jsonFakeLeagueParamsList) throws IOException {
+    final long startTime = System.nanoTime();
+    log.info("-- START building of {} fake leagues --", jsonFakeLeagueParamsList.size());
 
-  public void buildLeague(final String leagueName,
-                          final int numberOfCompletedSeasons,
-                          final int numberOfRoundsInLastSeason,
-                          final int numberOfAllPlayers,
-                          final int minNumberOfAttendingPlayers,
-                          final int maxNumberOfAttendingPlayers,
-                          final LocalDate startDate,
-                          final byte[] logoBytes) throws IOException {
+    for (final JsonFakeLeagueParams jsonFakeLeagueParams : jsonFakeLeagueParamsList) {
+      buildLeague(jsonFakeLeagueParams);
+    }
 
-    log.info("-- START --");
-    final long veryStartTime = System.nanoTime();
+    log.info("-- FINISHED building of {} fake leagues --", jsonFakeLeagueParamsList.size());
+    TimeLogUtil.logFinish(startTime);
+  }
+
+  public void buildLeague(final JsonFakeLeagueParams jsonFakeLeagueParams) throws IOException {
+    final String leagueName = jsonFakeLeagueParams.getLeagueName();
+    final int numberOfCompletedSeasons = jsonFakeLeagueParams.getNumberOfCompletedSeasons();
+    final int numberOfRoundsInLastSeason = jsonFakeLeagueParams.getNumberOfRoundsInLastSeason();
+    final int numberOfAllPlayers = jsonFakeLeagueParams.getNumberOfAllPlayers();
+    final int minNumberOfAttendingPlayers = jsonFakeLeagueParams.getMinNumberOfAttendingPlayers();
+    final int maxNumberOfAttendingPlayers = jsonFakeLeagueParams.getMaxNumberOfAttendingPlayers();
+    final LocalDate startDate = jsonFakeLeagueParams.getStartDate();
+    final String logoBase64 = jsonFakeLeagueParams.getLogoBase64();
+    final byte[] logoBytes = Base64.getDecoder().decode(logoBase64);
 
     log.info("Creating new League and assigning roles and logo...");
     long startTime = System.nanoTime();
@@ -83,13 +94,11 @@ public class FakeLeagueService {
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
     TimeLogUtil.logFinish(startTime);
 
-
     log.info("Creating {} players (including password hashing) and assigning roles/authorities...", numberOfAllPlayers);
     startTime = System.nanoTime();
     final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers);
     FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
     TimeLogUtil.logFinish(startTime);
-
 
     log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);
     startTime = System.nanoTime();
@@ -148,9 +157,6 @@ public class FakeLeagueService {
     hallOfFameSeasonRepository.saveAll(league.getHallOfFameSeasons());
     TimeLogUtil.logFinish(startTime);
 
-
-    log.info("-- FINISHED --");
-    TimeLogUtil.logFinish(veryStartTime);
     log.info(extractLeagueDetails(league));
   }
 
