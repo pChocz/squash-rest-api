@@ -7,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -52,12 +53,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       }
 
       final var authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
-      final Authentication authenticate = authenticationManager.authenticate(authentication);
-      return authenticate;
+      final var auth = authenticationManager.authenticate(authentication);
+      log.info("User [{}] has logged in", getPrincipal(auth).getUsername());
+      return auth;
 
     } catch (final AuthenticationException e) {
       throw new WrongCredentialsFormatException(e.getMessage() + " | User: [" + usernameOrEmail + "]");
     }
+  }
+
+  private UserDetailsImpl getPrincipal(final Authentication auth) {
+    return (UserDetailsImpl) auth.getPrincipal();
   }
 
   @Override
@@ -65,7 +71,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                           final HttpServletResponse res,
                                           final FilterChain chain,
                                           final Authentication auth) throws IOException, ServletException {
-    final UserDetailsImpl principal = (UserDetailsImpl) auth.getPrincipal();
+    final UserDetailsImpl principal = getPrincipal(auth);
 
     final String token = Jwts
             .builder()

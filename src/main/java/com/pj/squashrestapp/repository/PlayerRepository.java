@@ -19,6 +19,8 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
   Player findByUsername(@Param("username") String username);
 
+  List<Player> findByUsernameIn(List<String> username);
+
   @Query("SELECT p FROM Player p WHERE p.id IN :ids")
   List<Player> findByIds(@Param("ids") Long[] ids);
 
@@ -30,7 +32,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles.league",
   })
   @Query("SELECT p FROM Player p WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)")
-  Optional<Player> fetchForAuthorizationByUsernameOrEmail(@Param("usernameOrEmail") String usernameOrEmail);
+  Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(@Param("usernameOrEmail") String usernameOrEmail);
 
 
   @EntityGraph(attributePaths = {

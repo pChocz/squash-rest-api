@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(
@@ -90,6 +91,13 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
   @Override
   public String toString() {
     return "Round " + round.getNumber() + " | Group " + number;
+  }
+
+  public List<Match> getMatchesOrdered() {
+    return matches
+            .stream()
+            .sorted(Comparator.comparingInt(Match::getNumber))
+            .collect(Collectors.toList());
   }
 
   @Override

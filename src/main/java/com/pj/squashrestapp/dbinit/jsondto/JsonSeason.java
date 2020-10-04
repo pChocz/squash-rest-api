@@ -7,15 +7,21 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 public class JsonSeason {
 
   private int number;
+
+  private UUID uuid;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
+
   private ArrayList<JsonBonusPoint> bonusPoints;
+
   private ArrayList<JsonRound> rounds;
 
 }

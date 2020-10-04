@@ -20,7 +20,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   @Override
   public UserDetails loadUserByUsername(final String usernameOrEmail) throws UsernameNotFoundException {
     final Player player = playerRepository
-            .fetchForAuthorizationByUsernameOrEmail(usernameOrEmail.toUpperCase())
+            .fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase())
             .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
     final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);

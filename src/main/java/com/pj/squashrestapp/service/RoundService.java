@@ -1,11 +1,5 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
-import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
-import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
-import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
-import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
-import com.pj.squashrestapp.dbinit.jsondto.util.JsonExportUtil;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -15,25 +9,15 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
-import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -45,7 +29,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RoundService {
 
-  private final SetResultRepository setResultRepository;
   private final SeasonRepository seasonRepository;
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
@@ -173,14 +156,6 @@ public class RoundService {
     roundRepository.save(round);
 
     return round;
-  }
-
-  public JsonRound roundToJson(final UUID roundUuid) {
-    final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
-    final Long roundId = roundRepository.findIdByUuid(roundUuid);
-    final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
-    final JsonRound roundJson = JsonExportUtil.backupRoundToJson(round);
-    return roundJson;
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {

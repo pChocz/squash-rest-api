@@ -3,7 +3,7 @@
 server:
   port: 8082
   tomcat:
-    max-swallow-size: 5MB
+    max-swallow-size: 100MB
 
 
 # ###### ##########
@@ -33,8 +33,8 @@ spring:
     password: _REPLACE_
   servlet:
     multipart:
-      max-file-size: 2MB
-      max-request-size: 2MB
+      max-file-size: 75MB
+      max-request-size: 75MB
 
 
 # #####

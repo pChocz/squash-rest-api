@@ -74,6 +74,12 @@ public class Player {
     this.passwordSessionUuid = UUID.randomUUID();
   }
 
+  public Player(final String username) {
+    this.username = username;
+    this.enabled = false;
+    this.passwordSessionUuid = UUID.randomUUID();
+  }
+
   public void addRole(final RoleForLeague roleForLeague) {
     this.roles.add(roleForLeague);
     roleForLeague.getPlayers().add(this);

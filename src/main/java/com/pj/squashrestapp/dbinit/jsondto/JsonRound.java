@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 public class JsonRound {
 
+  private UUID uuid;
   private int number;
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate date;

@@ -48,24 +48,20 @@ public class InitializerController {
     fakeLeagueService.buildLeagues(fakeLeagueParams);
   }
 
-
   @PostMapping(value = "/json")
   @ResponseBody
   void createInitialDatabaseStructure(
-          @RequestParam("init-default-users") final MultipartFile initDefaultUsersFile,
           @RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
-          @RequestParam("init-league") final MultipartFile initLeagueFile,
+          @RequestParam("init-all-leagues") final MultipartFile initAllLeaguesFile,
           @RequestParam("init-credentials") final MultipartFile initCredentialsFile) throws Exception {
 
-    final String initDefaultUsersJsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
     final String initXpPointsJsonContent = IOUtils.toString(initXpPointsFile.getInputStream(), Charset.defaultCharset());
-    final String initLeagueJsonContent = IOUtils.toString(initLeagueFile.getInputStream(), Charset.defaultCharset());
+    final String initAllLeaguesJsonContent = IOUtils.toString(initAllLeaguesFile.getInputStream(), Charset.defaultCharset());
     final String initCredentialsJsonContent = IOUtils.toString(initCredentialsFile.getInputStream(), Charset.defaultCharset());
 
     final boolean initialized = adminInitializerService.initialize(
-            initDefaultUsersJsonContent,
             initXpPointsJsonContent,
-            initLeagueJsonContent,
+            initAllLeaguesJsonContent,
             initCredentialsJsonContent);
 
     if (initialized) {

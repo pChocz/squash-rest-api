@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.service;
 
-import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.google.gson.Gson;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.security.token.TokenConstants;
@@ -25,25 +24,20 @@ import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
-import jdk.jshell.spi.ExecutionControl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -108,7 +102,7 @@ public class PlayerService {
   }
 
   public Player getPlayer(final String usernameOrEmail) {
-    return playerRepository.fetchForAuthorizationByUsernameOrEmail(usernameOrEmail.toUpperCase()).orElse(null);
+    return playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase()).orElse(null);
   }
 
   public void createAndPersistVerificationToken(final String token, final Player user) {
@@ -166,7 +160,7 @@ public class PlayerService {
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmail(auth.getName().toUpperCase()).orElseThrow();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }

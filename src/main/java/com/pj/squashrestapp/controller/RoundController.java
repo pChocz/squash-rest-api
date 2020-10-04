@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.util.GeneralUtil;
@@ -8,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -65,13 +63,6 @@ public class RoundController {
     log.info("update round {}: finished state: {}", roundUuid, finishedState);
   }
 
-  @GetMapping("/backup/{roundUuid}")
-//  @ResponseBody
-//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  ResponseEntity<JsonRound> backupRound(@PathVariable final UUID roundUuid) {
-    final JsonRound roundJson = roundService.roundToJson(roundUuid);
-    return new ResponseEntity<JsonRound>(roundJson, HttpStatus.OK);
-  }
 
   @GetMapping(value = "{roundUuid}/leagueUuid")
   @ResponseBody

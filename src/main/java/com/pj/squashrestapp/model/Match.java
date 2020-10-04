@@ -64,8 +64,7 @@ public class Match implements Identifiable, Comparable<Match> {
 
   @Setter
   @Column(name = "uuid",
-          nullable = false,
-          updatable = false)
+          nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
@@ -111,11 +110,18 @@ public class Match implements Identifiable, Comparable<Match> {
     return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
   }
 
+  public List<SetResult> getSetResultsOrdered() {
+    return setResults
+            .stream()
+            .sorted(Comparator.comparingInt(SetResult::getNumber))
+            .collect(Collectors.toList());
+  }
+
   private List<SetResult> setResultsOrderedNonNull() {
     return setResults
             .stream()
             .filter(SetResult::nonNull)
-            .sorted()
+            .sorted(Comparator.comparingInt(SetResult::getNumber))
             .collect(Collectors.toList());
   }
 

@@ -35,6 +35,7 @@ public class JsonImportUtil {
     final Season season = new Season();
     season.setNumber(jsonSeason.getNumber());
     season.setStartDate(jsonSeason.getStartDate());
+    season.setUuid(jsonSeason.getUuid());
     return season;
   }
 
@@ -42,6 +43,7 @@ public class JsonImportUtil {
     final Round round = new Round();
     round.setNumber(jsonRound.getNumber());
     round.setDate(jsonRound.getDate());
+    round.setUuid(jsonRound.getUuid());
     round.setFinished(true);
     return round;
   }
@@ -126,6 +128,7 @@ public class JsonImportUtil {
     final League league = new League();
     league.setName(jsonLeague.getName());
     league.setLeagueLogo(constructLeagueLogo(jsonLeague));
+    league.setUuid(jsonLeague.getUuid());
     return league;
   }
 

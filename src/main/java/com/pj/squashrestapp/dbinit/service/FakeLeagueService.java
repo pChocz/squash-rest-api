@@ -131,6 +131,7 @@ public class FakeLeagueService {
     log.info("Persisting {} items (seasons/rounds/roundGroups/matches/sets + players) to PostreSQL DB...", extractNumberOfEntities(league, players));
     startTime = System.nanoTime();
     playerRepository.saveAll(players);
+    authorityRepository.save(userAuthority);
     leagueRepository.save(league);
     TimeLogUtil.logFinish(startTime);
 

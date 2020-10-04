@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 public class JsonBonusPoint {
 
   private String playerName;
+
   private int points;
 
 }

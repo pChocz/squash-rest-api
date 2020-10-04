@@ -66,8 +66,7 @@ public class Season implements Identifiable, Comparable<Season> {
 
   @Setter
   @Column(name = "uuid",
-          nullable = false,
-          updatable = false)
+          nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
