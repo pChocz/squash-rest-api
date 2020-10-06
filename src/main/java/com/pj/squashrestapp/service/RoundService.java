@@ -35,7 +35,7 @@ public class RoundService {
 
 
   public void deleteRound(final UUID roundUuid) {
-    final Round roundToDelete = roundRepository.findRoundByUuid(roundUuid);
+    final Round roundToDelete = roundRepository.findRoundByUuid(roundUuid).orElseThrow();
     roundRepository.delete(roundToDelete);
   }
 
@@ -159,7 +159,7 @@ public class RoundService {
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
-    final Round round = roundRepository.findRoundByUuid(roundUuid);
+    final Round round = roundRepository.findRoundByUuid(roundUuid).orElseThrow();
     round.setFinished(finishedState);
     roundRepository.save(round);
   }

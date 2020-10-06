@@ -16,7 +16,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
 
   Round findRoundById(Long id);
 
-  Round findRoundByUuid(UUID uuid);
+  Optional<Round> findRoundByUuid(UUID uuid);
 
   @Query("""
           SELECT l.uuid FROM Round r

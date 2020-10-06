@@ -51,10 +51,11 @@ public class EmailSendConfig {
     try {
       final Message message = prepareMessage(session, receiver, subject, content);
       Transport.send(message);
-      log.info("Email sent succesfully");
+      log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
 
     } catch (final MessagingException | UnsupportedEncodingException e) {
-      log.error("Email not sent!", e);
+      log.error("[{}] email to [{}] has not been sent!", subject, receiver);
+      log.error("Exception", e);
     }
   }
 

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  *
@@ -46,7 +47,6 @@ public class PlayerController {
 
   private final ApplicationEventPublisher eventPublisher;
   private final PlayerService playerService;
-  private final EmailSendConfig emailSendConfig;
 
 
   @GetMapping(value = "/me")
@@ -101,8 +101,8 @@ public class PlayerController {
   @PostMapping(value = "/requestPasswordReset")
   @ResponseBody
   void requestResetPassword(
-          @RequestParam("usernameOrEmail") final String usernameOrEmail,
-          @RequestParam("frontendUrl") final String frontendUrl,
+          @RequestParam final String usernameOrEmail,
+          @RequestParam final String frontendUrl,
           final HttpServletRequest request) {
 
     final Player player = playerService.getPlayer(usernameOrEmail);
@@ -111,7 +111,19 @@ public class PlayerController {
       eventPublisher.publishEvent(new OnPasswordResetEvent(player, request.getLocale(), frontendUrl));
 
     } else {
-      throw new RuntimeException("Account does not exist!");
+
+      // we are delaying execution to give indication
+      // to the user that some process is running.
+      try {
+        TimeUnit.SECONDS.sleep(2);
+      } catch (final InterruptedException ie) {
+        Thread.currentThread().interrupt();
+      }
+
+      // we are only logging it internally. Information
+      // that the account does not exist does not need
+      // to be passed to the frontend.
+      log.error("Account does not exist. This information is not passed to the frontend");
     }
   }
 

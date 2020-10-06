@@ -26,9 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -140,7 +142,9 @@ public class SeasonService {
 
     Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
     if (season == null) {
-      season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+      season = seasonRepository
+              .findSeasonByUuid(seasonUuid)
+              .orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
     }
 
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();

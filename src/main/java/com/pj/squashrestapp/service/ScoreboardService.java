@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,13 @@ public class ScoreboardService {
   public RoundScoreboard buildScoreboardForRound(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);
-    final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
+
+    Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
+    if (round == null) {
+      round = roundRepository
+              .findRoundByUuid(roundUuid)
+              .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
+    }
 
     final int currentRoundNumber = round.getNumber();
     final Season currentSeason = round.getSeason();

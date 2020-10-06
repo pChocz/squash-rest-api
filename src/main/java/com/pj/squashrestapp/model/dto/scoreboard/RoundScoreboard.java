@@ -7,6 +7,7 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
+import com.pj.squashrestapp.util.RomanUtil;
 import lombok.Getter;
 
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ public class RoundScoreboard {
 
   private final UUID seasonUuid;
   private final int seasonNumber;
+  private final String seasonNumberRoman;
 
   private final UUID roundUuid;
   private final int roundNumber;
@@ -47,6 +49,7 @@ public class RoundScoreboard {
 
     this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();
+    this.seasonNumberRoman = RomanUtil.toRoman(this.seasonNumber);
 
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
@@ -62,6 +65,7 @@ public class RoundScoreboard {
 
     this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();
+    this.seasonNumberRoman = RomanUtil.toRoman(this.seasonNumber);
 
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
