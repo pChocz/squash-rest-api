@@ -1,11 +1,14 @@
 package com.pj.squashrestapp.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -23,44 +26,39 @@ import java.util.NoSuchElementException;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(NullPointerException.class)
-  ResponseEntity<ErrorResponse> handleNullPointerException(
-          final Exception ex,
-          final HttpServletRequest request) {
-
-    log.error("Caught NullPointerException in the Exception Interceptor");
-
-    final HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-
-    return new ResponseEntity<>(
-            ErrorResponse.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message(ex.getMessage())
-                    .status(httpStatus.value())
-                    .path(request.getRequestURI())
-                    .build(),
-            httpStatus
-    );
-  }
-
-  @ExceptionHandler(IOException.class)
+  /**
+   *
+   * https://mtyurt.net/post/spring-how-to-handle-ioexception-broken-pipe.html
+   *
+   */
+  @ExceptionHandler({
+          IOException.class,
+          NullPointerException.class,
+  })
+  @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
   ResponseEntity<ErrorResponse> handleIOException(
           final Exception ex,
           final HttpServletRequest request) {
 
-    log.error("Caught IOException in the Exception Interceptor");
+    log.error("Caught IO/NullPointer Exception in the Exception Interceptor");
 
-    final HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+    final String rootCauseMessage = ExceptionUtils.getRootCauseMessage(ex);
 
-    return new ResponseEntity<>(
-            ErrorResponse.builder()
-                    .timestamp(LocalDateTime.now())
-                    .message(ex.getMessage())
-                    .status(httpStatus.value())
-                    .path(request.getRequestURI())
-                    .build(),
-            httpStatus
-    );
+    if (StringUtils.containsIgnoreCase(rootCauseMessage, "broken pipe")) {
+      return null;
+
+    } else {
+      final HttpStatus httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+      return new ResponseEntity<>(
+              ErrorResponse.builder()
+                      .timestamp(LocalDateTime.now())
+                      .message(ex.getMessage())
+                      .status(httpStatus.value())
+                      .path(request.getRequestURI())
+                      .build(),
+              httpStatus
+      );
+    }
   }
 
   @ExceptionHandler(NoSuchElementException.class)
