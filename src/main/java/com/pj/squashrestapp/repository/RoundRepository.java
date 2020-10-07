@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@SuppressWarnings({"JavaDoc", "unused"})
 public interface RoundRepository extends JpaRepository<Round, Long> {
 
-  Round findRoundById(Long id);
-
-  Optional<Round> findRoundByUuid(UUID uuid);
+  Optional<Round> findByUuid(UUID uuid);
 
   @Query("""
           SELECT l.uuid FROM Round r
@@ -24,7 +21,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
            JOIN League l ON s.league = l
               WHERE r.uuid = :roundUuid
           """)
-  UUID retrieveLeagueUuidOfRound(@Param("roundUuid") UUID roundUuid);
+  UUID retrieveLeagueUuidOfRound(UUID roundUuid);
 
   @Query("""
           SELECT r FROM Match m
@@ -32,7 +29,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
            JOIN Round r ON rg.round = r
               WHERE m.uuid = :matchUuid
           """)
-  Round findRoundByMatchUuid(@Param("matchUuid") UUID matchUuid);
+  Round findByMatchUuid(UUID matchUuid);
 
   Optional<Round> findBySeasonAndNumber(Season season, int number);
 

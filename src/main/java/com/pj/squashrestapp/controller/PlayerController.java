@@ -70,7 +70,7 @@ public class PlayerController {
   @ResponseBody
   void logout(@RequestParam final String token) {
     playerService.blacklistToken(token);
-    log.info("User [{}] has logged out. Token has been blacklisted", playerService.extractSessionUsername());
+    log.info("User [{}] has logged out. Token has been blacklisted", GeneralUtil.extractSessionUsername());
   }
 
 

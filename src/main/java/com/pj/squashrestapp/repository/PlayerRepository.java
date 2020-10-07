@@ -14,18 +14,14 @@ import java.util.UUID;
 /**
  *
  */
-@SuppressWarnings({"unused", "JavaDoc"})
 public interface PlayerRepository extends JpaRepository<Player, Long> {
 
-  Player findByUsername(@Param("username") String username);
+  Player findByUsername(String username);
 
   List<Player> findByUsernameIn(List<String> username);
 
-  @Query("SELECT p FROM Player p WHERE p.id IN :ids")
-  List<Player> findByIds(@Param("ids") Long[] ids);
-
   @Query("SELECT p FROM Player p WHERE p.uuid IN :uuids")
-  List<Player> findByUuids(@Param("uuids") UUID[] uuids);
+  List<Player> findByUuids(UUID[] uuids);
 
   Player findByUuid(UUID uuid);
 
@@ -35,7 +31,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles.league",
   })
   @Query("SELECT p FROM Player p WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)")
-  Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(@Param("usernameOrEmail") String usernameOrEmail);
+  Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(String usernameOrEmail);
 
 
   @EntityGraph(attributePaths = {
@@ -44,7 +40,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles.league",
   })
   @Query("SELECT p FROM Player p WHERE p.id = :playerId")
-  Optional<Player> fetchForAuthorizationById(@Param("playerId") Long playerId);
+  Optional<Player> fetchForAuthorizationById(Long playerId);
 
 
   @EntityGraph(attributePaths = {
@@ -53,7 +49,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles.league",
   })
   @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
-  Optional<Player> fetchForAuthorizationByUuid(@Param("uuid") UUID uuid);
+  Optional<Player> fetchForAuthorizationByUuid(UUID uuid);
 
 
   @EntityGraph(attributePaths = {
@@ -61,8 +57,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles",
           "roles.league",
   })
-  @Query("SELECT p FROM Player p")
-  List<Player> fetchForAuthorizationAll();
+  List<Player> findAll();
 
 
   @EntityGraph(attributePaths = {
@@ -73,15 +68,15 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   @Query("""
           SELECT p FROM Player p
             JOIN p.roles r
-              WHERE r.league.id = :leagueId
+              WHERE r.league.uuid = :leagueUuid
           """)
-  List<Player> fetchForAuthorizationForLeague(@Param("leagueId") Long leagueId);
+  List<Player> fetchForAuthorizationForLeague(UUID leagueUuid);
 
   @Query("""
           SELECT DISTINCT p FROM Player p
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
           """)
-  List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
+  List<Player> fetchGeneralInfoSorted(UUID leagueUuid, Sort sort);
 
 }

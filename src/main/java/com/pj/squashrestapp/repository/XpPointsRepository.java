@@ -1,17 +1,16 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.XpPointsForPlace;
 import com.pj.squashrestapp.model.XpPointsForRound;
-import com.pj.squashrestapp.model.XpPointsForRoundGroup;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-@SuppressWarnings({"JavaDoc", "unused"})
+/**
+ *
+ */
 public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long> {
 
   @Query("""
@@ -21,7 +20,8 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
               WHERE xpr.split = :split
                 ORDER BY xpp.placeInRound
           """)
-  List<Integer> retrievePointsBySplit(@Param("split") String split);
+  List<Integer> retrievePointsBySplit(String split);
+
 
   @Query("""
           SELECT xpp FROM XpPointsForPlace xpp

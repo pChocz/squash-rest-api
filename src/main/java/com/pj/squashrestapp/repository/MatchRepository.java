@@ -6,17 +6,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@SuppressWarnings({"JavaDoc", "unused"})
+/**
+ *
+ */
 public interface MatchRepository extends JpaRepository<Match, Long> {
 
   String SELECT_FETCH_LEAGUE = """
           SELECT m FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+                    
+          """;
+
+  String SELECT_FETCH_LEAGUE_IDS = """
+          SELECT m.id FROM Match m
           INNER JOIN m.roundGroup rg
           INNER JOIN rg.round r
           INNER JOIN r.season s
@@ -33,16 +43,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
            JOIN League l ON s.league = l
               WHERE m.uuid = :matchUuid
           """)
-  UUID retrieveLeagueUuidOfMatch(@Param("matchUuid") UUID matchUuid);
-
-
-  @EntityGraph(attributePaths = {
-          "firstPlayer",
-          "secondPlayer",
-          "setResults",
-          "roundGroup.round.season"
-  })
-  Match findMatchById(Long id);
+  UUID retrieveLeagueUuidOfMatch(UUID matchUuid);
 
 
   @EntityGraph(attributePaths = {
@@ -65,9 +66,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchBySeveralPlayersIdsAndLeagueId(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playersUuids") UUID[] playersUuids);
+  List<Match> fetchBySeveralPlayersIdsAndLeagueId(UUID leagueUuid, UUID[] playersUuids);
+
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
@@ -82,77 +82,33 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerUuid") UUID playerUuid,
-          @Param("playersUuids") UUID[] playersUuids);
+  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids);
 
 
-
-  @Query(SELECT_FETCH_LEAGUE + """
-            WHERE l.uuid = :leagueUuid
-              AND m.firstPlayer.id IN :playersIds 
-              AND m.secondPlayer.id IN :playersIds
-          """)
-  @EntityGraph(attributePaths = {
-          "firstPlayer",
-          "secondPlayer",
-          "setResults",
-          "roundGroup.round.season"
-  })
-  Page<Match> fetchPageBySeveralPlayersIdsAndLeagueId(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playersIds") Long[] playersIds,
-          Pageable pageable);
-
-  @Query("""
-          SELECT m.id FROM Match m
-          INNER JOIN m.roundGroup rg
-          INNER JOIN rg.round r
-          INNER JOIN r.season s
-          INNER JOIN s.league l
+  @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
               AND m.firstPlayer.uuid IN :playersUuids 
               AND m.secondPlayer.uuid IN :playersUuids
           """)
-  Page<Long> findIdsMultiple(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playersUuids") UUID[] playersUuids,
-          Pageable pageable);
+  Page<Long> findIdsMultiple(UUID leagueUuid, UUID[] playersUuids, Pageable pageable);
 
 
-  @Query("""
-          SELECT m.id FROM Match m
-          INNER JOIN m.roundGroup rg
-          INNER JOIN rg.round r
-          INNER JOIN r.season s
-          INNER JOIN s.league l
+  @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
               AND (m.firstPlayer.uuid = :playerUuid 
                OR m.secondPlayer.uuid = :playerUuid)
           """)
-  Page<Long> findIdsSingle(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerUuid") UUID playerUuid,
-          Pageable pageable);
+  Page<Long> findIdsSingle(UUID leagueUuid, UUID playerUuid, Pageable pageable);
 
-  @Query("""
-          SELECT m.id FROM Match m
-          INNER JOIN m.roundGroup rg
-          INNER JOIN rg.round r
-          INNER JOIN r.season s
-          INNER JOIN s.league l
+
+  @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
               AND (
                     (m.firstPlayer.uuid = :playerUuid AND m.secondPlayer.uuid IN :playersUuids)
                     OR (m.secondPlayer.uuid = :playerUuid AND m.firstPlayer.uuid IN :playersUuids)
               )
           """)
-  Page<Long> findIdsSingleAgainstOthers(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerUuid") UUID playerUuid,
-          @Param("playersUuids") UUID[] playersUuids,
-          Pageable pageable);
+  Page<Long> findIdsSingleAgainstOthers(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids, Pageable pageable);
 
 
   @EntityGraph(attributePaths = {
@@ -175,21 +131,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchByOnePlayerIdAndLeagueId(
-          @Param("leagueUuid") UUID leagueUuid,
-          @Param("playerUuid") UUID playerId);
+  List<Match> fetchForOnePlayerForLeague(UUID leagueUuid, UUID playerUuid);
 
 }
-
-//  @Query(SELECT_FETCH_LEAGUE + """
-//          WHERE l.uuid = :leagueUuid
-//            AND (m.firstPlayer.id = :playerId
-//             OR m.secondPlayer.id = :playerId)
-//          """)
-//  @EntityGraph(attributePaths = {
-//          "match.firstPlayer",
-//          "match.secondPlayer",
-//  })
-//  List<SetResult> fetchByOnePlayerIdAndLeagueId(
-//          @Param("leagueUuid") UUID leagueUuid,
-//          @Param("playerId") Long playerId);

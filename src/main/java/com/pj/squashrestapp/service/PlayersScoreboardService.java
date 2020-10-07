@@ -25,7 +25,7 @@ public class PlayersScoreboardService {
   private final MatchRepository matchRepository;
 
   public Scoreboard buildSingle(final UUID leagueUuid, final UUID playerUuid) {
-    final List<Match> matches = matchRepository.fetchByOnePlayerIdAndLeagueId(leagueUuid, playerUuid);
+    final List<Match> matches = matchRepository.fetchForOnePlayerForLeague(leagueUuid, playerUuid);
 
     final List<MatchDto> matchesDtos = matches
             .stream()

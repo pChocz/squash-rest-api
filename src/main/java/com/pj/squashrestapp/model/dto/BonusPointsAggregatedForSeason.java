@@ -2,8 +2,6 @@ package com.pj.squashrestapp.model.dto;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.BonusPoint;
-import com.pj.squashrestapp.model.Player;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
@@ -13,10 +11,8 @@ import java.util.UUID;
  *
  */
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class BonusPointsAggregatedForSeason {
 
-  @EqualsAndHashCode.Include
   final UUID seasonUuid;
   final AtomicLongMap<UUID> pointsPerPlayerId;
 

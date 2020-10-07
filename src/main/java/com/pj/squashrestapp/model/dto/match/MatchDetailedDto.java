@@ -8,8 +8,8 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
-import com.pj.squashrestapp.model.entityhelper.MatchStatus;
-import com.pj.squashrestapp.model.entityhelper.MatchValidator;
+import com.pj.squashrestapp.model.matchresulthelper.MatchStatus;
+import com.pj.squashrestapp.model.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -23,10 +23,8 @@ import java.util.UUID;
  *
  */
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class MatchDetailedDto implements MatchDto {
 
-  @EqualsAndHashCode.Include
   private final UUID matchUuid;
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;

@@ -1,8 +1,11 @@
-package com.pj.squashrestapp.model.entityhelper;
+package com.pj.squashrestapp.model.matchresulthelper;
 
 import com.pj.squashrestapp.model.SetResult;
 import lombok.AllArgsConstructor;
 
+/**
+ *
+ */
 @AllArgsConstructor
 public class SetValidator {
 
@@ -36,6 +39,30 @@ public class SetValidator {
     }
   }
 
+  private boolean isValidSet(final int setNumber, final int high, final int low) {
+    if (isRegularSet(setNumber) && isValidRegularSet(high, low)) {
+      return true;
+
+    } else if (isTiebreak(setNumber) && isValidTieBreak(high, low)) {
+      return true;
+
+    } else {
+      return false;
+
+    }
+  }
+
+  public SetStatus checkWinner() {
+    return setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()
+            ? SetStatus.FIRST_PLAYER_WINS
+
+            : setResult.getFirstPlayerScore() < setResult.getSecondPlayerScore()
+            ? SetStatus.SECOND_PLAYER_WINS
+
+            // will never happen
+            : null;
+  }
+
   private boolean isRegularSet(final int setNumber) {
     return setNumber == 1 || setNumber == 2;
   }
@@ -51,35 +78,6 @@ public class SetValidator {
     }
   }
 
-  public SetStatus checkWinner() {
-    return setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()
-            ? SetStatus.FIRST_PLAYER_WINS
-
-            : setResult.getFirstPlayerScore() < setResult.getSecondPlayerScore()
-            ? SetStatus.SECOND_PLAYER_WINS
-
-            // will never happen
-            : null;
-  }
-
-
-  private boolean isValidSet(final int setNumber, final int high, final int low) {
-    if (isRegularSet(setNumber) && isValidRegularSet(high, low)) {
-      return true;
-
-    } else if (isTiebreak(setNumber) && isValidTieBreak(high, low)) {
-      return true;
-
-    } else {
-      return false;
-
-    }
-  }
-
-  private boolean isInRange(final int value, final int min, final int max) {
-    return value >= min && value <= max;
-  }
-
   private boolean isTiebreak(final int setNumber) {
     return setNumber == 3;
   }
@@ -92,9 +90,8 @@ public class SetValidator {
     }
   }
 
-  public boolean isEmpty() {
-    return setResult.getFirstPlayerScore() == 0
-           && setResult.getSecondPlayerScore() == 0;
+  private boolean isInRange(final int value, final int min, final int max) {
+    return value >= min && value <= max;
   }
 
 }

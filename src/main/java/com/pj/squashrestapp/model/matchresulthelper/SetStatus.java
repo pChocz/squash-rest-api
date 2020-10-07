@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model.entityhelper;
+package com.pj.squashrestapp.model.matchresulthelper;
 
 public enum SetStatus {
 

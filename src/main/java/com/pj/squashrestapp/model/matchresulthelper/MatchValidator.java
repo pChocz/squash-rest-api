@@ -1,10 +1,11 @@
-package com.pj.squashrestapp.model.entityhelper;
+package com.pj.squashrestapp.model.matchresulthelper;
 
 import com.pj.squashrestapp.model.Match;
 
 /**
  *
  */
+@SuppressWarnings("OverlyComplexMethod")
 public class MatchValidator {
 
   final private SetStatus setStatus1;
@@ -28,37 +29,17 @@ public class MatchValidator {
   }
 
   public MatchStatus checkStatus() {
-
     if (allSetsEmpty()) {
       return MatchStatus.EMPTY;
 
     } else if (isFinished()) {
       return MatchStatus.FINISHED;
 
-    } else if (anySetError() || toManySets()) {
+    } else if (anySetError() || tooManySets()) {
       return MatchStatus.ERROR;
 
     } else {
       return MatchStatus.IN_PROGRESS;
-
-    }
-  }
-
-  private boolean toManySets() {
-    if (setStatus1 == SetStatus.FIRST_PLAYER_WINS
-        && setStatus2 == SetStatus.FIRST_PLAYER_WINS
-        && setStatus3 != SetStatus.EMPTY) {
-
-      return true;
-
-    } else if (setStatus1 == SetStatus.SECOND_PLAYER_WINS
-               && setStatus2 == SetStatus.SECOND_PLAYER_WINS
-               && setStatus3 != SetStatus.EMPTY) {
-
-      return true;
-
-    } else {
-      return false;
 
     }
   }
@@ -90,6 +71,25 @@ public class MatchValidator {
     return setStatus1 == SetStatus.ERROR
            || setStatus2 == SetStatus.ERROR
            || setStatus3 == SetStatus.ERROR;
+  }
+
+  private boolean tooManySets() {
+    if (setStatus1 == SetStatus.FIRST_PLAYER_WINS
+        && setStatus2 == SetStatus.FIRST_PLAYER_WINS
+        && setStatus3 != SetStatus.EMPTY) {
+
+      return true;
+
+    } else if (setStatus1 == SetStatus.SECOND_PLAYER_WINS
+               && setStatus2 == SetStatus.SECOND_PLAYER_WINS
+               && setStatus3 != SetStatus.EMPTY) {
+
+      return true;
+
+    } else {
+      return false;
+
+    }
   }
 
   private boolean wonAfterTwoSets(final SetStatus setStatus) {

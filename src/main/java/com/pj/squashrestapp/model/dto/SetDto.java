@@ -1,11 +1,8 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 /**
  *
@@ -24,19 +21,9 @@ public class SetDto {
   }
 
   @JsonIgnore
-  public boolean isNotEmpty() {
-    return !isEmpty();
-  }
-
-  @JsonIgnore
   public boolean isEmpty() {
     return firstPlayerScore == null
            && secondPlayerScore == null;
-  }
-
-  @JsonIgnore
-  public boolean isRegularSet() {
-    return !isTieBreak();
   }
 
   @JsonIgnore

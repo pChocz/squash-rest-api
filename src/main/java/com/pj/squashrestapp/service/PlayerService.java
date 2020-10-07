@@ -165,28 +165,6 @@ public class PlayerService {
     return userBasicInfo;
   }
 
-  public List<PlayerDetailedDto> getLeaguePlayers(final Long leagueId) {
-    final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueId);
-    return players
-            .stream()
-            .map(PlayerDetailedDto::new)
-            .collect(Collectors.toList());
-  }
-
-  public List<PlayerDetailedDto> getAllPlayers() {
-    final List<Player> players = playerRepository.fetchForAuthorizationAll();
-    return players
-            .stream()
-            .map(PlayerDetailedDto::new)
-            .collect(Collectors.toList());
-  }
-
-  public PlayerDetailedDto getPlayerInfo(final Long playerId) {
-    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
-    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
-    return userBasicInfo;
-  }
-
   public PlayerDetailedDto assignLeagueRole(final Long playerId, final Long leagueId, final LeagueRole leagueRole) {
     final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
     final League league = leagueRepository.findById(leagueId).get();
@@ -244,11 +222,6 @@ public class PlayerService {
       verificationTokenRepository.delete(verificationToken);
       log.info("User {} has been succesfully activated.", player.getUsername());
     }
-  }
-
-  public String extractSessionUsername() {
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return userDetails.getUsername();
   }
 
 }

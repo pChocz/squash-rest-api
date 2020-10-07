@@ -89,15 +89,17 @@ public class LeagueService {
     leagueRepository.save(league);
   }
 
-  public void removeEmptyLeague(final Long leagueId) {
+  public void removeEmptyLeague(final UUID leagueUuid) {
     final League leagueToRemove = leagueRepository
-            .findById(leagueId)
-            .orElseThrow(() -> new RuntimeException("No such league"));
+            .findByUuid(leagueUuid)
+            .orElseThrow();
 
-    final List<Player> leaguePlayers = playerRepository.fetchForAuthorizationForLeague(leagueId);
+    final List<Player> leaguePlayers = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
     for (final Player player : leaguePlayers) {
       player.getRoles()
-              .removeIf(roleForLeague -> roleForLeague.getLeague().equals(leagueToRemove));
+              .removeIf(roleForLeague -> roleForLeague
+                      .getLeague()
+                      .equals(leagueToRemove));
     }
     playerRepository.saveAll(leaguePlayers);
 

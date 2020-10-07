@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.model.dto;
 
 import com.pj.squashrestapp.model.BonusPoint;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
  *
  */
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class BonusPointsAggregatedForLeague {
 
   final UUID leagueUuid;

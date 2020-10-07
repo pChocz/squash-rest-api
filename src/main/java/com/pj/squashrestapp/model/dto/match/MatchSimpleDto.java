@@ -7,8 +7,8 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SetDto;
-import com.pj.squashrestapp.model.entityhelper.MatchStatus;
-import com.pj.squashrestapp.model.entityhelper.MatchValidator;
+import com.pj.squashrestapp.model.matchresulthelper.MatchStatus;
+import com.pj.squashrestapp.model.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 

@@ -1,14 +1,10 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
-import com.pj.squashrestapp.model.dto.match.MatchDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
-import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
@@ -23,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  *
@@ -47,7 +42,7 @@ public class ScoreboardService {
     Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
     if (round == null) {
       round = roundRepository
-              .findRoundByUuid(roundUuid)
+              .findByUuid(roundUuid)
               .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
     }
 

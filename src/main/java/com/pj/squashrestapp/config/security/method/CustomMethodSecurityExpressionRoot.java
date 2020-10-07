@@ -2,10 +2,7 @@ package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.LeagueRole;
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.entityhelper.MatchHelper;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -100,16 +97,9 @@ public class CustomMethodSecurityExpressionRoot
   }
 
   public boolean isRoundOfMatchInProgress(final UUID matchUuid) {
-    final Round round = roundRepository.findRoundByMatchUuid(matchUuid);
+    final Round round = roundRepository.findByMatchUuid(matchUuid);
     final boolean isRoundFinished = round.isFinished();
     return !isRoundFinished;
-  }
-
-  public boolean isMatchEmpty(final UUID matchUuid) {
-    final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
-    final MatchHelper matchHelper = new MatchHelper(match);
-    final Player winner = matchHelper.getWinner();
-    return winner == null;
   }
 
 }
