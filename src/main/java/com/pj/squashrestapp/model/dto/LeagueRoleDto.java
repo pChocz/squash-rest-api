@@ -14,13 +14,11 @@ import java.util.UUID;
 @Getter
 public class LeagueRoleDto {
 
-  private final Long leagueId;
   private final UUID leagueUuid;
   private final String leagueName;
   private final LeagueRole leagueRole;
 
   public LeagueRoleDto(final RoleForLeague role) {
-    this.leagueId = role.getLeague().getId();
     this.leagueUuid = role.getLeague().getUuid();
     this.leagueName = role.getLeague().getName();
     this.leagueRole = role.getLeagueRole();

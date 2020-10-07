@@ -7,6 +7,7 @@ import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -29,7 +30,7 @@ public class OveralStats {
     this.sets = 0;
     this.points = 0;
 
-    final Multimap<Long, Long> overalPlayersAttendicesMap = LinkedHashMultimap.create();
+    final Multimap<UUID, UUID> overalPlayersAttendicesMap = LinkedHashMultimap.create();
     for (final PerSeasonStats perSeasonStats : perSeasonStatsList) {
       this.rounds += perSeasonStats.getRounds();
       this.matches += perSeasonStats.getRegularMatches() + perSeasonStats.getTieBreakMatches();

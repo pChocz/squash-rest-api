@@ -78,34 +78,6 @@ public class ScoreboardService {
   }
 
 
-  public Scoreboard buildScoreboardForLeagueForPlayersNEW(final UUID leagueUuid, final UUID[] playersUuids) {
-    final List<Match> matches = matchRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersUuids);
-
-    final List<MatchDto> matchesDtos = matches
-            .stream()
-            .map(MatchDetailedDto::new)
-            .collect(Collectors.toList());
-
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
-
-    return scoreboard;
-  }
-
-  public Scoreboard buildScoreboardForLeagueForSinglePlayerNEW(final UUID leagueUuid, final UUID playerUuid) {
-    final List<Match> matches = matchRepository.fetchByOnePlayerIdAndLeagueId(leagueUuid, playerUuid);
-
-    final List<MatchDto> matchesDtos = matches
-            .stream()
-            .map(MatchDetailedDto::new)
-            .collect(Collectors.toList());
-
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
-    scoreboard.makeItSinglePlayerScoreboard(playerUuid);
-
-    return scoreboard;
-  }
-
-
 //  public Scoreboard buildScoreboardForLeagueForPlayers(final UUID leagueUuid, final Long[] playersIds) {
 //    final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersIds);
 //

@@ -107,11 +107,11 @@ public class LeagueService {
     leagueRepository.delete(leagueToRemove);
   }
 
-  public void saveLogoForLeague(final Long leagueId, final byte[] logoBytes) {
+  public void saveLogoForLeague(final UUID leagueUuid, final byte[] logoBytes) {
     final LeagueLogo leagueLogo = new LeagueLogo();
     leagueLogo.setPicture(logoBytes);
 
-    final League league = leagueRepository.findById(leagueId).get();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
 
@@ -179,23 +179,20 @@ public class LeagueService {
       final List<MatchDetailedDto> matchesForSeason = MatchExtractorUtil.extractAllMatches(season);
 
       int matches = 0;
-      int regularSets = 0;
       int tieBreaks = 0;
       int points = 0;
 
-      final Multimap<Long, Long> playersAttendicesMap = LinkedHashMultimap.create();
+      final Multimap<UUID, UUID> playersAttendicesMap = LinkedHashMultimap.create();
       for (final MatchDetailedDto match : matchesForSeason) {
         matches++;
-        playersAttendicesMap.put(match.getFirstPlayer().getId(), match.getRoundId());
-        playersAttendicesMap.put(match.getSecondPlayer().getId(), match.getRoundId());
+        playersAttendicesMap.put(match.getFirstPlayer().getUuid(), match.getRoundUuid());
+        playersAttendicesMap.put(match.getSecondPlayer().getUuid(), match.getRoundUuid());
         for (final SetDto set : match.getSets()) {
           points += set.getFirstPlayerScoreNullSafe();
           points += set.getSecondPlayerScoreNullSafe();
           if (!set.isEmpty()) {
             if (set.isTieBreak()) {
               tieBreaks++;
-            } else {
-              regularSets++;
             }
           }
         }
@@ -227,11 +224,11 @@ public class LeagueService {
   public List<PlayerLeagueXpOveral> overalXpPoints(final League league,
                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit) {
 
-    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = bonusPointService.extractBonusPointsAggregatedForLeague(league.getId());
+    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = bonusPointService.extractBonusPointsAggregatedForLeague(league.getUuid());
 
     final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
     for (final Season season : league.getSeasons()) {
-      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointsAggregatedForLeague.forSeason(season.getId());
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointsAggregatedForLeague.forSeason(season.getUuid());
       final SeasonScoreboardDto scoreboardDto = seasonService.getSeasonScoreboardDtoForLeagueStats(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
       seasonScoreboardDtoList.add(scoreboardDto);
     }
@@ -272,10 +269,15 @@ public class LeagueService {
     final List<LeagueDto> leaguesDtos = leagues.stream().map(LeagueDto::new).collect(Collectors.toList());
 
     for (final LeagueDto leagueDto : leaguesDtos) {
-      final LeagueLogo leagueLogo = leagueLogos.stream().filter(leagueLogo1 -> leagueLogo1.getLeague().getId().equals(leagueDto.getLeagueId())).findFirst().orElse(null);
-      if (leagueLogo != null) {
-        leagueDto.setLeagueLogo(leagueLogo.getPicture());
-      }
+      leagueLogos
+              .stream()
+              .filter(leagueLogo1 -> leagueLogo1
+                      .getLeague()
+                      .getUuid()
+                      .equals(leagueDto.getLeagueUuid()))
+              .findFirst()
+              .ifPresent(leagueLogo -> leagueDto
+                      .setLeagueLogo(leagueLogo.getPicture()));
     }
 
     return leaguesDtos;

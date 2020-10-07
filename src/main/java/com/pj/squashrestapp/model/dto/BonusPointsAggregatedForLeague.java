@@ -7,6 +7,7 @@ import lombok.Getter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -16,41 +17,41 @@ import java.util.stream.Collectors;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public final class BonusPointsAggregatedForLeague {
 
-  final Long leagueId;
+  final UUID leagueUuid;
   final List<BonusPointsAggregatedForSeason> bonusPointsAggregatedForSeasons;
 
-  public BonusPointsAggregatedForLeague(final Long leagueId, final List<BonusPoint> bonusPoints) {
-    this.leagueId = leagueId;
+  public BonusPointsAggregatedForLeague(final UUID leagueUuid, final List<BonusPoint> bonusPoints) {
+    this.leagueUuid = leagueUuid;
     this.bonusPointsAggregatedForSeasons = new ArrayList<>();
 
-    final Set<Long> allSeasonsIds = bonusPoints
+    final Set<UUID> allSeasonsUuids = bonusPoints
             .stream()
             .map(bonusPoint -> bonusPoint
                     .getSeason()
-                    .getId())
+                    .getUuid())
             .collect(Collectors.toSet());
 
-    for (final Long seasonId : allSeasonsIds) {
+    for (final UUID seasonUuid : allSeasonsUuids) {
       final List<BonusPoint> bonusPointsPerSeason = bonusPoints
               .stream()
               .filter(bonusPoint -> bonusPoint
                       .getSeason()
                       .getId()
-                      .equals(seasonId))
+                      .equals(seasonUuid))
               .collect(Collectors.toList());
 
-      this.bonusPointsAggregatedForSeasons.add(new BonusPointsAggregatedForSeason(seasonId, bonusPointsPerSeason));
+      this.bonusPointsAggregatedForSeasons.add(new BonusPointsAggregatedForSeason(seasonUuid, bonusPointsPerSeason));
     }
   }
 
-  public BonusPointsAggregatedForSeason forSeason(final Long seasonId) {
+  public BonusPointsAggregatedForSeason forSeason(final UUID seasonUuid) {
     return bonusPointsAggregatedForSeasons
             .stream()
             .filter(bonusPointsAggregatedForSeason -> bonusPointsAggregatedForSeason
-                    .getSeasonId()
-                    .equals(seasonId))
+                    .getSeasonUuid()
+                    .equals(seasonUuid))
             .findFirst()
-            .orElse(new BonusPointsAggregatedForSeason(seasonId, new ArrayList<>()));
+            .orElse(new BonusPointsAggregatedForSeason(seasonUuid, new ArrayList<>()));
   }
 
 }

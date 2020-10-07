@@ -24,6 +24,9 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   @Query("SELECT p FROM Player p WHERE p.id IN :ids")
   List<Player> findByIds(@Param("ids") Long[] ids);
 
+  @Query("SELECT p FROM Player p WHERE p.uuid IN :uuids")
+  List<Player> findByUuids(@Param("uuids") UUID[] uuids);
+
   Player findByUuid(UUID uuid);
 
   @EntityGraph(attributePaths = {

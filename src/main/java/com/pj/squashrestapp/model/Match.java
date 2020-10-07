@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.util.EntityVisitor;
-import com.pj.squashrestapp.model.util.Identifiable;
+import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
+import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;

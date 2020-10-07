@@ -79,7 +79,7 @@ public class BackupService {
     final String leagueName = leagueRepository.findNameByUuid(leagueUuid);
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
-    final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueId(league.getId());
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
     final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints);
     log.info("\tFinished backing up league -> {}", league.getName());
     TimeLogUtil.logFinish(startTime);

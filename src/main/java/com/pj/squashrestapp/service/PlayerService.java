@@ -3,7 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.gson.Gson;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.security.token.TokenConstants;
-import com.pj.squashrestapp.controller.WrongSignupDataException;
+import com.pj.squashrestapp.config.WrongSignupDataException;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BlacklistedToken;

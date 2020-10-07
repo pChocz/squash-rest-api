@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
@@ -16,23 +17,23 @@ import java.util.List;
 public final class BonusPointsAggregatedForSeason {
 
   @EqualsAndHashCode.Include
-  final Long seasonId;
-  final AtomicLongMap<Long> pointsPerPlayerId;
+  final UUID seasonUuid;
+  final AtomicLongMap<UUID> pointsPerPlayerId;
 
-  public BonusPointsAggregatedForSeason(final Long seasonId, final List<BonusPoint> bonusPoints) {
-    this.seasonId = seasonId;
+  public BonusPointsAggregatedForSeason(final UUID seasonUuid, final List<BonusPoint> bonusPoints) {
+    this.seasonUuid = seasonUuid;
     this.pointsPerPlayerId = AtomicLongMap.create();
     for (final BonusPoint bonusPoint : bonusPoints) {
-      final Long playerId = bonusPoint.getPlayer().getId();
+      final UUID playerId = bonusPoint.getPlayer().getUuid();
       final int points = bonusPoint.getPoints();
       this.pointsPerPlayerId.getAndAdd(playerId, points);
     }
   }
 
-  public int forPlayer(final Long playerId) {
+  public int forPlayer(final UUID playerUuid) {
     return (int) this
             .pointsPerPlayerId
-            .get(playerId);
+            .get(playerUuid);
   }
 
 }

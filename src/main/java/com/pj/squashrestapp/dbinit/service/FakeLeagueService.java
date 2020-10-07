@@ -143,7 +143,7 @@ public class FakeLeagueService {
     for (final Season season : league.getSeasons()) {
       if (season.getRounds().size() == 10) {
         final List<BonusPoint> bonusPoints = new ArrayList<>(season.getBonusPoints());
-        final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(season.getId(), bonusPoints);
+        final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(season.getUuid(), bonusPoints);
         final SeasonScoreboardDto seasonScoreboardDto = seasonService.getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
 
         for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {

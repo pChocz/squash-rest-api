@@ -69,6 +69,25 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           @Param("leagueUuid") UUID leagueUuid,
           @Param("playersUuids") UUID[] playersUuids);
 
+  @Query(SELECT_FETCH_LEAGUE + """
+            WHERE l.uuid = :leagueUuid
+              AND (
+                    (m.firstPlayer.uuid = :playerUuid AND m.secondPlayer.uuid IN :playersUuids)
+                    OR (m.secondPlayer.uuid = :playerUuid AND m.firstPlayer.uuid IN :playersUuids)
+              )
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season"
+  })
+  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerUuid") UUID playerUuid,
+          @Param("playersUuids") UUID[] playersUuids);
+
+
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
@@ -85,9 +104,6 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           @Param("leagueUuid") UUID leagueUuid,
           @Param("playersIds") Long[] playersIds,
           Pageable pageable);
-
-
-
 
   @Query("""
           SELECT m.id FROM Match m
@@ -119,6 +135,25 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           @Param("leagueUuid") UUID leagueUuid,
           @Param("playerUuid") UUID playerUuid,
           Pageable pageable);
+
+  @Query("""
+          SELECT m.id FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+            WHERE l.uuid = :leagueUuid
+              AND (
+                    (m.firstPlayer.uuid = :playerUuid AND m.secondPlayer.uuid IN :playersUuids)
+                    OR (m.secondPlayer.uuid = :playerUuid AND m.firstPlayer.uuid IN :playersUuids)
+              )
+          """)
+  Page<Long> findIdsSingleAgainstOthers(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerUuid") UUID playerUuid,
+          @Param("playersUuids") UUID[] playersUuids,
+          Pageable pageable);
+
 
   @EntityGraph(attributePaths = {
           "firstPlayer",

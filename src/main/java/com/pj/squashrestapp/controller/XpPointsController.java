@@ -26,32 +26,31 @@ public class XpPointsController {
 
   private final XpPointsService xpPointsService;
 
-
-  @GetMapping
-  @ResponseBody
-  Map<String, Collection<Integer>> allMultimap() {
-    final long startTime = System.nanoTime();
-
-    final Map<String, Collection<Integer>> multimap = xpPointsService.buildAllAsIntegerMultimap().asMap();
-
-    TimeLogUtil.logFinish(startTime);
-    return multimap;
-  }
-
-  @GetMapping(value = "/{split}")
-  @ResponseBody
-  List<Integer> listForSplit(@PathVariable("split") final String split) {
-    final long startTime = System.nanoTime();
-
-    final List<Integer> list = xpPointsService.buildForGivenSplit(split);
-
-    TimeLogUtil.logFinish(startTime);
-    return list;
-  }
+//  @GetMapping
+//  @ResponseBody
+//  Map<String, Collection<Integer>> allMultimap() {
+//    final long startTime = System.nanoTime();
+//
+//    final Map<String, Collection<Integer>> multimap = xpPointsService.buildAllAsIntegerMultimap().asMap();
+//
+//    TimeLogUtil.logFinish(startTime);
+//    return multimap;
+//  }
+//
+//  @GetMapping(value = "/{split}")
+//  @ResponseBody
+//  List<Integer> listForSplit(@PathVariable("split") final String split) {
+//    final long startTime = System.nanoTime();
+//
+//    final List<Integer> list = xpPointsService.buildForGivenSplit(split);
+//
+//    TimeLogUtil.logFinish(startTime);
+//    return list;
+//  }
 
   @GetMapping(value = "/all-for-table")
   @ResponseBody
-  List<XpPointsForTable> listForSplit() {
+  List<XpPointsForTable> extractAllForTable() {
     final long startTime = System.nanoTime();
 
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();

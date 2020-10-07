@@ -1,12 +1,11 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.util.EntityVisitor;
-import com.pj.squashrestapp.model.util.Identifiable;
+import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
+import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -18,11 +17,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;

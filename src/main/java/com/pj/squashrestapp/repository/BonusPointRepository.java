@@ -36,26 +36,26 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long> {
   @Query("""
           SELECT bp FROM BonusPoint bp
             JOIN Season s ON bp.season = s
-            WHERE s.id = :seasonId
+            WHERE s.uuid = :seasonUuid
           """)
   @EntityGraph(attributePaths = {
           "player",
           "season.id",
   })
-  List<BonusPoint> findBySeasonId(@Param("seasonId") Long seasonId);
+  List<BonusPoint> findBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT bp FROM BonusPoint bp
             JOIN Season s ON bp.season = s
             JOIN League l ON s.league = l
-            WHERE l.id = :leagueId
+            WHERE l.uuid = :leagueUuid
           """)
   @EntityGraph(attributePaths = {
           "player",
           "season.id",
   })
-  List<BonusPoint> findByLeagueId(@Param("leagueId") Long leagueId);
+  List<BonusPoint> findByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
 
 }

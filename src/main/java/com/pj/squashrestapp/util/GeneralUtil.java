@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.util;
 
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import lombok.experimental.UtilityClass;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -76,6 +79,16 @@ public class GeneralUtil {
       if (!Character.isBmpCodePoint(cp)) s++;
     }
     return sb.toString();
+  }
+
+  public String extractSessionUsername() {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return userDetails.getUsername();
+  }
+
+  public UUID extractSessionUserUuid() {
+    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    return userDetails.getUuid();
   }
 
 }

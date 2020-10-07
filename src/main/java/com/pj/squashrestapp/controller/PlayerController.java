@@ -68,9 +68,7 @@ public class PlayerController {
 
   @PostMapping(value = "/logout")
   @ResponseBody
-  void logout(
-          @RequestParam final String token) {
-
+  void logout(@RequestParam final String token) {
     playerService.blacklistToken(token);
     log.info("User [{}] has logged out. Token has been blacklisted", playerService.extractSessionUsername());
   }
@@ -79,10 +77,10 @@ public class PlayerController {
   @PostMapping(value = "/signUp")
   @ResponseBody
   PlayerDetailedDto signUpPlayer(
-          @RequestParam("username") final String username,
-          @RequestParam("email") final String email,
-          @RequestParam("password") final String password,
-          @RequestParam("frontendUrl") final String frontendUrl,
+          @RequestParam final String username,
+          @RequestParam final String email,
+          @RequestParam final String password,
+          @RequestParam final String frontendUrl,
           final HttpServletRequest request) {
 
     final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
@@ -115,7 +113,7 @@ public class PlayerController {
       // we are delaying execution to give indication
       // to the user that some process is running.
       try {
-        TimeUnit.SECONDS.sleep(2);
+        TimeUnit.SECONDS.sleep(3);
       } catch (final InterruptedException ie) {
         Thread.currentThread().interrupt();
       }
@@ -130,10 +128,8 @@ public class PlayerController {
 
   @PostMapping(value = "/resetPassword")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmResetPassword(
-          @RequestParam final UUID token,
-          @RequestParam final String newPassword,
-          final HttpServletRequest request) {
+  void confirmResetPassword(@RequestParam final UUID token,
+                            @RequestParam final String newPassword) {
 
     playerService.changePlayerPassword(token, newPassword);
   }
@@ -141,42 +137,43 @@ public class PlayerController {
 
   @PostMapping("/confirmRegistration")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmRegistration(
-          @RequestParam final String token) {
+  void confirmRegistration(@RequestParam final String token) {
     playerService.activateUserWithToken(token);
   }
 
 
-  @GetMapping(value = "/{playerId}")
-  @ResponseBody
-  @PreAuthorize("isAdmin()")
-  PlayerDetailedDto onePlayerInfoById(
-          @PathVariable final Long playerId) {
-
-    final PlayerDetailedDto usersBasicInfo = playerService.getPlayerInfo(playerId);
-    return usersBasicInfo;
-  }
-
-
-  @GetMapping
-  @ResponseBody
-  @PreAuthorize("isAdmin()")
-  List<PlayerDetailedDto> allPlayersInfo() {
-    final List<PlayerDetailedDto> usersBasicInfo = playerService.getAllPlayers();
-    return usersBasicInfo;
-  }
+//  @GetMapping(value = "/{playerId}")
+//  @ResponseBody
+//  @PreAuthorize("isAdmin()")
+//  PlayerDetailedDto onePlayerInfoById(
+//          @PathVariable final Long playerId) {
+//
+//    final PlayerDetailedDto usersBasicInfo = playerService.getPlayerInfo(playerId);
+//    return usersBasicInfo;
+//  }
 
 
-  @GetMapping(value = "/league/{leagueId}")
-  @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  List<PlayerDetailedDto> playersDetailedByLeagueId(
-          @PathVariable final Long leagueId) {
+//  @GetMapping
+//  @ResponseBody
+//  @PreAuthorize("isAdmin()")
+//  List<PlayerDetailedDto> allPlayersInfo() {
+//    final List<PlayerDetailedDto> usersBasicInfo = playerService.getAllPlayers();
+//    return usersBasicInfo;
+//  }
 
-    final List<PlayerDetailedDto> usersBasicInfo = playerService.getLeaguePlayers(leagueId);
-    return usersBasicInfo;
-  }
 
+//  @GetMapping(value = "/league/{leagueId}")
+//  @ResponseBody
+//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+//  List<PlayerDetailedDto> playersDetailedByLeagueId(
+//          @PathVariable final Long leagueId) {
+//
+//    final List<PlayerDetailedDto> usersBasicInfo = playerService.getLeaguePlayers(leagueId);
+//    return usersBasicInfo;
+//  }
+
+
+  // todo: Allign it to use UUIDs properly
 
   @PutMapping(value = "/{playerId}")
   @ResponseBody

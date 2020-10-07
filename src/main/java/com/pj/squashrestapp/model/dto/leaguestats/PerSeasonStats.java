@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 /**
  *
@@ -25,6 +26,6 @@ public class PerSeasonStats {
   private final BigDecimal playersAverage;
 
   @JsonIgnore
-  private final Multimap<Long, Long> playersAttendicesMap;
+  private final Multimap<UUID, UUID> playersAttendicesMap;
 
 }

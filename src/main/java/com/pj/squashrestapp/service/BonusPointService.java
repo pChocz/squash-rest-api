@@ -30,26 +30,29 @@ public class BonusPointService {
   private final BonusPointRepository bonusPointRepository;
 
 
-  public List<BonusPoint> extractBonusPoints(final UUID playerUuid, final UUID seasonUuid) {
+  public List<BonusPoint> extractBonusPoints(final UUID playerUuid,
+                                             final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerUuidAndSeasonUuid(playerUuid, seasonUuid);
     return bonusPoints;
   }
 
-  public BonusPointsAggregatedForSeason extractBonusPointsAggregatedForSeason(final Long seasonId) {
-    final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonId(seasonId);
-    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonId, bonusPoints);
+  public BonusPointsAggregatedForSeason extractBonusPointsAggregatedForSeason(final UUID seasonUuid) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
+    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonUuid, bonusPoints);
     return bonusPointsAggregatedForSeason;
   }
 
-  public BonusPointsAggregatedForLeague extractBonusPointsAggregatedForLeague(final Long leagueId) {
-    final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueId(leagueId);
-    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = new BonusPointsAggregatedForLeague(leagueId, bonusPoints);
+  public BonusPointsAggregatedForLeague extractBonusPointsAggregatedForLeague(final UUID leagueUuid) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(leagueUuid);
+    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = new BonusPointsAggregatedForLeague(leagueUuid, bonusPoints);
     return bonusPointsAggregatedForLeague;
   }
 
   @Transactional
-  public List<BonusPoint> applyBonusPointsForTwoPlayers(final UUID winnerUuid, final UUID looserUuid,
-                                                        final UUID seasonUuid, final int points) {
+  public List<BonusPoint> applyBonusPointsForTwoPlayers(final UUID winnerUuid,
+                                                        final UUID looserUuid,
+                                                        final UUID seasonUuid,
+                                                        final int points) {
     final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
     final Player winner = playerRepository.findByUuid(winnerUuid);
     final Player looser = playerRepository.findByUuid(looserUuid);

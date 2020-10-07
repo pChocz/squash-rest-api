@@ -16,12 +16,10 @@ import java.util.UUID;
 public class PlayerDto {
 
   @EqualsAndHashCode.Include
-  private final Long id;
   private final UUID uuid;
   private final String username;
 
   public PlayerDto(final Player player) {
-    this.id = player.getId();
     this.uuid = player.getUuid();
     this.username = player.getUsername();
   }

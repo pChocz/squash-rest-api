@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  *
@@ -47,8 +48,8 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.roundNumberToXpMapAll = new HashMap<>();
     this.roundNumberToXpMapPretenders = new HashMap<>();
 
-    final Long currentPlayerId = player.getId();
-    this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerId);
+    final UUID currentPlayerUuid = player.getUuid();
+    this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerUuid);
   }
 
   public void addXpForRound(final int roundNumber, final Integer xpEarned) {

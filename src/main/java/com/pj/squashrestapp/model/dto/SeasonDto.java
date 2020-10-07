@@ -18,10 +18,8 @@ import java.util.UUID;
 @Getter
 public class SeasonDto implements Comparable<SeasonDto> {
 
-  private final Long leagueId;
   private final UUID leagueUuid;
   private final String leagueName;
-  private final Long seasonId;
   private final UUID seasonUuid;
   private final int seasonNumber;
   private final String seasonNumberRoman;
@@ -29,10 +27,8 @@ public class SeasonDto implements Comparable<SeasonDto> {
   private final LocalDate seasonStartDate;
 
   public SeasonDto(final Season season) {
-    this.leagueId = season.getLeague().getId();
     this.leagueUuid = season.getLeague().getUuid();
     this.leagueName = season.getLeague().getName();
-    this.seasonId = season.getId();
     this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
     this.seasonNumberRoman = RomanUtil.toRoman(season.getNumber());

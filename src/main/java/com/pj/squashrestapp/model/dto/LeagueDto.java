@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @Getter
 public class LeagueDto {
 
-  private final Long leagueId;
   private final UUID leagueUuid;
   private final String leagueName;
   @Setter
@@ -26,7 +25,6 @@ public class LeagueDto {
   private final Set<SeasonDto> seasons;
 
   public LeagueDto(final League league) {
-    this.leagueId = league.getId();
     this.leagueUuid = league.getUuid();
     this.leagueName = league.getName();
 

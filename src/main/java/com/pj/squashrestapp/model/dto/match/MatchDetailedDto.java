@@ -27,14 +27,12 @@ import java.util.UUID;
 public class MatchDetailedDto implements MatchDto {
 
   @EqualsAndHashCode.Include
-  private final Long matchId;
+  private final UUID matchUuid;
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
 
-  private final Long roundGroupId;
   private final int roundGroupNumber;
 
-  private final Long roundId;
   private final UUID roundUuid;
   private final int roundNumber;
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
@@ -52,13 +50,11 @@ public class MatchDetailedDto implements MatchDto {
     final Round round = roundGroup.getRound();
     final Season season = round.getSeason();
 
-    this.matchId = match.getId();
+    this.matchUuid = match.getUuid();
     this.firstPlayer = new PlayerDto(match.getFirstPlayer());
     this.secondPlayer = new PlayerDto(match.getSecondPlayer());
-    this.roundGroupId = roundGroup.getId();
     this.roundGroupNumber = roundGroup.getNumber();
     this.roundDate = round.getDate();
-    this.roundId = round.getId();
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
     this.seasonUuid = season.getUuid();
@@ -74,7 +70,7 @@ public class MatchDetailedDto implements MatchDto {
 
   @Override
   public String toString() {
-    return "[" + matchId + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
+    return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
 
 }

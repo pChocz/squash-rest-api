@@ -30,28 +30,28 @@ public class BackupController {
 
   @GetMapping("/rounds/{roundUuid}")
   @PreAuthorize("isAdmin()")
-  ResponseEntity<JsonRound> backupRound(@PathVariable final UUID roundUuid) {
+  ResponseEntity<JsonRound> backupSingleRound(@PathVariable final UUID roundUuid) {
     final JsonRound roundJson = backupService.roundToJson(roundUuid);
     return new ResponseEntity<JsonRound>(roundJson, HttpStatus.OK);
   }
 
   @GetMapping("/leagues/{leagueUuid}")
   @PreAuthorize("isAdmin()")
-  ResponseEntity<JsonLeague> backupLeague(@PathVariable final UUID leagueUuid) {
+  ResponseEntity<JsonLeague> backupSingleLeague(@PathVariable final UUID leagueUuid) {
     final JsonLeague leagueJson = backupService.leagueToJson(leagueUuid);
     return new ResponseEntity<JsonLeague>(leagueJson, HttpStatus.OK);
   }
 
   @GetMapping("/leagues/all")
   @PreAuthorize("isAdmin()")
-  ResponseEntity<List<JsonLeague>> backupLeague() {
+  ResponseEntity<List<JsonLeague>> backupAllLeagues() {
     final List<JsonLeague> leaguesJson = backupService.allLeagues();
     return new ResponseEntity<List<JsonLeague>>(leaguesJson, HttpStatus.OK);
   }
 
   @GetMapping("/players/all")
   @PreAuthorize("isAdmin()")
-  ResponseEntity<List<JsonPlayerCredentials>> backupPlayerCredentials() {
+  ResponseEntity<List<JsonPlayerCredentials>> backupAllPlayersCredentials() {
     final List<JsonPlayerCredentials> playersCredentialsJson = backupService.allPlayersCredentials();
     return new ResponseEntity<List<JsonPlayerCredentials>>(playersCredentialsJson, HttpStatus.OK);
   }

@@ -1,12 +1,11 @@
 package com.pj.squashrestapp.model;
 
-import com.pj.squashrestapp.model.util.EntityVisitor;
-import com.pj.squashrestapp.model.util.Identifiable;
+import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
+import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,13 +15,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 

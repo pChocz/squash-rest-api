@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model.util;
+package com.pj.squashrestapp.model.entityvisitor;
 
 import lombok.Getter;
 

@@ -45,11 +45,11 @@ public class RoundController {
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
   UUID newRound(
           @RequestBody
-          @RequestParam("roundNumber") final int roundNumber,
-          @RequestParam("roundDate") @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
-          @RequestParam("seasonUuid") final UUID seasonUuid,
-          @RequestParam("playersIds") final List<Long[]> playersIds) {
-    final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersIds);
+          @RequestParam final int roundNumber,
+          @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
+          @RequestParam final UUID seasonUuid,
+          @RequestParam final List<UUID[]> playersUuids) {
+    final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersUuids);
     log.info("created round {}", round.getUuid());
     return round.getUuid();
   }
@@ -66,9 +66,7 @@ public class RoundController {
 
   @GetMapping(value = "{roundUuid}/leagueUuid")
   @ResponseBody
-  UUID getLeagueUuidFromRoundUuid(
-          @PathVariable final UUID roundUuid) {
-
+  UUID getLeagueUuidFromRoundUuid(@PathVariable final UUID roundUuid) {
     return roundService.extractLeagueUuid(roundUuid);
   }
 
@@ -81,19 +79,19 @@ public class RoundController {
   }
 
 
-  /**
-   * TEST - dummy method just to verify that testing of Spring Security works
-   */
-  @GetMapping(value = "dummyEndpoint/{value}")
-  @PreAuthorize("isAdmin()")
-  @ResponseBody
-  int dummyGetEndpoint(@PathVariable final int value) {
-    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    final String username = authentication.getName();
-    final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-    log.info("user info: \n USER:\t{} \n ROLES:\t{}", username, authorities);
-
-    return value * 2;
-  }
+//  /**
+//   * TEST - dummy method just to verify that testing of Spring Security works
+//   */
+//  @GetMapping(value = "dummyEndpoint/{value}")
+//  @PreAuthorize("isAdmin()")
+//  @ResponseBody
+//  int dummyGetEndpoint(@PathVariable final int value) {
+//    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    final String username = authentication.getName();
+//    final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+//    log.info("user info: \n USER:\t{} \n ROLES:\t{}", username, authorities);
+//
+//    return value * 2;
+//  }
 
 }

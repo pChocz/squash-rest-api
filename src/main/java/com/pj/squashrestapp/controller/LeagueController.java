@@ -40,8 +40,7 @@ public class LeagueController {
 
   @GetMapping(value = "/general-info/{leagueUuid}")
   @ResponseBody
-  LeagueDto extractLeagueGeneralInfo(
-          @PathVariable final UUID leagueUuid) {
+  LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
 
     try {
       final long startTime = System.nanoTime();
@@ -67,8 +66,7 @@ public class LeagueController {
 
   @GetMapping(value = "/{leagueUuid}/players-general")
   @ResponseBody
-  List<PlayerDto> playersGeneralByLeagueId(
-          @PathVariable final UUID leagueUuid) {
+  List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
 
     final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
@@ -78,8 +76,7 @@ public class LeagueController {
   @GetMapping(value = "/{leagueUuid}/stats")
   @ResponseBody
 //  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
-  LeagueStatsWrapper extractLeagueStatistics(
-          @PathVariable final UUID leagueUuid) {
+  LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
 
     try {
       final long startTime = System.nanoTime();
@@ -94,13 +91,13 @@ public class LeagueController {
 
 
   @ApiOperation(value = "Update league logo", authorizations = {@Authorization(value = "jwtToken")})
-  @PutMapping(value = "/{leagueId}/logo")
+  @PutMapping(value = "/{leagueUuid}/logo")
   @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
-  void updateLeagueLogo(@PathVariable final Long leagueId,
-                        @RequestParam("file") final MultipartFile file) throws IOException {
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  void updateLeagueLogo(@PathVariable final UUID leagueUuid,
+                        @RequestParam final MultipartFile file) throws IOException {
     final byte[] logoBytes = file.getBytes();
-    leagueService.saveLogoForLeague(leagueId, logoBytes);
+    leagueService.saveLogoForLeague(leagueUuid, logoBytes);
   }
 
 }

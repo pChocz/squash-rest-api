@@ -31,15 +31,10 @@ public class TimeLogUtil {
   }
 
   public void logQuery(final long startTime, final String query) {
-    final String username = extractSessionUsername();
+    final String username = GeneralUtil.extractSessionUsername();
     final double durationSecondsRounded = getDurationSecondsRounded(startTime);
     final String durationFormatted = getFormatted(durationSecondsRounded);
     log.info("QUERY: {}\t{}\t{}", username, durationFormatted, query);
-  }
-
-  private String extractSessionUsername() {
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return userDetails.getUsername();
   }
 
   private String getFormatted(final double durationSecondsRounded) {

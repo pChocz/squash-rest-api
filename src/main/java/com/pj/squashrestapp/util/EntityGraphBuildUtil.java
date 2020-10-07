@@ -10,9 +10,9 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.XpPointsForPlace;
 import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.model.XpPointsForRoundGroup;
-import com.pj.squashrestapp.model.util.ClassId;
-import com.pj.squashrestapp.model.util.EntityGraphBuilder;
-import com.pj.squashrestapp.model.util.EntityVisitor;
+import com.pj.squashrestapp.model.entityvisitor.ClassId;
+import com.pj.squashrestapp.model.entityvisitor.EntityGraphBuilder;
+import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;

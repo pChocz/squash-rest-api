@@ -19,16 +19,12 @@ import java.util.stream.Collectors;
 @Getter
 public class Scoreboard {
 
-  private final int numberOfMatches;
   private final List<ScoreboardRow> scoreboardRows;
-  private List<MatchDto> matches;
 
   public Scoreboard(final Collection<MatchDto> matches) {
-    this.matches = getSortedMatches(matches);
-    this.numberOfMatches = matches.size();
     this.scoreboardRows = new ArrayList<>();
 
-    for (final MatchDto match : matches) {
+    for (final MatchDto match : getSortedMatches(matches)) {
       final ScoreboardRow scoreboardRowFirst = getScoreboardRowOrBuildNew(match.getFirstPlayer());
       scoreboardRowFirst.applyMatch(match);
 
@@ -70,10 +66,6 @@ public class Scoreboard {
         iterator.remove();
       }
     }
-  }
-
-  public void removeMatches() {
-    this.matches = null;
   }
 
 }

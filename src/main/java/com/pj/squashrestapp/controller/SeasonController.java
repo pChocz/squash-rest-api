@@ -7,6 +7,7 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,7 +33,7 @@ public class SeasonController {
 
   @PostMapping
   @ResponseBody
-//  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   SeasonDto createNewSeason(@RequestParam final int seasonNumber,
                             @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
                             @RequestParam final UUID leagueUuid) {
@@ -45,7 +46,7 @@ public class SeasonController {
   @GetMapping(value = "/{seasonUuid}")
 //  @PreAuthorize("isAdmin()")
   @ResponseBody
-  SeasonDto dummyGetEndpoint(@PathVariable final UUID seasonUuid) {
+  SeasonDto extractSeasonDto(@PathVariable final UUID seasonUuid) {
     final SeasonDto seasonDto = seasonService.extractSeasonDtoByUuid(seasonUuid);
     return seasonDto;
   }

@@ -34,7 +34,7 @@ public class TokenController {
 
   @GetMapping(value = "/passwordReset/{passwordResetToken}")
   @ResponseBody
-  PlayerDetailedDto getPlayerForPasswordReset(@PathVariable("passwordResetToken") final UUID passwordResetToken) {
+  PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {
     final PlayerDetailedDto player = tokenService.extractPlayerByPasswordResetToken(passwordResetToken);
     return player;
   }

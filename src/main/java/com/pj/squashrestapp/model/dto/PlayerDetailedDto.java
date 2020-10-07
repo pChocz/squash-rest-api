@@ -20,7 +20,6 @@ import java.util.UUID;
 public class PlayerDetailedDto {
 
   @EqualsAndHashCode.Include
-  final Long id;
   final UUID uuid;
   final String username;
   final String email;
@@ -28,7 +27,6 @@ public class PlayerDetailedDto {
   final List<LeagueRoleDto> leagueRoles;
 
   public PlayerDetailedDto(final Player player) {
-    this.id = player.getId();
     this.uuid = player.getUuid();
     this.username = player.getUsername();
     this.email = player.getEmail();

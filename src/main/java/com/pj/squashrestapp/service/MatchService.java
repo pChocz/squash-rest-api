@@ -1,17 +1,14 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.match.MatchSimpleDto;
-import com.pj.squashrestapp.model.entityhelper.MatchHelper;
-import com.pj.squashrestapp.model.entityhelper.SetResultHelper;
+import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -31,15 +28,8 @@ public class MatchService {
   private final MatchRepository matchRepository;
   private final SetResultRepository setResultRepository;
 
-
-  public MatchDetailedDto getMatch(final Long matchId) {
-    final Match match = matchRepository.findMatchById(matchId);
-    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(match);
-    return matchDetailedDto;
-  }
-
-  public void modifySingleScore(final Long matchId, final int setNumber, final String player, final Integer newScore) {
-    final Match matchToModify = matchRepository.findMatchById(matchId);
+  public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
+    final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
 
     final String initialMatchResult = matchToModify.toString();
 
@@ -50,40 +40,21 @@ public class MatchService {
             .findFirst()
             .orElse(null);
 
-    if (player.equals("FIRST")) {
-      setToModify.setFirstPlayerScore(newScore);
+    if (looserScore == null) {
+      setToModify.setFirstPlayerScore(null);
+      setToModify.setSecondPlayerScore(null);
 
-      if (newScore != null) {
-        if (setNumber < 3) {
-          if (newScore < 10) {
-            setToModify.setSecondPlayerScore(11);
-          } else if (newScore < 12) {
-            setToModify.setSecondPlayerScore(12);
-          }
-        } else {
-          if (newScore < 9) {
-            setToModify.setSecondPlayerScore(9);
-          }
-        }
+    } else {
+      final Integer winnerScore = computeWinnerScore(looserScore, setNumber);
+
+      if (player.equals("FIRST")) {
+        setToModify.setFirstPlayerScore(looserScore);
+        setToModify.setSecondPlayerScore(winnerScore);
+
+      } else if (player.equals("SECOND")) {
+        setToModify.setFirstPlayerScore(winnerScore);
+        setToModify.setSecondPlayerScore(looserScore);
       }
-
-    } else if (player.equals("SECOND")) {
-      setToModify.setSecondPlayerScore(newScore);
-
-      if (newScore != null) {
-        if (setNumber < 3) {
-          if (newScore < 10) {
-            setToModify.setFirstPlayerScore(11);
-          } else if (newScore < 12) {
-            setToModify.setFirstPlayerScore(12);
-          }
-        } else {
-          if (newScore < 9) {
-            setToModify.setFirstPlayerScore(9);
-          }
-        }
-      }
-
     }
 
     setResultRepository.save(setToModify);
@@ -94,79 +65,27 @@ public class MatchService {
     log.info(message);
   }
 
-  public MatchDetailedDto modifyMatch(final Long matchId, final int setNumber, final int p1score, final int p2score) {
-    final Match matchToModify = matchRepository.findMatchById(matchId);
-
-    final String initialMatchResult = matchToModify.toString();
-    final SetResult setToModify = matchToModify.getSetResults().stream().filter(set -> set.getNumber() == setNumber).findFirst().orElse(null);
-
-    try {
-
-      if (setToModify.getFirstPlayerScore() != 0
-          || setToModify.getSecondPlayerScore() != 0) {
-        throw new IllegalArgumentException();
-      }
-
-      setToModify.setFirstPlayerScore(p1score);
-      setToModify.setSecondPlayerScore(p2score);
-
-      final SetResultHelper setResultHelper = new SetResultHelper(setToModify);
-      if (!setResultHelper.isValid()) {
-        throw new IllegalArgumentException();
-      }
-
-      final MatchHelper matchHelper = new MatchHelper(matchToModify);
-      if (!matchHelper.isValid()) {
-        throw new IllegalArgumentException();
-      }
-
-      setResultRepository.save(setToModify);
-
-      final String message = "\nSuccesfully updated the match!" +
-                             "\n\t-> " + initialMatchResult + "\t- earlier" +
-                             "\n\t-> " + matchToModify + "\t- now";
-      log.info(message);
-
-
-    } catch (final IllegalArgumentException e) {
-      final String message = "\nDoes not look like a valid match result after the update!" +
-                             "\n\t-> " + matchToModify + "\t- tried to update to look like this" +
-                             "\n\t-> " + initialMatchResult + "\t- leaving the old result like this.";
-      log.error(message);
+  private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
+    if (setNumber < 3) {
+      return computeWinnerScoreForRegularSet(looserScore);
+    } else {
+      return 9;
     }
-
-    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(matchToModify);
-    return matchDetailedDto;
   }
 
-  public MatchDetailedDto clearSingleSetOfMatch(final Long matchId, final int setNumber) {
-    final Match matchToModify = matchRepository.findMatchById(matchId);
-
-    final SetResult setToModify = matchToModify
-            .getSetResults()
-            .stream()
-            .filter(set -> set.getNumber() == setNumber)
-            .findFirst()
-            .orElse(null);
-
-    final String initialMatchResult = matchToModify.toString();
-
-    setToModify.setFirstPlayerScore(0);
-    setToModify.setSecondPlayerScore(0);
-
-    setResultRepository.save(setToModify);
-
-    final String message = "\nSuccesfully updated the match!" +
-                           "\n\t-> " + initialMatchResult + "\t- earlier" +
-                           "\n\t-> " + matchToModify + "\t- now";
-    log.info(message);
-
-    final MatchDetailedDto matchDetailedDto = new MatchDetailedDto(matchToModify);
-    return matchDetailedDto;
+  private Integer computeWinnerScoreForRegularSet(final Integer looserScore) {
+    if (looserScore < 10) {
+      return 11;
+    } else {
+      return 12;
+    }
   }
 
-  public MatchesSimplePaginated getMatchesPaginatedForOnePlayer(final Pageable pageable, final UUID leagueUuid, final UUID playerUuid) {
-    final Page<Long> matchIds = matchRepository.findIdsSingle(leagueUuid, playerUuid, pageable);
+  public MatchesSimplePaginated getMatchesPaginated(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
+    final Page<Long> matchIds = (playersUuids.length == 1)
+            ? matchRepository.findIdsSingle(leagueUuid, playersUuids[0], pageable)
+            : matchRepository.findIdsMultiple(leagueUuid, playersUuids, pageable);
+
     final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
 
     final List<MatchSimpleDto> matchesDtos = matches
@@ -178,8 +97,9 @@ public class MatchService {
     return matchesDtoPage;
   }
 
-  public MatchesSimplePaginated getMatchesPaginatedForMultiplePlayers(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
-    final Page<Long> matchIds = matchRepository.findIdsMultiple(leagueUuid, playersUuids, pageable);
+  public MatchesSimplePaginated getMatchesPaginatedMeAgainstAll(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
+    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
+    final Page<Long> matchIds = matchRepository.findIdsSingleAgainstOthers(leagueUuid, currentPlayerUuid, playersUuids, pageable);
     final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
 
     final List<MatchSimpleDto> matchesDtos = matches
