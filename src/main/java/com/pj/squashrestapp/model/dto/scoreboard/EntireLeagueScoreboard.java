@@ -34,7 +34,7 @@ public class EntireLeagueScoreboard {
     for (final PlayerLeagueXpOveral playerLeagueXpOveral : playerLeagueXpOveralList) {
       final PlayerDto player = playerLeagueXpOveral.getPlayer();
 
-      final ScoreboardRow scoreboardRowForPlayer = roundGroupScoreboard
+      final RoundGroupScoreboardRow scoreboardRowForPlayer = roundGroupScoreboard
               .getScoreboardRows()
               .stream()
               .filter(scoreboardRow -> scoreboardRow.getPlayer().equals(player))

@@ -86,7 +86,7 @@ public class RoundScoreboard {
     int i = 0;
     for (final RoundGroupScoreboard scoreboard : roundGroupScoreboards) {
       int j = 1;
-      for (final ScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
+      for (final RoundGroupScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
         scoreboardRow.setPlaceInRound(i + 1);
         scoreboardRow.setPlaceInGroup(j++);
         scoreboardRow.setXpEarned(xpPoints.get(i++));

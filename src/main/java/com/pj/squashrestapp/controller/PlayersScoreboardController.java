@@ -2,6 +2,7 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
+import com.pj.squashrestapp.util.LogUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class PlayersScoreboardController {
             ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0])
             : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids);
 
-    TimeLogUtil.logQuery(startTime, "Players stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
+    TimeLogUtil.logQuery(startTime, "ALL-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 
@@ -48,7 +49,7 @@ public class PlayersScoreboardController {
 
     final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid, playersUuids);
 
-    TimeLogUtil.logQuery(startTime, "Players stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
+    TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 

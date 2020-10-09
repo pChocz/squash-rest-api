@@ -32,7 +32,7 @@ public class EntireLeagueScoreboardRow {
   private final int matchesBalance;
 
   public EntireLeagueScoreboardRow(final PlayerLeagueXpOveral playerLeagueXpOveral,
-                                   final ScoreboardRow scoreboardRowForPlayer) {
+                                   final RoundGroupScoreboardRow scoreboardRowForPlayer) {
     this.player = playerLeagueXpOveral.getPlayer();
 
     this.xpTotal = playerLeagueXpOveral.getTotalPoints();

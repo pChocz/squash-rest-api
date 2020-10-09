@@ -48,7 +48,9 @@ public class League implements Identifiable {
   private String name;
 
   @Setter
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY)
   @JoinColumn(name = "league_logo_id")
   private LeagueLogo leagueLogo;
 

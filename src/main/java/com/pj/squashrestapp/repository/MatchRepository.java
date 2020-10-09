@@ -133,4 +133,19 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   })
   List<Match> fetchForOnePlayerForLeague(UUID leagueUuid, UUID playerUuid);
 
+
+  @Query("""
+          select count(m), p1, p2, l from Match m
+            inner join Player p1 on m.firstPlayer.id = p1.id
+            inner join Player p2 on m.secondPlayer.id = p2.id
+            inner join RoundGroup rg on m.roundGroup.id = rg.id
+            inner join Round r on rg.round.id = r.id
+            inner join Season s on r.season.id = s.id
+            inner join League l on s.league.id = l.id
+                    WHERE (m.firstPlayer.uuid = :playerUuid 
+                     OR m.secondPlayer.uuid = :playerUuid)
+                  GROUP BY p1, p2, l
+                """)
+  List<Object> fetchGroupedMatches(UUID playerUuid);
+
 }

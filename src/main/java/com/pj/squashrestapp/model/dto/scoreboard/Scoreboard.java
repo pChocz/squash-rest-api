@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.pj.squashrestapp.model.dto.match.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.match.MatchDto;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -19,16 +19,18 @@ import java.util.stream.Collectors;
 @Getter
 public class Scoreboard {
 
-  private final List<ScoreboardRow> scoreboardRows;
+  private final int numberOfMatches;
+  private final List<PlayersStatsScoreboardRow> scoreboardRows;
 
   public Scoreboard(final Collection<MatchDto> matches) {
+    this.numberOfMatches = matches.size();
     this.scoreboardRows = new ArrayList<>();
 
     for (final MatchDto match : getSortedMatches(matches)) {
-      final ScoreboardRow scoreboardRowFirst = getScoreboardRowOrBuildNew(match.getFirstPlayer());
+      final PlayersStatsScoreboardRow scoreboardRowFirst = getScoreboardRowOrBuildNew(match.getFirstPlayer());
       scoreboardRowFirst.applyMatch(match);
 
-      final ScoreboardRow scoreboardRowSecond = getScoreboardRowOrBuildNew(match.getSecondPlayer());
+      final PlayersStatsScoreboardRow scoreboardRowSecond = getScoreboardRowOrBuildNew(match.getSecondPlayer());
       scoreboardRowSecond.applyMatch(match);
     }
     Collections.sort(scoreboardRows);
@@ -43,27 +45,39 @@ public class Scoreboard {
             .collect(Collectors.toList());
   }
 
-  private ScoreboardRow getScoreboardRowOrBuildNew(final PlayerDto player) {
-    ScoreboardRow scoreboardRowFirst = scoreboardRows
+  private PlayersStatsScoreboardRow getScoreboardRowOrBuildNew(final PlayerDto player) {
+    PlayersStatsScoreboardRow scoreboardRowFirst = scoreboardRows
             .stream()
             .filter(e -> e.getPlayer().equals(player))
             .findFirst()
             .orElse(null);
 
     if (scoreboardRowFirst == null) {
-      scoreboardRowFirst = new ScoreboardRow(player);
+      scoreboardRowFirst = new PlayersStatsScoreboardRow(player);
       scoreboardRows.add(scoreboardRowFirst);
     }
     return scoreboardRowFirst;
   }
 
   public void makeItSinglePlayerScoreboard(final UUID playerUuid) {
-    final Iterator<ScoreboardRow> iterator = this.scoreboardRows.iterator();
+    final Iterator<PlayersStatsScoreboardRow> iterator = this.scoreboardRows.iterator();
     while (iterator.hasNext()) {
       final ScoreboardRow scoreboardRow = iterator.next();
       final UUID currentPlayerUuid = scoreboardRow.getPlayer().getUuid();
       if (!currentPlayerUuid.equals(playerUuid)) {
         iterator.remove();
+      }
+    }
+  }
+
+  public void removeSinglePlayer(final UUID playerUuid) {
+    final Iterator<PlayersStatsScoreboardRow> iterator = this.scoreboardRows.iterator();
+    while (iterator.hasNext()) {
+      final ScoreboardRow scoreboardRow = iterator.next();
+      final UUID currentPlayerUuid = scoreboardRow.getPlayer().getUuid();
+      if (currentPlayerUuid.equals(playerUuid)) {
+        iterator.remove();
+        break;
       }
     }
   }

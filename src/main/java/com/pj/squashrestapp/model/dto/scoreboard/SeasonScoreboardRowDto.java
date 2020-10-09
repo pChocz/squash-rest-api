@@ -108,7 +108,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
   }
 
-  public void addScoreboardRow(final ScoreboardRow scoreboardRow) {
+  public void addScoreboardRow(final RoundGroupScoreboardRow scoreboardRow) {
     this.pointsWon += scoreboardRow.getPointsWon();
     this.pointsLost += scoreboardRow.getPointsLost();
     this.pointsBalance += scoreboardRow.getPointsBalance();

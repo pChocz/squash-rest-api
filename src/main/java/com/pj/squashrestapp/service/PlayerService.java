@@ -1,9 +1,8 @@
 package com.pj.squashrestapp.service;
 
 import com.google.gson.Gson;
-import com.pj.squashrestapp.config.UserDetailsImpl;
-import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.config.WrongSignupDataException;
+import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BlacklistedToken;
@@ -165,9 +164,9 @@ public class PlayerService {
     return userBasicInfo;
   }
 
-  public PlayerDetailedDto assignLeagueRole(final Long playerId, final Long leagueId, final LeagueRole leagueRole) {
-    final Player player = playerRepository.fetchForAuthorizationById(playerId).get();
-    final League league = leagueRepository.findById(leagueId).get();
+  public PlayerDetailedDto assignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
     player.addRole(roleForLeague);
 

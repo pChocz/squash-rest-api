@@ -1,124 +1,110 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.pj.squashrestapp.model.dto.match.MatchDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.SetDto;
-import lombok.Getter;
-import lombok.Setter;
+import com.pj.squashrestapp.model.dto.match.MatchDto;
 
-import java.util.Comparator;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *
  */
-@Getter
-@JsonInclude(NON_NULL)
-public class ScoreboardRow implements Comparable<ScoreboardRow> {
+public interface ScoreboardRow {
 
-  private final PlayerDto player;
+  PlayerDto getPlayer();
 
-  private int pointsWon;
-  private int pointsLost;
-  private int pointsBalance;
-  private int pointsPlayed;
+  int getPointsWon();
+  int getPointsLost();
+  void setPointsWon(int value);
 
-  private int setsWon;
-  private int setsLost;
-  private int setsBalance;
-  private int setsPlayed;
+  void setPointsLost(int value);
+  int getSetsWon();
+  int getSetsLost();
+  void setSetsWon(int value);
 
-  private int matchesWon;
-  private int matchesLost;
-  private int matchesBalance;
-  private int matchesPlayed;
+  void setSetsLost(int value);
+  int getMatchesWon();
+  int getMatchesLost();
+  void setMatchesWon(int value);
+  void setMatchesLost(int value);
 
-  @Setter
-  private Integer xpEarned;
-  @Setter
-  private Integer placeInRound;
-  @Setter
-  private Integer placeInGroup;
+  default void applyMatch(final MatchDto match) {
+    final List<Integer> pointsWonPerSet = extractPointsWon(match);
+    final List<Integer> pointsLostPerSet = extractPointsLost(match);
 
-  public ScoreboardRow(final PlayerDto player) {
-    this.player = player;
-  }
+    final int numberOfSets = match.getSets().size();
+    int currentMatchSetsWon = 0;
+    int currentMatchSetsLost = 0;
 
-  public void applyMatch(final MatchDto match) {
-    if (player.equals(match.getFirstPlayer())) {
+    for (int i = 0; i < numberOfSets; i++) {
+      final Integer pointsWon = pointsWonPerSet.get(i);
+      final Integer pointsLost = pointsLostPerSet.get(i);
 
-      int currentMatchSetsWon = 0;
-      int currentMatchSetsLost = 0;
+      setPointsWon(getPointsWon() + pointsWon);
+      setPointsLost(getPointsLost() + pointsLost);
 
-      for (final SetDto set : match.getSets()) {
-        final int currentSetPointsWon = set.getFirstPlayerScoreNullSafe();
-        final int currentSetPointsLost = set.getSecondPlayerScoreNullSafe();
-        if (currentSetPointsWon > currentSetPointsLost) {
-          currentMatchSetsWon++;
-        } else if (currentSetPointsWon < currentSetPointsLost) {
-          currentMatchSetsLost++;
-        }
-        pointsWon += currentSetPointsWon;
-        pointsLost += currentSetPointsLost;
+      if (pointsWon > pointsLost) {
+        currentMatchSetsWon++;
+      } else if (pointsWon < pointsLost) {
+        currentMatchSetsLost++;
       }
-
-      if (currentMatchSetsWon > currentMatchSetsLost) {
-        matchesWon++;
-      } else if (currentMatchSetsWon < currentMatchSetsLost) {
-        matchesLost++;
-      }
-
-      setsWon += currentMatchSetsWon;
-      setsLost += currentMatchSetsLost;
-
-    } else if (player.equals(match.getSecondPlayer())) {
-
-      int currentMatchSetsWon = 0;
-      int currentMatchSetsLost = 0;
-
-      for (final SetDto set : match.getSets()) {
-        final int currentSetPointsWon = set.getSecondPlayerScoreNullSafe();
-        final int currentSetPointsLost = set.getFirstPlayerScoreNullSafe();
-        if (currentSetPointsWon > currentSetPointsLost) {
-          currentMatchSetsWon++;
-        } else if (currentSetPointsWon < currentSetPointsLost) {
-          currentMatchSetsLost++;
-        }
-        pointsWon += currentSetPointsWon;
-        pointsLost += currentSetPointsLost;
-      }
-
-      if (currentMatchSetsWon > currentMatchSetsLost) {
-        matchesWon++;
-      } else if (currentMatchSetsWon < currentMatchSetsLost) {
-        matchesLost++;
-      }
-
-      setsWon += currentMatchSetsWon;
-      setsLost += currentMatchSetsLost;
     }
 
-    pointsBalance = pointsWon - pointsLost;
-    setsBalance = setsWon - setsLost;
-    matchesBalance = matchesWon - matchesLost;
+    setSetsWon(getSetsWon() + currentMatchSetsWon);
+    setSetsLost(getSetsLost() + currentMatchSetsLost);
 
-    pointsPlayed = pointsWon + pointsLost;
-    setsPlayed = setsWon + setsLost;
-    matchesPlayed = matchesWon + matchesLost;
+    if (currentMatchSetsWon > currentMatchSetsLost) {
+      setMatchesWon(getMatchesWon() + 1);
+    } else if (currentMatchSetsWon < currentMatchSetsLost) {
+      setMatchesLost(getMatchesLost() + 1);
+    }
+
   }
 
-  @Override
-  public int compareTo(final ScoreboardRow that) {
-    return Comparator
-            .comparingInt(ScoreboardRow::getMatchesBalance)
-            .thenComparingInt(ScoreboardRow::getSetsBalance)
-            .thenComparingInt(ScoreboardRow::getPointsBalance)
-            .thenComparingInt(ScoreboardRow::getSetsWon)
-            .thenComparingInt(ScoreboardRow::getPointsWon)
-            .reversed()
-            .compare(this, that);
+  default List<Integer> extractPointsWon(final MatchDto match) {
+    final List<Integer> list = match
+            .getSets()
+            .stream()
+            .map(setDto -> getPlayer().equals(match.getFirstPlayer())
+                    ? setDto.getFirstPlayerScoreNullSafe()
+                    : setDto.getSecondPlayerScoreNullSafe())
+            .collect(Collectors.toList());
+    return list;
   }
+
+  default List<Integer> extractPointsLost(final MatchDto match) {
+    final List<Integer> list = match
+            .getSets()
+            .stream()
+            .map(setDto -> getPlayer().equals(match.getFirstPlayer())
+                    ? setDto.getSecondPlayerScoreNullSafe()
+                    : setDto.getFirstPlayerScoreNullSafe())
+            .collect(Collectors.toList());
+    return list;
+  }
+
+  default int getPointsBalance() {
+    return getPointsWon() - getPointsLost();
+  }
+
+  default int getSetsBalance() {
+    return getSetsWon() - getSetsLost();
+  }
+
+  default int getMatchesBalance() {
+    return getMatchesWon() - getMatchesLost();
+  }
+
+//  default int getPointsPlayed() {
+//    return getPointsWon() + getPointsLost();
+//  }
+//
+//  default int getSetsPlayed() {
+//    return getSetsWon() + getSetsLost();
+//  }
+//
+//  default int getMatchesPlayed() {
+//    return getMatchesWon() + getMatchesLost();
+//  }
 
 }

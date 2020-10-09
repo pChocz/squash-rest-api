@@ -61,6 +61,7 @@ public class PlayersScoreboardService {
             .collect(Collectors.toList());
 
     final Scoreboard scoreboard = new Scoreboard(matchesDtos);
+    scoreboard.removeSinglePlayer(currentPlayerUuid);
 
     return scoreboard;
   }

@@ -11,6 +11,7 @@ import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
@@ -74,7 +75,7 @@ public class SeasonService {
       roundScoreboard.assignPointsAndPlaces(xpPoints);
 
       for (final RoundGroupScoreboard scoreboard : roundScoreboard.getRoundGroupScoreboards()) {
-        for (final ScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
+        for (final RoundGroupScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
 
           final PlayerDto player = scoreboardRow.getPlayer();
           final SeasonScoreboardRowDto seasonScoreboardRowDto = seasonScoreboardDto

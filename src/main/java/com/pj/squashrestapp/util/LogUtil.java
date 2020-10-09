@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.controller;
+package com.pj.squashrestapp.util;
 
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class LogUtil {
 
-  String extractPlayersCommaSeparated(final Scoreboard scoreboard) {
+  public String extractPlayersCommaSeparated(final Scoreboard scoreboard) {
     return scoreboard
             .getScoreboardRows()
             .stream()

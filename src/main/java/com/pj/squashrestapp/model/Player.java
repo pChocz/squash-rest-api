@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +24,7 @@ import java.util.UUID;
 @Table(name = "players")
 @Getter
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player {
 
   @Id
@@ -32,6 +34,7 @@ public class Player {
   @Setter
   @Column(name = "uuid",
           nullable = false)
+  @EqualsAndHashCode.Include
   private UUID uuid = UUID.randomUUID();
 
   @Setter

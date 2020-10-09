@@ -19,7 +19,7 @@ import java.util.List;
 public class RoundGroupScoreboard {
 
   private final int roundGroupNumber;
-  private final List<ScoreboardRow> scoreboardRows;
+  private final List<RoundGroupScoreboardRow> scoreboardRows;
   private final Collection<MatchDetailedDto> matches;
 
   public RoundGroupScoreboard(final Collection<MatchDetailedDto> matches) {
@@ -34,8 +34,8 @@ public class RoundGroupScoreboard {
     this.scoreboardRows = new ArrayList<>();
 
     for (final MatchDetailedDto match : matches) {
-      final ScoreboardRow scoreboardRowFirst = getScoreboardRow(match.getFirstPlayer());
-      final ScoreboardRow scoreboardRowSecond = getScoreboardRow(match.getSecondPlayer());
+      final RoundGroupScoreboardRow scoreboardRowFirst = getScoreboardRow(match.getFirstPlayer());
+      final RoundGroupScoreboardRow scoreboardRowSecond = getScoreboardRow(match.getSecondPlayer());
 
       if (match.getStatus() == MatchStatus.FINISHED) {
         scoreboardRowFirst.applyMatch(match);
@@ -46,15 +46,15 @@ public class RoundGroupScoreboard {
     Collections.sort(scoreboardRows);
   }
 
-  private ScoreboardRow getScoreboardRow(final PlayerDto player) {
-    ScoreboardRow scoreboardRowFirst = scoreboardRows
+  private RoundGroupScoreboardRow getScoreboardRow(final PlayerDto player) {
+    RoundGroupScoreboardRow scoreboardRowFirst = scoreboardRows
             .stream()
             .filter(e -> e.getPlayer().equals(player))
             .findFirst()
             .orElse(null);
 
     if (scoreboardRowFirst == null) {
-      scoreboardRowFirst = new ScoreboardRow(player);
+      scoreboardRowFirst = new RoundGroupScoreboardRow(player);
       scoreboardRows.add(scoreboardRowFirst);
     }
     return scoreboardRowFirst;
