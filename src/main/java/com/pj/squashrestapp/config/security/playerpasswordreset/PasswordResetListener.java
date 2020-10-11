@@ -4,13 +4,10 @@ import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.email.EmailTemplate;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.util.UUID;
 
 /**

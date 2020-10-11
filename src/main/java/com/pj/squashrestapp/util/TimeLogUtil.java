@@ -1,11 +1,7 @@
 package com.pj.squashrestapp.util;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pj.squashrestapp.config.UserDetailsImpl;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -23,7 +19,7 @@ public class TimeLogUtil {
     log.info("{} seconds", durationSecondsRounded);
   }
 
-  private double getDurationSecondsRounded(final long startTime) {
+  public double getDurationSecondsRounded(final long startTime) {
     final long endTime = System.nanoTime();
     final long duration = endTime - startTime;
     final double durationSeconds = (double) duration / 1_000_000_000;

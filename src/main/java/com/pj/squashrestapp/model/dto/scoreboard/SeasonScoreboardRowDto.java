@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

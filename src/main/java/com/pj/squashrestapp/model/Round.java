@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(
         name = "rounds",
-        uniqueConstraints={
+        uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"season_id", "number"})})
 @Getter
 @NoArgsConstructor

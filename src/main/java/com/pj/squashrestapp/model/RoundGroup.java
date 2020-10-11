@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(
         name = "round_groups",
-        uniqueConstraints={
+        uniqueConstraints = {
                 @UniqueConstraint(columnNames = {"round_id", "number"})})
 @Getter
 @NoArgsConstructor

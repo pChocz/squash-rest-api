@@ -1,10 +1,5 @@
 package com.pj.squashrestapp.config.security.token;
 
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
-
-import java.security.Key;
-
 /**
  * Several constants related to the token authentication.
  */

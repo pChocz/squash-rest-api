@@ -7,10 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -77,21 +72,5 @@ public class RoundController {
     roundService.deleteRound(roundUuid);
     log.info("Round {} has been deleted", roundUuid);
   }
-
-
-//  /**
-//   * TEST - dummy method just to verify that testing of Spring Security works
-//   */
-//  @GetMapping(value = "dummyEndpoint/{value}")
-//  @PreAuthorize("isAdmin()")
-//  @ResponseBody
-//  int dummyGetEndpoint(@PathVariable final int value) {
-//    final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//    final String username = authentication.getName();
-//    final Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-//    log.info("user info: \n USER:\t{} \n ROLES:\t{}", username, authorities);
-//
-//    return value * 2;
-//  }
 
 }

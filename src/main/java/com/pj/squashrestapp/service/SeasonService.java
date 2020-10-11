@@ -13,7 +13,6 @@ import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
-import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.repository.LeagueRepository;

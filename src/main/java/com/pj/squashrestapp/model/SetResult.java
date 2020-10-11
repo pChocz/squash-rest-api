@@ -94,7 +94,7 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
 
   public boolean nonNull() {
     return this.getFirstPlayerScore() != null
-            && this.getSecondPlayerScore() != null;
+           && this.getSecondPlayerScore() != null;
   }
 
 }

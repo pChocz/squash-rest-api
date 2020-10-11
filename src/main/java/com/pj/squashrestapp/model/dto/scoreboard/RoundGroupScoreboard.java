@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
+import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.matchresulthelper.MatchStatus;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

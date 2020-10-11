@@ -1,13 +1,13 @@
 package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.util.TimeLogUtil;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -52,8 +52,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         throw new WrongCredentialsFormatException("Wrong format of credentials received");
       }
 
+      final long startTime = System.nanoTime();
       final var authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
       final var auth = authenticationManager.authenticate(authentication);
+      log.info("Authentication took {} s", TimeLogUtil.getDurationSecondsRounded(startTime));
       log.info("User [{}] has logged in", getPrincipal(auth).getUsername());
       return auth;
 

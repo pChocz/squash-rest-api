@@ -2,7 +2,6 @@ package com.pj.squashrestapp.model.dto.leaguestats;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.collect.Multimap;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 

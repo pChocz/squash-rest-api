@@ -11,7 +11,6 @@ import com.pj.squashrestapp.model.dto.SetDto;
 import com.pj.squashrestapp.model.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.model.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 import java.time.LocalDate;

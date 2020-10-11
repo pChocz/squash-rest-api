@@ -42,7 +42,8 @@ public class InitializerController {
           throws IOException {
 
     final String jsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
-    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {}.getType();
+    final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {
+    }.getType();
     final List<JsonFakeLeagueParams> fakeLeagueParams = GsonUtil.gsonWithDate().fromJson(jsonContent, listOfMyClassObject);
 
     fakeLeagueService.buildLeagues(fakeLeagueParams);

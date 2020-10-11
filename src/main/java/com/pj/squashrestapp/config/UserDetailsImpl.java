@@ -3,7 +3,6 @@ package com.pj.squashrestapp.config;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.model.Authority;
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
@@ -12,9 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;

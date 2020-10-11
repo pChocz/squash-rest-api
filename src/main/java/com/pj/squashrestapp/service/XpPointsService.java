@@ -10,7 +10,6 @@ import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -58,16 +57,16 @@ public class XpPointsService {
 
     final List<XpPointsForTable> xpPointsForTableList = new ArrayList<>();
 
-    for (final XpPointsForRound xpPointsForRound: xpPointsForRoundList) {
+    for (final XpPointsForRound xpPointsForRound : xpPointsForRoundList) {
       final String split = xpPointsForRound.getSplit();
       final int numberOfPlayers = xpPointsForRound.getNumberOfPlayers();
 
       final XpPointsForTable xpPointsForTable = new XpPointsForTable(split, numberOfPlayers);
 
-      for (final XpPointsForRoundGroup xpPointsForRoundGroup: xpPointsForRound.getXpPointsForRoundGroups()) {
+      for (final XpPointsForRoundGroup xpPointsForRoundGroup : xpPointsForRound.getXpPointsForRoundGroups()) {
         final int groupNumber = xpPointsForRoundGroup.getRoundGroupNumber();
 
-        for (final XpPointsForPlace xpPointsForPlace: xpPointsForRoundGroup.getXpPointsForPlaces()) {
+        for (final XpPointsForPlace xpPointsForPlace : xpPointsForRoundGroup.getXpPointsForPlaces()) {
           final int placeInRound = xpPointsForPlace.getPlaceInRound();
           final int placeInGroup = xpPointsForPlace.getPlaceInRoundGroup();
           final int points = xpPointsForPlace.getPoints();
@@ -79,8 +78,6 @@ public class XpPointsService {
 
       xpPointsForTableList.add(xpPointsForTable);
     }
-
-
 
 
     return xpPointsForTableList;

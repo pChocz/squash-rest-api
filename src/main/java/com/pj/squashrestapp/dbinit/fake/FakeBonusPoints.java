@@ -14,10 +14,10 @@ import java.util.List;
 public class FakeBonusPoints {
 
   List<BonusPoint> create(final List<Player> players,
-                                 final int minOccurs,
-                                 final int maxOccurs,
-                                 final int minPoints,
-                                 final int maxPoints) {
+                          final int minOccurs,
+                          final int maxOccurs,
+                          final int minPoints,
+                          final int maxPoints) {
 
     final List<BonusPoint> bonusPoints = new ArrayList<>();
     final int occurs = FakeUtil.randomBetweenTwoIntegers(minOccurs, maxOccurs);

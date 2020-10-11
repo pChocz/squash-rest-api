@@ -21,7 +21,6 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.experimental.UtilityClass;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;

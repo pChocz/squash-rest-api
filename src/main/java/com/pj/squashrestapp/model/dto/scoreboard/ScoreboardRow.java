@@ -14,18 +14,27 @@ public interface ScoreboardRow {
   PlayerDto getPlayer();
 
   int getPointsWon();
+
   int getPointsLost();
+
   void setPointsWon(int value);
 
   void setPointsLost(int value);
+
   int getSetsWon();
+
   int getSetsLost();
+
   void setSetsWon(int value);
 
   void setSetsLost(int value);
+
   int getMatchesWon();
+
   int getMatchesLost();
+
   void setMatchesWon(int value);
+
   void setMatchesLost(int value);
 
   default void applyMatch(final MatchDto match) {

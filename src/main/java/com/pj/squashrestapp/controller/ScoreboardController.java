@@ -3,7 +3,6 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
-import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.TimeLogUtil;

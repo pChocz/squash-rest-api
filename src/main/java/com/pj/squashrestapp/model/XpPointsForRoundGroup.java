@@ -76,7 +76,7 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
 
     int placesInAllRoundsBefore = 0;
     for (int i = 1; i < roundGroupNumber; i++) {
-      placesInAllRoundsBefore += allPoints[i-1].length;
+      placesInAllRoundsBefore += allPoints[i - 1].length;
     }
 
     this.xpPointsForPlaces = new TreeSet<>();

@@ -21,7 +21,7 @@ public class XpPointsForTable {
     this.xpPoints = new ArrayList<>();
   }
 
-  public void addPoints(XpPointsDto xpPointsDto) {
+  public void addPoints(final XpPointsDto xpPointsDto) {
     this.xpPoints.add(xpPointsDto);
   }
 
