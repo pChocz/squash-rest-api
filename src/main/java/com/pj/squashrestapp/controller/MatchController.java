@@ -45,11 +45,13 @@ public class MatchController {
   MatchesSimplePaginated matchesPageable(
           @PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
           @PathVariable final UUID leagueUuid,
-          @PathVariable final UUID[] playersUuids) {
+          @PathVariable final UUID[] playersUuids,
+          @RequestParam(required = false) final UUID seasonUuid,
+          @RequestParam(required = false) final Integer groupNumber) {
 
     final long startTime = System.nanoTime();
 
-    final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids);
+    final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
 
     TimeLogUtil.logQuery(startTime, "Extracted matches paginated");
     return matchesPaginated;

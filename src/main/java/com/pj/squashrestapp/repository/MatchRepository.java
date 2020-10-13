@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,9 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           INNER JOIN rg.round r
           INNER JOIN r.season s
           INNER JOIN s.league l
-                    
+          INNER JOIN m.firstPlayer p1
+          INNER JOIN m.secondPlayer p2
+          
           """;
 
   String SELECT_FETCH_LEAGUE_IDS = """
@@ -31,16 +34,18 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           INNER JOIN rg.round r
           INNER JOIN r.season s
           INNER JOIN s.league l
-                    
+          INNER JOIN m.firstPlayer p1
+          INNER JOIN m.secondPlayer p2
+          
           """;
 
 
   @Query("""
           SELECT l.uuid FROM Match m
-           JOIN RoundGroup rg ON m.roundGroup = rg
-           JOIN Round r ON rg.round = r
-           JOIN Season s ON r.season = s
-           JOIN League l ON s.league = l
+           JOIN m.roundGroup rg
+           JOIN rg.round r
+           JOIN r.season s
+           JOIN s.league l
               WHERE m.uuid = :matchUuid
           """)
   UUID retrieveLeagueUuidOfMatch(UUID matchUuid);
@@ -57,8 +62,10 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND m.firstPlayer.uuid IN :playersUuids 
-              AND m.secondPlayer.uuid IN :playersUuids
+              AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
+              AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+              AND p1.uuid IN :playersUuids 
+              AND p2.uuid IN :playersUuids
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -66,14 +73,17 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchBySeveralPlayersIdsAndLeagueId(UUID leagueUuid, UUID[] playersUuids);
+  List<Match> fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playersUuids") UUID[] playersUuids,
+          @Param("seasonUuid") UUID seasonUuid,
+          @Param("groupNumber") Integer groupNumber);
 
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND (
-                    (m.firstPlayer.uuid = :playerUuid AND m.secondPlayer.uuid IN :playersUuids)
-                    OR (m.secondPlayer.uuid = :playerUuid AND m.firstPlayer.uuid IN :playersUuids)
+              AND ((p1.uuid = :playerUuid AND p2.uuid IN :playersUuids)
+                OR (p2.uuid = :playerUuid AND p1.uuid IN :playersUuids)
               )
           """)
   @EntityGraph(attributePaths = {
@@ -87,28 +97,40 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
-              AND m.firstPlayer.uuid IN :playersUuids 
-              AND m.secondPlayer.uuid IN :playersUuids
+              AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
+              AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+              AND p1.uuid IN :playersUuids 
+              AND p2.uuid IN :playersUuids
           """)
-  Page<Long> findIdsMultiple(UUID leagueUuid, UUID[] playersUuids, Pageable pageable);
+  Page<Long> findIdsMultiple(
+          Pageable pageable,
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playersUuids") UUID[] playersUuids,
+          @Param("seasonUuid") UUID seasonUuid,
+          @Param("groupNumber") Integer groupNumber);
 
 
   @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
-              AND (m.firstPlayer.uuid = :playerUuid 
-               OR m.secondPlayer.uuid = :playerUuid)
+              AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
+              AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+              AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
           """)
-  Page<Long> findIdsSingle(UUID leagueUuid, UUID playerUuid, Pageable pageable);
+  Page<Long> findIdsSingle(
+          Pageable pageable,
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerUuid") UUID playerUuid,
+          @Param("seasonUuid") UUID seasonUuid,
+          @Param("groupNumber") Integer groupNumber);
 
 
-  @Query(SELECT_FETCH_LEAGUE_IDS + """
-            WHERE l.uuid = :leagueUuid
-              AND (
-                    (m.firstPlayer.uuid = :playerUuid AND m.secondPlayer.uuid IN :playersUuids)
-                    OR (m.secondPlayer.uuid = :playerUuid AND m.firstPlayer.uuid IN :playersUuids)
-              )
-          """)
-  Page<Long> findIdsSingleAgainstOthers(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids, Pageable pageable);
+//  @Query(SELECT_FETCH_LEAGUE_IDS + """
+//            WHERE l.uuid = :leagueUuid
+//              AND ((p1.uuid = :playerUuid AND p2.uuid IN :playersUuids)
+//                OR (p2.uuid = :playerUuid AND p1.uuid IN :playersUuids)
+//              )
+//          """)
+//  Page<Long> findIdsSingleAgainstOthers(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids, Pageable pageable);
 
 
   @EntityGraph(attributePaths = {
@@ -122,8 +144,10 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND (m.firstPlayer.uuid = :playerUuid 
-               OR m.secondPlayer.uuid = :playerUuid)
+              AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
+              AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+              AND (p1.uuid = :playerUuid 
+                OR p2.uuid = :playerUuid)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -131,20 +155,24 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchForOnePlayerForLeague(UUID leagueUuid, UUID playerUuid);
+  List<Match> fetchForOnePlayerForLeagueForSeasonForGroupNumber(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerUuid") UUID playerUuid,
+          @Param("seasonUuid") UUID seasonUuid,
+          @Param("groupNumber") Integer groupNumber);
 
 
   @Query("""
-          select count(m), p1, p2, l from Match m
-            inner join Player p1 on m.firstPlayer.id = p1.id
-            inner join Player p2 on m.secondPlayer.id = p2.id
-            inner join RoundGroup rg on m.roundGroup.id = rg.id
-            inner join Round r on rg.round.id = r.id
-            inner join Season s on r.season.id = s.id
-            inner join League l on s.league.id = l.id
-                    WHERE (m.firstPlayer.uuid = :playerUuid 
-                     OR m.secondPlayer.uuid = :playerUuid)
-                  GROUP BY p1, p2, l
+          SELECT COUNT(m), p1, p2, l from Match m
+            INNER JOIN m.firstPlayer p1
+            INNER JOIN m.secondPlayer p2
+            INNER JOIN m.roundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+            INNER JOIN s.league l
+              WHERE (p1.uuid = :playerUuid 
+                  OR p2.uuid = :playerUuid)
+          GROUP BY p1, p2, l
                 """)
   List<Object> fetchGroupedMatches(UUID playerUuid);
 

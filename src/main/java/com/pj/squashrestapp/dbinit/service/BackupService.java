@@ -76,7 +76,7 @@ public class BackupService {
   @Transactional
   public JsonLeague leagueToJson(final UUID leagueUuid) {
     final long startTime = System.nanoTime();
-    final String leagueName = leagueRepository.findNameByUuid(leagueUuid);
+    final String leagueName = leagueRepository.findByUuid(leagueUuid).orElseThrow().getName();
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());

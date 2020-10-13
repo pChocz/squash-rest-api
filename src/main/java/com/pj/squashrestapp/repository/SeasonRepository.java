@@ -33,10 +33,7 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
   UUID retrieveLeagueUuidOfSeason(UUID seasonUuid);
 
 
-  @Query("""
-          SELECT s.id FROM Season s
-              WHERE s.uuid = :seasonUuid
-          """)
+  @Query("SELECT s.id FROM Season s WHERE s.uuid = :seasonUuid")
   Long findIdByUuid(UUID seasonUuid);
 
 }

@@ -90,10 +90,13 @@ public class MatchService {
     }
   }
 
-  public MatchesSimplePaginated getMatchesPaginated(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
+  public MatchesSimplePaginated getMatchesPaginated(final Pageable pageable, final UUID leagueUuid,
+                                                    final UUID[] playersUuids,
+                                                    final UUID seasonUuid, final Integer groupNumber) {
+
     final Page<Long> matchIds = (playersUuids.length == 1)
-            ? matchRepository.findIdsSingle(leagueUuid, playersUuids[0], pageable)
-            : matchRepository.findIdsMultiple(leagueUuid, playersUuids, pageable);
+            ? matchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber)
+            : matchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
 
     final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
 
@@ -106,19 +109,19 @@ public class MatchService {
     return matchesDtoPage;
   }
 
-  public MatchesSimplePaginated getMatchesPaginatedMeAgainstAll(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
-    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-    final Page<Long> matchIds = matchRepository.findIdsSingleAgainstOthers(leagueUuid, currentPlayerUuid, playersUuids, pageable);
-    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
-
-    final List<MatchSimpleDto> matchesDtos = matches
-            .stream()
-            .map(MatchSimpleDto::new)
-            .collect(Collectors.toList());
-
-    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
-    return matchesDtoPage;
-  }
+//  public MatchesSimplePaginated getMatchesPaginatedMeAgainstAll(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
+//    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
+//    final Page<Long> matchIds = matchRepository.findIdsSingleAgainstOthers(leagueUuid, currentPlayerUuid, playersUuids, pageable);
+//    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
+//
+//    final List<MatchSimpleDto> matchesDtos = matches
+//            .stream()
+//            .map(MatchSimpleDto::new)
+//            .collect(Collectors.toList());
+//
+//    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
+//    return matchesDtoPage;
+//  }
 
 //  public Set<PerLeagueMatchStats> getMyMatchesCountPerPlayers_v1() {
 //    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();

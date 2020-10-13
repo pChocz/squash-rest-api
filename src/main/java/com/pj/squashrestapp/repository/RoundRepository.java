@@ -12,6 +12,10 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
 
   Optional<Round> findByUuid(UUID uuid);
 
+
+  Optional<Round> findBySeasonAndNumber(Season season, int number);
+
+
   @Query("""
           SELECT l.uuid FROM Round r
            JOIN Season s ON r.season = s
@@ -19,6 +23,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
               WHERE r.uuid = :roundUuid
           """)
   UUID retrieveLeagueUuidOfRound(UUID roundUuid);
+
 
   @Query("""
           SELECT r FROM Match m
@@ -28,7 +33,6 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
           """)
   Round findByMatchUuid(UUID matchUuid);
 
-  Optional<Round> findBySeasonAndNumber(Season season, int number);
 
   @Query("""
           SELECT r.id FROM Round r

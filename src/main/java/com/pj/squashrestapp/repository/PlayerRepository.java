@@ -17,37 +17,41 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
   Player findByUsername(String username);
 
+
   List<Player> findByUsernameIn(List<String> username);
+
+
+  Player findByUuid(UUID uuid);
+
 
   @Query("SELECT p FROM Player p WHERE p.uuid IN :uuids")
   List<Player> findByUuids(UUID[] uuids);
 
-  Player findByUuid(UUID uuid);
 
+  @Query("SELECT p FROM Player p WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)")
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
           "roles.league",
   })
-  @Query("SELECT p FROM Player p WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)")
   Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(String usernameOrEmail);
 
 
+  @Query("SELECT p FROM Player p WHERE p.id = :playerId")
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
           "roles.league",
   })
-  @Query("SELECT p FROM Player p WHERE p.id = :playerId")
   Optional<Player> fetchForAuthorizationById(Long playerId);
 
 
+  @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
           "roles.league",
   })
-  @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
   Optional<Player> fetchForAuthorizationByUuid(UUID uuid);
 
 
@@ -60,16 +64,16 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   List<Player> findAll();
 
 
-  @EntityGraph(attributePaths = {
-          "authorities",
-          "roles",
-          "roles.league",
-  })
   @Query("""
           SELECT p FROM Player p
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
           """)
+  @EntityGraph(attributePaths = {
+          "authorities",
+          "roles",
+          "roles.league",
+  })
   List<Player> fetchForAuthorizationForLeague(UUID leagueUuid);
 
   @Query("""

@@ -24,8 +24,10 @@ public class PlayersScoreboardService {
 
   private final MatchRepository matchRepository;
 
-  public Scoreboard buildSingle(final UUID leagueUuid, final UUID playerUuid) {
-    final List<Match> matches = matchRepository.fetchForOnePlayerForLeague(leagueUuid, playerUuid);
+  public Scoreboard buildSingle(final UUID leagueUuid, final UUID playerUuid,
+                                final UUID seasonUuid, final Integer groupNumber) {
+
+    final List<Match> matches = matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(leagueUuid, playerUuid, seasonUuid, groupNumber);
 
     final List<MatchDto> matchesDtos = matches
             .stream()
@@ -38,8 +40,10 @@ public class PlayersScoreboardService {
     return scoreboard;
   }
 
-  public Scoreboard buildMultipleAllAgainstAll(final UUID leagueUuid, final UUID[] playersUuids) {
-    final List<Match> matches = matchRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersUuids);
+  public Scoreboard buildMultipleAllAgainstAll(final UUID leagueUuid, final UUID[] playersUuids,
+                                               final UUID seasonUuid, final Integer groupNumber) {
+
+    final List<Match> matches = matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(leagueUuid, playersUuids, seasonUuid, groupNumber);
 
     final List<MatchDto> matchesDtos = matches
             .stream()
