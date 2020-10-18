@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -67,7 +68,7 @@ public class RoundController {
 
   @DeleteMapping(value = "/{roundUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-//  @PreAuthorize("hasRoleForRound(#roundId, 'MODERATOR')")
+  @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void deleteRound(@PathVariable final UUID roundUuid) {
     roundService.deleteRound(roundUuid);
     log.info("Round {} has been deleted", roundUuid);

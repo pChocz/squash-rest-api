@@ -30,8 +30,12 @@ public class BonusPointService {
   private final BonusPointRepository bonusPointRepository;
 
 
-  public List<BonusPoint> extractBonusPoints(final UUID playerUuid,
-                                             final UUID seasonUuid) {
+  public List<BonusPoint> extractBonusPoints(final UUID seasonUuid) {
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
+    return bonusPoints;
+  }
+
+  public List<BonusPoint> extractBonusPoints(final UUID playerUuid, final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerUuidAndSeasonUuid(playerUuid, seasonUuid);
     return bonusPoints;
   }

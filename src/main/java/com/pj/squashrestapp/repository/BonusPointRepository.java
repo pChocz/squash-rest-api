@@ -33,7 +33,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long> {
           """)
   @EntityGraph(attributePaths = {
           "player",
-          "season.id",
+          "season.league",
   })
   List<BonusPoint> findBySeasonUuid(UUID seasonUuid);
 

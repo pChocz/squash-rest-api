@@ -26,6 +26,11 @@ public class TimeLogUtil {
     return (double) Math.round(durationSeconds * 100d) / 100d;
   }
 
+  public void logMessage(final String message) {
+    final String username = GeneralUtil.extractSessionUsername();
+    log.info("LOG: {}\t{}", username, message);
+  }
+
   public void logQuery(final long startTime, final String query) {
     final String username = GeneralUtil.extractSessionUsername();
     final double durationSecondsRounded = getDurationSecondsRounded(startTime);

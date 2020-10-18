@@ -5,6 +5,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
+import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonExportUtil;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.BonusPoint;
@@ -12,6 +13,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
@@ -46,6 +48,14 @@ public class BackupService {
   private final RoundRepository roundRepository;
   private final BonusPointRepository bonusPointRepository;
 
+  public JsonSeason seasonToJson(final UUID seasonUuid) {
+    final List<SetResult> setResults = setResultRepository.fetchBySeasonId(seasonUuid);
+    final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
+    final Season season = EntityGraphBuildUtil.reconstructSeason(setResults, seasonId);
+    final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
+    final JsonSeason seasonJson = JsonExportUtil.buildSeasonJson(season, bonusPoints);
+    return seasonJson;
+  }
 
   public JsonRound roundToJson(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);

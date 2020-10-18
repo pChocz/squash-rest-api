@@ -23,6 +23,7 @@ public class GsonUtil {
   public Gson gsonWithDate() {
     return new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, getLocalDateJsonDeserializer())
+            .setPrettyPrinting()
             .create();
   }
 

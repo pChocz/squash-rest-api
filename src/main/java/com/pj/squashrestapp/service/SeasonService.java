@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
+import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -21,6 +23,8 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.sun.tools.jconsole.JConsoleContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -28,10 +32,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -43,6 +50,7 @@ public class SeasonService {
 
   private final BonusPointService bonusPointService;
   private final XpPointsService xpPointsService;
+  private final BackupService backupService;
 
   private final SetResultRepository setResultRepository;
   private final PlayerRepository playerRepository;
@@ -183,6 +191,30 @@ public class SeasonService {
     return seasonDto;
   }
 
+  public List<PlayerDto> extractSeasonPlayers(final UUID seasonUuid) {
+    final Set<PlayerDto> playersFirst = seasonRepository
+            .extractSeasonPlayersFirst(seasonUuid)
+            .stream()
+            .map(PlayerDto::new)
+            .collect(Collectors.toSet());
+
+    final Set<PlayerDto> playersSecond = seasonRepository
+            .extractSeasonPlayersSecond(seasonUuid)
+            .stream()
+            .map(PlayerDto::new)
+            .collect(Collectors.toSet());
+
+    final List<PlayerDto> merged = Stream
+            .concat(
+                    playersFirst.stream(),
+                    playersSecond.stream())
+            .distinct()
+            .sorted(Comparator.comparing(PlayerDto::getUsername))
+            .collect(Collectors.toList());
+
+    return merged;
+  }
+
   @Transactional
   public Season createNewSeason(final int seasonNumber, final LocalDate startDate, final UUID leagueUuid) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
@@ -190,6 +222,16 @@ public class SeasonService {
     league.addSeason(season);
     leagueRepository.save(league);
     return season;
+  }
+
+  public void deleteSeason(final UUID seasonUuid) {
+    final Season seasonToDelete = seasonRepository.findByUuid(seasonUuid).orElseThrow();
+
+    final JsonSeason jsonSeason = backupService.seasonToJson(seasonUuid);
+    final String seasonJsonContent = GsonUtil.gsonWithDate().toJson(jsonSeason);
+    log.info("Removing season: \n{}", seasonJsonContent);
+
+    seasonRepository.delete(seasonToDelete);
   }
 
 }
