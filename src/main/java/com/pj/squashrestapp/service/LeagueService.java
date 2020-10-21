@@ -42,7 +42,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -266,21 +269,10 @@ public class LeagueService {
 
   public List<LeagueDto> buildGeneralInfoForAllLeagues() {
     final List<League> leagues = leagueRepository.findAll();
-    final List<LeagueLogo> leagueLogos = leagueLogoRepository.findAll();
-    final List<LeagueDto> leaguesDtos = leagues.stream().map(LeagueDto::new).collect(Collectors.toList());
-
-    for (final LeagueDto leagueDto : leaguesDtos) {
-      leagueLogos
-              .stream()
-              .filter(leagueLogo1 -> leagueLogo1
-                      .getLeague()
-                      .getUuid()
-                      .equals(leagueDto.getLeagueUuid()))
-              .findFirst()
-              .ifPresent(leagueLogo -> leagueDto
-                      .setLeagueLogo(leagueLogo.getPicture()));
-    }
-
+    final List<LeagueDto> leaguesDtos = leagues
+            .stream()
+            .map(LeagueDto::new)
+            .collect(Collectors.toList());
     return leaguesDtos;
   }
 
@@ -295,5 +287,23 @@ public class LeagueService {
     return playersDtos;
   }
 
+
+  public Map<UUID, byte[]> extractAllLogos() {
+    final Map<UUID, byte[]> leagueLogosMap = new HashMap<>();
+
+    final List<League> leagues = leagueRepository.findAll();
+    final List<LeagueLogo> leagueLogos = leagueLogoRepository.findAll();
+
+    for (final League league : leagues) {
+      final UUID uuid = league.getUuid();
+      leagueLogos
+              .stream()
+              .filter(logo -> logo.getLeague().getUuid().equals(uuid))
+              .findFirst()
+              .ifPresent(logo -> leagueLogosMap.put(uuid, logo.getPicture()));
+    }
+
+    return leagueLogosMap;
+  }
 
 }

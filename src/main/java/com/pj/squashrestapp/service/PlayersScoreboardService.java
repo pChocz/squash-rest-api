@@ -6,7 +6,6 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.dto.match.MatchDto;
-import com.pj.squashrestapp.model.dto.playerroundsstats.PlayerRoundsStats;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MatchRepository;

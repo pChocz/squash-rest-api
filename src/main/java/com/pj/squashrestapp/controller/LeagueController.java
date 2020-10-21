@@ -23,6 +23,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -61,6 +62,15 @@ public class LeagueController {
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
     TimeLogUtil.logQuery(startTime, "All leagues general info");
     return allLeaguesGeneralInfo;
+  }
+
+  @GetMapping(value = "/all-logos")
+  @ResponseBody
+  Map<UUID, byte[]> extractAllLeaguesLogosMap() {
+    final long startTime = System.nanoTime();
+    final Map<UUID, byte[]> allLeaguesLogos = leagueService.extractAllLogos();
+    TimeLogUtil.logQuery(startTime, "All leagues logos");
+    return allLeaguesLogos;
   }
 
 
