@@ -57,6 +57,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // set up of endpoints permissions
     httpSecurity.authorizeRequests()
+            // allowing not authenticated players view scoreboard for rounds and seasons
+            .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*").permitAll()
+            .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
+            // allowing regular endpoints to be accessible
             .antMatchers(HttpMethod.GET, "/players/confirmRegistration**").permitAll()
             .antMatchers(HttpMethod.GET, "/token/passwordReset/**").permitAll()
             .antMatchers(HttpMethod.POST, "/players/signUp").permitAll()

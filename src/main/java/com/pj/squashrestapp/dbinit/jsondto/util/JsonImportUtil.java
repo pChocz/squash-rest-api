@@ -118,7 +118,10 @@ public class JsonImportUtil {
 
   public BonusPoint constructBonusPoints(final JsonBonusPoint jsonBonusPoint, final List<Player> players) {
     final BonusPoint bonusPoint = new BonusPoint();
-    bonusPoint.setPlayer(getCorrespondingPlayer(players, jsonBonusPoint.getPlayerName()));
+    bonusPoint.setUuid(jsonBonusPoint.getUuid());
+    bonusPoint.setDate(jsonBonusPoint.getDate());
+    bonusPoint.setWinner(getCorrespondingPlayer(players, jsonBonusPoint.getWinner()));
+    bonusPoint.setLooser(getCorrespondingPlayer(players, jsonBonusPoint.getLooser()));
     bonusPoint.setPoints(jsonBonusPoint.getPoints());
     return bonusPoint;
   }

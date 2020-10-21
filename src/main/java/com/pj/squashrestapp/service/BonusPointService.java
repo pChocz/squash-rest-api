@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -53,7 +54,7 @@ public class BonusPointService {
   }
 
   @Transactional
-  public List<BonusPoint> applyBonusPointsForTwoPlayers(final UUID winnerUuid,
+  public BonusPoint applyBonusPointsForTwoPlayers(final UUID winnerUuid,
                                                         final UUID looserUuid,
                                                         final UUID seasonUuid,
                                                         final int points) {
@@ -61,21 +62,24 @@ public class BonusPointService {
     final Player winner = playerRepository.findByUuid(winnerUuid);
     final Player looser = playerRepository.findByUuid(looserUuid);
 
-    final BonusPoint bonusPointForWinner = new BonusPoint();
-    bonusPointForWinner.setPlayer(winner);
-    bonusPointForWinner.setPoints(points);
+    final BonusPoint bonusPoint = new BonusPoint();
+    bonusPoint.setWinner(winner);
+    bonusPoint.setLooser(looser);
+    bonusPoint.setDate(LocalDate.now());
+    bonusPoint.setPoints(points);
 
-    final BonusPoint bonusPointForLooser = new BonusPoint();
-    bonusPointForLooser.setPlayer(looser);
-    bonusPointForLooser.setPoints(-points);
+    season.addBonusPoint(bonusPoint);
 
-    season.addBonusPoint(bonusPointForWinner);
-    season.addBonusPoint(bonusPointForLooser);
+    bonusPointRepository.save(bonusPoint);
 
-    final List<BonusPoint> list = Arrays.asList(bonusPointForWinner, bonusPointForLooser);
-    bonusPointRepository.saveAll(list);
+    return bonusPoint;
+  }
 
-    return list;
+  @Transactional
+  public void deleteBonusPoint(final UUID uuid) {
+    final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
+    log.info("Removing: {}", bonusPoint);
+    bonusPointRepository.delete(bonusPoint);
   }
 
 }

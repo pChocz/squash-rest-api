@@ -80,8 +80,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
           "match.firstPlayer",
           "match.secondPlayer",
   })
-  List<SetResult> fetchByLeagueId(UUID leagueUuid);
-
+  List<SetResult> fetchByLeagueUuid(UUID leagueUuid);
 
   @Query(SELECT_FETCH_SEASON + "WHERE s.uuid = :seasonUuid")
   @EntityGraph(attributePaths = {
@@ -89,7 +88,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
           "match.secondPlayer",
           "match.roundGroup.round.season.league"
   })
-  List<SetResult> fetchBySeasonId(UUID seasonUuid);
+  List<SetResult> fetchBySeasonUuid(UUID seasonUuid);
 
 
   @Query(SELECT_FETCH_ROUND + "WHERE r.uuid = :roundUuid")
@@ -99,6 +98,16 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
           "match.roundGroup.round.season",
           "match.roundGroup.round.season.league"
   })
-  List<SetResult> fetchByRoundId(UUID roundUuid);
+  List<SetResult> fetchByRoundUuid(UUID roundUuid);
+
+
+  @Query(SELECT_FETCH_ROUND_GROUP + "WHERE rg.id IN :ids")
+  @EntityGraph(attributePaths = {
+          "match.firstPlayer",
+          "match.secondPlayer",
+          "match.roundGroup.round.season",
+          "match.roundGroup.round.season.league"
+  })
+  List<SetResult> fetchByRoundGroupsIds(List<Long> ids);
 
 }

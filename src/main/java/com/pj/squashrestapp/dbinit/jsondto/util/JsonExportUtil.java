@@ -97,7 +97,10 @@ public class JsonExportUtil {
     final ArrayList<JsonBonusPoint> jsonBonusPoints = new ArrayList<>();
     for (final BonusPoint bonusPoint : bonusPoints) {
       final JsonBonusPoint jsonBonusPoint = new JsonBonusPoint();
-      jsonBonusPoint.setPlayerName(bonusPoint.getPlayer().getUsername());
+      jsonBonusPoint.setWinner(bonusPoint.getWinner().getUsername());
+      jsonBonusPoint.setLooser(bonusPoint.getLooser().getUsername());
+      jsonBonusPoint.setDate(bonusPoint.getDate());
+      jsonBonusPoint.setUuid(bonusPoint.getUuid());
       jsonBonusPoint.setPoints(bonusPoint.getPoints());
 
       jsonBonusPoints.add(jsonBonusPoint);

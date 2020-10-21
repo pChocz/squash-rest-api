@@ -35,7 +35,9 @@ public class FakeSeason {
       final Round round = FakeRound.create(roundNumber, roundDate, attendingPlayersGrouped);
       season.addRound(round);
 
-      final List<BonusPoint> bonusPoints = FakeBonusPoints.create(roundPlayers,
+      final List<BonusPoint> bonusPoints = FakeBonusPoints.create(
+              roundPlayers,
+              round.getDate(),
               0, 3,
               1, 3);
 

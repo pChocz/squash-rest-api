@@ -1,0 +1,24 @@
+package com.pj.squashrestapp.repository;
+
+import com.pj.squashrestapp.model.RoundGroup;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long> {
+
+  @Query("""
+          SELECT rg.id FROM Match m
+            INNER JOIN m.roundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+            INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+              AND (m.firstPlayer.uuid = :playerUuid 
+               OR m.secondPlayer.uuid = :playerUuid)
+          """)
+  List<Long> retrieveRoundGroupsIdsForPlayer(UUID leagueUuid, UUID playerUuid);
+
+}

@@ -49,7 +49,7 @@ public class BackupService {
   private final BonusPointRepository bonusPointRepository;
 
   public JsonSeason seasonToJson(final UUID seasonUuid) {
-    final List<SetResult> setResults = setResultRepository.fetchBySeasonId(seasonUuid);
+    final List<SetResult> setResults = setResultRepository.fetchBySeasonUuid(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
     final Season season = EntityGraphBuildUtil.reconstructSeason(setResults, seasonId);
     final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
@@ -58,7 +58,7 @@ public class BackupService {
   }
 
   public JsonRound roundToJson(final UUID roundUuid) {
-    final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
+    final List<SetResult> setResults = setResultRepository.fetchByRoundUuid(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);
     final Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);
     final JsonRound roundJson = JsonExportUtil.buildRoundJson(round);

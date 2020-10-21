@@ -24,7 +24,6 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.GsonUtil;
-import com.sun.tools.jconsole.JConsoleContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -144,7 +143,7 @@ public class SeasonService {
   }
 
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
-    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonId(seasonUuid);
+    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonUuid(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
 
     Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);

@@ -36,7 +36,7 @@ public class ScoreboardService {
 
 
   public RoundScoreboard buildScoreboardForRound(final UUID roundUuid) {
-    final List<SetResult> setResults = setResultRepository.fetchByRoundId(roundUuid);
+    final List<SetResult> setResults = setResultRepository.fetchByRoundUuid(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);
 
     Round round = EntityGraphBuildUtil.reconstructRound(setResults, roundId);

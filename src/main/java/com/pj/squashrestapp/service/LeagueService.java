@@ -152,7 +152,7 @@ public class LeagueService {
   }
 
   public League fetchEntireLeague(final UUID leagueUuid) {
-    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueId(leagueUuid);
+    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
   }

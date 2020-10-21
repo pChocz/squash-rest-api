@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.model.dto.playerroundsstats.PlayerSingleRoundStats;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.service.PlayersRoundsStatsService;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
 import com.pj.squashrestapp.util.LogUtil;
 import com.pj.squashrestapp.util.TimeLogUtil;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,6 +28,19 @@ import java.util.UUID;
 public class PlayersScoreboardController {
 
   private final PlayersScoreboardService playersScoreboardService;
+  private final PlayersRoundsStatsService playersRoundsStatsService;
+
+  @GetMapping(value = "/rounds-stats")
+  @ResponseBody
+  List<PlayerSingleRoundStats> extractRoundsStats(@RequestParam final UUID leagueUuid,
+                                                  @RequestParam final UUID playerUuid) {
+    final long startTime = System.nanoTime();
+
+    final List<PlayerSingleRoundStats> ret = playersRoundsStatsService.buildRoundsStatsForPlayer(leagueUuid, playerUuid);
+
+    TimeLogUtil.logQuery(startTime, "Player rounds stats: " + playerUuid);
+    return ret;
+  }
 
   @GetMapping(value = "/leagues/{leagueUuid}/players/{playersUuids}")
   @ResponseBody

@@ -82,8 +82,12 @@ public class GeneralUtil {
   }
 
   public String extractSessionUsername() {
-    final UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return userDetails.getUsername();
+    final Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    if (userDetails instanceof UserDetailsImpl) {
+      return ((UserDetailsImpl) userDetails).getUsername();
+    } else {
+      return "ANONYMOUS";
+    }
   }
 
   public UUID extractSessionUserUuid() {

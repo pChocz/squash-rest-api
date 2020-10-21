@@ -20,9 +20,11 @@ public final class BonusPointsAggregatedForSeason {
     this.seasonUuid = seasonUuid;
     this.pointsPerPlayerId = AtomicLongMap.create();
     for (final BonusPoint bonusPoint : bonusPoints) {
-      final UUID playerId = bonusPoint.getPlayer().getUuid();
+      final UUID winnerId = bonusPoint.getWinner().getUuid();
+      final UUID looserId = bonusPoint.getLooser().getUuid();
       final int points = bonusPoint.getPoints();
-      this.pointsPerPlayerId.getAndAdd(playerId, points);
+      this.pointsPerPlayerId.getAndAdd(winnerId, points);
+      this.pointsPerPlayerId.getAndAdd(looserId, -points);
     }
   }
 

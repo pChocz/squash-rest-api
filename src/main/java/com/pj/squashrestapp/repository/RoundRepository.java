@@ -5,6 +5,7 @@ import com.pj.squashrestapp.model.Season;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,7 +15,6 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
 
 
   Optional<Round> findBySeasonAndNumber(Season season, int number);
-
 
   @Query("""
           SELECT l.uuid FROM Round r
