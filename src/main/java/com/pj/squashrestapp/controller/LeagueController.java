@@ -77,7 +77,6 @@ public class LeagueController {
   @GetMapping(value = "/{leagueUuid}/players-general")
   @ResponseBody
   List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
-
     final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
   }

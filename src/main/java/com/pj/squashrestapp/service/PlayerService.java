@@ -31,6 +31,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Base64;
@@ -123,6 +124,7 @@ public class PlayerService {
     player.setPassword(hashedPassword);
     player.addAuthority(userAuthority);
     playerRepository.save(player);
+    authorityRepository.save(userAuthority);
 
     return player;
   }
@@ -164,6 +166,7 @@ public class PlayerService {
     return userBasicInfo;
   }
 
+  @Transactional
   public PlayerDetailedDto assignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
     final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();

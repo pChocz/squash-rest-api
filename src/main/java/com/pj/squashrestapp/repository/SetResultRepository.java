@@ -82,6 +82,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   })
   List<SetResult> fetchByLeagueUuid(UUID leagueUuid);
 
+
   @Query(SELECT_FETCH_SEASON + "WHERE s.uuid = :seasonUuid")
   @EntityGraph(attributePaths = {
           "match.firstPlayer",

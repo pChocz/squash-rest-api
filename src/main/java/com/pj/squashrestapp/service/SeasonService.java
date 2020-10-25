@@ -69,7 +69,7 @@ public class SeasonService {
                                                       final ArrayListMultimap<String, Integer> xpPointsPerSplit,
                                                       final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
-    for (final Round round : season.getRoundsOrdered()) {
+    for (final Round round : season.getFinishedRoundsOrdered()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
       for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
         roundScoreboard.addRoundGroupNew(roundGroup);

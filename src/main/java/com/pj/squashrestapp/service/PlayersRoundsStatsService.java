@@ -56,10 +56,12 @@ public class PlayersRoundsStatsService {
     final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResults, league.getId());
 
     final List<PlayerSingleRoundStats> playerRoundsStats = new ArrayList<>();
-    for (final Season season : leagueReconstructed.getSeasons()) {
-      for (final Round round : season.getRounds()) {
-        final List<Integer> xpPoints = xpPointsPerSplit.get(round.getSplit());
-        playerRoundsStats.add(new PlayerSingleRoundStats(player, round, xpPoints));
+    if (leagueReconstructed != null) {
+      for (final Season season : leagueReconstructed.getSeasons()) {
+        for (final Round round : season.getRounds()) {
+          final List<Integer> xpPoints = xpPointsPerSplit.get(round.getSplit());
+          playerRoundsStats.add(new PlayerSingleRoundStats(player, round, xpPoints));
+        }
       }
     }
     Collections.reverse(playerRoundsStats);

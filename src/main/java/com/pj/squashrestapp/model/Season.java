@@ -124,6 +124,15 @@ public class Season implements Identifiable, Comparable<Season> {
             .collect(Collectors.toList());
   }
 
+  public List<Round> getFinishedRoundsOrdered() {
+    return this
+            .getRounds()
+            .stream()
+            .filter(Round::isFinished)
+            .sorted(Comparator.comparingInt(Round::getNumber))
+            .collect(Collectors.toList());
+  }
+
   @Override
   public int compareTo(final Season that) {
     return Comparator
