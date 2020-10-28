@@ -98,6 +98,13 @@ public class ScoreboardController {
 //    return seasonScoreboardDto;
 //  }
 
+  @GetMapping(value = "/most-recent-round/{playerUuid}")
+  @ResponseBody
+  RoundScoreboard scoreboardForMostRecentRoundOfPlayer(@PathVariable final UUID playerUuid) {
+    final RoundScoreboard roundScoreboard = scoreboardService.buildMostRecentRoundOfPlayer(playerUuid);
+    return roundScoreboard;
+  }
+
 
   @GetMapping(value = "/rounds/{roundUuid}")
   @ResponseBody

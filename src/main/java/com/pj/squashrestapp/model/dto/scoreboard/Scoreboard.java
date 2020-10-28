@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.match.MatchDto;
 import lombok.Getter;
@@ -80,6 +81,14 @@ public class Scoreboard {
         break;
       }
     }
+  }
+
+  public PlayersStatsScoreboardRow getRowForPlayer(final PlayerDto player) {
+    return this.scoreboardRows
+            .stream()
+            .filter(row -> row.getPlayer().equals(player))
+            .findFirst()
+            .orElse(new PlayersStatsScoreboardRow(player));
   }
 
 }

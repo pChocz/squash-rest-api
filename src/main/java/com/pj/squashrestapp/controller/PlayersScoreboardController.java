@@ -1,7 +1,9 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.playerroundsstats.PlayerSingleRoundStats;
+import com.pj.squashrestapp.model.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.model.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.service.PlayersRoundsStatsService;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
 import com.pj.squashrestapp.util.LogUtil;
@@ -70,6 +72,13 @@ public class PlayersScoreboardController {
 
     TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
+  }
+
+  @GetMapping(value = "/me-against-all")
+  @ResponseBody
+  PlayerSummary extractMeAgainstAllForAllLeagues() {
+    final PlayerSummary playerSummary = playersScoreboardService.buildMeAgainstAllForAllLeagues();
+    return playerSummary;
   }
 
 }

@@ -95,6 +95,18 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids);
 
 
+  @Query(SELECT_FETCH_LEAGUE + """
+              WHERE (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season.league"
+  })
+  List<Match> fetchByOnePlayerAgainstAllForAllLeagues(UUID playerUuid);
+
+
   @Query(SELECT_FETCH_LEAGUE_IDS + """
             WHERE l.uuid = :leagueUuid
               AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)

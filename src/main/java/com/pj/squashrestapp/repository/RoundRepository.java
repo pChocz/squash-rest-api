@@ -2,6 +2,7 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,6 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface RoundRepository extends JpaRepository<Round, Long> {
+
 
   Optional<Round> findByUuid(UUID uuid);
 
@@ -39,5 +41,18 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
               WHERE r.uuid = :roundUuid
           """)
   Long findIdByUuid(UUID roundUuid);
+
+  @Query("""
+          SELECT DISTINCT r FROM Match m
+           INNER JOIN m.firstPlayer p1
+           INNER JOIN m.secondPlayer p2
+           INNER JOIN m.roundGroup rg
+           INNER JOIN rg.round r
+              WHERE (p1.uuid = :playerUuid 
+                  OR p2.uuid = :playerUuid)
+           ORDER BY r.date DESC
+          """)
+  List<Round> findMostRecentRoundOfPlayer(UUID playerUuid, Pageable pageable);
+
 
 }
