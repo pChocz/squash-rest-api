@@ -98,9 +98,9 @@ public class PlayersScoreboardService {
     return playerSummary;
   }
 
-  public Scoreboard buildMultipleMeAgainstAll(final UUID leagueUuid, final UUID[] playersUuids) {
+  public Scoreboard buildMultipleMeAgainstAll(final UUID leagueUuid) {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-    final List<Match> matches = matchRepository.fetchByOnePlayerAgainstOthersAndLeagueId(leagueUuid, currentPlayerUuid, playersUuids);
+    final List<Match> matches = matchRepository.fetchByOnePlayerAgainstOthersAndLeagueId(leagueUuid, currentPlayerUuid);
 
     final List<MatchDto> matchesDtos = matches
             .stream()

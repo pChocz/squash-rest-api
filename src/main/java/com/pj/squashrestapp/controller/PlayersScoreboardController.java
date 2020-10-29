@@ -61,18 +61,30 @@ public class PlayersScoreboardController {
     return scoreboard;
   }
 
-  @GetMapping(value = "/leagues/{leagueUuid}/players/{playersUuids}/me-against-all")
+  @GetMapping(value = "/leagues/{leagueUuid}/me-against-all")
   @ResponseBody
-  Scoreboard extractMeAgainstAll(@PathVariable final UUID leagueUuid,
-                                 @PathVariable final UUID[] playersUuids) {
+  Scoreboard extractMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
 
     final long startTime = System.nanoTime();
 
-    final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid, playersUuids);
+    final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid);
 
     TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
+
+//  @GetMapping(value = "/leagues/{leagueUuid}/players/{playersUuids}/me-against-all")
+//  @ResponseBody
+//  Scoreboard extractMeAgainstAll(@PathVariable final UUID leagueUuid,
+//                                 @PathVariable final UUID[] playersUuids) {
+//
+//    final long startTime = System.nanoTime();
+//
+//    final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid, playersUuids);
+//
+//    TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
+//    return scoreboard;
+//  }
 
   @GetMapping(value = "/me-against-all")
   @ResponseBody

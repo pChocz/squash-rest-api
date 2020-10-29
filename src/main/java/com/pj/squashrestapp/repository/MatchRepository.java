@@ -82,9 +82,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
 
   @Query(SELECT_FETCH_LEAGUE + """
             WHERE l.uuid = :leagueUuid
-              AND ((p1.uuid = :playerUuid AND p2.uuid IN :playersUuids)
-                OR (p2.uuid = :playerUuid AND p1.uuid IN :playersUuids)
-              )
+              AND (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -92,7 +90,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(UUID leagueUuid, UUID playerUuid, UUID[] playersUuids);
+  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(UUID leagueUuid, UUID playerUuid);
 
 
   @Query(SELECT_FETCH_LEAGUE + """
