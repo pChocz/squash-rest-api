@@ -109,6 +109,7 @@ public class PlayersScoreboardService {
 
     final Scoreboard scoreboard = new Scoreboard(matchesDtos);
     scoreboard.removeSinglePlayer(currentPlayerUuid);
+    scoreboard.reverse();
 
     return scoreboard;
   }

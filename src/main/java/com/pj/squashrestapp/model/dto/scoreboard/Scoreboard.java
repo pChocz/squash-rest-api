@@ -91,4 +91,24 @@ public class Scoreboard {
             .orElse(new PlayersStatsScoreboardRow(player));
   }
 
+  public void reverse() {
+    for (final PlayersStatsScoreboardRow row : this.scoreboardRows) {
+      final int matchesWon = row.getMatchesWon();
+      final int matchesLost = row.getMatchesLost();
+      final int setsWon = row.getSetsWon();
+      final int setsLost = row.getSetsLost();
+      final int pointsWon = row.getPointsWon();
+      final int pointsLost = row.getPointsLost();
+
+      row.setMatchesWon(matchesLost);
+      row.setMatchesLost(matchesWon);
+      row.setSetsWon(setsLost);
+      row.setSetsLost(setsWon);
+      row.setPointsWon(pointsLost);
+      row.setPointsLost(pointsWon);
+    }
+    Collections.sort(this.scoreboardRows);
+    Collections.reverse(this.scoreboardRows);
+  }
+
 }
