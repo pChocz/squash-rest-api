@@ -35,7 +35,7 @@ public class OveralStats {
       this.rounds += perSeasonStats.getRounds();
       this.matches += perSeasonStats.getRegularMatches() + perSeasonStats.getTieBreakMatches();
       this.sets += perSeasonStats.getRegularMatches() * 2;
-      this.sets += perSeasonStats.getTieBreakMatches();
+      this.sets += perSeasonStats.getTieBreakMatches() * 3;
       this.points += perSeasonStats.getPoints();
       overalPlayersAttendicesMap.putAll(perSeasonStats.getPlayersAttendicesMap());
     }
