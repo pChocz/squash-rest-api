@@ -45,4 +45,12 @@ public class JsonHallOfFameSeason {
   @SerializedName("pc")
   private String pretendersCupWinner;
 
+  @JsonProperty("all")
+  @SerializedName("all")
+  private String allRoundsAttendees;
+
+  @JsonProperty("cov")
+  @SerializedName("cov")
+  private String coviders;
+
 }

@@ -72,6 +72,14 @@ public class HallOfFameSeason {
   @Column(name = "pretenders_cup")
   private String pretendersCupWinner;
 
+  @Setter
+  @Column(name = "covid")
+  private String coviders;
+
+  @Setter
+  @Column(name = "all_rounds_attendees")
+  private String allRoundsAttendees;
+
   public HallOfFameSeason(final int seasonNumber) {
     this.seasonNumber = seasonNumber;
   }

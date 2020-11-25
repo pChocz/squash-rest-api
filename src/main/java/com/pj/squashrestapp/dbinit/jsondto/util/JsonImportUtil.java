@@ -113,6 +113,8 @@ public class JsonImportUtil {
     hallOfFameSeason.setCup3rdPlace(jsonHallOfFameSeason.getCup3rdPlace());
     hallOfFameSeason.setSuperCupWinner(jsonHallOfFameSeason.getSuperCupWinner());
     hallOfFameSeason.setPretendersCupWinner(jsonHallOfFameSeason.getPretendersCupWinner());
+    hallOfFameSeason.setCoviders(jsonHallOfFameSeason.getCoviders());
+    hallOfFameSeason.setAllRoundsAttendees(jsonHallOfFameSeason.getAllRoundsAttendees());
     return hallOfFameSeason;
   }
 

@@ -13,4 +13,7 @@ public enum Trophy {
   SUPER_CUP,
   PRETENDERS_CUP,
 
+  COVID,
+  ALL_ROUNDS_ATTENDEE
+
 }

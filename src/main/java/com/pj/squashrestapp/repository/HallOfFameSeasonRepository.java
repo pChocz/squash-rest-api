@@ -25,6 +25,8 @@ public interface HallOfFameSeasonRepository extends JpaRepository<HallOfFameSeas
               OR hof.cup3rdPlace LIKE :playerName
               OR hof.superCupWinner LIKE :playerName
               OR hof.pretendersCupWinner LIKE :playerName
+              OR hof.coviders LIKE CONCAT('%',:playerName,'%')
+              OR hof.allRoundsAttendees LIKE CONCAT('%',:playerName,'%')
             ORDER BY hof.seasonNumber DESC
           """)
   @EntityGraph(attributePaths = {

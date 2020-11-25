@@ -52,6 +52,20 @@ public class TrophiesWonForLeague {
         trophiesWonForSeason.addTrophy(Trophy.PRETENDERS_CUP);
       }
 
+      if (hallOfFameSeason.getCoviders() != null) {
+        final List<String> seasonCoviders = List.of(hallOfFameSeason.getCoviders().split("\\|"));
+        if (seasonCoviders.contains(player.getUsername())) {
+          trophiesWonForSeason.addTrophy(Trophy.COVID);
+        }
+      }
+
+      if (hallOfFameSeason.getAllRoundsAttendees() != null) {
+        final List<String> seasonAllRoundsAttendees = List.of(hallOfFameSeason.getAllRoundsAttendees().split("\\|"));
+        if (seasonAllRoundsAttendees.contains(player.getUsername())) {
+          trophiesWonForSeason.addTrophy(Trophy.ALL_ROUNDS_ATTENDEE);
+        }
+      }
+
       this.trophiesPerSeason.add(trophiesWonForSeason);
     }
 

@@ -75,6 +75,8 @@ public class JsonExportUtil {
       jsonHallOfFameSeason.setCup3rdPlace(hallOfFameSeason.getCup3rdPlace());
       jsonHallOfFameSeason.setSuperCupWinner(hallOfFameSeason.getSuperCupWinner());
       jsonHallOfFameSeason.setPretendersCupWinner(hallOfFameSeason.getPretendersCupWinner());
+      jsonHallOfFameSeason.setCoviders(hallOfFameSeason.getCoviders());
+      jsonHallOfFameSeason.setAllRoundsAttendees(hallOfFameSeason.getAllRoundsAttendees());
 
       jsonHallOfFameSeasons.add(jsonHallOfFameSeason);
     }
