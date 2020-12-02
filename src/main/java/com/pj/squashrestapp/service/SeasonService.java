@@ -117,8 +117,19 @@ public class SeasonService {
 
   public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
     // first - get all the players that have already played in the season (need to extract entire season scoreboard)
-    final SeasonScoreboardDto seasonScoreboardDto = overalScoreboard(seasonUuid);
-    seasonScoreboardDto.sortByTotalPoints();
+    final SeasonScoreboardDto currentSeasonScoreboardDto = overalScoreboard(seasonUuid);
+
+    final SeasonScoreboardDto seasonScoreboardDto;
+    if (currentSeasonScoreboardDto.getFinishedRounds() == 0
+        && currentSeasonScoreboardDto.previousSeasonExists()) {
+      seasonScoreboardDto = overalScoreboard(currentSeasonScoreboardDto.getPreviousSeasonUuid());
+      seasonScoreboardDto.sortByCountedPoints();
+
+    } else {
+      seasonScoreboardDto = overalScoreboard(seasonUuid);
+      seasonScoreboardDto.sortByTotalPoints();
+    }
+
     final List<PlayerDto> seasonPlayersSorted = seasonScoreboardDto
             .getSeasonScoreboardRows()
             .stream()

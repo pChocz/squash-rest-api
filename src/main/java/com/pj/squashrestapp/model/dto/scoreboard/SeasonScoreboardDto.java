@@ -97,4 +97,12 @@ public class SeasonScoreboardDto {
             .reversed());
   }
 
+  public boolean previousSeasonExists() {
+    return this.previousSeasonUuid != null;
+  }
+
+  public boolean nextSeasonExists() {
+    return this.nextSeasonUuid != null;
+  }
+
 }
