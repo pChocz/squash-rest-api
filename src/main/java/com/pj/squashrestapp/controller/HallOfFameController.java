@@ -2,7 +2,6 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.TrophiesWonForLeague;
 import com.pj.squashrestapp.service.HallOfFameService;
-import com.pj.squashrestapp.service.PlayersRoundsStatsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,6 @@ import java.util.UUID;
 public class HallOfFameController {
 
   private final HallOfFameService hallOfFameService;
-  private final PlayersRoundsStatsService playersRoundsStatsService;
 
   @GetMapping(value = "/{playerUuid}")
   @ResponseBody

@@ -64,6 +64,7 @@ public class LeagueController {
     return allLeaguesGeneralInfo;
   }
 
+
   @GetMapping(value = "/all-logos")
   @ResponseBody
   Map<UUID, byte[]> extractAllLeaguesLogosMap() {
@@ -74,7 +75,7 @@ public class LeagueController {
   }
 
 
-  @GetMapping(value = "/{leagueUuid}/players-general")
+  @GetMapping(value = "/players/{leagueUuid}")
   @ResponseBody
   List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
     final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
@@ -82,9 +83,9 @@ public class LeagueController {
   }
 
 
-  @GetMapping(value = "/{leagueUuid}/stats")
+  @GetMapping(value = "/stats/{leagueUuid}")
   @ResponseBody
-//  @PreAuthorize("hasRoleForLeague(#leagueId, 'PLAYER')")
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
 
     try {
@@ -100,7 +101,7 @@ public class LeagueController {
 
 
   @ApiOperation(value = "Update league logo", authorizations = {@Authorization(value = "jwtToken")})
-  @PutMapping(value = "/{leagueUuid}/logo")
+  @PutMapping(value = "/logo/{leagueUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   void updateLeagueLogo(@PathVariable final UUID leagueUuid,

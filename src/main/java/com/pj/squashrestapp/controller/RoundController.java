@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -38,7 +39,7 @@ public class RoundController {
 
   @PostMapping
   @ResponseBody
-//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+  @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
   UUID newRound(
           @RequestBody
           @RequestParam final int roundNumber,
@@ -50,21 +51,23 @@ public class RoundController {
     return round.getUuid();
   }
 
-  @PutMapping
-//  @PreAuthorize("hasRoleForLeague(#leagueId, 'MODERATOR')")
+
+  @PutMapping(value = "{roundUuid}/{finishedState}")
+  @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void updateRoundFinishState(
-          @RequestParam("roundUuid") final UUID roundUuid,
-          @RequestParam("finishedState") final boolean finishedState) {
+          @PathVariable final UUID roundUuid,
+          @PathVariable final boolean finishedState) {
     roundService.updateRoundFinishedState(roundUuid, finishedState);
     log.info("update round {}: finished state: {}", roundUuid, finishedState);
   }
 
 
-  @GetMapping(value = "{roundUuid}/leagueUuid")
+  @GetMapping(value = "league-uuid/{roundUuid}")
   @ResponseBody
   UUID getLeagueUuidFromRoundUuid(@PathVariable final UUID roundUuid) {
     return roundService.extractLeagueUuid(roundUuid);
   }
+
 
   @DeleteMapping(value = "/{roundUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)

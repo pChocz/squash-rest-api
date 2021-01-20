@@ -1,9 +1,7 @@
 package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
-import com.pj.squashrestapp.model.BlacklistedToken;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -11,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import javax.servlet.FilterChain;
@@ -30,20 +27,14 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PR
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-  private final UserDetailsService userDetailsService;
   private final SecretKeyHolder secretKeyHolder;
-  private final BlacklistedTokenRepository blacklistedTokenRepository;
   private final PlayerRepository playerRepository;
 
   public JwtAuthorizationFilter(final AuthenticationManager authManager,
-                                final UserDetailsService userDetailsService,
                                 final SecretKeyHolder secretKeyHolder,
-                                final BlacklistedTokenRepository blacklistedTokenRepository,
                                 final PlayerRepository playerRepository) {
     super(authManager);
-    this.userDetailsService = userDetailsService;
     this.secretKeyHolder = secretKeyHolder;
-    this.blacklistedTokenRepository = blacklistedTokenRepository;
     this.playerRepository = playerRepository;
   }
 
@@ -70,7 +61,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
    * - UsernameNotFoundException  -> Token is valid but username does not exist
    * - ExpiredJwtException        -> Token has expired, obviously
    * - MalformedJsonException     -> Token has wrong JSON syntax
-   * - TokenBlacklistedException  -> Token has been blacklisted
    * </pre>
    */
   @SuppressWarnings("ProhibitedExceptionCaught")
@@ -84,12 +74,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
 
     try {
-      // checking if token is on the blacklist
-      final BlacklistedToken tokenFromBlacklist = blacklistedTokenRepository.findByToken(token);
-      if (tokenFromBlacklist != null) {
-        throw new TokenBlacklistedException("Token has been blacklisted, it cannot be authenticated");
-      }
-
       final Claims claims = Jwts
               .parserBuilder()
               .setSigningKey(secretKeyHolder.getSecretKey())

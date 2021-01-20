@@ -2,7 +2,6 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
-import com.pj.squashrestapp.service.PerLeagueMatchStats;
 import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,28 +32,6 @@ public class MatchController {
 
   private final MatchService matchService;
 
-  @GetMapping(value = "/my-count")
-  @ResponseBody
-  List<PerLeagueMatchStats> getMyMatchesCountPerPlayers() {
-    return matchService.getMyMatchesCountPerPlayers();
-  }
-
-  @GetMapping(value = "/pageable/leagues/{leagueUuid}/players/{playersUuids}")
-  @ResponseBody
-  MatchesSimplePaginated matchesPageable(
-          @PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
-          @PathVariable final UUID leagueUuid,
-          @PathVariable final UUID[] playersUuids,
-          @RequestParam(required = false) final UUID seasonUuid,
-          @RequestParam(required = false) final Integer groupNumber) {
-
-    final long startTime = System.nanoTime();
-
-    final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
-
-    TimeLogUtil.logQuery(startTime, "Extracted matches paginated");
-    return matchesPaginated;
-  }
 
   @PutMapping(value = "/{matchUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -70,6 +46,24 @@ public class MatchController {
                          @RequestParam final Integer newScore) {
 
     matchService.modifySingleScore(matchUuid, setNumber, player, newScore);
+  }
+
+
+  @GetMapping(value = "/for-league-for-players/{leagueUuid}/{playersUuids}")
+  @ResponseBody
+  MatchesSimplePaginated matchesPageable(
+          @PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
+          @PathVariable final UUID leagueUuid,
+          @PathVariable final UUID[] playersUuids,
+          @RequestParam(required = false) final UUID seasonUuid,
+          @RequestParam(required = false) final Integer groupNumber) {
+
+    final long startTime = System.nanoTime();
+
+    final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+
+    TimeLogUtil.logQuery(startTime, "Extracted matches paginated");
+    return matchesPaginated;
   }
 
 }

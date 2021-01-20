@@ -1,9 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.model.HallOfFameSeason;
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.dto.LeagueDto;
 import com.pj.squashrestapp.model.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.TrophiesWonForLeague;
@@ -50,7 +48,6 @@ public class HallOfFameService {
       final TrophiesWonForLeague trophiesWonForLeague = new TrophiesWonForLeague(playerDto, league, hallOfFameForLeague);
       trophiesWonForLeagues.add(trophiesWonForLeague);
     }
-
 
     return trophiesWonForLeagues;
   }

@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -27,31 +26,12 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/bonusPoints")
+@RequestMapping("/bonus-points")
 @RequiredArgsConstructor
 public class BonusPointController {
 
   private final BonusPointService bonusPointService;
 
-
-  @GetMapping("/season/player")
-  @ResponseBody
-  List<BonusPoint> extractForSeasonForPlayer(@RequestParam final UUID playerUuid,
-                                             @RequestParam final UUID seasonUuid) {
-    final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(playerUuid, seasonUuid);
-    return bonusPoints;
-  }
-
-  @GetMapping("/season/{seasonUuid}")
-  @ResponseBody
-  List<BonusPointsDto> extractForSeason(@PathVariable final UUID seasonUuid) {
-    final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(seasonUuid);
-    final List<BonusPointsDto> bonusPointsForSeason = bonusPoints
-            .stream()
-            .map(BonusPointsDto::new)
-            .collect(Collectors.toList());
-    return bonusPointsForSeason;
-  }
 
   @PostMapping
   @ResponseBody
@@ -64,12 +44,25 @@ public class BonusPointController {
     return bonusPoint;
   }
 
+
   @DeleteMapping("/{uuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForBonusPoint(#uuid, 'MODERATOR')")
   void apply(@PathVariable final UUID uuid) {
     bonusPointService.deleteBonusPoint(uuid);
     log.info("Bonus Point has been removed");
+  }
+
+
+  @GetMapping("/seasons/{seasonUuid}")
+  @ResponseBody
+  List<BonusPointsDto> extractForSeason(@PathVariable final UUID seasonUuid) {
+    final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(seasonUuid);
+    final List<BonusPointsDto> bonusPointsForSeason = bonusPoints
+            .stream()
+            .map(BonusPointsDto::new)
+            .collect(Collectors.toList());
+    return bonusPointsForSeason;
   }
 
 }

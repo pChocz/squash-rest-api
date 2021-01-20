@@ -5,6 +5,7 @@ import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.SeasonDto;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -37,32 +37,13 @@ public class SeasonController {
   private final SeasonService seasonService;
 
 
-  @PostMapping
-  @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  SeasonDto createNewSeason(@RequestParam final int seasonNumber,
-                            @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
-                            @RequestParam final UUID leagueUuid) {
-
-    final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid);
-    return new SeasonDto(season);
-  }
-
-
   @GetMapping(value = "/{seasonUuid}")
-//  @PreAuthorize("isAdmin()")
   @ResponseBody
   SeasonDto extractSeasonDto(@PathVariable final UUID seasonUuid) {
     final SeasonDto seasonDto = seasonService.extractSeasonDtoByUuid(seasonUuid);
     return seasonDto;
   }
 
-  @GetMapping(value = "/{seasonUuid}/players")
-  @ResponseBody
-  List<PlayerDto> extractSeasonPlayers(@PathVariable final UUID seasonUuid) {
-    final List<PlayerDto> seasonPlayers = seasonService.extractSeasonPlayers(seasonUuid);
-    return seasonPlayers;
-  }
 
   @DeleteMapping(value = "/{seasonUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -70,6 +51,35 @@ public class SeasonController {
   void deleteRound(@PathVariable final UUID seasonUuid) {
     seasonService.deleteSeason(seasonUuid);
     log.info("Season {} has been deleted", seasonUuid);
+  }
+
+
+  @PostMapping
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  SeasonDto createNewSeason(@RequestParam final int seasonNumber,
+                            @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
+                            @RequestParam final UUID leagueUuid) {
+    final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid);
+    return new SeasonDto(season);
+  }
+
+
+  @GetMapping(value = "/players-sorted/{seasonUuid}")
+  @ResponseBody
+  List<PlayerDto> leaguePlayersSeasonSorted(@PathVariable final UUID seasonUuid) {
+    final long startTime = System.nanoTime();
+    final List<PlayerDto> players = seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonUuid);
+    TimeLogUtil.logFinish(startTime);
+    return players;
+  }
+
+
+  @GetMapping(value = "/players/{seasonUuid}")
+  @ResponseBody
+  List<PlayerDto> extractSeasonPlayers(@PathVariable final UUID seasonUuid) {
+    final List<PlayerDto> seasonPlayers = seasonService.extractSeasonPlayers(seasonUuid);
+    return seasonPlayers;
   }
 
 }

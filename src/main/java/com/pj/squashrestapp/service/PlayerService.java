@@ -5,7 +5,6 @@ import com.pj.squashrestapp.config.WrongSignupDataException;
 import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
-import com.pj.squashrestapp.model.BlacklistedToken;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.PasswordResetToken;
@@ -14,7 +13,6 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
-import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -55,7 +53,6 @@ public class PlayerService {
   private final LeagueRepository leagueRepository;
   private final AuthorityRepository authorityRepository;
   private final RoleForLeagueRepository roleForLeagueRepository;
-  private final BlacklistedTokenRepository blacklistedTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
 
@@ -130,34 +127,9 @@ public class PlayerService {
   }
 
   public void resendVerificationToken(final Player player) {
-    // not implemented yet
+    // todo: implement!
   }
 
-
-  public void blacklistToken(final String bearerToken) {
-    final String token = bearerToken.replace(TokenConstants.TOKEN_PREFIX, "");
-    final String tokenPayload = token.split("\\.")[1];
-    final String tokenPayloadDecoded = new String(Base64.getDecoder().decode(tokenPayload));
-    final Properties tokenProperties = new Gson().fromJson(tokenPayloadDecoded, Properties.class);
-    final String expAsString = tokenProperties.getProperty(TokenConstants.EXPIRATION_PREFIX);
-    final long expSeconds = Long.valueOf(expAsString);
-    final LocalDateTime expirationDateTime = GeneralUtil.toLocalDateTimeUtc(expSeconds);
-
-    final BlacklistedToken tokenToBlacklist = new BlacklistedToken();
-    tokenToBlacklist.setToken(token);
-    tokenToBlacklist.setExpirationDateTime(expirationDateTime);
-    blacklistedTokenRepository.save(tokenToBlacklist);
-  }
-
-  public int removeExpiredBlacklistedTokensFromDb() {
-    final LocalDateTime now = LocalDateTime.now(UTC_ZONE_ID);
-
-    final List<BlacklistedToken> expiredTokensToRemoveFromDb = blacklistedTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final int tokensCount = expiredTokensToRemoveFromDb.size();
-    blacklistedTokenRepository.deleteAll(expiredTokensToRemoveFromDb);
-
-    return tokensCount;
-  }
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();

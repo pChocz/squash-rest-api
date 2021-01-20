@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,11 +35,6 @@ public class BonusPointService {
     return bonusPoints;
   }
 
-  public List<BonusPoint> extractBonusPoints(final UUID playerUuid, final UUID seasonUuid) {
-    final List<BonusPoint> bonusPoints = bonusPointRepository.findByPlayerUuidAndSeasonUuid(playerUuid, seasonUuid);
-    return bonusPoints;
-  }
-
   public BonusPointsAggregatedForSeason extractBonusPointsAggregatedForSeason(final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
     final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(seasonUuid, bonusPoints);
@@ -55,9 +49,9 @@ public class BonusPointService {
 
   @Transactional
   public BonusPoint applyBonusPointsForTwoPlayers(final UUID winnerUuid,
-                                                        final UUID looserUuid,
-                                                        final UUID seasonUuid,
-                                                        final int points) {
+                                                  final UUID looserUuid,
+                                                  final UUID seasonUuid,
+                                                  final int points) {
     final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
     final Player winner = playerRepository.findByUuid(winnerUuid);
     final Player looser = playerRepository.findByUuid(looserUuid);

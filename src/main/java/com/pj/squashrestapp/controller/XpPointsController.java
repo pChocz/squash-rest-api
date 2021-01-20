@@ -17,43 +17,19 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/xpPoints")
+@RequestMapping("/xp-points")
 @RequiredArgsConstructor
 public class XpPointsController {
 
   private final XpPointsService xpPointsService;
 
-//  @GetMapping
-//  @ResponseBody
-//  Map<String, Collection<Integer>> allMultimap() {
-//    final long startTime = System.nanoTime();
-//
-//    final Map<String, Collection<Integer>> multimap = xpPointsService.buildAllAsIntegerMultimap().asMap();
-//
-//    TimeLogUtil.logFinish(startTime);
-//    return multimap;
-//  }
-//
-//  @GetMapping(value = "/{split}")
-//  @ResponseBody
-//  List<Integer> listForSplit(@PathVariable("split") final String split) {
-//    final long startTime = System.nanoTime();
-//
-//    final List<Integer> list = xpPointsService.buildForGivenSplit(split);
-//
-//    TimeLogUtil.logFinish(startTime);
-//    return list;
-//  }
 
-  @GetMapping(value = "/all-for-table")
+  @GetMapping
   @ResponseBody
   List<XpPointsForTable> extractAllForTable() {
     final long startTime = System.nanoTime();
-
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
-
     TimeLogUtil.logQuery(startTime, "XP points");
-
     return xpPointsForTableList;
   }
 

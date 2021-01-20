@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.config.security.method;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
@@ -15,10 +15,10 @@ import org.springframework.security.config.annotation.method.configuration.Globa
         prePostEnabled = true,
         securedEnabled = true,
         jsr250Enabled = true)
+@AllArgsConstructor
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-  @Autowired
-  ApplicationContext applicationContext;
+  private final ApplicationContext applicationContext;
 
   @Override
   protected MethodSecurityExpressionHandler createExpressionHandler() {
@@ -28,4 +28,3 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
   }
 
 }
-

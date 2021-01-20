@@ -38,8 +38,7 @@ public class InitializerController {
   @ResponseBody
   @PreAuthorize("isAdmin()")
   void createFakeLeague(
-          @RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile)
-          throws IOException {
+          @RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile) throws IOException {
 
     final String jsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
     final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {

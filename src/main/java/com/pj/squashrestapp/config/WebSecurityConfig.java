@@ -5,9 +5,8 @@ import com.pj.squashrestapp.config.security.accessexceptionhandler.Authenticatio
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
-import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -35,19 +34,12 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebSecurity
 @EnableWebMvc
 @ComponentScan
+@AllArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  @Autowired
-  UserDetailsService userDetailsService;
-
-  @Autowired
-  BlacklistedTokenRepository blacklistedTokenRepository;
-
-  @Autowired
-  PlayerRepository playerRepository;
-
-  @Autowired
-  SecretKeyHolder secretKeyHolder;
+  private final UserDetailsService userDetailsService;
+  private final PlayerRepository playerRepository;
+  private final SecretKeyHolder secretKeyHolder;
 
   @Override
   protected void configure(final HttpSecurity httpSecurity) throws Exception {
@@ -61,20 +53,19 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*").permitAll()
             .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
             // allowing regular endpoints to be accessible
-            .antMatchers(HttpMethod.GET, "/players/confirmRegistration**").permitAll()
-            .antMatchers(HttpMethod.GET, "/token/passwordReset/**").permitAll()
-            .antMatchers(HttpMethod.POST, "/players/signUp").permitAll()
-            .antMatchers(HttpMethod.POST, "/players/requestPasswordReset").permitAll()
-            .antMatchers(HttpMethod.POST, "/players/resetPassword").permitAll()
-            .antMatchers(HttpMethod.POST, "/players/confirmRegistration").permitAll()
+            .antMatchers(HttpMethod.GET, "/access/reset-password-player/**").permitAll()
+            .antMatchers(HttpMethod.POST, "/access/sign-up").permitAll()
+            .antMatchers(HttpMethod.POST, "/access/request-password-reset").permitAll()
+            .antMatchers(HttpMethod.POST, "/access/confirm-password-reset").permitAll()
+            .antMatchers(HttpMethod.POST, "/access/confirm-registration").permitAll()
             .antMatchers(HttpMethod.POST, "/db-initializers/**").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
             .anyRequest().authenticated();
-//            .anyRequest().permitAll();
+    // anyRequest().permitAll();
 
     // authentication and authorization filters
     httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), userDetailsService, secretKeyHolder, blacklistedTokenRepository, playerRepository));
+            .addFilter(new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
 
     // this disables session creation on Spring Security
     httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

@@ -41,14 +41,13 @@ public class RoundService {
 
   @Transactional
   public Round createRound(final int roundNumber, final LocalDate roundDate, final UUID seasonUuid, final List<UUID[]> playersUuids) {
-    final UUID[] allPlayersIds = playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
+    final UUID[] allPlayersUuids = playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
 
-    // repos queries from DB
-    final List<Player> allPlayersOrderedById = playerRepository.findByUuids(allPlayersIds);
+    final List<Player> allPlayers = playerRepository.findByUuids(allPlayersUuids);
 
-    final List<Player> allPlayersOrderedProperly = Arrays
-            .stream(allPlayersIds)
-            .map(uuid -> allPlayersOrderedById
+    final List<Player> allPlayersOrdered = Arrays
+            .stream(allPlayersUuids)
+            .map(uuid -> allPlayers
                     .stream()
                     .filter(p -> p.getUuid().equals(uuid))
                     .findFirst()
@@ -59,12 +58,13 @@ public class RoundService {
 
     final List<List<Player>> playersPerGroup = playersUuids
             .stream()
-            .map(playersId -> Arrays
-                    .stream(playersId)
+            .filter(uuids -> uuids.length > 0)
+            .map(uuid -> Arrays
+                    .stream(uuid)
                     .collect(Collectors.toList()))
-            .map(idsForCurrentGroup -> allPlayersOrderedProperly
+            .map(uuidsForCurrentGroup -> allPlayersOrdered
                     .stream()
-                    .filter(player -> idsForCurrentGroup.contains(player.getUuid()))
+                    .filter(player -> uuidsForCurrentGroup.contains(player.getUuid()))
                     .collect(Collectors.toList()))
             .collect(Collectors.toList());
 

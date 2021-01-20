@@ -45,7 +45,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -160,22 +159,6 @@ public class LeagueService {
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
   }
 
-//  private String extractLeagueLogo(final Blob blob) {
-//    byte[] decodedBytes = new byte[0];
-//    if (blob != null) {
-//      try {
-//        final int length = (int) blob.length();
-//        final byte[] bytes = blob.getBytes(1, length);
-//        decodedBytes = Base64.getDecoder().decode(bytes);
-//        blob.free();
-//      } catch (final SQLException e) {
-//        log.error("SQL Exception when trying to encode league logo", e);
-//      }
-//    }
-//
-//    return Base64.getEncoder().encodeToString(decodedBytes);
-//  }
-
   private List<PerSeasonStats> buildPerSeasonStatsList(final League league) {
     final List<PerSeasonStats> perSeasonStatsList = new ArrayList<>();
 
@@ -286,7 +269,6 @@ public class LeagueService {
 
     return playersDtos;
   }
-
 
   public Map<UUID, byte[]> extractAllLogos() {
     final Map<UUID, byte[]> leagueLogosMap = new HashMap<>();

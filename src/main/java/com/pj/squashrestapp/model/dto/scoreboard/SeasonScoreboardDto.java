@@ -51,6 +51,14 @@ public class SeasonScoreboardDto {
             .collect(Collectors.toList());
   }
 
+  private int getNumberOfRoundsThatCount() {
+    return (finishedRounds <= 4)
+            ? finishedRounds
+            : (finishedRounds <= 8)
+            ? finishedRounds - 1
+            : finishedRounds - 2;
+  }
+
   public SeasonScoreboardDto(final Season season, final UUID previousSeasonUuid, final UUID nextSeasonUuid) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
@@ -71,14 +79,6 @@ public class SeasonScoreboardDto {
             .stream()
             .map(RoundDto::new)
             .collect(Collectors.toList());
-  }
-
-  private int getNumberOfRoundsThatCount() {
-    return (finishedRounds <= 4)
-            ? finishedRounds
-            : (finishedRounds <= 8)
-            ? finishedRounds - 1
-            : finishedRounds - 2;
   }
 
   public void sortByCountedPoints() {
@@ -103,6 +103,12 @@ public class SeasonScoreboardDto {
 
   public boolean nextSeasonExists() {
     return this.nextSeasonUuid != null;
+  }
+
+  @Override
+  public String toString() {
+    return "S: " + this.getSeason().getSeasonNumber()
+           + "\t| " + this.getSeason().getLeagueName();
   }
 
 }

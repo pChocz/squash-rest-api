@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPIRATION_TIME;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_EXPIRATION_TIME;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPOSE_HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
@@ -80,7 +80,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             .claim("uid", principal.getUuid())
             .claim("pid", principal.getPasswordSessionUuid())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+            .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
             .signWith(secretKeyHolder.getSecretKey())
             .compact();
 

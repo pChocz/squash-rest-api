@@ -1,11 +1,9 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.model.BlacklistedToken;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
-import com.pj.squashrestapp.repository.BlacklistedTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
@@ -27,7 +25,6 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 @RequiredArgsConstructor
 public class TokenService {
 
-  private final BlacklistedTokenRepository blacklistedTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final PlayerRepository playerRepository;
@@ -54,13 +51,11 @@ public class TokenService {
   public void removeExpiredTokensFromDb() {
     final LocalDateTime now = LocalDateTime.now(UTC_ZONE_ID);
 
-    final List<BlacklistedToken> expiredBlacklistedTokens = blacklistedTokenRepository.findAllByExpirationDateTimeBefore(now);
     final List<VerificationToken> expiredVerificationTokens = verificationTokenRepository.findAllByExpirationDateTimeBefore(now);
     final List<PasswordResetToken> expiredPasswordResetTokens = passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final int tokensCount = expiredBlacklistedTokens.size() + expiredBlacklistedTokens.size() + expiredPasswordResetTokens.size();
+    final int tokensCount = expiredVerificationTokens.size() + expiredPasswordResetTokens.size();
 
     if (tokensCount > 0) {
-      blacklistedTokenRepository.deleteAll(expiredBlacklistedTokens);
       verificationTokenRepository.deleteAll(expiredVerificationTokens);
       passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
       log.info("Succesfully removed {} expired tokens.", tokensCount);

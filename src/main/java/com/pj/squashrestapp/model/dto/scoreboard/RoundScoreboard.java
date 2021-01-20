@@ -31,15 +31,12 @@ public class RoundScoreboard {
   private final int roundNumber;
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT, timezone = "UTC")
   private final LocalDate roundDate;
-
-  private boolean finishedState;
-
-  private UUID previousRoundUuid;
-  private UUID nextRoundUuid;
-
   @JsonIgnore
   private final List<Integer> playersPerGroup;
   private final List<RoundGroupScoreboard> roundGroupScoreboards;
+  private boolean finishedState;
+  private UUID previousRoundUuid;
+  private UUID nextRoundUuid;
 
   public RoundScoreboard(final Round round, final UUID previousRoundUuid, final UUID nextRoundUuid) {
     this.previousRoundUuid = previousRoundUuid;
@@ -92,6 +89,14 @@ public class RoundScoreboard {
         scoreboardRow.setXpEarned(xpPoints.get(i++));
       }
     }
+  }
+
+  @Override
+  public String toString() {
+    return "R: "
+           + this.getRoundNumber()
+           + "\t| S: " + this.getSeasonNumber()
+           + "\t| " + this.getLeagueName();
   }
 
 }

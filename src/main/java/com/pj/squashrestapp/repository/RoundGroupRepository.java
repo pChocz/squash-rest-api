@@ -18,6 +18,7 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long> {
               WHERE l.uuid = :leagueUuid
               AND (m.firstPlayer.uuid = :playerUuid 
                OR m.secondPlayer.uuid = :playerUuid)
+              AND r.finished = true
           """)
   List<Long> retrieveRoundGroupsIdsForPlayer(UUID leagueUuid, UUID playerUuid);
 
