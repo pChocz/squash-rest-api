@@ -6,7 +6,7 @@ import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -34,7 +34,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableWebSecurity
 @EnableWebMvc
 @ComponentScan
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService userDetailsService;
