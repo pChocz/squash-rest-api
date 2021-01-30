@@ -93,10 +93,7 @@ public class RoundScoreboard {
 
   @Override
   public String toString() {
-    return "R: "
-           + this.getRoundNumber()
-           + "\t| S: " + this.getSeasonNumber()
-           + "\t| " + this.getLeagueName();
+    return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
   }
 
 }

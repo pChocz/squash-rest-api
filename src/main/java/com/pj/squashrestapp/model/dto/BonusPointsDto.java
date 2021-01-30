@@ -29,4 +29,9 @@ public final class BonusPointsDto {
     this.points = bonusPoint.getPoints();
   }
 
+  @Override
+  public String toString() {
+    return winner + " | " + looser + " | " + points;
+  }
+
 }

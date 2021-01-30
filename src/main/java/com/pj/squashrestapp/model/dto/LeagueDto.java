@@ -34,4 +34,9 @@ public class LeagueDto {
             .collect(Collectors.toCollection(TreeSet::new));
   }
 
+  @Override
+  public String toString() {
+    return leagueName;
+  }
+
 }

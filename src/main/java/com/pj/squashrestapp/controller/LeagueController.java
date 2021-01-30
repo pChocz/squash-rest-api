@@ -44,9 +44,9 @@ public class LeagueController {
   LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
 
     try {
-      final long startTime = System.nanoTime();
+//      final long startTime = System.nanoTime();
       final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
-      TimeLogUtil.logQuery(startTime, "Single league general info: " + leagueGeneralInfo.getLeagueName());
+//      TimeLogUtil.logQuery(startTime, "Single league general info: " + leagueGeneralInfo.getLeagueName());
       return leagueGeneralInfo;
 
     } catch (final NoSuchElementException e) {
@@ -58,9 +58,9 @@ public class LeagueController {
   @GetMapping(value = "/general-info")
   @ResponseBody
   List<LeagueDto> extractAllLeaguesGeneralInfo() {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
-    TimeLogUtil.logQuery(startTime, "All leagues general info");
+//    TimeLogUtil.logQuery(startTime, "All leagues general info");
     return allLeaguesGeneralInfo;
   }
 
@@ -68,9 +68,9 @@ public class LeagueController {
   @GetMapping(value = "/all-logos")
   @ResponseBody
   Map<UUID, byte[]> extractAllLeaguesLogosMap() {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final Map<UUID, byte[]> allLeaguesLogos = leagueService.extractAllLogos();
-    TimeLogUtil.logQuery(startTime, "All leagues logos");
+//    TimeLogUtil.logQuery(startTime, "All leagues logos");
     return allLeaguesLogos;
   }
 
@@ -89,9 +89,9 @@ public class LeagueController {
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
 
     try {
-      final long startTime = System.nanoTime();
+//      final long startTime = System.nanoTime();
       final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueUuid);
-      TimeLogUtil.logQuery(startTime, "League Stats: " + leagueStatsWrapper.getLeagueName());
+//      TimeLogUtil.logQuery(startTime, "League Stats: " + leagueStatsWrapper.getLeagueName());
       return leagueStatsWrapper;
 
     } catch (final NoSuchElementException e) {

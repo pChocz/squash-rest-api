@@ -130,34 +130,6 @@ public class RoundService {
     return roundGroup;
   }
 
-//  // this one will be deleted later
-//  public Round createRound(final int roundNumber, final LocalDate roundDate, final int seasonNumber, final Long leagueId, final List<Long[]> playersIds) {
-//    final Long[] allPlayersIds = playersIds.stream().flatMap(Arrays::stream).toArray(Long[]::new);
-//
-//    // repos queries from DB
-//    final List<Player> allPlayers = playerRepository.findByIds(allPlayersIds);
-//    final Season season = seasonRepository.findSeasonByNumberAndLeagueId(seasonNumber, leagueId);
-//
-//    final List<List<Player>> playersPerGroup = playersIds
-//            .stream()
-//            .map(playersId -> Arrays
-//                    .stream(playersId)
-//                    .collect(Collectors.toList()))
-//            .map(idsForCurrentGroup -> allPlayers
-//                    .stream()
-//                    .filter(player -> idsForCurrentGroup.contains(player.getId()))
-//                    .collect(Collectors.toList()))
-//            .collect(Collectors.toList());
-//
-//    final Round round = createRoundForSeasonWithGivenPlayers(roundNumber, roundDate, playersPerGroup);
-//    season.addRound(round);
-//
-//    // saving to DB
-//    roundRepository.save(round);
-//
-//    return round;
-//  }
-
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
     final Round round = roundRepository.findByUuid(roundUuid).orElseThrow();
     round.setFinished(finishedState);

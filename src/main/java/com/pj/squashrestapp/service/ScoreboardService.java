@@ -5,8 +5,6 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
-import com.pj.squashrestapp.repository.LeagueRepository;
-import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
@@ -19,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -30,9 +27,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ScoreboardService {
 
-  private final LeagueRepository leagueRepository;
   private final RoundRepository roundRepository;
-  private final MatchRepository matchRepository;
   private final SetResultRepository setResultRepository;
   private final XpPointsRepository xpPointsRepository;
 
@@ -104,35 +99,5 @@ public class ScoreboardService {
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
   }
-
-
-//  public Scoreboard buildScoreboardForLeagueForPlayers(final UUID leagueUuid, final Long[] playersIds) {
-//    final List<SetResult> setResults = setResultRepository.fetchBySeveralPlayersIdsAndLeagueId(leagueUuid, playersIds);
-//
-//    if (setResults.isEmpty()) {
-//      return new Scoreboard(new ArrayList<>());
-//    }
-//
-//    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
-//    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-//
-//    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-//    final Scoreboard scoreboard = new Scoreboard(matches);
-//
-//    return scoreboard;
-//  }
-//
-//
-//  public Scoreboard buildScoreboardForLeagueForSinglePlayer(final UUID leagueUuid, final Long playerId) {
-//    final List<SetResult> setResults = setResultRepository.fetchByOnePlayerIdAndLeagueId(leagueUuid, playerId);
-//    final Long leagueId = leagueRepository.findIdByUuid(leagueUuid);
-//    final League leagueFetched = EntityGraphBuildUtil.reconstructLeague(setResults, leagueId);
-//
-//    final List<MatchDto> matches = MatchExtractorUtil.extractAllMatches(leagueFetched);
-//    final Scoreboard scoreboard = new Scoreboard(matches);
-//    scoreboard.makeItSinglePlayerScoreboard(playerId);
-//
-//    return scoreboard;
-//  }
 
 }

@@ -11,7 +11,9 @@ import java.util.List;
  */
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
 
+
   VerificationToken findByToken(String token);
+
 
   List<VerificationToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
 

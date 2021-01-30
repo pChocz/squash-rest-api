@@ -42,4 +42,9 @@ public class SeasonDto implements Comparable<SeasonDto> {
             .compare(this, that);
   }
 
+  @Override
+  public String toString() {
+    return "S: " + seasonNumber + " | " + leagueName + " | uuid: " + seasonUuid;
+  }
+
 }

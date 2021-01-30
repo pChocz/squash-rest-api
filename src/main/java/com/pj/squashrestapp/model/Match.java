@@ -106,7 +106,7 @@ public class Match implements Identifiable, Comparable<Match> {
 
   @Override
   public String toString() {
-    return "[" + getId() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
+    return "[" + getUuid() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
   }
 
   public List<SetResult> getSetResultsOrdered() {

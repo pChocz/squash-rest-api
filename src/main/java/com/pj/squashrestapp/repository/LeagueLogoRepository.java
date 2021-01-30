@@ -13,6 +13,7 @@ import java.util.UUID;
  */
 public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
 
+
   @Override
   @EntityGraph(attributePaths = {
           "league.uuid",
@@ -23,8 +24,8 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
   @Query("""
           SELECT ll.picture FROM LeagueLogo ll
             JOIN League l ON l.leagueLogo = ll
-            WHERE l.uuid = :leagueUuid
-          """)
+              WHERE l.uuid = :leagueUuid
+              """)
   byte[] extractLogoBlob(UUID leagueUuid);
 
 }

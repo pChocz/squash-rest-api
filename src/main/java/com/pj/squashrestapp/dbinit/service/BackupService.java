@@ -67,7 +67,7 @@ public class BackupService {
 
   @Transactional
   public List<JsonLeague> allLeagues() {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final List<UUID> allLeaguesUuids = leagueRepository.findUuids();
 
     log.info("Backing up {} leagues", allLeaguesUuids.size());
@@ -78,21 +78,21 @@ public class BackupService {
             .collect(Collectors.toList());
 
     log.info("Finished backing up all leagues");
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
     return jsonLeagues;
   }
 
   @Transactional
   public JsonLeague leagueToJson(final UUID leagueUuid) {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final String leagueName = leagueRepository.findByUuid(leagueUuid).orElseThrow().getName();
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
     final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints);
     log.info("\tFinished backing up league -> {}", league.getName());
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
     return leagueJson;
   }
 

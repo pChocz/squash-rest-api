@@ -79,7 +79,7 @@ public class AdminInitializerService {
       return false;
 
     } else {
-      final long startTime = System.nanoTime();
+//      final long startTime = System.nanoTime();
       log.info("Initializing - BEGIN");
 
       persistStandardAuthorities();
@@ -88,7 +88,7 @@ public class AdminInitializerService {
       persistCredentials(initCredentialsJsonContent);
 
       log.info("Initializing - FINISHED");
-      TimeLogUtil.logFinish(startTime);
+//      TimeLogUtil.logFinish(startTime);
 
       return true;
     }

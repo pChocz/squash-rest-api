@@ -32,10 +32,10 @@ public class ScoreboardController {
   @ResponseBody
   SeasonScoreboardDto seasonScoreboard(@PathVariable final UUID seasonUuid) {
 
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonUuid);
 
-    TimeLogUtil.logQuery(startTime, "Season Scoreboard: " + seasonScoreboardDto);
+//    TimeLogUtil.logQuery(startTime, "Season Scoreboard: " + seasonScoreboardDto);
 
     return seasonScoreboardDto;
   }
@@ -53,10 +53,10 @@ public class ScoreboardController {
   @ResponseBody
   RoundScoreboard scoreboardForRound(@PathVariable final UUID roundUuid) {
 
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
 
-    TimeLogUtil.logQuery(startTime, "Round Scoreboard: " + roundScoreboard);
+//    TimeLogUtil.logQuery(startTime, "Round Scoreboard: " + roundScoreboard);
 
     return roundScoreboard;
   }

@@ -68,9 +68,9 @@ public class SeasonController {
   @GetMapping(value = "/players-sorted/{seasonUuid}")
   @ResponseBody
   List<PlayerDto> leaguePlayersSeasonSorted(@PathVariable final UUID seasonUuid) {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     final List<PlayerDto> players = seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonUuid);
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
     return players;
   }
 

@@ -35,13 +35,13 @@ public class PlayersScoreboardController {
                                   @RequestParam(required = false) final UUID seasonUuid,
                                   @RequestParam(required = false) final Integer groupNumber) {
 
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
 
     final Scoreboard scoreboard = (playersUuids.length == 1)
             ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0], seasonUuid, groupNumber)
             : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids, seasonUuid, groupNumber);
 
-    TimeLogUtil.logQuery(startTime, "ALL-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
+//    TimeLogUtil.logQuery(startTime, "ALL-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 
@@ -50,11 +50,11 @@ public class PlayersScoreboardController {
   @ResponseBody
   Scoreboard extractMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
 
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
 
     final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid);
 
-    TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
+//    TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 

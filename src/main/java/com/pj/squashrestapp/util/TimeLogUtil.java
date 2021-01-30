@@ -14,10 +14,10 @@ import java.util.Locale;
 @UtilityClass
 public class TimeLogUtil {
 
-  public void logFinish(final long startTime) {
-    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
-    log.info("{} seconds", durationSecondsRounded);
-  }
+//  public void logFinish(final long startTime) {
+//    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
+//    log.info("{} seconds", durationSecondsRounded);
+//  }
 
   public double getDurationSecondsRounded(final long startTime) {
     final long endTime = System.nanoTime();
@@ -26,26 +26,26 @@ public class TimeLogUtil {
     return (double) Math.round(durationSeconds * 100d) / 100d;
   }
 
-  public void logMessage(final String message) {
-    final String username = GeneralUtil.extractSessionUsername();
-    log.info("LOG: {}\t{}", username, message);
-  }
+//  public void logMessage(final String message) {
+//    final String username = GeneralUtil.extractSessionUsername();
+//    log.info("LOG: {}\t{}", username, message);
+//  }
 
-  public void logQuery(final long startTime, final String query) {
-    final String username = GeneralUtil.extractSessionUsername();
-    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
-    final String durationFormatted = getFormatted(durationSecondsRounded);
-    log.info("QUERY: {}\t{}\t{}", username, durationFormatted, query);
-  }
+//  public void logQuery(final long startTime, final String query) {
+//    final String username = GeneralUtil.extractSessionUsername();
+//    final double durationSecondsRounded = getDurationSecondsRounded(startTime);
+//    final String durationFormatted = getFormatted(durationSecondsRounded);
+//    log.info("QUERY: {}\t{}\t{}", username, durationFormatted, query);
+//  }
 
-  private String getFormatted(final double durationSecondsRounded) {
-    final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
-    final DecimalFormat decimalFormat = new DecimalFormat();
-    decimalFormat.setDecimalFormatSymbols(symbols);
-    decimalFormat.setMinimumFractionDigits(2);
-    decimalFormat.setMaximumFractionDigits(2);
-    return decimalFormat.format(durationSecondsRounded);
-  }
+//  private String getFormatted(final double durationSecondsRounded) {
+//    final DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.US);
+//    final DecimalFormat decimalFormat = new DecimalFormat();
+//    decimalFormat.setDecimalFormatSymbols(symbols);
+//    decimalFormat.setMinimumFractionDigits(2);
+//    decimalFormat.setMaximumFractionDigits(2);
+//    return decimalFormat.format(durationSecondsRounded);
+//  }
 
 //  public <T> void logFinish(final long startTime, final T objectToPrint) {
 //    try {

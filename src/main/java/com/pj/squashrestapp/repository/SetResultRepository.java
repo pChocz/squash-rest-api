@@ -34,48 +34,16 @@ import java.util.UUID;
  */
 public interface SetResultRepository extends JpaRepository<SetResult, Long> {
 
-  String SELECT_FETCH_LEAGUE = """
+
+  @Query("""
           SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-          INNER JOIN FETCH rg.round r
-          INNER JOIN FETCH r.season s
-          INNER JOIN FETCH s.league l
-                    
-          """;
-
-  String SELECT_FETCH_SEASON = """
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-          INNER JOIN FETCH rg.round r
-          INNER JOIN FETCH r.season s
-                    
-          """;
-
-  String SELECT_FETCH_ROUND = """
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-          INNER JOIN FETCH rg.round r
-                    
-          """;
-
-  String SELECT_FETCH_ROUND_GROUP = """
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-          INNER JOIN FETCH m.roundGroup rg
-                    
-          """;
-
-  String SELECT_FETCH_MATCH = """
-          SELECT sr FROM SetResult sr
-          INNER JOIN FETCH sr.match m
-                    
-          """;
-
-
-  @Query(SELECT_FETCH_LEAGUE + "WHERE l.uuid = :leagueUuid")
+            INNER JOIN FETCH sr.match m
+            INNER JOIN FETCH m.roundGroup rg
+            INNER JOIN FETCH rg.round r
+            INNER JOIN FETCH r.season s
+            INNER JOIN FETCH s.league l
+              WHERE l.uuid = :leagueUuid
+              """)
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
@@ -83,7 +51,14 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   List<SetResult> fetchByLeagueUuid(UUID leagueUuid);
 
 
-  @Query(SELECT_FETCH_SEASON + "WHERE s.uuid = :seasonUuid")
+  @Query("""
+          SELECT sr FROM SetResult sr
+            INNER JOIN FETCH sr.match m
+            INNER JOIN FETCH m.roundGroup rg
+            INNER JOIN FETCH rg.round r
+            INNER JOIN FETCH r.season s
+              WHERE s.uuid = :seasonUuid
+              """)
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
@@ -92,7 +67,13 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   List<SetResult> fetchBySeasonUuid(UUID seasonUuid);
 
 
-  @Query(SELECT_FETCH_ROUND + "WHERE r.uuid = :roundUuid")
+  @Query("""
+          SELECT sr FROM SetResult sr
+            INNER JOIN FETCH sr.match m
+            INNER JOIN FETCH m.roundGroup rg
+            INNER JOIN FETCH rg.round r
+              WHERE r.uuid = :roundUuid
+              """)
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",
@@ -102,7 +83,12 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
   List<SetResult> fetchByRoundUuid(UUID roundUuid);
 
 
-  @Query(SELECT_FETCH_ROUND_GROUP + "WHERE rg.id IN :ids")
+  @Query("""
+          SELECT sr FROM SetResult sr
+            INNER JOIN FETCH sr.match m
+            INNER JOIN FETCH m.roundGroup rg
+              WHERE rg.id IN :ids
+              """)
   @EntityGraph(attributePaths = {
           "match.firstPlayer",
           "match.secondPlayer",

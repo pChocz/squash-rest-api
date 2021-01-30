@@ -130,4 +130,9 @@ public class PlayerSingleRoundStats {
     return splitAsArray;
   }
 
+  @Override
+  public String toString() {
+    return "S: " + seasonNumber + " | R: " + round.getRoundNumber() + " | RG: " + roundGroupNumber;
+  }
+
 }

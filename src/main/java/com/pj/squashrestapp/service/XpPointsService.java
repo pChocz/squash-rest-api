@@ -32,18 +32,6 @@ public class XpPointsService {
     return multimap;
   }
 
-  public ArrayListMultimap<String, Integer> buildForGivenSplitAsMultimap(final String split) {
-    final List<Integer> list = xpPointsRepository.retrievePointsBySplit(split);
-    final ArrayListMultimap<String, Integer> multimap = ArrayListMultimap.create();
-    multimap.putAll(split, list);
-    return multimap;
-  }
-
-  public List<Integer> buildForGivenSplit(final String split) {
-    final List<Integer> list = xpPointsRepository.retrievePointsBySplit(split);
-    return list;
-  }
-
   public List<XpPointsForRound> buildAllAsNativeObject() {
     final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();
     final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
@@ -53,7 +41,6 @@ public class XpPointsService {
 
   public List<XpPointsForTable> buildXpPointsForTable() {
     final List<XpPointsForRound> xpPointsForRoundList = buildAllAsNativeObject();
-
 
     final List<XpPointsForTable> xpPointsForTableList = new ArrayList<>();
 
@@ -78,7 +65,6 @@ public class XpPointsService {
 
       xpPointsForTableList.add(xpPointsForTable);
     }
-
 
     return xpPointsForTableList;
   }

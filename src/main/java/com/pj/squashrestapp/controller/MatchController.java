@@ -58,11 +58,11 @@ public class MatchController {
           @RequestParam(required = false) final UUID seasonUuid,
           @RequestParam(required = false) final Integer groupNumber) {
 
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
 
     final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
 
-    TimeLogUtil.logQuery(startTime, "Extracted matches paginated");
+//    TimeLogUtil.logQuery(startTime, "Extracted matches paginated");
     return matchesPaginated;
   }
 

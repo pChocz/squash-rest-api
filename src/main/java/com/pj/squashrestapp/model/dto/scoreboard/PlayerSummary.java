@@ -10,4 +10,9 @@ public class PlayerSummary {
   int seasons;
   int rounds;
 
+  @Override
+  public String toString() {
+    return scoreboardRow.getPlayer() + " | leagues: " + leagues + " | seasons: " + seasons + " | rounds: " + rounds;
+  }
+
 }

@@ -71,4 +71,16 @@ public class TrophiesWonForLeague {
 
   }
 
+  @Override
+  public String toString() {
+    return player + " | " + league + " | " + getNumberOfTrophies() + " trophies";
+  }
+
+  private int getNumberOfTrophies() {
+    return trophiesPerSeason
+            .stream()
+            .mapToInt(t -> t.getTrophies().size())
+            .sum();
+  }
+
 }

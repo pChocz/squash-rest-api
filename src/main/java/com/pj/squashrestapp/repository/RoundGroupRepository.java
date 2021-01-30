@@ -9,6 +9,7 @@ import java.util.UUID;
 
 public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long> {
 
+
   @Query("""
           SELECT rg.id FROM Match m
             INNER JOIN m.roundGroup rg
@@ -17,7 +18,7 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long> {
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               AND (m.firstPlayer.uuid = :playerUuid 
-               OR m.secondPlayer.uuid = :playerUuid)
+                OR m.secondPlayer.uuid = :playerUuid)
               AND r.finished = true
           """)
   List<Long> retrieveRoundGroupsIdsForPlayer(UUID leagueUuid, UUID playerUuid);

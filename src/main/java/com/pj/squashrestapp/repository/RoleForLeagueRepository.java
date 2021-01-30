@@ -13,10 +13,12 @@ import java.util.List;
  */
 public interface RoleForLeagueRepository extends JpaRepository<RoleForLeague, Long> {
 
+
   @EntityGraph(attributePaths = {
           "players"
   })
   RoleForLeague findByLeagueAndLeagueRole(League league, LeagueRole leagueRole);
+
 
   List<RoleForLeague> findByLeague(League league);
 

@@ -111,4 +111,13 @@ public class Scoreboard {
     Collections.reverse(this.scoreboardRows);
   }
 
+  @Override
+  public String toString() {
+    return "matches: " + numberOfMatches + " | " +
+           scoreboardRows
+                   .stream()
+                   .map(PlayersStatsScoreboardRow::toString)
+                   .collect(Collectors.joining(", "));
+  }
+
 }

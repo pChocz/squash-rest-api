@@ -3,6 +3,7 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Comparator;
 
@@ -48,6 +49,11 @@ public class PlayersStatsScoreboardRow implements Comparable<PlayersStatsScorebo
 
   private double getPointsRatio() {
     return (double) this.pointsWon / (this.pointsWon + this.pointsLost);
+  }
+
+  @Override
+  public String toString() {
+    return player.getUsername();
   }
 
 }

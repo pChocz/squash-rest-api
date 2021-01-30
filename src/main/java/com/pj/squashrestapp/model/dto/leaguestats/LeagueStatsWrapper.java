@@ -25,4 +25,9 @@ public class LeagueStatsWrapper {
   private final EntireLeagueScoreboard scoreboard;
   private final List<HallOfFameSeason> hallOfFame;
 
+  @Override
+  public String toString() {
+    return "League Stats: " + leagueName + " | " + leagueUuid;
+  }
+
 }
