@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
+import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.match.MatchDto;
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
  *
  */
 @Getter
-public class Scoreboard {
+public class Scoreboard implements LoggableQuery {
 
   private final int numberOfMatches;
   private final List<PlayersStatsScoreboardRow> scoreboardRows;
@@ -118,6 +119,11 @@ public class Scoreboard {
                    .stream()
                    .map(PlayersStatsScoreboardRow::toString)
                    .collect(Collectors.joining(", "));
+  }
+
+  @Override
+  public String message() {
+    return toString();
   }
 
 }

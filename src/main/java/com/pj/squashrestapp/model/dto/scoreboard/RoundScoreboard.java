@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
@@ -19,7 +20,7 @@ import java.util.UUID;
  *
  */
 @Getter
-public class RoundScoreboard {
+public class RoundScoreboard implements LoggableQuery {
 
   private final String leagueName;
 
@@ -94,6 +95,11 @@ public class RoundScoreboard {
   @Override
   public String toString() {
     return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
+  }
+
+  @Override
+  public String message() {
+    return toString();
   }
 
 }

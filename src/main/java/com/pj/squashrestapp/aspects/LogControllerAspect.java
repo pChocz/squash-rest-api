@@ -5,8 +5,10 @@ import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
@@ -20,17 +22,22 @@ import java.util.Arrays;
 @Aspect
 @Component
 @RequiredArgsConstructor
-public class LoggingAspect {
+public class LogControllerAspect {
 
   private final HibernateQueryInterceptor hibernateQueryInterceptor;
 
+  @Pointcut("execution(* com.pj.squashrestapp.controller.*.*(..)))")
+  public void controllerMethodsPointcut() {
+    // empty
+  }
+
   /**
    * Logging aspect that matches all non-void controller methods.
+   *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
-   * @throws Throwable if any problem occurs
    */
-  @Around("execution(* com.pj.squashrestapp.controller.*.*(..)))")
+  @Around("controllerMethodsPointcut()")
   public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) {
     final String username = GeneralUtil.extractSessionUsername();
     final Object[] args = proceedingJoinPoint.getArgs();
@@ -63,7 +70,6 @@ public class LoggingAspect {
 
       return result;
     }
-
   }
 
 }

@@ -1,10 +1,9 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.model.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
-import com.pj.squashrestapp.util.LogUtil;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,18 +29,16 @@ public class PlayersScoreboardController {
 
   @GetMapping(value = "/{leagueUuid}/{playersUuids}")
   @ResponseBody
+  @QueryLog
   Scoreboard extractAllAgainstAll(@PathVariable final UUID leagueUuid,
                                   @PathVariable final UUID[] playersUuids,
                                   @RequestParam(required = false) final UUID seasonUuid,
                                   @RequestParam(required = false) final Integer groupNumber) {
 
-//    final long startTime = System.nanoTime();
-
     final Scoreboard scoreboard = (playersUuids.length == 1)
             ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0], seasonUuid, groupNumber)
             : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids, seasonUuid, groupNumber);
 
-//    TimeLogUtil.logQuery(startTime, "ALL-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 
@@ -49,18 +46,14 @@ public class PlayersScoreboardController {
   @GetMapping(value = "/me-against-all/{leagueUuid}")
   @ResponseBody
   Scoreboard extractMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
-
-//    final long startTime = System.nanoTime();
-
     final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid);
-
-//    TimeLogUtil.logQuery(startTime, "ME-AGAINST-ALL stats: " + LogUtil.extractPlayersCommaSeparated(scoreboard));
     return scoreboard;
   }
 
 
   @GetMapping(value = "/me-against-all")
   @ResponseBody
+  @QueryLog
   PlayerSummary extractMeAgainstAllForAllLeagues() {
     final PlayerSummary playerSummary = playersScoreboardService.buildMeAgainstAllForAllLeagues();
     return playerSummary;
