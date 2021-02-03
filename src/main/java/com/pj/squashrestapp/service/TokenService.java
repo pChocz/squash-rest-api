@@ -30,18 +30,11 @@ public class TokenService {
   private final PlayerRepository playerRepository;
 
 
-  /**
-   *
-   * @param token
-   * @return
-   */
   public PlayerDetailedDto extractPlayerByPasswordResetToken(final UUID token) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
     final UUID playerUuid = passwordResetToken.getPlayer().getUuid();
     final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).get();
-
     final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-
     return playerDetailedDto;
   }
 

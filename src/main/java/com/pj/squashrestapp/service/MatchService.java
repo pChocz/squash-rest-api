@@ -70,8 +70,10 @@ public class MatchService {
 
     final String message = "\nSuccesfully updated the match!" +
                            "\n\t-> " + initialMatchResult + "\t- earlier" +
-                           "\n\t-> " + matchToModify + "\t- now";
+                           "\n\t-> " + matchToModify.getSetResults() + "\t- now";
     log.info(message);
+
+    log.info("Match modified: {} ");
   }
 
   private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
@@ -109,51 +111,6 @@ public class MatchService {
     return matchesDtoPage;
   }
 
-//  public MatchesSimplePaginated getMatchesPaginatedMeAgainstAll(final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids) {
-//    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-//    final Page<Long> matchIds = matchRepository.findIdsSingleAgainstOthers(leagueUuid, currentPlayerUuid, playersUuids, pageable);
-//    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
-//
-//    final List<MatchSimpleDto> matchesDtos = matches
-//            .stream()
-//            .map(MatchSimpleDto::new)
-//            .collect(Collectors.toList());
-//
-//    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
-//    return matchesDtoPage;
-//  }
-
-//  public Set<PerLeagueMatchStats> getMyMatchesCountPerPlayers_v1() {
-//    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-//    final Player currentPlayer = playerRepository.findByUuid(currentPlayerUuid);
-//
-//    final List<Match> allMatches = matchRepository.fetchByOnePlayerAgainstAll(currentPlayerUuid);
-//
-//    final Set<PerLeagueMatchStats> perLeagueMatchStatsList = new TreeSet<>();
-//
-//    final Multimap<League, Match> map = LinkedHashMultimap.create();
-//    for (final Match match : allMatches) {
-//      final League league = match.getRoundGroup().getRound().getSeason().getLeague();
-//      map.put(league, match);
-//    }
-//
-//    for (final League league : map.keySet()) {
-//      final List<Match> leagueMatches = new ArrayList<>(map.get(league));
-//
-//      final AtomicLongMap<Player> atomicLongMap = AtomicLongMap.create();
-//      for (final Match match : leagueMatches) {
-//        atomicLongMap.getAndIncrement(match.getFirstPlayer());
-//        atomicLongMap.getAndIncrement(match.getSecondPlayer());
-//      }
-//      atomicLongMap.remove(currentPlayer);
-//
-//      final PerLeagueMatchStats perLeagueMatchStats = new PerLeagueMatchStats(league, atomicLongMap);
-//
-//      perLeagueMatchStatsList.add(perLeagueMatchStats);
-//    }
-//
-//    return perLeagueMatchStatsList;
-//  }
 
   public List<PerLeagueMatchStats> getMyMatchesCountPerPlayers() {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();

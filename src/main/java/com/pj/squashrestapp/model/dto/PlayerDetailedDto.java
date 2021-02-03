@@ -42,4 +42,9 @@ public class PlayerDetailedDto {
     }
   }
 
+  @Override
+  public String toString() {
+    return username + " | uuid: " + uuid;
+  }
+
 }

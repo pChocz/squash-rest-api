@@ -18,6 +18,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
 
   Optional<Round> findBySeasonAndNumber(Season season, int number);
 
+
   @Query("""
           SELECT l.uuid FROM Round r
            JOIN Season s ON r.season = s
@@ -42,6 +43,7 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
           """)
   Long findIdByUuid(UUID roundUuid);
 
+
   @Query("""
           SELECT DISTINCT r FROM Match m
            INNER JOIN m.firstPlayer p1
@@ -53,6 +55,5 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
            ORDER BY r.date DESC
           """)
   List<Round> findMostRecentRoundOfPlayer(UUID playerUuid, Pageable pageable);
-
 
 }

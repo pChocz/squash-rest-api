@@ -13,7 +13,9 @@ import java.util.List;
  */
 public interface HallOfFameSeasonRepository extends JpaRepository<HallOfFameSeason, Long> {
 
+
   List<HallOfFameSeason> findByLeague(League league);
+
 
   @Query("""
           SELECT hof FROM HallOfFameSeason hof
@@ -28,7 +30,7 @@ public interface HallOfFameSeasonRepository extends JpaRepository<HallOfFameSeas
               OR hof.coviders LIKE CONCAT('%',:playerName,'%')
               OR hof.allRoundsAttendees LIKE CONCAT('%',:playerName,'%')
             ORDER BY hof.seasonNumber DESC
-          """)
+            """)
   @EntityGraph(attributePaths = {
           "league",
   })

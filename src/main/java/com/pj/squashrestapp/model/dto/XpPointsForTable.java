@@ -25,4 +25,9 @@ public class XpPointsForTable {
     this.xpPoints.add(xpPointsDto);
   }
 
+  @Override
+  public String toString() {
+    return split;
+  }
+
 }

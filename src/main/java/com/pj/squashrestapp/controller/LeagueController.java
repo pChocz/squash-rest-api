@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.model.dto.LeagueDto;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.service.LeagueService;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.Authorization;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +42,8 @@ public class LeagueController {
   @GetMapping(value = "/general-info/{leagueUuid}")
   @ResponseBody
   LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
-
     try {
-      final long startTime = System.nanoTime();
       final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
-      TimeLogUtil.logQuery(startTime, "Single league general info: " + leagueGeneralInfo.getLeagueName());
       return leagueGeneralInfo;
 
     } catch (final NoSuchElementException e) {
@@ -58,9 +55,7 @@ public class LeagueController {
   @GetMapping(value = "/general-info")
   @ResponseBody
   List<LeagueDto> extractAllLeaguesGeneralInfo() {
-    final long startTime = System.nanoTime();
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
-    TimeLogUtil.logQuery(startTime, "All leagues general info");
     return allLeaguesGeneralInfo;
   }
 
@@ -68,9 +63,7 @@ public class LeagueController {
   @GetMapping(value = "/all-logos")
   @ResponseBody
   Map<UUID, byte[]> extractAllLeaguesLogosMap() {
-    final long startTime = System.nanoTime();
     final Map<UUID, byte[]> allLeaguesLogos = leagueService.extractAllLogos();
-    TimeLogUtil.logQuery(startTime, "All leagues logos");
     return allLeaguesLogos;
   }
 
@@ -86,12 +79,10 @@ public class LeagueController {
   @GetMapping(value = "/stats/{leagueUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
+  @QueryLog
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
-
     try {
-      final long startTime = System.nanoTime();
       final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueUuid);
-      TimeLogUtil.logQuery(startTime, "League Stats: " + leagueStatsWrapper.getLeagueName());
       return leagueStatsWrapper;
 
     } catch (final NoSuchElementException e) {

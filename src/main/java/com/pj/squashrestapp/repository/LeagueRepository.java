@@ -14,6 +14,7 @@ import java.util.UUID;
  */
 public interface LeagueRepository extends JpaRepository<League, Long> {
 
+
   @Override
   @EntityGraph(attributePaths = {
           "seasons",
@@ -27,7 +28,10 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   Optional<League> findByUuid(UUID uuid);
 
 
-  @Query("SELECT l FROM League l WHERE l.uuid = :leagueUuid")
+  @Query("""
+          SELECT l FROM League l 
+            WHERE l.uuid = :leagueUuid
+            """)
   @EntityGraph(attributePaths = {
           "seasons.rounds.roundGroups.matches.setResults",
           "seasons.rounds.roundGroups.matches.firstPlayer",

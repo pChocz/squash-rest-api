@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
+import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.dto.RoundDto;
@@ -17,7 +18,7 @@ import java.util.stream.Collectors;
  *
  */
 @Getter
-public class SeasonScoreboardDto {
+public class SeasonScoreboardDto implements LoggableQuery {
 
   private final SeasonDto season;
   private final int allRounds = 10;
@@ -109,6 +110,11 @@ public class SeasonScoreboardDto {
   public String toString() {
     return "S: " + this.getSeason().getSeasonNumber()
            + "\t| " + this.getSeason().getLeagueName();
+  }
+
+  @Override
+  public String message() {
+    return toString();
   }
 
 }

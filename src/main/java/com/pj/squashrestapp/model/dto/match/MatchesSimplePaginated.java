@@ -46,4 +46,9 @@ public class MatchesSimplePaginated {
             .collect(Collectors.toList());
   }
 
+  @Override
+  public String toString() {
+    return "matches: " + matches.size() + " | page: " + page + "/" + pages;
+  }
+
 }

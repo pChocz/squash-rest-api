@@ -24,4 +24,9 @@ public class LeagueDtoSimple {
     this.name = league.getName();
   }
 
+  @Override
+  public String toString() {
+    return name;
+  }
+
 }

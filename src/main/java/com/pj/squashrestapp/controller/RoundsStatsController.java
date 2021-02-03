@@ -29,11 +29,11 @@ public class RoundsStatsController {
   @ResponseBody
   List<PlayerSingleRoundStats> extractRoundsStats(@PathVariable final UUID leagueUuid,
                                                   @PathVariable final UUID playerUuid) {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
 
     final List<PlayerSingleRoundStats> roundsStatsForPlayer = playersRoundsStatsService.buildRoundsStatsForPlayer(leagueUuid, playerUuid);
 
-    TimeLogUtil.logQuery(startTime, "Player rounds stats: " + playerUuid);
+//    TimeLogUtil.logQuery(startTime, "Player rounds stats: " + playerUuid);
     return roundsStatsForPlayer;
   }
 

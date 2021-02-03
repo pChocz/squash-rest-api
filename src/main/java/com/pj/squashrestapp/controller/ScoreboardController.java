@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.model.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,13 +30,9 @@ public class ScoreboardController {
 
   @GetMapping(value = "/seasons/{seasonUuid}")
   @ResponseBody
+  @QueryLog
   SeasonScoreboardDto seasonScoreboard(@PathVariable final UUID seasonUuid) {
-
-    final long startTime = System.nanoTime();
     final SeasonScoreboardDto seasonScoreboardDto = seasonService.overalScoreboard(seasonUuid);
-
-    TimeLogUtil.logQuery(startTime, "Season Scoreboard: " + seasonScoreboardDto);
-
     return seasonScoreboardDto;
   }
 
@@ -51,13 +47,9 @@ public class ScoreboardController {
 
   @GetMapping(value = "/rounds/{roundUuid}")
   @ResponseBody
+  @QueryLog
   RoundScoreboard scoreboardForRound(@PathVariable final UUID roundUuid) {
-
-    final long startTime = System.nanoTime();
     final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
-
-    TimeLogUtil.logQuery(startTime, "Round Scoreboard: " + roundScoreboard);
-
     return roundScoreboard;
   }
 

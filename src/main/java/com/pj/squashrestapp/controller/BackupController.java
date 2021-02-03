@@ -32,14 +32,14 @@ public class BackupController {
   @PreAuthorize("isAdmin()")
   ResponseEntity<JsonRound> backupSingleRound(@PathVariable final UUID roundUuid) {
     final JsonRound roundJson = backupService.roundToJson(roundUuid);
-    return new ResponseEntity<JsonRound>(roundJson, HttpStatus.OK);
+    return new ResponseEntity<>(roundJson, HttpStatus.OK);
   }
 
   @GetMapping("/leagues/{leagueUuid}")
   @PreAuthorize("isAdmin()")
   ResponseEntity<JsonLeague> backupSingleLeague(@PathVariable final UUID leagueUuid) {
     final JsonLeague leagueJson = backupService.leagueToJson(leagueUuid);
-    return new ResponseEntity<JsonLeague>(leagueJson, HttpStatus.OK);
+    return new ResponseEntity<>(leagueJson, HttpStatus.OK);
   }
 
   @GetMapping("/leagues/all")

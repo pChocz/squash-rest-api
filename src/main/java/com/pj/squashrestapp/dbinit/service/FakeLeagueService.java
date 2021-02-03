@@ -56,7 +56,7 @@ public class FakeLeagueService {
   private final HallOfFameSeasonRepository hallOfFameSeasonRepository;
 
   public void buildLeagues(final List<JsonFakeLeagueParams> jsonFakeLeagueParamsList) throws IOException {
-    final long startTime = System.nanoTime();
+//    final long startTime = System.nanoTime();
     log.info("-- START building of {} fake leagues --", jsonFakeLeagueParamsList.size());
 
     for (final JsonFakeLeagueParams jsonFakeLeagueParams : jsonFakeLeagueParamsList) {
@@ -64,7 +64,7 @@ public class FakeLeagueService {
     }
 
     log.info("-- FINISHED building of {} fake leagues --", jsonFakeLeagueParamsList.size());
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
   }
 
   public void buildLeague(final JsonFakeLeagueParams jsonFakeLeagueParams) throws IOException {
@@ -79,7 +79,7 @@ public class FakeLeagueService {
     final byte[] logoBytes = Base64.getDecoder().decode(logoBase64);
 
     log.info("Creating new League and assigning roles and logo...");
-    long startTime = System.nanoTime();
+//    long startTime = System.nanoTime();
 
     final League league = new League(leagueName);
 
@@ -92,16 +92,16 @@ public class FakeLeagueService {
     league.addRoleForLeague(moderatorRole);
     league.addRoleForLeague(playerRole);
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
     log.info("Creating {} players (including password hashing) and assigning roles/authorities...", numberOfAllPlayers);
-    startTime = System.nanoTime();
+//    startTime = System.nanoTime();
     final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers);
     FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
     log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);
-    startTime = System.nanoTime();
+//    startTime = System.nanoTime();
     LocalDate seasonStartDate = startDate;
     for (int seasonNumber = 1; seasonNumber <= numberOfCompletedSeasons; seasonNumber++) {
       final Season season = FakeSeason.create(
@@ -125,19 +125,19 @@ public class FakeLeagueService {
               maxNumberOfAttendingPlayers);
       league.addSeason(season);
     }
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
 
     log.info("Persisting {} items (seasons/rounds/roundGroups/matches/sets + players) to PostreSQL DB...", extractNumberOfEntities(league, players));
-    startTime = System.nanoTime();
+//    startTime = System.nanoTime();
     playerRepository.saveAll(players);
     authorityRepository.save(userAuthority);
     leagueRepository.save(league);
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
 
     log.info("Calculating scoreboards to fill the Hall of Fame...");
-    startTime = System.nanoTime();
+//    startTime = System.nanoTime();
     // only after persisting the league we can calculate the scoreboard (as some of the logic is based on the Id)
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
     for (final Season season : league.getSeasons()) {
@@ -156,7 +156,7 @@ public class FakeLeagueService {
       }
     }
     hallOfFameSeasonRepository.saveAll(league.getHallOfFameSeasons());
-    TimeLogUtil.logFinish(startTime);
+//    TimeLogUtil.logFinish(startTime);
 
     log.info(extractLeagueDetails(league));
   }

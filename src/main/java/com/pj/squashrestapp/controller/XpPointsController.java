@@ -27,9 +27,7 @@ public class XpPointsController {
   @GetMapping
   @ResponseBody
   List<XpPointsForTable> extractAllForTable() {
-    final long startTime = System.nanoTime();
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
-    TimeLogUtil.logQuery(startTime, "XP points");
     return xpPointsForTableList;
   }
 

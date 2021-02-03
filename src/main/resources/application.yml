@@ -35,6 +35,15 @@ spring:
     multipart:
       max-file-size: 75MB
       max-request-size: 75MB
+  aop:
+    auto: true
+
+
+# ###### ##### #####
+# Spring Query Utils
+spring-hibernate-query-utils:
+  n-plus-one-queries-detection:
+    enabled: false
 
 
 # #####
