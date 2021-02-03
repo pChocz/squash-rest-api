@@ -1,6 +1,5 @@
 # Squash Java Spring Boot App (Backend)
 
----
 
 ![Squash logo](src/main/resources/static/squash_logo.svg "Squash logo")
 
@@ -14,14 +13,12 @@ It is built with:
 * PostgreSQL 12
 
 
----
 ## Working demo
 
 Application is up and running, and it is accessible at 
 [www.squash-app.win](https://squash-app.win "https://squash-app.win").
 
 
----
 ## Launching locally
 
 In order to launch it locally:
@@ -52,7 +49,6 @@ In order to launch it locally:
 * run `Application` class from the IDE
 
 
----
 ## Frontend
 
 In order to use the application, it must be run together with the frontend part, 
@@ -62,7 +58,6 @@ which is available at
 Follow instructions there as well if you want to run whole application locally.
 
 
----
 ## License
 
 >You can check out the full license [here](https://github.com/pChocz/squash-rest-api/blob/master/LICENSE)
