@@ -122,12 +122,12 @@ public class LeagueService {
   }
 
 
-  public LeagueStatsWrapper buildStatsForLeagueId(final UUID leagueUuid) {
+  public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final League league = fetchEntireLeague(leagueUuid);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
     // logo
-    final byte[] logoBytes = leagueLogoRepository.extractLogoBlob(leagueUuid);
+    final byte[] logoBytes = leagueLogoRepository.extractLogoBlobByLeagueUuid(leagueUuid);
 
     // per season stats
     final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);

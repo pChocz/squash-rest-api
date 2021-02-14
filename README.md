@@ -1,7 +1,6 @@
-# Squash Java Spring Boot App (Backend)
-
-
 ![Squash logo](src/main/resources/static/squash_logo.svg "Squash logo")
+
+# Squash Java Spring Boot App (Backend)
 
 This project is a backend part of an application to manage a squash league.
 
