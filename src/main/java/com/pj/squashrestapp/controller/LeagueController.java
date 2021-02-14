@@ -82,7 +82,7 @@ public class LeagueController {
   @QueryLog
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
     try {
-      final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueId(leagueUuid);
+      final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueUuid(leagueUuid);
       return leagueStatsWrapper;
 
     } catch (final NoSuchElementException e) {

@@ -1,18 +1,24 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -45,6 +51,29 @@ public class PlayerController {
 
     final PlayerDetailedDto playerDetailedDto = playerService.assignLeagueRole(playerUuid, leagueUuid, leagueRole);
     return playerDetailedDto;
+  }
+
+
+  @PostMapping(value = "/newEnabled")
+  @ResponseBody
+  @PreAuthorize("isAdmin()")
+  PlayerDetailedDto createNewPlayerEnabled(@RequestParam final String username,
+                                           @RequestParam final String email,
+                                           @RequestParam final String password) {
+
+    final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
+    final String lowerCaseEmailAdress = email.toLowerCase();
+
+    final boolean isValid = playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+    if (isValid) {
+      final Player newPlayer = playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+      playerService.enableUser(newPlayer);
+      return new PlayerDetailedDto(newPlayer);
+
+    } else {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data!");
+
+    }
   }
 
 }

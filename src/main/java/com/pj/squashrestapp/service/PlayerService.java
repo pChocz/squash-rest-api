@@ -1,8 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.google.gson.Gson;
 import com.pj.squashrestapp.config.WrongSignupDataException;
-import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.League;
@@ -18,7 +16,6 @@ import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
-import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -124,6 +119,11 @@ public class PlayerService {
     authorityRepository.save(userAuthority);
 
     return player;
+  }
+
+  public void enableUser(final Player player) {
+    player.setEnabled(true);
+    playerRepository.save(player);
   }
 
   public void resendVerificationToken(final Player player) {
