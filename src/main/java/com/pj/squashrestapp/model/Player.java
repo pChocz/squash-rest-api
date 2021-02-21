@@ -86,6 +86,11 @@ public class Player {
     roleForLeague.getPlayers().add(this);
   }
 
+  public void removeRole(final RoleForLeague roleForLeague) {
+    this.roles.remove(roleForLeague);
+    roleForLeague.getPlayers().remove(this);
+  }
+
   public void addAuthority(final Authority authority) {
     this.authorities.add(authority);
     authority.getPlayers().add(this);

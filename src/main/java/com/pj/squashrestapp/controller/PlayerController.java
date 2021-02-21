@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -34,6 +34,14 @@ public class PlayerController {
   private final PlayerService playerService;
 
 
+  @GetMapping(value = "/all")
+  @ResponseBody
+  @PreAuthorize("isAdmin()")
+  List<PlayerDetailedDto> extractAllPlayers() {
+    final List<PlayerDetailedDto> allPlayers = playerService.getAllPlayers();
+    return allPlayers;
+  }
+
   @GetMapping(value = "/me")
   @ResponseBody
   PlayerDetailedDto aboutMe() {
@@ -42,7 +50,19 @@ public class PlayerController {
   }
 
 
-  @PutMapping(value = "/{playerUuid}")
+  @PutMapping(value = "/role-unassign/{playerUuid}")
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  PlayerDetailedDto unassignLeagueRole(@PathVariable final UUID playerUuid,
+                                       @RequestParam final UUID leagueUuid,
+                                       @RequestParam final LeagueRole leagueRole) {
+
+    final PlayerDetailedDto playerDetailedDto = playerService.unassignLeagueRole(playerUuid, leagueUuid, leagueRole);
+    return playerDetailedDto;
+  }
+
+
+  @PutMapping(value = "/role-assign/{playerUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   PlayerDetailedDto assignLeagueRole(@PathVariable final UUID playerUuid,

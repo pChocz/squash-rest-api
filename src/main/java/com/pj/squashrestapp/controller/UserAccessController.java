@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -47,9 +48,17 @@ public class UserAccessController {
   }
 
 
+  @PutMapping(value = "/changeMyPassword")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void changeMyPassword(@RequestParam final String oldPassword,
+                        @RequestParam final String newPassword) {
+    playerService.changeCurrentSessionPlayerPassword(oldPassword, newPassword);
+  }
+
+
   @PostMapping(value = "/logout")
-  @ResponseBody
-  void logout(@RequestParam final String token) {
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void logout() {
     log.info("User [{}] has logged out", GeneralUtil.extractSessionUsername());
   }
 
@@ -76,7 +85,7 @@ public class UserAccessController {
 
 
   @PostMapping(value = "/request-password-reset")
-  @ResponseBody
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   void requestResetPassword(@RequestParam final String usernameOrEmail,
                             @RequestParam final String frontendUrl,
                             final HttpServletRequest request) {
@@ -109,7 +118,7 @@ public class UserAccessController {
   void confirmResetPassword(@RequestParam final UUID token,
                             @RequestParam final String newPassword) {
 
-    playerService.changePlayerPassword(token, newPassword);
+    playerService.changeCurrentSessionPlayerPassword(token, newPassword);
   }
 
 

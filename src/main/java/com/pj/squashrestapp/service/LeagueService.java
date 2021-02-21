@@ -36,6 +36,8 @@ import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,9 +74,12 @@ public class LeagueService {
    * that can be assigned to the players later.
    *
    * @param leagueName name of the league to create
-   * @param leagueModerator existing player that will be assigned as league moderator
+   * @return
    */
-  public void createNewLeague(final String leagueName, final Player leagueModerator) {
+  public LeagueDto createNewLeague(final String leagueName) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
+
     final League league = new League(leagueName);
 
     final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
@@ -82,12 +87,14 @@ public class LeagueService {
     league.addRoleForLeague(playerRole);
     league.addRoleForLeague(moderatorRole);
 
-    leagueModerator.addRole(moderatorRole);
+    player.addRole(moderatorRole);
 
-    playerRepository.save(leagueModerator);
+    playerRepository.save(player);
     roleForLeagueRepository.save(playerRole);
     roleForLeagueRepository.save(moderatorRole);
     leagueRepository.save(league);
+
+    return new LeagueDto(league);
   }
 
   public void removeEmptyLeague(final UUID leagueUuid) {

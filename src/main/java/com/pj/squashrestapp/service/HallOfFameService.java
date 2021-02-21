@@ -43,7 +43,7 @@ public class HallOfFameService {
     for (final LeagueDtoSimple league : leagues) {
       final List<HallOfFameSeason> hallOfFameForLeague = hallOfFameForPlayer
               .stream()
-              .filter(hof -> hof.getLeague().getUuid().equals(league.getUuid()))
+              .filter(hof -> hof.getLeague().getUuid().equals(league.getLeagueUuid()))
               .collect(Collectors.toList());
       final TrophiesWonForLeague trophiesWonForLeague = new TrophiesWonForLeague(playerDto, league, hallOfFameForLeague);
       trophiesWonForLeagues.add(trophiesWonForLeague);
