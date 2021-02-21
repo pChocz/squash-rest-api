@@ -16,17 +16,17 @@ import java.util.UUID;
 public class LeagueDtoSimple {
 
   @EqualsAndHashCode.Include
-  private final UUID uuid;
-  private final String name;
+  private final UUID leagueUuid;
+  private final String leagueName;
 
   public LeagueDtoSimple(final League league) {
-    this.uuid = league.getUuid();
-    this.name = league.getName();
+    this.leagueUuid = league.getUuid();
+    this.leagueName = league.getName();
   }
 
   @Override
   public String toString() {
-    return name;
+    return leagueName;
   }
 
 }

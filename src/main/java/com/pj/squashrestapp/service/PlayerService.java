@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
 import org.springframework.stereotype.Service;
@@ -131,11 +132,33 @@ public class PlayerService {
   }
 
 
+  public List<PlayerDetailedDto> getAllPlayers() {
+    final List<Player> allPlayers = playerRepository.findAll();
+    final List<PlayerDetailedDto> allPlayersDetailedInfo = allPlayers
+            .stream()
+            .map(PlayerDetailedDto::new)
+            .collect(Collectors.toList());
+    return allPlayersDetailedInfo;
+  }
+
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
+  }
+
+  @Transactional
+  public PlayerDetailedDto unassignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    player.removeRole(roleForLeague);
+
+    playerRepository.save(player);
+
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
   }
 
   @Transactional
@@ -151,7 +174,26 @@ public class PlayerService {
     return playerDetailedDto;
   }
 
-  public void changePlayerPassword(final UUID token, final String newPassword) {
+  public void changeCurrentSessionPlayerPassword(final String oldPassword, final String newPassword) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = playerRepository.findByUsername(auth.getName());
+    final String oldPasswordHashed = player.getPassword();
+    final boolean oldPasswordMatches = BCrypt.checkpw(oldPassword, oldPasswordHashed);
+
+    if (oldPasswordMatches) {
+      final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
+      final String hashedPassword = bCryptPasswordEncoder.encode(newPassword);
+      player.setPassword(hashedPassword);
+      playerRepository.save(player);
+      log.info("Password for user {} has been succesfully changed.", player.getUsername());
+
+    } else {
+      log.warn("Attempt to change password but old password does not match");
+      throw new RuntimeException("Sorry, your old password does not match!");
+    }
+  }
+
+  public void changeCurrentSessionPlayerPassword(final UUID token, final String newPassword) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
     if (passwordResetToken == null) {
