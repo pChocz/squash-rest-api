@@ -32,23 +32,26 @@ public class XpPointsService {
     return multimap;
   }
 
-  public List<XpPointsForRound> buildAllAsNativeObject() {
-    final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();
-    final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
+  public List<XpPointsForTable> buildXpPointsForTableForType(final String type) {
+    final List<XpPointsForRound> xpPointsForRoundList = buildAllAsNativeObjectForType(type);
+    return build(xpPointsForRoundList);
+  }
+
+  private List<XpPointsForRound> buildAllAsNativeObjectForType(final String type) {
+    final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAllByType(type);
+    final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAllByType(type);
     final List<XpPointsForRound> xpPointsForRound = EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
     return xpPointsForRound;
   }
 
-  public List<XpPointsForTable> buildXpPointsForTable() {
-    final List<XpPointsForRound> xpPointsForRoundList = buildAllAsNativeObject();
-
+  private List<XpPointsForTable> build(final List<XpPointsForRound> xpPointsForRoundList) {
     final List<XpPointsForTable> xpPointsForTableList = new ArrayList<>();
 
     for (final XpPointsForRound xpPointsForRound : xpPointsForRoundList) {
+      final String type = xpPointsForRound.getType();
       final String split = xpPointsForRound.getSplit();
       final int numberOfPlayers = xpPointsForRound.getNumberOfPlayers();
-
-      final XpPointsForTable xpPointsForTable = new XpPointsForTable(split, numberOfPlayers);
+      final XpPointsForTable xpPointsForTable = new XpPointsForTable(type, split, numberOfPlayers);
 
       for (final XpPointsForRoundGroup xpPointsForRoundGroup : xpPointsForRound.getXpPointsForRoundGroups()) {
         final int groupNumber = xpPointsForRoundGroup.getRoundGroupNumber();
@@ -67,6 +70,23 @@ public class XpPointsService {
     }
 
     return xpPointsForTableList;
+  }
+
+  public List<XpPointsForTable> buildXpPointsForTableAll() {
+    final List<XpPointsForRound> xpPointsForRoundList = buildAllAsNativeObject();
+    return build(xpPointsForRoundList);
+  }
+
+  public List<XpPointsForRound> buildAllAsNativeObject() {
+    final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();
+    final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
+    final List<XpPointsForRound> xpPointsForRound = EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
+    return xpPointsForRound;
+  }
+
+  public List<String> getTypes() {
+    final List<String> allTypes = xpPointsRepository.getAllTypes();
+    return allTypes;
   }
 
 }

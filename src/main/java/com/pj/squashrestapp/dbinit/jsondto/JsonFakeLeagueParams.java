@@ -13,6 +13,7 @@ public class JsonFakeLeagueParams {
 
   private String leagueName;
   private String logoBase64;
+  private String xpPointsType;
 
   private int numberOfCompletedSeasons;
   private int numberOfRoundsInLastSeason;

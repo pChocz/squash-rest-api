@@ -2,10 +2,10 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.dto.XpPointsForTable;
 import com.pj.squashrestapp.service.XpPointsService;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +27,22 @@ public class XpPointsController {
   @GetMapping
   @ResponseBody
   List<XpPointsForTable> extractAllForTable() {
-    final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTable();
+    final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTableAll();
     return xpPointsForTableList;
+  }
+
+  @GetMapping("/{type}")
+  @ResponseBody
+  List<XpPointsForTable> extractAllForTableForType(@PathVariable final String type) {
+    final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTableForType(type);
+    return xpPointsForTableList;
+  }
+
+  @GetMapping("/types")
+  @ResponseBody
+  List<String> extractTypes() {
+    final List<String> xpPointsTypes = xpPointsService.getTypes();
+    return xpPointsTypes;
   }
 
 }

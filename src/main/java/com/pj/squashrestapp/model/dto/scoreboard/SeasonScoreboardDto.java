@@ -27,6 +27,8 @@ public class SeasonScoreboardDto implements LoggableQuery {
   private final List<SeasonScoreboardRowDto> seasonScoreboardRows;
   private final List<RoundDto> rounds;
 
+  private final String xpPointsType;
+
   private final UUID previousSeasonUuid;
   private final UUID nextSeasonUuid;
 
@@ -36,6 +38,8 @@ public class SeasonScoreboardDto implements LoggableQuery {
 
     this.previousSeasonUuid = null;
     this.nextSeasonUuid = null;
+
+    this.xpPointsType = season.getXpPointsType();
 
     this.finishedRounds = (int) season
             .getRounds()
@@ -66,6 +70,8 @@ public class SeasonScoreboardDto implements LoggableQuery {
 
     this.previousSeasonUuid = previousSeasonUuid;
     this.nextSeasonUuid = nextSeasonUuid;
+
+    this.xpPointsType = season.getXpPointsType();
 
     this.finishedRounds = (int) season
             .getRounds()

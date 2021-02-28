@@ -59,7 +59,7 @@ public class PlayersRoundsStatsService {
     if (leagueReconstructed != null) {
       for (final Season season : leagueReconstructed.getSeasons()) {
         for (final Round round : season.getRounds()) {
-          final List<Integer> xpPoints = xpPointsPerSplit.get(round.getSplit());
+          final List<Integer> xpPoints = xpPointsPerSplit.get(round.getSplit() + "|" + season.getXpPointsType());
           playerRoundsStats.add(new PlayerSingleRoundStats(player, round, xpPoints));
         }
       }

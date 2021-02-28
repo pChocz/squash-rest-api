@@ -35,6 +35,7 @@ public class JsonImportUtil {
     season.setNumber(jsonSeason.getNumber());
     season.setStartDate(jsonSeason.getStartDate());
     season.setUuid(jsonSeason.getUuid());
+    season.setXpPointsType(jsonSeason.getXpPointsType());
     return season;
   }
 

@@ -63,7 +63,8 @@ public class ScoreboardService {
 
     final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
     final String split = GeneralUtil.integerListToString(playersPerGroup);
-    final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
+    final String type = currentSeason.getXpPointsType();
+    final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplitAndType(split, type);
 
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
@@ -94,7 +95,8 @@ public class ScoreboardService {
 
     final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
     final String split = GeneralUtil.integerListToString(playersPerGroup);
-    final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplit(split);
+    final String type = mostRecentRound.getSeason().getXpPointsType();
+    final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplitAndType(split, type);
 
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;

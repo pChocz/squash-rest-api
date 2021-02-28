@@ -77,7 +77,7 @@ public class SeasonService {
 
       final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
       final String split = GeneralUtil.integerListToString(playersPerGroup);
-      final List<Integer> xpPoints = xpPointsPerSplit.get(split);
+      final List<Integer> xpPoints = xpPointsPerSplit.get(split + "|" + season.getXpPointsType());
       roundScoreboard.assignPointsAndPlaces(xpPoints);
 
       for (final RoundGroupScoreboard scoreboard : roundScoreboard.getRoundGroupScoreboards()) {
@@ -226,9 +226,10 @@ public class SeasonService {
   }
 
   @Transactional
-  public Season createNewSeason(final int seasonNumber, final LocalDate startDate, final UUID leagueUuid) {
+  public Season createNewSeason(final int seasonNumber, final LocalDate startDate,
+                                final UUID leagueUuid, final String xpPointsType) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final Season season = new Season(seasonNumber, startDate);
+    final Season season = new Season(seasonNumber, startDate, xpPointsType);
     league.addSeason(season);
     leagueRepository.save(league);
     return season;

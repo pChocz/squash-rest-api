@@ -36,6 +36,10 @@ public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRou
   private Long id;
 
   @Setter
+  @Column(name = "type")
+  private String type;
+
+  @Setter
   @Column(name = "split")
   private String split;
 
@@ -51,7 +55,8 @@ public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRou
           orphanRemoval = true)
   private Set<XpPointsForRoundGroup> xpPointsForRoundGroups;
 
-  public XpPointsForRound(final int[] splitAsArray, final int[][] points) {
+  public XpPointsForRound(final String type, final int[] splitAsArray, final int[][] points) {
+    this.type = type;
     this.numberOfPlayers = Arrays.stream(splitAsArray).sum();
     this.split = GeneralUtil.intArrayToString(splitAsArray);
     this.xpPointsForRoundGroups = new TreeSet<XpPointsForRoundGroup>();

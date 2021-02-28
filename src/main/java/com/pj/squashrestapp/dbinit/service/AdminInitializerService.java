@@ -79,7 +79,6 @@ public class AdminInitializerService {
       return false;
 
     } else {
-//      final long startTime = System.nanoTime();
       log.info("Initializing - BEGIN");
 
       persistStandardAuthorities();
@@ -88,8 +87,6 @@ public class AdminInitializerService {
       persistCredentials(initCredentialsJsonContent);
 
       log.info("Initializing - FINISHED");
-//      TimeLogUtil.logFinish(startTime);
-
       return true;
     }
   }
@@ -107,9 +104,10 @@ public class AdminInitializerService {
 
     final List<XpPointsForRound> xpPoints = new ArrayList<>();
     for (final JsonXpPointsForRound jsonXpPointsForRound : xpPointsDto.getXpPointsForRound()) {
+      final String type = jsonXpPointsForRound.getType();
       final int[] players = jsonXpPointsForRound.buildPlayerSplitArray();
       final int[][] points = jsonXpPointsForRound.buildXpPointsArray();
-      final XpPointsForRound xpPointsForRound = new XpPointsForRound(players, points);
+      final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, players, points);
       xpPoints.add(xpPointsForRound);
     }
 

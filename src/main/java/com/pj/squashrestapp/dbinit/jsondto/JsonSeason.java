@@ -17,6 +17,8 @@ public class JsonSeason {
 
   private UUID uuid;
 
+  private String xpPointsType;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
 

@@ -67,6 +67,10 @@ public class Season implements Identifiable, Comparable<Season> {
   private UUID uuid = UUID.randomUUID();
 
   @Setter
+  @Column(name = "xp_points_type")
+  private String xpPointsType;
+
+  @Setter
   @Column(name = "number")
   private int number;
 
@@ -96,9 +100,10 @@ public class Season implements Identifiable, Comparable<Season> {
   @JoinColumn(name = "league_id")
   private League league;
 
-  public Season(final int number, final LocalDate startDate) {
+  public Season(final int number, final LocalDate startDate, final String xpPointsType) {
     this.number = number;
     this.startDate = startDate;
+    this.xpPointsType = xpPointsType;
   }
 
   public void addRound(final Round round) {
