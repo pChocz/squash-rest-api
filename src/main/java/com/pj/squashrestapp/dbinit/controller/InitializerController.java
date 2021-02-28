@@ -37,8 +37,7 @@ public class InitializerController {
   @PostMapping(value = "/leagues")
   @ResponseBody
   @PreAuthorize("isAdmin()")
-  void createFakeLeague(
-          @RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile) throws IOException {
+  void createFakeLeague(@RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile) throws IOException {
 
     final String jsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
     final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {
@@ -50,10 +49,9 @@ public class InitializerController {
 
   @PostMapping(value = "/json")
   @ResponseBody
-  void createInitialDatabaseStructure(
-          @RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
-          @RequestParam("init-all-leagues") final MultipartFile initAllLeaguesFile,
-          @RequestParam("init-credentials") final MultipartFile initCredentialsFile) throws Exception {
+  void createInitialDatabaseStructure(@RequestParam("init-xp-points") final MultipartFile initXpPointsFile,
+                                      @RequestParam("init-all-leagues") final MultipartFile initAllLeaguesFile,
+                                      @RequestParam("init-credentials") final MultipartFile initCredentialsFile) throws Exception {
 
     final String initXpPointsJsonContent = IOUtils.toString(initXpPointsFile.getInputStream(), Charset.defaultCharset());
     final String initAllLeaguesJsonContent = IOUtils.toString(initAllLeaguesFile.getInputStream(), Charset.defaultCharset());

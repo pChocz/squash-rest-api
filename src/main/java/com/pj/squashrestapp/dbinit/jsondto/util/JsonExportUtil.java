@@ -88,6 +88,7 @@ public class JsonExportUtil {
     final JsonSeason jsonSeason = new JsonSeason();
     jsonSeason.setUuid(season.getUuid());
     jsonSeason.setNumber(season.getNumber());
+    jsonSeason.setXpPointsType(season.getXpPointsType());
     jsonSeason.setStartDate(season.getStartDate());
     jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
     jsonSeason.setRounds(buildRoundsJson(season.getRoundsOrdered()));

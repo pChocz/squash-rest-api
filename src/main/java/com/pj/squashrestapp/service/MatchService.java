@@ -49,7 +49,7 @@ public class MatchService {
             .findFirst()
             .orElse(null);
 
-    if (looserScore == null) {
+    if (looserScore == -1) {
       setToModify.setFirstPlayerScore(null);
       setToModify.setSecondPlayerScore(null);
 
@@ -68,12 +68,7 @@ public class MatchService {
 
     setResultRepository.save(setToModify);
 
-    final String message = "\nSuccesfully updated the match!" +
-                           "\n\t-> " + initialMatchResult + "\t- earlier" +
-                           "\n\t-> " + matchToModify.getSetResults() + "\t- now";
-    log.info(message);
-
-    log.info("Match modified: {} ");
+    log.info("Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, matchToModify);
   }
 
   private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {

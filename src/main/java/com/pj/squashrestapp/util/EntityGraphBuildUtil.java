@@ -85,9 +85,10 @@ public class EntityGraphBuildUtil {
               .getObject(xpPointsForRoundClassId);
 
       final String split = xpPointsForRoundReconstructed.getSplit();
+      final String type = xpPointsForRoundReconstructed.getType();
       for (final XpPointsForRoundGroup xpPointsForRoundGroup : xpPointsForRoundReconstructed.getXpPointsForRoundGroups()) {
         for (final XpPointsForPlace xpPointsForPlaces : xpPointsForRoundGroup.getXpPointsForPlaces()) {
-          multimap.put(split, xpPointsForPlaces.getPoints());
+          multimap.put(split + "|" + type, xpPointsForPlaces.getPoints());
         }
       }
     }

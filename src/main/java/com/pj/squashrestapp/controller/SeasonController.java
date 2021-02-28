@@ -59,8 +59,9 @@ public class SeasonController {
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   SeasonDto createNewSeason(@RequestParam final int seasonNumber,
                             @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
-                            @RequestParam final UUID leagueUuid) {
-    final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid);
+                            @RequestParam final UUID leagueUuid,
+                            @RequestParam final String xpPointsType) {
+    final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid, xpPointsType);
     return new SeasonDto(season);
   }
 
@@ -68,9 +69,7 @@ public class SeasonController {
   @GetMapping(value = "/players-sorted/{seasonUuid}")
   @ResponseBody
   List<PlayerDto> leaguePlayersSeasonSorted(@PathVariable final UUID seasonUuid) {
-//    final long startTime = System.nanoTime();
     final List<PlayerDto> players = seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonUuid);
-//    TimeLogUtil.logFinish(startTime);
     return players;
   }
 

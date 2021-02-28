@@ -22,9 +22,10 @@ public class FakeSeason {
                        final int numberOfRounds,
                        final List<Player> allPlayers,
                        final int minNumberOfAttendingPlayers,
-                       final int maxNumberOfAttendingPlayers) {
+                       final int maxNumberOfAttendingPlayers,
+                       final String xpPointsType) {
 
-    final Season season = new Season(seasonNumber, seasonStartDate);
+    final Season season = new Season(seasonNumber, seasonStartDate, xpPointsType);
 
     LocalDate roundDate = seasonStartDate;
     for (int roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {

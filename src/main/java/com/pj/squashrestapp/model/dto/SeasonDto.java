@@ -23,6 +23,8 @@ public class SeasonDto implements Comparable<SeasonDto> {
   private final UUID seasonUuid;
   private final int seasonNumber;
   private final String seasonNumberRoman;
+  private final String xpPointsType;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate seasonStartDate;
 
@@ -32,6 +34,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
     this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
     this.seasonNumberRoman = RomanUtil.toRoman(season.getNumber());
+    this.xpPointsType = season.getXpPointsType();
     this.seasonStartDate = season.getStartDate();
   }
 

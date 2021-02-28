@@ -13,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class JsonXpPointsForRound {
 
+  private String type;
   private String numberOfPlayersCsv;
   private List<String> pointsCsv;
 
