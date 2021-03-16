@@ -9,17 +9,17 @@ public final class TokenConstants {
 
   public static final String HEADER_STRING = "Authorization";
 
+  public static final String HEADER_REFRESH_STRING = "Refresh";
+
   public static final String EXPOSE_HEADER_STRING = "Access-Control-Expose-Headers";
 
-  public static final String EXPIRATION_PREFIX = "exp";
+  /** Verification token expiration time in days */
+  public static final long VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS = 1;
 
-  /** Expiration time in miliseconds */
-  static final long TOKEN_EXPIRATION_TIME =
-          2 * // months
-          31 * // days
-          24 * // hours
-          60 * // minutes
-          60 * // seconds
-          1000L; // milliseconds
+  /** Access token expiration time in days */
+  public static final long ACCESS_TOKEN_EXPIRATION_TIME_DAYS = 7;
+
+  /** Refresh token expiration time in days */
+  public static final long REFRESH_TOKEN_EXPIRATION_TIME_DAYS = 30;
 
 }

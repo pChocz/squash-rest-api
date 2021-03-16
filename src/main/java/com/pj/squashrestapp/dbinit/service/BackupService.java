@@ -4,25 +4,33 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
+import com.pj.squashrestapp.dbinit.jsondto.JsonRefreshToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
+import com.pj.squashrestapp.dbinit.jsondto.JsonVerificationToken;
+import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonExportUtil;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.VerificationToken;
+import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
+import com.pj.squashrestapp.repository.VerificationTokenRepository;
+import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,6 +55,9 @@ public class BackupService {
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
   private final BonusPointRepository bonusPointRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
+  private final VerificationTokenRepository verificationTokenRepository;
+  private final XpPointsService xpPointsService;
 
   public JsonSeason seasonToJson(final UUID seasonUuid) {
     final List<SetResult> setResults = setResultRepository.fetchBySeasonUuid(seasonUuid);
@@ -65,34 +76,55 @@ public class BackupService {
     return roundJson;
   }
 
+  public List<JsonXpPointsForRound> allXpPoints() {
+    final List<XpPointsForRound> xpPointsForRoundAll = xpPointsService.buildAllAsNativeObject();
+
+    final List<JsonXpPointsForRound> jsonXpPointsForRoundAll = new ArrayList<>();
+    for (final XpPointsForRound xpPointsForRound : xpPointsForRoundAll) {
+
+      final String splitCsv = xpPointsForRound.getSplit().replace(" | ", ", ");
+
+      final List<String> pointsCsv = xpPointsForRound
+              .getXpPointsForRoundGroups()
+              .stream()
+              .map(xpPointsForRoundGroup -> xpPointsForRoundGroup
+                      .getXpPointsForPlaces()
+                      .stream()
+                      .map(xpPointsForPlace -> String.valueOf(xpPointsForPlace.getPoints()))
+                      .collect(Collectors.toList()))
+              .map(roundGroupPointsList -> String.join(", ", roundGroupPointsList))
+              .collect(Collectors.toList());
+
+      final JsonXpPointsForRound jsonXpPointsForRound = new JsonXpPointsForRound();
+      jsonXpPointsForRound.setType(xpPointsForRound.getType());
+      jsonXpPointsForRound.setNumberOfPlayersCsv(splitCsv);
+      jsonXpPointsForRound.setPointsCsv(pointsCsv);
+      jsonXpPointsForRoundAll.add(jsonXpPointsForRound);
+    }
+
+    return jsonXpPointsForRoundAll;
+  }
+
   @Transactional
   public List<JsonLeague> allLeagues() {
-//    final long startTime = System.nanoTime();
     final List<UUID> allLeaguesUuids = leagueRepository.findUuids();
-
     log.info("Backing up {} leagues", allLeaguesUuids.size());
-
     final List<JsonLeague> jsonLeagues = allLeaguesUuids
             .stream()
             .map(this::leagueToJson)
             .collect(Collectors.toList());
-
     log.info("Finished backing up all leagues");
-//    TimeLogUtil.logFinish(startTime);
-
     return jsonLeagues;
   }
 
   @Transactional
   public JsonLeague leagueToJson(final UUID leagueUuid) {
-//    final long startTime = System.nanoTime();
     final String leagueName = leagueRepository.findByUuid(leagueUuid).orElseThrow().getName();
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
     final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints);
     log.info("\tFinished backing up league -> {}", league.getName());
-//    TimeLogUtil.logFinish(startTime);
     return leagueJson;
   }
 
@@ -136,6 +168,32 @@ public class BackupService {
       jsonLeagueRoles.add(jsonLeagueRole);
     }
     return jsonLeagueRoles;
+  }
+
+  public List<JsonRefreshToken> allRefreshTokens() {
+    final List<JsonRefreshToken> jsonRefreshTokens = new ArrayList<>();
+    final List<RefreshToken> allRefreshTokens = refreshTokenRepository.findAll();
+    for (final RefreshToken refreshToken : allRefreshTokens) {
+      final JsonRefreshToken jsonRefreshToken = new JsonRefreshToken();
+      jsonRefreshToken.setToken(refreshToken.getToken());
+      jsonRefreshToken.setPlayerUuid(refreshToken.getPlayer().getUuid());
+      jsonRefreshToken.setExpirationDateTime(refreshToken.getExpirationDateTime());
+      jsonRefreshTokens.add(jsonRefreshToken);
+    }
+    return jsonRefreshTokens;
+  }
+
+  public List<JsonVerificationToken> allVerificationTokens() {
+    final List<JsonVerificationToken> jsonVerificationTokens = new ArrayList<>();
+    final List<VerificationToken> allVerificationTokens = verificationTokenRepository.findAll();
+    for (final VerificationToken verificationToken : allVerificationTokens) {
+      final JsonVerificationToken jsonVerificationToken = new JsonVerificationToken();
+      jsonVerificationToken.setToken(verificationToken.getToken());
+      jsonVerificationToken.setPlayerUuid(verificationToken.getPlayer().getUuid());
+      jsonVerificationToken.setExpirationDateTime(verificationToken.getExpirationDateTime());
+      jsonVerificationTokens.add(jsonVerificationToken);
+    }
+    return jsonVerificationTokens;
   }
 
 }

@@ -26,7 +26,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
   }
 
   private void confirmRegistration(final OnRegistrationCompleteEvent event) {
-    final String token = UUID.randomUUID().toString();
+    final UUID token = UUID.randomUUID();
     final Player player = event.getPlayer();
     playerService.createAndPersistVerificationToken(token, player);
 

@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dbinit.jsondto.JsonAll;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
-import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +14,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.UUID;
 
 /**
- *
+ * Controller that provides methods to perform a backup of the database to a JSON file.
  */
 @Slf4j
 @RestController
@@ -42,18 +41,18 @@ public class BackupController {
     return new ResponseEntity<>(leagueJson, HttpStatus.OK);
   }
 
-  @GetMapping("/leagues/all")
+  @GetMapping("/all")
   @PreAuthorize("isAdmin()")
-  ResponseEntity<List<JsonLeague>> backupAllLeagues() {
-    final List<JsonLeague> leaguesJson = backupService.allLeagues();
-    return new ResponseEntity<List<JsonLeague>>(leaguesJson, HttpStatus.OK);
-  }
-
-  @GetMapping("/players/all")
-  @PreAuthorize("isAdmin()")
-  ResponseEntity<List<JsonPlayerCredentials>> backupAllPlayersCredentials() {
-    final List<JsonPlayerCredentials> playersCredentialsJson = backupService.allPlayersCredentials();
-    return new ResponseEntity<List<JsonPlayerCredentials>>(playersCredentialsJson, HttpStatus.OK);
+  ResponseEntity<JsonAll> backupAll() {
+    final JsonAll jsonAll = JsonAll
+            .builder()
+            .xpPoints(backupService.allXpPoints())
+            .leagues(backupService.allLeagues())
+            .credentials(backupService.allPlayersCredentials())
+            .refreshTokens(backupService.allRefreshTokens())
+            .verificationTokens(backupService.allVerificationTokens())
+            .build();
+    return new ResponseEntity<>(jsonAll, HttpStatus.OK);
   }
 
 }

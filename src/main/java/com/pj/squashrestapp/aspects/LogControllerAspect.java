@@ -31,13 +31,18 @@ public class LogControllerAspect {
     // empty
   }
 
+  @Pointcut("execution(* com.pj.squashrestapp.dbinit.controller.*.*(..)))")
+  public void controllerDbInitMethodsPointcut() {
+    // empty
+  }
+
   /**
    * Logging aspect that matches all non-void controller methods.
    *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
    */
-  @Around("controllerMethodsPointcut()")
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
   public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) {
     final String username = GeneralUtil.extractSessionUsername();
     final Object[] args = proceedingJoinPoint.getArgs();

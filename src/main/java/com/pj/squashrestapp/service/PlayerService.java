@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.WrongSignupDataException;
+import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.League;
@@ -35,6 +36,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.pj.squashrestapp.config.security.token.TokenConstants.VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS;
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
 /**
@@ -51,7 +53,6 @@ public class PlayerService {
   private final RoleForLeagueRepository roleForLeagueRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
-
 
   @SuppressWarnings("OverlyComplexMethod")
   public boolean isValidSignupData(final String username, final String email, final String password) throws WrongSignupDataException {
@@ -80,7 +81,7 @@ public class PlayerService {
       message = "Email is not valid!";
 
     } else if (!PasswordStrengthValidator.isValid(password)) {
-      message = "Password is too weak. It must contain at least 5 characters.";
+      message = "Password is too weak or too long. It must contain 5-100 characters.";
 
     } else {
       message = "";
@@ -98,8 +99,9 @@ public class PlayerService {
     return playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase()).orElse(null);
   }
 
-  public void createAndPersistVerificationToken(final String token, final Player user) {
-    final VerificationToken verificationToken = new VerificationToken(token, user);
+  public void createAndPersistVerificationToken(final UUID token, final Player user) {
+    final LocalDateTime expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusDays(VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS);
+    final VerificationToken verificationToken = new VerificationToken(token, user, expirationDateTime);
     verificationTokenRepository.save(verificationToken);
   }
 
@@ -220,7 +222,7 @@ public class PlayerService {
     }
   }
 
-  public void activateUserWithToken(final String token) {
+  public void activateUserWithToken(final UUID token) {
     final VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
 
     if (verificationToken == null) {
@@ -238,6 +240,24 @@ public class PlayerService {
       verificationTokenRepository.delete(verificationToken);
       log.info("User {} has been succesfully activated.", player.getUsername());
     }
+  }
+
+  public void invalidateAllTokens() {
+    playerRepository
+            .findAll()
+            .stream()
+            .filter(this::isNonAdminPlayer)
+            .forEach(player -> {
+              player.setPasswordSessionUuid(UUID.randomUUID());
+              playerRepository.save(player);
+            });
+  }
+
+  private boolean isNonAdminPlayer(final Player player) {
+    return player
+            .getAuthorities()
+            .stream()
+            .noneMatch(authority -> authority.getType() == AuthorityType.ROLE_ADMIN);
   }
 
 }

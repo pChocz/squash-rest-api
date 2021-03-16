@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class GeneralUtil {
 
   public final static String DATE_FORMAT = "yyyy-MM-dd";
+  public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
   public final static TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
   public final static ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
 

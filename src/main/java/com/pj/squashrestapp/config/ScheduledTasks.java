@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.service.TokenService;
+import com.pj.squashrestapp.service.TokenRemovalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -32,7 +32,7 @@ public class ScheduledTasks {
   private static final String CRON_EVERY_FULL_HOUR = "0 0 * * * *";
   private static final String CRON_EVERYDAY_AT_MIDNIGHT = "0 0 0 * * *";
 
-  private final TokenService tokenService;
+  private final TokenRemovalService tokenRemovalService;
 
   /**
    * Permanently removes all expired temporary tokens from database.
@@ -40,7 +40,7 @@ public class ScheduledTasks {
    */
   @Scheduled(cron = CRON_EVERYDAY_AT_MIDNIGHT, zone = "UTC")
   public void cronScheduledEveryday() {
-    tokenService.removeExpiredTokensFromDb();
+    tokenRemovalService.removeExpiredTokensFromDb();
   }
 
 }
