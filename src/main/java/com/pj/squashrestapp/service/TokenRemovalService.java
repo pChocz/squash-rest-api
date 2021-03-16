@@ -2,10 +2,12 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +25,10 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TokenService {
+public class TokenRemovalService {
 
   private final VerificationTokenRepository verificationTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final PlayerRepository playerRepository;
 
@@ -45,11 +48,13 @@ public class TokenService {
     final LocalDateTime now = LocalDateTime.now(UTC_ZONE_ID);
 
     final List<VerificationToken> expiredVerificationTokens = verificationTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final List<RefreshToken> expiredRefreshTokens = refreshTokenRepository.findAllByExpirationDateTimeBefore(now);
     final List<PasswordResetToken> expiredPasswordResetTokens = passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final int tokensCount = expiredVerificationTokens.size() + expiredPasswordResetTokens.size();
+    final int tokensCount = expiredVerificationTokens.size() + expiredRefreshTokens.size() + expiredPasswordResetTokens.size();
 
     if (tokensCount > 0) {
       verificationTokenRepository.deleteAll(expiredVerificationTokens);
+      refreshTokenRepository.deleteAll(expiredRefreshTokens);
       passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
       log.info("Succesfully removed {} expired tokens.", tokensCount);
 
@@ -59,20 +64,3 @@ public class TokenService {
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

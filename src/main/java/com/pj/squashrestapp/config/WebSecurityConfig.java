@@ -6,6 +6,7 @@ import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.service.TokenCreateService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -39,6 +40,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final UserDetailsService userDetailsService;
   private final PlayerRepository playerRepository;
+  private final TokenCreateService tokenCreateService;
   private final SecretKeyHolder secretKeyHolder;
 
   @Override
@@ -48,12 +50,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     httpSecurity.cors().and().csrf().disable();
 
     // set up of endpoints permissions
-    httpSecurity.authorizeRequests()
+    httpSecurity
+            .authorizeRequests()
             // allowing not authenticated players view scoreboard for rounds and seasons
             .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*").permitAll()
             .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
+            .antMatchers(HttpMethod.GET, "/league-logos/season/*").permitAll()
+            .antMatchers(HttpMethod.GET, "/league-logos/round/*").permitAll()
             // allowing regular endpoints to be accessible
             .antMatchers(HttpMethod.GET, "/access/reset-password-player/**").permitAll()
+            .antMatchers(HttpMethod.GET, "/access/refresh-token/*").permitAll()
             .antMatchers(HttpMethod.POST, "/access/sign-up").permitAll()
             .antMatchers(HttpMethod.POST, "/access/request-password-reset").permitAll()
             .antMatchers(HttpMethod.POST, "/access/confirm-password-reset").permitAll()
@@ -64,7 +70,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     // anyRequest().permitAll();
 
     // authentication and authorization filters
-    httpSecurity.addFilter(new JwtAuthenticationFilter(authenticationManager(), secretKeyHolder))
+    httpSecurity
+            .addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenCreateService, playerRepository))
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
 
     // this disables session creation on Spring Security

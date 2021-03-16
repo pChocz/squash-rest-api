@@ -5,12 +5,15 @@ import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCom
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
-import com.pj.squashrestapp.service.TokenService;
+import com.pj.squashrestapp.service.TokenPair;
+import com.pj.squashrestapp.service.TokenCreateService;
+import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,13 +40,14 @@ public class UserAccessController {
 
   private final ApplicationEventPublisher eventPublisher;
   private final PlayerService playerService;
-  private final TokenService tokenService;
+  private final TokenRemovalService tokenRemovalService;
+  private final TokenCreateService tokenCreateService;
 
 
   @GetMapping(value = "/reset-password-player/{passwordResetToken}")
   @ResponseBody
   PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {
-    final PlayerDetailedDto player = tokenService.extractPlayerByPasswordResetToken(passwordResetToken);
+    final PlayerDetailedDto player = tokenRemovalService.extractPlayerByPasswordResetToken(passwordResetToken);
     return player;
   }
 
@@ -112,6 +116,21 @@ public class UserAccessController {
     }
   }
 
+  @PostMapping(value = "/invalidate-all-tokens")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("isAdmin()")
+  void invalidateAllTokens() {
+    playerService.invalidateAllTokens();
+  }
+
+
+  @GetMapping(value = "/refresh-token/{oldRefreshTokenUuid}")
+  @ResponseBody
+  TokenPair refreshToken(@PathVariable final UUID oldRefreshTokenUuid) {
+    final TokenPair tokenPair = tokenCreateService.attemptToCreateNewTokensPair(oldRefreshTokenUuid);
+    return tokenPair;
+  }
+
 
   @PostMapping(value = "/confirm-password-reset")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -124,7 +143,7 @@ public class UserAccessController {
 
   @PostMapping("/confirm-registration")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmRegistration(@RequestParam final String token) {
+  void confirmRegistration(@RequestParam final UUID token) {
     playerService.activateUserWithToken(token);
   }
 

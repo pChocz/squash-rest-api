@@ -35,7 +35,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   @EntityGraph(attributePaths = {
           "seasons.rounds.roundGroups.matches.setResults",
           "seasons.rounds.roundGroups.matches.firstPlayer",
-          "seasons.rounds.roundGroups.matches.secondPlayer",
+          "seasons.rounds.roundGroups.matches.secondPlayer"
   })
   Optional<League> findByUuidForBackup(UUID leagueUuid);
 

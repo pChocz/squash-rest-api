@@ -16,16 +16,14 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
-
 /**
  *
  */
 @Entity
-@Table(name = "verification_tokens")
+@Table(name = "refresh_tokens")
 @Getter
 @NoArgsConstructor
-public class VerificationToken {
+public class RefreshToken {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,7 +44,7 @@ public class VerificationToken {
           updatable = false)
   private LocalDateTime expirationDateTime;
 
-  public VerificationToken(final UUID token, final Player player, final LocalDateTime expirationDateTime) {
+  public RefreshToken(final UUID token, final Player player, final LocalDateTime expirationDateTime) {
     this.token = token;
     this.player = player;
     this.expirationDateTime = expirationDateTime;

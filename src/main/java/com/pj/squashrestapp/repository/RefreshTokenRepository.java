@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.VerificationToken;
+import com.pj.squashrestapp.model.RefreshToken;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,18 +11,18 @@ import java.util.UUID;
 /**
  *
  */
-public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
+public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
   @Override
   @EntityGraph(attributePaths = {
           "player"
   })
-  List<VerificationToken> findAll();
+  List<RefreshToken> findAll();
 
 
-  VerificationToken findByToken(UUID token);
+  RefreshToken findByToken(UUID token);
 
 
-  List<VerificationToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
+  List<RefreshToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
 
 }

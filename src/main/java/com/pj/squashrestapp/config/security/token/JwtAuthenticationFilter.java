@@ -1,8 +1,11 @@
 package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.service.TokenPair;
+import com.pj.squashrestapp.service.TokenCreateService;
 import com.pj.squashrestapp.util.TimeLogUtil;
-import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,10 +19,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 
-import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_EXPIRATION_TIME;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPOSE_HEADER_STRING;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_REFRESH_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
@@ -30,19 +32,22 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PR
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
-  private final SecretKeyHolder secretKeyHolder;
+  private final TokenCreateService tokenCreateService;
+  private final PlayerRepository playerRepository;
 
   public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
-                                 final SecretKeyHolder secretKeyHolder) {
+                                 final TokenCreateService tokenCreateService,
+                                 final PlayerRepository playerRepository) {
     this.authenticationManager = authenticationManager;
-    this.secretKeyHolder = secretKeyHolder;
+    this.tokenCreateService = tokenCreateService;
+    this.playerRepository = playerRepository;
   }
 
   @Override
   public Authentication attemptAuthentication(final HttpServletRequest req,
                                               final HttpServletResponse res) throws AuthenticationException {
 
-    final String usernameOrEmail = req.getParameter("usernameOrEmail");
+    final String usernameOrEmail = req.getParameter("usernameOrEmail").trim();
 
     try {
       final int numberOfParams = req.getParameterMap().size();
@@ -74,18 +79,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                           final FilterChain chain,
                                           final Authentication auth) throws IOException, ServletException {
     final UserDetailsImpl principal = getPrincipal(auth);
+    final Player player = playerRepository.findByUuid(principal.getUuid());
+    final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player);
 
-    final String token = Jwts
-            .builder()
-            .claim("uid", principal.getUuid())
-            .claim("pid", principal.getPasswordSessionUuid())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
-            .signWith(secretKeyHolder.getSecretKey())
-            .compact();
-
-    res.addHeader(HEADER_STRING, TOKEN_PREFIX + token);
-    res.addHeader(EXPOSE_HEADER_STRING, HEADER_STRING);
+    res.addHeader(HEADER_STRING, TOKEN_PREFIX + tokensPair.getJwtAccessToken());
+    res.addHeader(HEADER_REFRESH_STRING, tokensPair.getRefreshToken().toString());
+    res.addHeader(EXPOSE_HEADER_STRING, HEADER_STRING + ", " + HEADER_REFRESH_STRING);
   }
 
 }
