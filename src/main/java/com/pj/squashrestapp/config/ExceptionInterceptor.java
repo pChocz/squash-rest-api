@@ -66,6 +66,8 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
           final Exception ex,
           final HttpServletRequest request) {
 
+    log.error("Caught NoSuchElementException in the Exception Interceptor");
+
     final HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 
     return new ResponseEntity<>(
@@ -90,6 +92,24 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
             ErrorResponse.builder()
                     .timestamp(LocalDateTime.now())
                     .message("Wrong data format. Are you sure you didn't type it yourself?")
+                    .status(httpStatus.value())
+                    .path(request.getRequestURI())
+                    .build(),
+            httpStatus
+    );
+  }
+
+  @ExceptionHandler(Exception.class)
+  ResponseEntity<ErrorResponse> handleGenericException(
+          final Exception ex,
+          final HttpServletRequest request) {
+
+    final HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
+    return new ResponseEntity<>(
+            ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .message(ex.getMessage())
                     .status(httpStatus.value())
                     .path(request.getRequestURI())
                     .build(),

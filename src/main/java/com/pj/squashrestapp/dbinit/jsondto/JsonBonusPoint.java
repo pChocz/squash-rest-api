@@ -13,10 +13,14 @@ import java.util.UUID;
 public class JsonBonusPoint {
 
   private UUID uuid;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate date;
-  private String winner;
-  private String looser;
+
+  private UUID winner;
+
+  private UUID looser;
+
   private int points;
 
 }

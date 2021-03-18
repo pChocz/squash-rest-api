@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.BonusPoint;
-import com.pj.squashrestapp.model.dto.BonusPointsDto;
+import com.pj.squashrestapp.dto.BonusPointsDto;
 import com.pj.squashrestapp.service.BonusPointService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -13,11 +14,11 @@ public class JsonMatch {
 
   @JsonProperty("p1")
   @SerializedName("p1")
-  private String firstPlayer;
+  private UUID firstPlayer;
 
   @JsonProperty("p2")
   @SerializedName("p2")
-  private String secondPlayer;
+  private UUID secondPlayer;
 
   private ArrayList<JsonSetResult> sets;
 

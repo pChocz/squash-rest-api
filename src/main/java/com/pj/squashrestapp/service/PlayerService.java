@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.WrongSignupDataException;
-import com.pj.squashrestapp.config.security.token.TokenConstants;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.League;
@@ -10,7 +9,7 @@ import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
-import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;

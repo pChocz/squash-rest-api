@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.aspects.QueryLog;
-import com.pj.squashrestapp.model.dto.scoreboard.PlayerSummary;
-import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
+import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

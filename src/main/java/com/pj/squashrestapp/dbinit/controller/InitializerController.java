@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/db-initializers")
+@RequestMapping("/init")
 @RequiredArgsConstructor
 public class InitializerController {
 
@@ -39,9 +39,9 @@ public class InitializerController {
   @PostMapping(value = "/leagues")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void createFakeLeague(@RequestParam("init-fake-leagues") final MultipartFile initDefaultUsersFile) throws IOException {
+  void createFakeLeague(@RequestParam final MultipartFile initFakeLeagues) throws IOException {
 
-    final String jsonContent = IOUtils.toString(initDefaultUsersFile.getInputStream(), Charset.defaultCharset());
+    final String jsonContent = IOUtils.toString(initFakeLeagues.getInputStream(), Charset.defaultCharset());
     final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {
     }.getType();
     final List<JsonFakeLeagueParams> fakeLeagueParams = GsonUtil.gsonWithDateAndDateTime().fromJson(jsonContent, listOfMyClassObject);
@@ -50,15 +50,14 @@ public class InitializerController {
   }
 
 
-  @PostMapping(value = "/json-single-file")
-  @ResponseStatus(HttpStatus.OK)
-  void createInitialDatabaseStructure(@RequestParam("init-all") final MultipartFile initAllFile) throws IOException {
-    final String initAllJsonContent = IOUtils.toString(initAllFile.getInputStream(), Charset.defaultCharset());
+  @PostMapping(value = "/json")
+  void createInitialDatabaseStructure(@RequestParam final MultipartFile initJson) throws IOException {
+    final String initAllJsonContent = IOUtils.toString(initJson.getInputStream(), Charset.defaultCharset());
     final boolean initialized = adminInitializerService.initialize(initAllJsonContent);
     if (initialized) {
       log.info("Database initialized properly");
     } else {
-      log.info("It seems that database has already been populated earlier so we leave it as is");
+      throw new UnsupportedOperationException("It seems that database has already been populated earlier so we leave it as is");
     }
   }
 

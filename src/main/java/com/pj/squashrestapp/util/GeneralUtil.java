@@ -96,4 +96,11 @@ public class GeneralUtil {
     return userDetails.getUuid();
   }
 
+  public double getDurationSecondsRounded(final long startTime) {
+    final long endTime = System.nanoTime();
+    final long duration = endTime - startTime;
+    final double durationSeconds = (double) duration / 1_000_000_000;
+    return (double) Math.round(durationSeconds * 100d) / 100d;
+  }
+
 }

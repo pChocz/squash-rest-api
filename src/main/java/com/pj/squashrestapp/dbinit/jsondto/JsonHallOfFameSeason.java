@@ -5,6 +5,9 @@ import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+import java.util.UUID;
+
 @Data
 @NoArgsConstructor
 public class JsonHallOfFameSeason {
@@ -15,42 +18,42 @@ public class JsonHallOfFameSeason {
 
   @JsonProperty("l1")
   @SerializedName("l1")
-  private String league1stPlace;
+  private UUID league1stPlace;
 
   @JsonProperty("l2")
   @SerializedName("l2")
-  private String league2ndPlace;
+  private UUID league2ndPlace;
 
   @JsonProperty("l3")
   @SerializedName("l3")
-  private String league3rdPlace;
+  private UUID league3rdPlace;
 
   @JsonProperty("c1")
   @SerializedName("c1")
-  private String cup1stPlace;
+  private UUID cup1stPlace;
 
   @JsonProperty("c2")
   @SerializedName("c2")
-  private String cup2ndPlace;
+  private UUID cup2ndPlace;
 
   @JsonProperty("c3")
   @SerializedName("c3")
-  private String cup3rdPlace;
+  private UUID cup3rdPlace;
 
   @JsonProperty("sc")
   @SerializedName("sc")
-  private String superCupWinner;
+  private UUID superCupWinner;
 
   @JsonProperty("pc")
   @SerializedName("pc")
-  private String pretendersCupWinner;
+  private UUID pretendersCupWinner;
 
   @JsonProperty("all")
   @SerializedName("all")
-  private String allRoundsAttendees;
+  private List<UUID> allRoundsAttendees;
 
   @JsonProperty("cov")
   @SerializedName("cov")
-  private String coviders;
+  private List<UUID> coviders;
 
 }

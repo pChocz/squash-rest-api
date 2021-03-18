@@ -4,7 +4,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import lombok.experimental.UtilityClass;
 
 import java.util.List;
@@ -46,7 +46,6 @@ public class MatchExtractorUtil {
             .map(MatchDetailedDto::new)
             .collect(Collectors.toList());
   }
-
 
   public List<MatchDetailedDto> extractAllMatches(final Round round) {
     return round

@@ -1,11 +1,10 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.SeasonDto;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
-import com.pj.squashrestapp.util.TimeLogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;

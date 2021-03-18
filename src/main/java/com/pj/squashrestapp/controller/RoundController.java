@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -70,7 +69,6 @@ public class RoundController {
 
 
   @DeleteMapping(value = "/{roundUuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void deleteRound(@PathVariable final UUID roundUuid) {
     roundService.deleteRound(roundUuid);

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.dto.XpPointsForTable;
+import com.pj.squashrestapp.dto.XpPointsForTable;
 import com.pj.squashrestapp.service.XpPointsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +31,14 @@ public class XpPointsController {
     return xpPointsForTableList;
   }
 
+
   @GetMapping("/{type}")
   @ResponseBody
   List<XpPointsForTable> extractAllForTableForType(@PathVariable final String type) {
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTableForType(type);
     return xpPointsForTableList;
   }
+
 
   @GetMapping("/types")
   @ResponseBody
