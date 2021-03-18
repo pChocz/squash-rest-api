@@ -43,7 +43,7 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    */
   @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
-  public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) {
+  public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
     final Object[] args = proceedingJoinPoint.getArgs();
 
@@ -59,21 +59,19 @@ public class LogControllerAspect {
     Object result = null;
     try {
       result = proceedingJoinPoint.proceed();
+      stopWatch.stop();
+      return result;
 
     } catch (final Throwable throwable) {
-      log.warn(throwable.getMessage());
+      log.error(throwable.getMessage(), throwable);
+      throw throwable;
 
     } finally {
-
-      stopWatch.stop();
-
       log.info("REST-REQUEST\t{}\t{}\t{}ms\t{}.{}{}",
               hibernateQueryInterceptor.getQueryCount(),
               username,
               stopWatch.getTotalTimeMillis(),
               className, methodName, Arrays.deepToString(args));
-
-      return result;
     }
   }
 

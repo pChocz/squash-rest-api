@@ -74,7 +74,7 @@ public class League implements Identifiable {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private final List<HallOfFameSeason> hallOfFameSeasons = new ArrayList<>();
+  private final List<TrophyForLeague> trophiesForLeague = new ArrayList<>();
 
   public League(final String name) {
     this.name = name;
@@ -90,9 +90,9 @@ public class League implements Identifiable {
     roleForLeague.setLeague(this);
   }
 
-  public void addHallOfFameSeason(final HallOfFameSeason hallOfFameSeason) {
-    this.hallOfFameSeasons.add(hallOfFameSeason);
-    hallOfFameSeason.setLeague(this);
+  public void addTrophyForLeague(final TrophyForLeague trophyForLeague) {
+    this.trophiesForLeague.add(trophyForLeague);
+    trophyForLeague.setLeague(this);
   }
 
   @Override

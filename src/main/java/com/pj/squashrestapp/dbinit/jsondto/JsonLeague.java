@@ -1,7 +1,5 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,10 +16,8 @@ public class JsonLeague {
 
   private UUID uuid;
 
-  @JsonProperty("hof")
-  @SerializedName("hof")
-  private ArrayList<JsonHallOfFameSeason> hallOfFameSeasons;
-
   private ArrayList<JsonSeason> seasons;
+
+  private ArrayList<JsonLeagueTrophy> trophies;
 
 }

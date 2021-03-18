@@ -1,10 +1,13 @@
 package com.pj.squashrestapp.model.dto;
 
-import com.pj.squashrestapp.model.HallOfFameSeason;
+import com.pj.squashrestapp.model.TrophyForLeague;
 import lombok.Getter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -18,52 +21,29 @@ public class TrophiesWonForLeague {
 
   public TrophiesWonForLeague(final PlayerDto player,
                               final LeagueDtoSimple league,
-                              final List<HallOfFameSeason> hallOfFameSeasons) {
+                              final List<TrophyForLeague> trophiesForLeague) {
     this.player = player;
     this.league = league;
     this.trophiesPerSeason = new ArrayList<>();
 
-    for (final HallOfFameSeason hallOfFameSeason : hallOfFameSeasons) {
-      final int seasonNumber = hallOfFameSeason.getSeasonNumber();
+    final List<Integer> listOfSeasonNumbers = trophiesForLeague
+            .stream()
+            .map(TrophyForLeague::getSeasonNumber)
+            .distinct()
+            .sorted(Comparator.reverseOrder())
+            .collect(Collectors.toList());
+
+    for (final int seasonNumber : listOfSeasonNumbers) {
       final TrophiesWonForSeason trophiesWonForSeason = new TrophiesWonForSeason(seasonNumber);
 
-      if (hallOfFameSeason.getLeague1stPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.LEAGUE_1ST);
-      }
-      if (hallOfFameSeason.getLeague2ndPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.LEAGUE_2ND);
-      }
-      if (hallOfFameSeason.getLeague3rdPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.LEAGUE_3RD);
-      }
-      if (hallOfFameSeason.getCup1stPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.CUP_1ST);
-      }
-      if (hallOfFameSeason.getCup2ndPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.CUP_2ND);
-      }
-      if (hallOfFameSeason.getCup3rdPlace().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.CUP_3RD);
-      }
-      if (hallOfFameSeason.getSuperCupWinner().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.SUPER_CUP);
-      }
-      if (hallOfFameSeason.getPretendersCupWinner().equals(player.getUsername())) {
-        trophiesWonForSeason.addTrophy(Trophy.PRETENDERS_CUP);
-      }
+      final List<TrophyForLeague> seasonTrophies = trophiesForLeague
+              .stream()
+              .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
+              .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
+              .collect(Collectors.toList());
 
-      if (hallOfFameSeason.getCoviders() != null) {
-        final List<String> seasonCoviders = List.of(hallOfFameSeason.getCoviders().split("\\|"));
-        if (seasonCoviders.contains(player.getUsername())) {
-          trophiesWonForSeason.addTrophy(Trophy.COVID);
-        }
-      }
-
-      if (hallOfFameSeason.getAllRoundsAttendees() != null) {
-        final List<String> seasonAllRoundsAttendees = List.of(hallOfFameSeason.getAllRoundsAttendees().split("\\|"));
-        if (seasonAllRoundsAttendees.contains(player.getUsername())) {
-          trophiesWonForSeason.addTrophy(Trophy.ALL_ROUNDS_ATTENDEE);
-        }
+      for (final TrophyForLeague trophyForLeague : seasonTrophies) {
+        trophiesWonForSeason.addTrophy(trophyForLeague.getTrophy());
       }
 
       this.trophiesPerSeason.add(trophiesWonForSeason);

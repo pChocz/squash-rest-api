@@ -22,6 +22,10 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   List<League> findAll();
 
 
+  @EntityGraph(attributePaths = {
+          "seasons",
+          "trophiesForLeague"
+  })
   League findByName(String name);
 
 

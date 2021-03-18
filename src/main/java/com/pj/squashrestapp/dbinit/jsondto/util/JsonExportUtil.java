@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.dbinit.jsondto.util;
 
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
-import com.pj.squashrestapp.dbinit.jsondto.JsonHallOfFameSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
@@ -10,13 +10,14 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
-import com.pj.squashrestapp.model.HallOfFameSeason;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.TrophyForLeague;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class JsonExportUtil {
 
-  public JsonLeague buildLeagueJson(final League league, final List<BonusPoint> bonusPoints) {
+  public JsonLeague buildLeagueJson(final List<Player> allPlayers, final League league, final List<BonusPoint> bonusPoints) {
     final JsonLeague jsonLeague = new JsonLeague();
     jsonLeague.setUuid(league.getUuid());
     jsonLeague.setName(league.getName());
@@ -47,9 +48,23 @@ public class JsonExportUtil {
                                     .getPicture()));
 
     jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints));
-    jsonLeague.setHallOfFameSeasons(buildHallOfFameJson(league.getHallOfFameSeasons()));
+    jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
 
     return jsonLeague;
+  }
+
+  private ArrayList<JsonLeagueTrophy> buildTrophiesList(final List<TrophyForLeague> trophiesForLeague) {
+    final ArrayList<JsonLeagueTrophy> trophies = new ArrayList<>();
+
+    for (final TrophyForLeague trophyForLeague : trophiesForLeague) {
+      final JsonLeagueTrophy trophy = new JsonLeagueTrophy();
+      trophy.setSeasonNumber(trophyForLeague.getSeasonNumber());
+      trophy.setPlayerUuid(trophyForLeague.getPlayer().getUuid());
+      trophy.setTrophy(trophyForLeague.getTrophy());
+      trophies.add(trophy);
+    }
+
+    return trophies;
   }
 
   private ArrayList<JsonSeason> buildSeasonsJson(final List<Season> seasonsOrdered, final List<BonusPoint> bonusPoints) {
@@ -59,29 +74,6 @@ public class JsonExportUtil {
       jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason));
     }
     return jsonSeasons;
-  }
-
-  private ArrayList<JsonHallOfFameSeason> buildHallOfFameJson(final List<HallOfFameSeason> hallOfFameSeasons) {
-    final ArrayList<JsonHallOfFameSeason> jsonHallOfFameSeasons = new ArrayList<>();
-
-    for (final HallOfFameSeason hallOfFameSeason : hallOfFameSeasons) {
-      final JsonHallOfFameSeason jsonHallOfFameSeason = new JsonHallOfFameSeason();
-      jsonHallOfFameSeason.setSeasonNumber(hallOfFameSeason.getSeasonNumber());
-      jsonHallOfFameSeason.setLeague1stPlace(hallOfFameSeason.getLeague1stPlace());
-      jsonHallOfFameSeason.setLeague2ndPlace(hallOfFameSeason.getLeague2ndPlace());
-      jsonHallOfFameSeason.setLeague3rdPlace(hallOfFameSeason.getLeague3rdPlace());
-      jsonHallOfFameSeason.setCup1stPlace(hallOfFameSeason.getCup1stPlace());
-      jsonHallOfFameSeason.setCup2ndPlace(hallOfFameSeason.getCup2ndPlace());
-      jsonHallOfFameSeason.setCup3rdPlace(hallOfFameSeason.getCup3rdPlace());
-      jsonHallOfFameSeason.setSuperCupWinner(hallOfFameSeason.getSuperCupWinner());
-      jsonHallOfFameSeason.setPretendersCupWinner(hallOfFameSeason.getPretendersCupWinner());
-      jsonHallOfFameSeason.setCoviders(hallOfFameSeason.getCoviders());
-      jsonHallOfFameSeason.setAllRoundsAttendees(hallOfFameSeason.getAllRoundsAttendees());
-
-      jsonHallOfFameSeasons.add(jsonHallOfFameSeason);
-    }
-
-    return jsonHallOfFameSeasons;
   }
 
   public JsonSeason buildSeasonJson(final Season season, final List<BonusPoint> bonusPointsForSeason) {
@@ -100,8 +92,8 @@ public class JsonExportUtil {
     final ArrayList<JsonBonusPoint> jsonBonusPoints = new ArrayList<>();
     for (final BonusPoint bonusPoint : bonusPoints) {
       final JsonBonusPoint jsonBonusPoint = new JsonBonusPoint();
-      jsonBonusPoint.setWinner(bonusPoint.getWinner().getUsername());
-      jsonBonusPoint.setLooser(bonusPoint.getLooser().getUsername());
+      jsonBonusPoint.setWinner(bonusPoint.getWinner().getUuid());
+      jsonBonusPoint.setLooser(bonusPoint.getLooser().getUuid());
       jsonBonusPoint.setDate(bonusPoint.getDate());
       jsonBonusPoint.setUuid(bonusPoint.getUuid());
       jsonBonusPoint.setPoints(bonusPoint.getPoints());
@@ -146,11 +138,11 @@ public class JsonExportUtil {
     final Set<JsonPlayer> jsonPlayers = new LinkedHashSet<>();
     for (final Match match : roundGroup.getMatchesOrdered()) {
       final JsonPlayer jsonPlayer1 = new JsonPlayer();
-      jsonPlayer1.setName(match.getFirstPlayer().getUsername());
+      jsonPlayer1.setUuid(match.getFirstPlayer().getUuid());
       jsonPlayers.add(jsonPlayer1);
 
       final JsonPlayer jsonPlayer2 = new JsonPlayer();
-      jsonPlayer2.setName(match.getSecondPlayer().getUsername());
+      jsonPlayer2.setUuid(match.getSecondPlayer().getUuid());
       jsonPlayers.add(jsonPlayer2);
     }
     return new ArrayList<>(jsonPlayers);
@@ -160,8 +152,8 @@ public class JsonExportUtil {
     final ArrayList<JsonMatch> jsonMatches = new ArrayList<>();
     for (final Match match : roundGroup.getMatchesOrdered()) {
       final JsonMatch jsonMatch = new JsonMatch();
-      jsonMatch.setFirstPlayer(match.getFirstPlayer().getUsername());
-      jsonMatch.setSecondPlayer(match.getSecondPlayer().getUsername());
+      jsonMatch.setFirstPlayer(match.getFirstPlayer().getUuid());
+      jsonMatch.setSecondPlayer(match.getSecondPlayer().getUuid());
       jsonMatch.setSets(buildSetResultsJson(match));
       jsonMatches.add(jsonMatch);
     }
