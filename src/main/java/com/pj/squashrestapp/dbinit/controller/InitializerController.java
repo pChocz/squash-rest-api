@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequestMapping("/db-initializers")
+@RequestMapping("/init")
 @RequiredArgsConstructor
 public class InitializerController {
 

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.pj.squashrestapp.model.dto.Trophy;
+import com.pj.squashrestapp.dto.Trophy;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

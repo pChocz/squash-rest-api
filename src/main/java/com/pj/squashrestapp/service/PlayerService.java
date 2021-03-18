@@ -9,7 +9,7 @@ import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
-import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;

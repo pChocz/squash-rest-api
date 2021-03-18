@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.dto.match.MatchesSimplePaginated;
+import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

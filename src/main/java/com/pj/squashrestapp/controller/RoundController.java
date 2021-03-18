@@ -69,7 +69,6 @@ public class RoundController {
 
 
   @DeleteMapping(value = "/{roundUuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void deleteRound(@PathVariable final UUID roundUuid) {
     roundService.deleteRound(roundUuid);

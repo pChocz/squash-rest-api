@@ -4,8 +4,8 @@ import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.service.TokenPair;
-import com.pj.squashrestapp.util.TimeLogUtil;
+import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -60,7 +60,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       final long startTime = System.nanoTime();
       final var authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
       final var auth = authenticationManager.authenticate(authentication);
-      log.info("Authentication took {} s", TimeLogUtil.getDurationSecondsRounded(startTime));
+      log.info("Authentication took {} s", GeneralUtil.getDurationSecondsRounded(startTime));
       log.info("User [{}] has logged in", getPrincipal(auth).getUsername());
       return auth;
 

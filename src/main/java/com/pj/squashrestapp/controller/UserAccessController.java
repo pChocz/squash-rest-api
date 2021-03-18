@@ -3,10 +3,10 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.config.security.playerpasswordreset.OnPasswordResetEvent;
 import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCompleteEvent;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.service.TokenPair;
+import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
@@ -136,7 +136,6 @@ public class UserAccessController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   void confirmResetPassword(@RequestParam final UUID token,
                             @RequestParam final String newPassword) {
-
     playerService.changeCurrentSessionPlayerPassword(token, newPassword);
   }
 

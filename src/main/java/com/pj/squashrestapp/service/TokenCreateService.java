@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
+import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
@@ -54,7 +55,6 @@ public class TokenCreateService {
   }
 
   public TokenPair createTokensPairForPlayer(final Player player) {
-
     // TEST CODE:
 //    final LocalDateTime accessTokenExpirationDate = LocalDateTime.now().plusSeconds(20);
 //    final LocalDateTime refreshTokenExpirationDate = LocalDateTime.now().plusSeconds(40);

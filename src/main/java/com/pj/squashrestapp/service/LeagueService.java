@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.dto.leaguestats.TrophyDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
@@ -11,20 +12,20 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForLeague;
-import com.pj.squashrestapp.model.dto.BonusPointsAggregatedForSeason;
-import com.pj.squashrestapp.model.dto.LeagueDto;
-import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.PlayerLeagueXpOveral;
-import com.pj.squashrestapp.model.dto.SetDto;
-import com.pj.squashrestapp.model.dto.leaguestats.LeagueSeasonTrophies;
-import com.pj.squashrestapp.model.dto.leaguestats.LeagueStatsWrapper;
-import com.pj.squashrestapp.model.dto.leaguestats.OveralStats;
-import com.pj.squashrestapp.model.dto.leaguestats.PerSeasonStats;
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
-import com.pj.squashrestapp.model.dto.scoreboard.EntireLeagueScoreboard;
-import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
-import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
+import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
+import com.pj.squashrestapp.dto.SetDto;
+import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
+import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
+import com.pj.squashrestapp.dto.leaguestats.OveralStats;
+import com.pj.squashrestapp.dto.leaguestats.PerSeasonStats;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.dto.scoreboard.EntireLeagueScoreboard;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -75,7 +76,7 @@ public class LeagueService {
    * that can be assigned to the players later.
    *
    * @param leagueName name of the league to create
-   * @return
+   * @return league DTO object
    */
   public LeagueDto createNewLeague(final String leagueName) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -150,7 +151,7 @@ public class LeagueService {
     // trophies
     final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeague(league);
 
-    final List<LeagueSeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
+    final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
 
     final List<Integer> listOfSeasonNumbers = allTrophiesForLeague
             .stream()
@@ -167,7 +168,7 @@ public class LeagueService {
               .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
               .collect(Collectors.toList());
 
-      leagueTrophiesPerSeason.add(new LeagueSeasonTrophies(seasonNumber, seasonTrophies));
+      leagueTrophiesPerSeason.add(new SeasonTrophies(seasonNumber, seasonTrophies));
     }
 
     return LeagueStatsWrapper.builder()
@@ -177,7 +178,7 @@ public class LeagueService {
             .overalStats(overalStats)
             .perSeasonStats(perSeasonStatsList)
             .scoreboard(scoreboard)
-            .hallOfFame(leagueTrophiesPerSeason)
+            .seasonTrophies(leagueTrophiesPerSeason)
             .build();
   }
 

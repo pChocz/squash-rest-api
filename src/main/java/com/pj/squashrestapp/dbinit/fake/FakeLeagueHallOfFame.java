@@ -2,10 +2,10 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.Trophy;
-import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardDto;
-import com.pj.squashrestapp.model.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.Trophy;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
 import lombok.experimental.UtilityClass;
 
 import java.util.ArrayList;

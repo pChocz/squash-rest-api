@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.SeasonDto;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;

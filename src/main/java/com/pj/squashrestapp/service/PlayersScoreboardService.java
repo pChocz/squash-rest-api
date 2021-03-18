@@ -2,12 +2,12 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.dto.PlayerDto;
-import com.pj.squashrestapp.model.dto.match.MatchDetailedDto;
-import com.pj.squashrestapp.model.dto.match.MatchDto;
-import com.pj.squashrestapp.model.dto.scoreboard.PlayerSummary;
-import com.pj.squashrestapp.model.dto.scoreboard.PlayersStatsScoreboardRow;
-import com.pj.squashrestapp.model.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.dto.match.MatchDto;
+import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
+import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
+import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.util.GeneralUtil;

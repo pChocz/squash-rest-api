@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.TrophyForLeague;
-import com.pj.squashrestapp.model.dto.TrophiesWonForLeague;
-import com.pj.squashrestapp.model.dto.Trophy;
+import com.pj.squashrestapp.dto.TrophiesWonForLeague;
+import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.service.LeagueTrophiesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,19 +24,11 @@ import java.util.UUID;
  */
 @Slf4j
 @RestController
-@RequestMapping("/hall-of-fame")
+@RequestMapping("/trophies")
 @RequiredArgsConstructor
 public class LeagueTrophiesController {
 
   private final LeagueTrophiesService leagueTrophiesService;
-
-
-  @GetMapping(value = "/{playerUuid}")
-  @ResponseBody
-  List<TrophiesWonForLeague> extractHallOfFameForPlayer(@PathVariable final UUID playerUuid) {
-    final List<TrophiesWonForLeague> trophiesWonForLeagues = leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
-    return trophiesWonForLeagues;
-  }
 
 
   @PostMapping
@@ -60,13 +52,12 @@ public class LeagueTrophiesController {
     leagueTrophiesService.removeTrophy(playerUuid, leagueUuid, seasonNumber, trophy);
   }
 
+
+  @GetMapping(value = "/{playerUuid}")
+  @ResponseBody
+  List<TrophiesWonForLeague> extractHallOfFameForPlayer(@PathVariable final UUID playerUuid) {
+    final List<TrophiesWonForLeague> trophiesWonForLeagues = leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
+    return trophiesWonForLeagues;
+  }
+
 }
-
-
-
-
-
-
-
-
-
