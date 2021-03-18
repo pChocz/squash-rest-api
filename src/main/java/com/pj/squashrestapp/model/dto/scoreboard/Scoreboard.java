@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.model.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import com.pj.squashrestapp.model.dto.match.MatchDto;
 import lombok.Getter;

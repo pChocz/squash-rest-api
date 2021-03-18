@@ -18,7 +18,6 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import com.pj.squashrestapp.model.dto.Trophy;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.experimental.UtilityClass;
 
@@ -120,67 +119,6 @@ public class JsonImportUtil {
     trophyForLeague.setTrophy(jsonLeagueTrophy.getTrophy());
 
     return trophyForLeague;
-
-
-
-//    final List<TrophyForLeague> trophiesForLeagueForSeason = new ArrayList<>();
-
-//    if (jsonLeagueTrophy.getLeague1stPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getLeague1stPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.LEAGUE_1ST));
-//    }
-//    if (jsonLeagueTrophy.getLeague2ndPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getLeague2ndPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.LEAGUE_2ND));
-//    }
-//    if (jsonLeagueTrophy.getLeague3rdPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getLeague3rdPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.LEAGUE_3RD));
-//    }
-//
-//
-//    if (jsonLeagueTrophy.getCup1stPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getCup1stPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.CUP_1ST));
-//    }
-//    if (jsonLeagueTrophy.getCup2ndPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getCup2ndPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.CUP_2ND));
-//    }
-//    if (jsonLeagueTrophy.getCup3rdPlace() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getCup3rdPlace(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.CUP_3RD));
-//    }
-//
-//
-//    if (jsonLeagueTrophy.getPretendersCupWinner() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getPretendersCupWinner(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.PRETENDERS_CUP));
-//    }
-//    if (jsonLeagueTrophy.getSuperCupWinner() != null) {
-//      final Player player = getMatchingPlayer(jsonLeagueTrophy.getSuperCupWinner(), players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.SUPER_CUP));
-//    }
-//
-//
-//    for (final UUID playerUuid : jsonLeagueTrophy.getAllRoundsAttendees()) {
-//      final Player player = getMatchingPlayer(playerUuid, players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.ALL_ROUNDS_ATTENDEE));
-//    }
-//    for (final UUID playerUuid : jsonLeagueTrophy.getCoviders()) {
-//      final Player player = getMatchingPlayer(playerUuid, players);
-//      trophiesForLeagueForSeason.add(new TrophyForLeague(seasonNumber, player, Trophy.COVID));
-//    }
-//
-//    return trophiesForLeagueForSeason;
-  }
-
-  private static Player getMatchingPlayer(final UUID playerUuid, final List<Player> players) {
-    return players
-            .stream()
-            .filter(player -> player.getUuid().equals(playerUuid))
-            .findFirst()
-            .orElseThrow();
   }
 
   public BonusPoint constructBonusPoints(final JsonBonusPoint jsonBonusPoint, final List<Player> players) {

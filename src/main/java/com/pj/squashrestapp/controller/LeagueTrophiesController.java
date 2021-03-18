@@ -54,9 +54,9 @@ public class LeagueTrophiesController {
   @DeleteMapping
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   void removeTrophy(@RequestParam final UUID playerUuid,
-                                          @RequestParam final UUID leagueUuid,
-                                          @RequestParam final int seasonNumber,
-                                          @RequestParam final Trophy trophy) {
+                    @RequestParam final UUID leagueUuid,
+                    @RequestParam final int seasonNumber,
+                    @RequestParam final Trophy trophy) {
     leagueTrophiesService.removeTrophy(playerUuid, leagueUuid, seasonNumber, trophy);
   }
 

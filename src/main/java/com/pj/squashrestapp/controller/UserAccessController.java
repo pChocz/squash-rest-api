@@ -5,8 +5,8 @@ import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCom
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
-import com.pj.squashrestapp.service.TokenPair;
 import com.pj.squashrestapp.service.TokenCreateService;
+import com.pj.squashrestapp.service.TokenPair;
 import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;

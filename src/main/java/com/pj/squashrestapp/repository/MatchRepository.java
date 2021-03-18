@@ -26,7 +26,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           INNER JOIN s.league l
           INNER JOIN m.firstPlayer p1
           INNER JOIN m.secondPlayer p2
-          
+                    
           """;
 
 

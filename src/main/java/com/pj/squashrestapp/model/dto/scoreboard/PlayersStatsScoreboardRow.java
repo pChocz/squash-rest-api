@@ -3,7 +3,6 @@ package com.pj.squashrestapp.model.dto.scoreboard;
 import com.pj.squashrestapp.model.dto.PlayerDto;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.util.Comparator;
 
