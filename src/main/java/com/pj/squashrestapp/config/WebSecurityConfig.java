@@ -57,6 +57,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
             .antMatchers(HttpMethod.GET, "/league-logos/season/*").permitAll()
             .antMatchers(HttpMethod.GET, "/league-logos/round/*").permitAll()
+            // allowing to initialize the database
+            .antMatchers(HttpMethod.POST, "/init/json").permitAll()
             // allowing regular endpoints to be accessible
             .antMatchers(HttpMethod.GET, "/access/reset-password-player/**").permitAll()
             .antMatchers(HttpMethod.GET, "/access/refresh-token/*").permitAll()
@@ -64,7 +66,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/access/request-password-reset").permitAll()
             .antMatchers(HttpMethod.POST, "/access/confirm-password-reset").permitAll()
             .antMatchers(HttpMethod.POST, "/access/confirm-registration").permitAll()
-            .antMatchers(HttpMethod.POST, "/db-initializers/**").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
             .anyRequest().authenticated();
     // anyRequest().permitAll();
