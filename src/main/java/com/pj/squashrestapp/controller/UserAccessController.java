@@ -2,11 +2,11 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.config.security.playerpasswordreset.OnPasswordResetEvent;
 import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCompleteEvent;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
@@ -116,11 +116,27 @@ public class UserAccessController {
     }
   }
 
+
+  /**
+   * Invalidates all tokens (JWT and Refresh tokens) for
+   * all players without ADMIN authority.
+   */
   @PostMapping(value = "/invalidate-all-tokens")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("isAdmin()")
   void invalidateAllTokens() {
     playerService.invalidateAllTokens();
+  }
+
+
+  /**
+   * Invalidates all tokens (JWT and Refresh tokens) for a single player
+   *
+   * @param playerUuid UUID of the player (can also be an ADMIN)
+   */
+  @PostMapping(value = "/invalidate-tokens-for-player/{playerUuid}")
+  @PreAuthorize("isAdmin()")
+  void invalidateTokensForPlayer(@PathVariable final UUID playerUuid) {
+    playerService.invalidateTokensForPlayer(playerUuid);
   }
 
 

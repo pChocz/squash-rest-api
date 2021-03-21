@@ -7,6 +7,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
@@ -14,6 +15,7 @@ import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
@@ -52,6 +54,7 @@ public class PlayerService {
   private final RoleForLeagueRepository roleForLeagueRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final RefreshTokenRepository refreshTokenRepository;
 
   @SuppressWarnings("OverlyComplexMethod")
   public boolean isValidSignupData(final String username, final String email, final String password) throws WrongSignupDataException {
@@ -242,14 +245,21 @@ public class PlayerService {
   }
 
   public void invalidateAllTokens() {
-    playerRepository
+    final List<Player> nonAdminPlayers = playerRepository
             .findAll()
             .stream()
             .filter(this::isNonAdminPlayer)
-            .forEach(player -> {
-              player.setPasswordSessionUuid(UUID.randomUUID());
-              playerRepository.save(player);
-            });
+            .collect(Collectors.toList());
+
+    for (final Player player : nonAdminPlayers) {
+      player.setPasswordSessionUuid(UUID.randomUUID());
+    }
+
+    playerRepository.saveAll(nonAdminPlayers);
+
+    final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayerIn(nonAdminPlayers);
+    refreshTokenRepository.deleteAll(playerRefreshTokens);
+
   }
 
   private boolean isNonAdminPlayer(final Player player) {
@@ -257,6 +267,15 @@ public class PlayerService {
             .getAuthorities()
             .stream()
             .noneMatch(authority -> authority.getType() == AuthorityType.ROLE_ADMIN);
+  }
+
+  public void invalidateTokensForPlayer(final UUID playerUuid) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    player.setPasswordSessionUuid(UUID.randomUUID());
+    playerRepository.save(player);
+
+    final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
+    refreshTokenRepository.deleteAll(playerRefreshTokens);
   }
 
 }
