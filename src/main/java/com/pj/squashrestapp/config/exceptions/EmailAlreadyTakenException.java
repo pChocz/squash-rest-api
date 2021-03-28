@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.config;
+package com.pj.squashrestapp.config.exceptions;
 
 
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +9,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  *
  */
 @Slf4j
-@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-public class WrongSignupDataException extends RuntimeException {
+public class EmailAlreadyTakenException extends RuntimeException {
 
-  public WrongSignupDataException(final String message) {
+  public EmailAlreadyTakenException(final String message) {
     super(message);
     log.error(message);
   }

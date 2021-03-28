@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import lombok.EqualsAndHashCode;
@@ -40,6 +41,13 @@ public class PlayerDetailedDto {
       final LeagueRoleDto leagueRole = new LeagueRoleDto(role);
       this.leagueRoles.add(leagueRole);
     }
+  }
+
+  public boolean isPlayerForLeague(final String leagueName) {
+    return this.leagueRoles
+            .stream()
+            .filter(leagueRoleDto -> leagueRoleDto.getLeagueRole().equals(LeagueRole.PLAYER))
+            .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueName().equals(leagueName));
   }
 
   @Override

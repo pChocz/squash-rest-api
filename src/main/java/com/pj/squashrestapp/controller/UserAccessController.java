@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.SecretMethod;
 import com.pj.squashrestapp.config.security.playerpasswordreset.OnPasswordResetEvent;
 import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCompleteEvent;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
@@ -52,11 +53,29 @@ public class UserAccessController {
   }
 
 
-  @PutMapping(value = "/changeMyPassword")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @SecretMethod
+  @PutMapping(value = "/change-my-password")
   void changeMyPassword(@RequestParam final String oldPassword,
                         @RequestParam final String newPassword) {
     playerService.changeCurrentSessionPlayerPassword(oldPassword, newPassword);
+  }
+
+
+  @PutMapping(value = "/change-my-email")
+  void changeMyEmail(@RequestParam final String newEmail) {
+    playerService.changeCurrentSessionPlayerEmail(newEmail);
+  }
+
+
+  @PutMapping(value = "/join-league")
+  void joinNewLeague(@RequestParam final String leagueName) {
+    playerService.joinNewLeague(leagueName);
+  }
+
+
+  @PutMapping(value = "/leave-league")
+  void leaveLeague(@RequestParam final String leagueName) {
+    playerService.leaveLeague(leagueName);
   }
 
 
@@ -67,6 +86,7 @@ public class UserAccessController {
   }
 
 
+  @SecretMethod
   @PostMapping(value = "/sign-up")
   @ResponseBody
   PlayerDetailedDto signUpPlayer(@RequestParam final String username,
@@ -148,6 +168,7 @@ public class UserAccessController {
   }
 
 
+  @SecretMethod
   @PostMapping(value = "/confirm-password-reset")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   void confirmResetPassword(@RequestParam final UUID token,
