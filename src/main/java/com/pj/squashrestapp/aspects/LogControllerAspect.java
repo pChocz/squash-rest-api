@@ -12,6 +12,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 
 /**
@@ -40,6 +41,7 @@ public class LogControllerAspect {
    *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
+   * @throws Throwable rethrows exception after logging it so it can be passed to the client
    */
   @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
   public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -47,8 +49,10 @@ public class LogControllerAspect {
     final Object[] args = proceedingJoinPoint.getArgs();
 
     final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+    final Method method = methodSignature.getMethod();
     final String className = methodSignature.getDeclaringType().getSimpleName();
     final String methodName = methodSignature.getName();
+    final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
 
     hibernateQueryInterceptor.startQueryCount();
 
@@ -70,7 +74,7 @@ public class LogControllerAspect {
               hibernateQueryInterceptor.getQueryCount(),
               username,
               stopWatch.getTotalTimeMillis(),
-              className, methodName, Arrays.deepToString(args));
+              className, methodName, isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
     }
   }
 

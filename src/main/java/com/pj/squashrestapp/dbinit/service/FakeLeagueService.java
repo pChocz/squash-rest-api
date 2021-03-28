@@ -27,6 +27,7 @@ import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.service.XpPointsService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -53,6 +54,7 @@ public class FakeLeagueService {
   private final PlayerRepository playerRepository;
   private final LeagueRepository leagueRepository;
   private final TrophiesForLeagueRepository trophiesForLeagueRepository;
+  private final PasswordEncoder passwordEncoder;
 
   public void buildLeagues(final List<JsonFakeLeagueParams> jsonFakeLeagueParamsList) throws IOException {
     log.info("-- START building of {} fake leagues --", jsonFakeLeagueParamsList.size());
@@ -91,7 +93,7 @@ public class FakeLeagueService {
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
 
     log.info("Creating {} players (including password hashing) and assigning roles/authorities...", numberOfAllPlayers);
-    final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers);
+    final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers, passwordEncoder);
     FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
 
     log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);

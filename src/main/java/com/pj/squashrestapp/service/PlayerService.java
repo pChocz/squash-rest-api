@@ -1,6 +1,10 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.WrongSignupDataException;
+import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
+import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
+import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
+import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.League;
@@ -10,7 +14,6 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
-import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
@@ -25,9 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder.BCryptVersion;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,6 +56,7 @@ public class PlayerService {
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @SuppressWarnings("OverlyComplexMethod")
   public boolean isValidSignupData(final String username, final String email, final String password) throws WrongSignupDataException {
@@ -113,8 +115,7 @@ public class PlayerService {
   }
 
   public Player registerNewUser(final String username, final String email, final String password) {
-    final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
-    final String hashedPassword = bCryptPasswordEncoder.encode(password);
+    final String hashedPassword = passwordEncoder.encode(password);
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
 
     final Player player = new Player(username, email);
@@ -178,22 +179,82 @@ public class PlayerService {
     return playerDetailedDto;
   }
 
+  public void changeCurrentSessionPlayerEmail(final String newEmail) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = playerRepository.findByUsername(auth.getName());
+
+    final List<Player> allPlayers = playerRepository.findAll();
+    final Set<String> allEmails = allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
+    final boolean emailValid = !allEmails.contains(newEmail);
+
+    if (emailValid) {
+      player.setEmail(newEmail);
+      playerRepository.save(player);
+      log.info("Email for user {} has been succesfully changed to {}.", player.getUsername(), player.getEmail());
+
+    } else {
+      log.warn("Attempt to change email but it's already taken");
+      throw new EmailAlreadyTakenException("Email already taken!");
+    }
+  }
+
+  @Transactional
+  public void joinNewLeague(final String leagueName) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = getPlayer(auth.getName());
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
+    final boolean isPlayerForLeagueAlready = userBasicInfo.isPlayerForLeague(leagueName);
+
+    if (isPlayerForLeagueAlready) {
+      throw new GeneralBadRequestException("Already player of this league");
+    }
+
+    final League league = leagueRepository.findByName(leagueName);
+    final boolean leagueExists = league != null;
+
+    if (!leagueExists) {
+      throw new GeneralBadRequestException("Such league does not exist");
+    }
+
+    assignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
+  }
+
+  @Transactional
+  public void leaveLeague(final String leagueName) {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player = getPlayer(auth.getName());
+    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
+    final boolean isPlayerForLeague = userBasicInfo.isPlayerForLeague(leagueName);
+
+    if (!isPlayerForLeague) {
+      throw new GeneralBadRequestException("Not a player of this league");
+    }
+
+    final League league = leagueRepository.findByName(leagueName);
+    final boolean leagueExists = league != null;
+
+    if (!leagueExists) {
+      throw new GeneralBadRequestException("Such league does not exist");
+    }
+
+    unassignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
+  }
+
   public void changeCurrentSessionPlayerPassword(final String oldPassword, final String newPassword) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.findByUsername(auth.getName());
     final String oldPasswordHashed = player.getPassword();
-    final boolean oldPasswordMatches = BCrypt.checkpw(oldPassword, oldPasswordHashed);
+    final boolean oldPasswordMatches = passwordEncoder.matches(oldPassword, oldPasswordHashed);
 
     if (oldPasswordMatches) {
-      final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
-      final String hashedPassword = bCryptPasswordEncoder.encode(newPassword);
+      final String hashedPassword = passwordEncoder.encode(newPassword);
       player.setPassword(hashedPassword);
       playerRepository.save(player);
       log.info("Password for user {} has been succesfully changed.", player.getUsername());
 
     } else {
       log.warn("Attempt to change password but old password does not match");
-      throw new RuntimeException("Sorry, your old password does not match!");
+      throw new PasswordDoesNotMatchException("Old password does not match!");
     }
   }
 
@@ -212,8 +273,7 @@ public class PlayerService {
 
     } else {
       final Player player = passwordResetToken.getPlayer();
-      final BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder(BCryptVersion.$2A, 12);
-      final String hashedPassword = bCryptPasswordEncoder.encode(newPassword);
+      final String hashedPassword = passwordEncoder.encode(newPassword);
       player.setPassword(hashedPassword);
       player.setPasswordSessionUuid(UUID.randomUUID());
 
