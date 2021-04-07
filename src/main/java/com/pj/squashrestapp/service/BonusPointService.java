@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
+import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
-import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -51,6 +51,7 @@ public class BonusPointService {
   public BonusPoint applyBonusPointsForTwoPlayers(final UUID winnerUuid,
                                                   final UUID looserUuid,
                                                   final UUID seasonUuid,
+                                                  final LocalDate date,
                                                   final int points) {
     final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
     final Player winner = playerRepository.findByUuid(winnerUuid);
@@ -59,12 +60,12 @@ public class BonusPointService {
     final BonusPoint bonusPoint = new BonusPoint();
     bonusPoint.setWinner(winner);
     bonusPoint.setLooser(looser);
-    bonusPoint.setDate(LocalDate.now());
+    bonusPoint.setDate(date);
     bonusPoint.setPoints(points);
 
     season.addBonusPoint(bonusPoint);
-
     bonusPointRepository.save(bonusPoint);
+    log.info("Adding: {}", bonusPoint);
 
     return bonusPoint;
   }
