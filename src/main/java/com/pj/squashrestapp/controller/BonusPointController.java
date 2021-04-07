@@ -1,10 +1,12 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.dto.BonusPointsDto;
+import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,8 +42,9 @@ public class BonusPointController {
   BonusPoint apply(@RequestParam final UUID winnerUuid,
                    @RequestParam final UUID looserUuid,
                    @RequestParam final UUID seasonUuid,
+                   @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
                    @RequestParam final int points) {
-    final BonusPoint bonusPoint = bonusPointService.applyBonusPointsForTwoPlayers(winnerUuid, looserUuid, seasonUuid, points);
+    final BonusPoint bonusPoint = bonusPointService.applyBonusPointsForTwoPlayers(winnerUuid, looserUuid, seasonUuid, date, points);
     return bonusPoint;
   }
 
@@ -50,7 +54,6 @@ public class BonusPointController {
   @PreAuthorize("hasRoleForBonusPoint(#uuid, 'MODERATOR')")
   void apply(@PathVariable final UUID uuid) {
     bonusPointService.deleteBonusPoint(uuid);
-    log.info("Bonus Point has been removed");
   }
 
 

@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "JWT secret that is used for signing tokens."
+    },
+    {
+      "name": "email.sender_email_adress",
+      "type": "java.lang.String",
+      "description": "Email address used by the app to send messages to users."
+    },
+    {
+      "name": "email.sender_name",
+      "type": "java.lang.String",
+      "description": "Sender name used by the app to send messages to users."
+    },
+    {
+      "name": "email.password",
+      "type": "java.lang.String",
+      "description": "Password for the email account."
+    },
+    {
+      "name": "email.smtp_host",
+      "type": "java.lang.String",
+      "description": "Email SMTP host name."
+    },
+    {
+      "name": "email.smtp_port",
+      "type": "java.lang.String",
+      "description": "Email SMTP port number."
+    }
+  ]
+}

@@ -249,6 +249,7 @@ public class PlayerService {
     if (oldPasswordMatches) {
       final String hashedPassword = passwordEncoder.encode(newPassword);
       player.setPassword(hashedPassword);
+      player.setPasswordSessionUuid(UUID.randomUUID());
       playerRepository.save(player);
       log.info("Password for user {} has been succesfully changed.", player.getUsername());
 
@@ -263,13 +264,13 @@ public class PlayerService {
 
     if (passwordResetToken == null) {
       log.warn("It seems that we do not have matching token!");
-      throw new RuntimeException("It seems that we do not have matching token!");
+      throw new GeneralBadRequestException("It seems that we do not have matching token!");
 
     } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
-      throw new RuntimeException("Password reset token has already expired. You must request new one!");
+      throw new GeneralBadRequestException("Password reset token has already expired. You must request new one!");
 
     } else if (!PasswordStrengthValidator.isValid(newPassword)) {
-      throw new RuntimeException("Password is too weak. It must contain at least 5 characters.");
+      throw new GeneralBadRequestException("Password is too weak (or too long). It must contain at least 5 characters (and not more than 100).");
 
     } else {
       final Player player = passwordResetToken.getPlayer();

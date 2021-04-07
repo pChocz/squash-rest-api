@@ -6,15 +6,18 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
  */
 public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long> {
 
+  List<XpPointsForRound> findAllByOrderByNumberOfPlayersAscSplitAsc();
 
   List<XpPointsForRound> findAllByType(String type);
 
+  Optional<XpPointsForRound> findByTypeAndSplit(String type, String split);
 
   @Query("""
           SELECT xpp.points FROM XpPointsForRound xpr 
