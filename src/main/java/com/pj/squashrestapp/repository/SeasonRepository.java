@@ -3,6 +3,7 @@ package com.pj.squashrestapp.repository;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -69,4 +70,12 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
             """)
   List<Player> extractSeasonPlayersSecond(UUID seasonUuid);
 
+
+  @Query("""
+          SELECT DISTINCT s FROM Season s
+           INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+           ORDER BY s.startDate DESC
+          """)
+  List<Season> findCurrentSeasonForLeague(UUID leagueUuid, Pageable pageable);
 }

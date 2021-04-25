@@ -19,7 +19,7 @@ public class FakeUtil {
     return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
 
-  List<Player> pickTwoRandomPlayers(final List<Player> list) {
+  public List<Player> pickTwoRandomPlayers(final List<Player> list) {
     final List<Player> copy = new LinkedList<>(list);
     Collections.shuffle(copy);
     return copy.subList(0, 2);

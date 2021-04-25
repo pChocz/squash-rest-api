@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.dbinit.fake;
 
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.experimental.UtilityClass;
 
@@ -12,6 +13,12 @@ public class FakeSetResult {
   private final int WINNING_REGULAR_SET_SCORE = 11;
   private final int WINNING_REGULAR_SET_SCORE_ADVANTAGE = 12;
   private final int WINNING_TIE_BREAK_SCORE = 9;
+
+  AdditonalSetResult createAdditional(final int setNumber) {
+    final int winningSetScore = generateWinningPoints(setNumber);
+    final int[] result = createFakeSetResultArray(winningSetScore);
+    return new AdditonalSetResult(setNumber, result[0], result[1]);
+  }
 
   SetResult create(final int setNumber) {
     final int winningSetScore = generateWinningPoints(setNumber);
@@ -53,6 +60,10 @@ public class FakeSetResult {
 
   SetResult createNullSet(final int setNumber) {
     return new SetResult(setNumber, null, null);
+  }
+
+  AdditonalSetResult createNullSetAdditional(final int setNumber) {
+    return new AdditonalSetResult(setNumber, null, null);
   }
 
 }

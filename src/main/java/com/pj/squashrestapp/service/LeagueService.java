@@ -146,7 +146,7 @@ public class LeagueService {
     final EntireLeagueScoreboard scoreboard = new EntireLeagueScoreboard(league, playerLeagueXpOveralList);
 
     // build overal stats
-    final OveralStats overalStats = new OveralStats(perSeasonStatsList);
+    final OveralStats overalStats = new OveralStats(perSeasonStatsList, league.getTime(), league.getLocation());
 
     // trophies
     final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeague(league);
@@ -222,6 +222,7 @@ public class LeagueService {
 
       perSeasonStatsList.add(PerSeasonStats.builder()
               .seasonNumber(season.getNumber())
+              .seasonUuid(season.getUuid())
               .rounds(season.getRounds().size())
               .regularMatches(matches - tieBreaks)
               .tieBreakMatches(tieBreaks)
@@ -280,7 +281,7 @@ public class LeagueService {
   }
 
   public List<LeagueDto> buildGeneralInfoForAllLeagues() {
-    final List<League> leagues = leagueRepository.findAll();
+    final List<League> leagues = leagueRepository.findAllGeneralInfo();
     final List<LeagueDto> leaguesDtos = leagues
             .stream()
             .map(LeagueDto::new)
@@ -302,7 +303,7 @@ public class LeagueService {
   public Map<UUID, byte[]> extractAllLogos() {
     final Map<UUID, byte[]> leagueLogosMap = new HashMap<>();
 
-    final List<League> leagues = leagueRepository.findAll();
+    final List<League> leagues = leagueRepository.findAllRaw();
     final List<LeagueLogo> leagueLogos = leagueLogoRepository.findAll();
 
     for (final League league : leagues) {

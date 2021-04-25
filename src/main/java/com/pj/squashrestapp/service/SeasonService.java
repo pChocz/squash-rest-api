@@ -1,14 +1,9 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.RoundGroup;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
@@ -17,6 +12,12 @@ import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.RoundGroup;
+import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -26,6 +27,7 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.GsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -154,6 +156,11 @@ public class SeasonService {
   }
 
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
+    final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(seasonUuid);
+    return seasonScoreboardDto;
+  }
+
+  private SeasonScoreboardDto buildSeasonScoreboardDto(final UUID seasonUuid) {
     final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonUuid(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
 
@@ -192,6 +199,15 @@ public class SeasonService {
     final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
 
     return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+  }
+
+  public SeasonScoreboardDto buildCurrentSeasonScoreboardOfLeague(final UUID leagueUuid) {
+    final List<Season> currentSeason = seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
+    if (currentSeason.isEmpty()) {
+      throw new GeneralBadRequestException("No seasons");
+    }
+    final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(currentSeason.get(0).getUuid());
+    return seasonScoreboardDto;
   }
 
   @Transactional

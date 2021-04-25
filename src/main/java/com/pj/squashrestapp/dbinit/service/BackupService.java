@@ -123,8 +123,7 @@ public class BackupService {
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
-    final List<Player> allPlayers = playerRepository.findAll();
-    final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(allPlayers, league, bonusPoints);
+    final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints);
     log.info("\tFinished backing up league -> {}", league.getName());
     return leagueJson;
   }

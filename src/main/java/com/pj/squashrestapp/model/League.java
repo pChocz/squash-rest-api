@@ -19,6 +19,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -48,9 +49,18 @@ public class League implements Identifiable {
   private String name;
 
   @Setter
+  @Column(name = "location")
+  private String location;
+
+  @Setter
+  @Column(name = "time")
+  private String time;
+
+  @Setter
   @OneToOne(
           cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY)
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
   @JoinColumn(name = "league_logo_id")
   private LeagueLogo leagueLogo;
 
@@ -61,6 +71,14 @@ public class League implements Identifiable {
           fetch = FetchType.LAZY,
           orphanRemoval = true)
   private Set<Season> seasons = new TreeSet<>();
+
+  @Setter
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private Set<LeagueRule> rules = new HashSet<>();
 
   @OneToMany(
           mappedBy = "league",
@@ -75,6 +93,14 @@ public class League implements Identifiable {
           fetch = FetchType.LAZY,
           orphanRemoval = true)
   private final List<TrophyForLeague> trophiesForLeague = new ArrayList<>();
+
+  @Setter
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private Set<AdditionalMatch> additionalMatches = new TreeSet<>();
 
   public League(final String name) {
     this.name = name;
@@ -93,6 +119,16 @@ public class League implements Identifiable {
   public void addTrophyForLeague(final TrophyForLeague trophyForLeague) {
     this.trophiesForLeague.add(trophyForLeague);
     trophyForLeague.setLeague(this);
+  }
+
+  public void addRuleForLeague(final LeagueRule leagueRule) {
+    this.rules.add(leagueRule);
+    leagueRule.setLeague(this);
+  }
+
+  public void addAdditionalMatch(final AdditionalMatch match) {
+    this.additionalMatches.add(match);
+    match.setLeague(this);
   }
 
   @Override

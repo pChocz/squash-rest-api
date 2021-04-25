@@ -1,8 +1,10 @@
 package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
@@ -13,6 +15,7 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -38,6 +41,7 @@ public class CustomMethodSecurityExpressionRoot
   private RoundRepository roundRepository;
   private SeasonRepository seasonRepository;
   private BonusPointRepository bonusPointRepository;
+  private AdditionalMatchRepository additionalMatchRepository;
 
   private Object target;
   private Object filterObject;
@@ -104,6 +108,23 @@ public class CustomMethodSecurityExpressionRoot
     }
     final UUID leagueUuid = matchRepository.retrieveLeagueUuidOfMatch(matchUuid);
     return principal.hasRoleForLeague(leagueUuid, role);
+  }
+
+  public boolean isOneOfThePlayers(final UUID firstPlayerUuid, final UUID secondPlayerUuid) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    return principal.getUuid().equals(firstPlayerUuid)
+           || principal.getUuid().equals(secondPlayerUuid);
+  }
+
+  public boolean isPlayerOfAdditionalMatch(final UUID matchUuid) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
+    return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
+            || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
   }
 
   public boolean isRoundOfMatchInProgress(final UUID matchUuid) {

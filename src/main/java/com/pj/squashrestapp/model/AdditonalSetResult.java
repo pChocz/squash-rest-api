@@ -1,8 +1,6 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
-import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -17,31 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
 
 @Entity
-@Table(name = "set_results")
+@Table(name = "additional_set_results")
 @Getter
 @NoArgsConstructor
-public class SetResult implements Identifiable, Comparable<SetResult> {
-
-  public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
-    @Override
-    public Match getParent(final SetResult visitingObject) {
-      return visitingObject.getMatch();
-    }
-
-    @Override
-    public Set<SetResult> getChildren(final Match parent) {
-      return parent.getSetResults();
-    }
-
-    @Override
-    public void setChildren(final Match parent) {
-      parent.setSetResults(new TreeSet<SetResult>());
-    }
-  };
+public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,9 +42,9 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "match_id")
-  private Match match;
+  private AdditionalMatch match;
 
-  public SetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
+  public AdditonalSetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
     this.secondPlayerScore = secondPlayerScore;
@@ -77,9 +56,9 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
   }
 
   @Override
-  public int compareTo(final SetResult that) {
+  public int compareTo(final AdditonalSetResult that) {
     return Comparator
-            .comparingInt(SetResult::getNumber)
+            .comparingInt(AdditonalSetResult::getNumber)
             .compare(this, that);
   }
 

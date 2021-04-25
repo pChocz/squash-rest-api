@@ -56,4 +56,18 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
           """)
   List<Round> findMostRecentRoundOfPlayer(UUID playerUuid, Pageable pageable);
 
+
+  @Query("""
+          SELECT DISTINCT r FROM Match m
+           INNER JOIN m.firstPlayer p1
+           INNER JOIN m.secondPlayer p2
+           INNER JOIN m.roundGroup rg
+           INNER JOIN rg.round r
+           INNER JOIN r.season s
+           INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+           ORDER BY r.date DESC
+          """)
+  List<Round> findMostRecentRoundOfLeague(UUID leagueUuid, Pageable pageable);
+
 }

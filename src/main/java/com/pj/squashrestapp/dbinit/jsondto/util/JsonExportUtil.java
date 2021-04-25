@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.dbinit.jsondto.util;
 
+import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
@@ -9,10 +10,12 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
@@ -35,10 +38,12 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class JsonExportUtil {
 
-  public JsonLeague buildLeagueJson(final List<Player> allPlayers, final League league, final List<BonusPoint> bonusPoints) {
+  public JsonLeague buildLeagueJson(final League league, final List<BonusPoint> bonusPoints) {
     final JsonLeague jsonLeague = new JsonLeague();
     jsonLeague.setUuid(league.getUuid());
     jsonLeague.setName(league.getName());
+    jsonLeague.setTime(league.getTime());
+    jsonLeague.setLocation(league.getLocation());
     jsonLeague.setLogoBase64(
             Base64
                     .getEncoder()
@@ -46,11 +51,40 @@ public class JsonExportUtil {
                             league
                                     .getLeagueLogo()
                                     .getPicture()));
-
+    jsonLeague.setRules(buildRules(league.getRules()));
+    jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
     jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints));
     jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
 
     return jsonLeague;
+  }
+
+  private ArrayList<JsonAdditionalMatch> buildAdditionalMatches(final Set<AdditionalMatch> additionalMatchesForLeague) {
+    final ArrayList<JsonAdditionalMatch> additionalMatches = new ArrayList<>();
+
+    for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
+      final JsonAdditionalMatch jsonAdditionalMatch = new JsonAdditionalMatch();
+      jsonAdditionalMatch.setUuid(additionalMatch.getUuid());
+      jsonAdditionalMatch.setDate(additionalMatch.getDate());
+      jsonAdditionalMatch.setType(additionalMatch.getType());
+      jsonAdditionalMatch.setFirstPlayer(additionalMatch.getFirstPlayer().getUuid());
+      jsonAdditionalMatch.setSecondPlayer(additionalMatch.getSecondPlayer().getUuid());
+      jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
+
+      additionalMatches.add(jsonAdditionalMatch);
+    }
+
+    return additionalMatches;
+  }
+
+  private ArrayList<String> buildRules(final Set<LeagueRule> leagueRules) {
+    final ArrayList<String> rules = new ArrayList<>();
+
+    for (final LeagueRule leagueRule : leagueRules) {
+      rules.add(leagueRule.getRule());
+    }
+
+    return rules;
   }
 
   private ArrayList<JsonLeagueTrophy> buildTrophiesList(final List<TrophyForLeague> trophiesForLeague) {
@@ -160,6 +194,20 @@ public class JsonExportUtil {
     return jsonMatches;
   }
 
+  private ArrayList<JsonSetResult> buildSetResultsJson(final AdditionalMatch match) {
+    final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
+    for (final AdditonalSetResult setResult : match.getSetResultsOrdered()) {
+      if (isNotNull(setResult)) {
+        final JsonSetResult jsonSetResult = new JsonSetResult();
+        jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
+        jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
+
+        jsonSetResults.add(jsonSetResult);
+      }
+    }
+    return jsonSetResults;
+  }
+
   private ArrayList<JsonSetResult> buildSetResultsJson(final Match match) {
     final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
     for (final SetResult setResult : match.getSetResultsOrdered()) {
@@ -175,6 +223,11 @@ public class JsonExportUtil {
   }
 
   private boolean isNotNull(final SetResult setResult) {
+    return setResult.getFirstPlayerScore() != null
+           && setResult.getSecondPlayerScore() != null;
+  }
+
+  private boolean isNotNull(final AdditonalSetResult setResult) {
     return setResult.getFirstPlayerScore() != null
            && setResult.getSecondPlayerScore() != null;
   }

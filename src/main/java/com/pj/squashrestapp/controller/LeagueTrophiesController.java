@@ -55,7 +55,7 @@ public class LeagueTrophiesController {
 
   @GetMapping(value = "/{playerUuid}")
   @ResponseBody
-  List<TrophiesWonForLeague> extractHallOfFameForPlayer(@PathVariable final UUID playerUuid) {
+  List<TrophiesWonForLeague> extractTrophiesForPlayer(@PathVariable final UUID playerUuid) {
     final List<TrophiesWonForLeague> trophiesWonForLeagues = leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
     return trophiesWonForLeagues;
   }

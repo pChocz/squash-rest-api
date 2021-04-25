@@ -12,6 +12,10 @@ public class JsonLeague {
 
   private String name;
 
+  private String time;
+
+  private String location;
+
   private String logoBase64;
 
   private UUID uuid;
@@ -19,5 +23,9 @@ public class JsonLeague {
   private ArrayList<JsonSeason> seasons;
 
   private ArrayList<JsonLeagueTrophy> trophies;
+
+  private ArrayList<String> rules;
+
+  private ArrayList<JsonAdditionalMatch> additionalMatches;
 
 }

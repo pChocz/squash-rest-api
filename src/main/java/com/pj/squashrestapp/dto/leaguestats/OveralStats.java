@@ -15,6 +15,8 @@ import java.util.UUID;
 @Getter
 public class OveralStats {
 
+  private final String time;
+  private final String location;
   private final int seasons;
   private final int players;
   private final BigDecimal averagePlayers;
@@ -23,7 +25,9 @@ public class OveralStats {
   private int sets;
   private int points;
 
-  public OveralStats(final List<PerSeasonStats> perSeasonStatsList) {
+  public OveralStats(final List<PerSeasonStats> perSeasonStatsList, final String time, final String location) {
+    this.time = time;
+    this.location = location;
     this.seasons = perSeasonStatsList.size();
     this.rounds = 0;
     this.matches = 0;
