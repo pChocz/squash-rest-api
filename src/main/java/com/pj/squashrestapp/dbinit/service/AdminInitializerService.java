@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.dbinit.service;
 
+import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAll;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
@@ -16,11 +17,14 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
 import com.pj.squashrestapp.dbinit.jsondto.JsonVerificationToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
@@ -183,6 +187,37 @@ public class AdminInitializerService {
     for (final JsonLeagueTrophy jsonLeagueTrophy : jsonLeague.getTrophies()) {
       final TrophyForLeague trophyForLeague = JsonImportUtil.constructLeagueTrophy(jsonLeagueTrophy, players);
       league.addTrophyForLeague(trophyForLeague);
+    }
+
+    for (final String rule : jsonLeague.getRules()) {
+      final LeagueRule leagueRule = new LeagueRule(rule);
+      league.addRuleForLeague(leagueRule);
+    }
+
+    for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
+      final AdditionalMatch additionalMatch = JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players);
+
+      for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
+        final int setNumber = i + 1;
+        final JsonSetResult jsonSetResult = jsonAdditionalMatch.getSets().get(i);
+        final AdditonalSetResult setResult = JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
+        additionalMatch.addSetResult(setResult);
+      }
+
+      if (jsonAdditionalMatch.getSets().size() == 0) {
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(1));
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(2));
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
+
+      } else if (jsonAdditionalMatch.getSets().size() == 1) {
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(2));
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
+
+      } else if (jsonAdditionalMatch.getSets().size() == 2) {
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
+      }
+
+      league.addAdditionalMatch(additionalMatch);
     }
 
     for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {

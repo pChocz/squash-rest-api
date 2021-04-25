@@ -18,13 +18,27 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   @Override
   @EntityGraph(attributePaths = {
           "seasons",
+          "additionalMatches",
   })
   List<League> findAll();
 
 
+  @Query("SELECT l FROM League l")
   @EntityGraph(attributePaths = {
           "seasons",
-          "trophiesForLeague"
+  })
+  List<League> findAllGeneralInfo();
+
+
+  @Query("SELECT l FROM League l")
+  List<League> findAllRaw();
+
+
+  @EntityGraph(attributePaths = {
+          "seasons",
+          "trophiesForLeague",
+          "rules",
+          "additionalMatches",
   })
   League findByName(String name);
 

@@ -36,11 +36,26 @@ public class ScoreboardController {
     return seasonScoreboardDto;
   }
 
+  @GetMapping(value = "/current-season-for-league/{leagueUuid}")
+  @ResponseBody
+  SeasonScoreboardDto scoreboardForCurrentSeasonOfLeague(@PathVariable final UUID leagueUuid) {
+    final SeasonScoreboardDto seasonScoreboardDto = seasonService.buildCurrentSeasonScoreboardOfLeague(leagueUuid);
+    return seasonScoreboardDto;
+  }
+
 
   @GetMapping(value = "/most-recent-round-for-player/{playerUuid}")
   @ResponseBody
   RoundScoreboard scoreboardForMostRecentRoundOfPlayer(@PathVariable final UUID playerUuid) {
     final RoundScoreboard roundScoreboard = scoreboardService.buildMostRecentRoundOfPlayer(playerUuid);
+    return roundScoreboard;
+  }
+
+
+  @GetMapping(value = "/most-recent-round-for-league/{leagueUuid}")
+  @ResponseBody
+  RoundScoreboard scoreboardForMostRecentRoundOfLeague(@PathVariable final UUID leagueUuid) {
+    final RoundScoreboard roundScoreboard = scoreboardService.buildMostRecentRoundOfLeague(leagueUuid);
     return roundScoreboard;
   }
 

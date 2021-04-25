@@ -16,6 +16,7 @@ import java.util.UUID;
 public class PerSeasonStats {
 
   private final int seasonNumber;
+  private final UUID seasonUuid;
   private final int rounds;
   private final int regularMatches;
   private final int tieBreakMatches;

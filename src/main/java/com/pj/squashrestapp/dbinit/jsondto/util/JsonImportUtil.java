@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.dbinit.jsondto.util;
 
+import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
@@ -8,6 +9,8 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
@@ -62,6 +65,16 @@ public class JsonImportUtil {
     return match;
   }
 
+  public AdditionalMatch constructAdditionalMatch(final JsonAdditionalMatch jsonMatch, final List<Player> players) {
+    final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
+    final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
+    final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer);
+    match.setUuid(jsonMatch.getUuid());
+    match.setDate(jsonMatch.getDate());
+    match.setType(jsonMatch.getType());
+    return match;
+  }
+
   private Player getCorrespondingPlayer(final List<Player> players, final UUID playerUuid) {
     return players
             .stream()
@@ -80,8 +93,24 @@ public class JsonImportUtil {
     return setResult;
   }
 
+  public AdditonalSetResult constructAdditionalSetResult(final int setNumber, final JsonSetResult jsonSetResult) {
+    final AdditonalSetResult setResult = new AdditonalSetResult();
+    setResult.setNumber(setNumber);
+    setResult.setFirstPlayerScore(jsonSetResult.getFirstPlayerResult());
+    setResult.setSecondPlayerScore(jsonSetResult.getSecondPlayerResult());
+    return setResult;
+  }
+
   public SetResult constructEmptySetResult(final int setNumber) {
     final SetResult setResult = new SetResult();
+    setResult.setNumber(setNumber);
+    setResult.setFirstPlayerScore(null);
+    setResult.setSecondPlayerScore(null);
+    return setResult;
+  }
+
+  public AdditonalSetResult constructEmptyAdditionalSetResult(final int setNumber) {
+    final AdditonalSetResult setResult = new AdditonalSetResult();
     setResult.setNumber(setNumber);
     setResult.setFirstPlayerScore(null);
     setResult.setSecondPlayerScore(null);
@@ -134,6 +163,8 @@ public class JsonImportUtil {
   public League constructLeague(final JsonLeague jsonLeague) {
     final League league = new League();
     league.setName(jsonLeague.getName());
+    league.setTime(jsonLeague.getTime());
+    league.setLocation(jsonLeague.getLocation());
     league.setLeagueLogo(constructLeagueLogo(jsonLeague));
     league.setUuid(jsonLeague.getUuid());
     return league;

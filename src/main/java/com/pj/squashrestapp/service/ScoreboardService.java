@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
@@ -72,7 +72,10 @@ public class ScoreboardService {
 
   public RoundScoreboard buildMostRecentRoundOfPlayer(final UUID playerUuid) {
     final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfPlayer(playerUuid, PageRequest.of(0, 1));
+    return buildRoundScoreboard(mostRecentRoundAsList);
+  }
 
+  private RoundScoreboard buildRoundScoreboard(final List<Round> mostRecentRoundAsList) {
     if (mostRecentRoundAsList.isEmpty()) {
       return null;
     }
@@ -100,6 +103,11 @@ public class ScoreboardService {
 
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
+  }
+
+  public RoundScoreboard buildMostRecentRoundOfLeague(final UUID leagueUuid) {
+    final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfLeague(leagueUuid, PageRequest.of(0, 1));
+    return buildRoundScoreboard(mostRecentRoundAsList);
   }
 
 }
