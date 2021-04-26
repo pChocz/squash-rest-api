@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
 
@@ -15,6 +16,12 @@ public class SetDto {
   private final Integer secondPlayerScore;
 
   public SetDto(final SetResult setResult) {
+    this.setNumber = setResult.getNumber();
+    this.firstPlayerScore = setResult.getFirstPlayerScore();
+    this.secondPlayerScore = setResult.getSecondPlayerScore();
+  }
+
+  public SetDto(final AdditonalSetResult setResult) {
     this.setNumber = setResult.getNumber();
     this.firstPlayerScore = setResult.getFirstPlayerScore();
     this.secondPlayerScore = setResult.getSecondPlayerScore();

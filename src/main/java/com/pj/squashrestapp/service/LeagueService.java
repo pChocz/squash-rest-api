@@ -222,6 +222,7 @@ public class LeagueService {
 
       perSeasonStatsList.add(PerSeasonStats.builder()
               .seasonNumber(season.getNumber())
+              .seasonStartDate(season.getStartDate())
               .seasonUuid(season.getUuid())
               .rounds(season.getRounds().size())
               .regularMatches(matches - tieBreaks)

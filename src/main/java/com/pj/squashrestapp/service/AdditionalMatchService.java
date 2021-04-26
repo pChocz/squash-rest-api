@@ -40,7 +40,7 @@ public class AdditionalMatchService {
     if (league.isEmpty()) {
       throw new GeneralBadRequestException("League not valid!");
     }
-    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeague(league.get());
+    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDesc(league.get());
     return buildDtoList(matches);
   }
 

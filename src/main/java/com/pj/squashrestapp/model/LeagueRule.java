@@ -32,6 +32,10 @@ public class LeagueRule {
   private UUID uuid = UUID.randomUUID();
 
   @Setter
+  @Column(name = "orderValue")
+  private Double orderValue;
+
+  @Setter
   @Column(name = "rule")
   private String rule;
 

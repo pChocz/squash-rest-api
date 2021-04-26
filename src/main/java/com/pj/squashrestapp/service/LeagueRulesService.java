@@ -41,7 +41,7 @@ public class LeagueRulesService {
 
   public List<LeagueRule> extractRulesForLeague(final UUID leagueUuid) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final List<LeagueRule> rules = leagueRulesRepository.findAllByLeague(league);
+    final List<LeagueRule> rules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(league);
     return rules;
   }
 

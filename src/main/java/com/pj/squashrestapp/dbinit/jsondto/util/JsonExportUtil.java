@@ -3,6 +3,7 @@ package com.pj.squashrestapp.dbinit.jsondto.util;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
@@ -77,11 +78,15 @@ public class JsonExportUtil {
     return additionalMatches;
   }
 
-  private ArrayList<String> buildRules(final Set<LeagueRule> leagueRules) {
-    final ArrayList<String> rules = new ArrayList<>();
+  private ArrayList<JsonLeagueRule> buildRules(final Set<LeagueRule> leagueRules) {
+    final ArrayList<JsonLeagueRule> rules = new ArrayList<>();
 
     for (final LeagueRule leagueRule : leagueRules) {
-      rules.add(leagueRule.getRule());
+      final JsonLeagueRule jsonLeagueRule = new JsonLeagueRule();
+      jsonLeagueRule.setUuid(leagueRule.getUuid());
+      jsonLeagueRule.setOrderValue(leagueRule.getOrderValue());
+      jsonLeagueRule.setRule(leagueRule.getRule());
+      rules.add(jsonLeagueRule);
     }
 
     return rules;

@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public interface LeagueRulesRepository extends JpaRepository<LeagueRule, Long> {
 
-  List<LeagueRule> findAllByLeague(League league);
+  List<LeagueRule> findAllByLeagueOrderByOrderValueAsc(League league);
 
   Optional<LeagueRule> findByUuid(UUID uuid);
 

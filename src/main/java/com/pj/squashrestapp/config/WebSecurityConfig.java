@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
             .antMatchers(HttpMethod.GET, "/league-logos/season/*").permitAll()
             .antMatchers(HttpMethod.GET, "/league-logos/round/*").permitAll()
+            .antMatchers(HttpMethod.GET, "/league-logos/*").permitAll()
             // allowing to initialize the database
             .antMatchers(HttpMethod.POST, "/init/json").permitAll()
             // allowing regular endpoints to be accessible

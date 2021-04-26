@@ -40,6 +40,11 @@ public class LeagueLogoService {
     return leagueLogoBytes;
   }
 
+  public byte[] extractLeagueLogo(final UUID leagueUuid) {
+    final byte[] leagueLogoBytes = leagueLogoRepository.extractLogoBlobByLeagueUuid(leagueUuid);
+    return leagueLogoBytes;
+  }
+
   public void replaceLogoForLeague(final UUID leagueUuid, final MultipartFile leagueLogoFile) {
     final byte[] logoBytes;
     try {

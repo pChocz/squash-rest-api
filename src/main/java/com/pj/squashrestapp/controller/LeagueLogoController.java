@@ -63,4 +63,12 @@ public class LeagueLogoController {
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 
+
+  @GetMapping(value = "/{leagueUuid}")
+  @ResponseBody
+  String extractLeagueLogo(@PathVariable final UUID leagueUuid) {
+    final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
+    return Base64Utils.encodeToString(leagueLogoBytes);
+  }
+
 }
