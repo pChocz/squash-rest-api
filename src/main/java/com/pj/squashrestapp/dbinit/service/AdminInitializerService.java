@@ -6,6 +6,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
@@ -189,8 +190,11 @@ public class AdminInitializerService {
       league.addTrophyForLeague(trophyForLeague);
     }
 
-    for (final String rule : jsonLeague.getRules()) {
-      final LeagueRule leagueRule = new LeagueRule(rule);
+    for (final JsonLeagueRule rule : jsonLeague.getRules()) {
+      final LeagueRule leagueRule = new LeagueRule();
+      leagueRule.setUuid(rule.getUuid());
+      leagueRule.setOrderValue(rule.getOrderValue());
+      leagueRule.setRule(rule.getRule());
       league.addRuleForLeague(leagueRule);
     }
 

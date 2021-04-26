@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;

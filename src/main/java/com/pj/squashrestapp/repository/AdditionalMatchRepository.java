@@ -64,6 +64,6 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "setResults",
           "league"
   })
-  List<AdditionalMatch> findAllByLeague(League league);
+  List<AdditionalMatch> findAllByLeagueOrderByDateDesc(League league);
 
 }

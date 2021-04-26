@@ -24,7 +24,7 @@ public class JsonLeague {
 
   private ArrayList<JsonLeagueTrophy> trophies;
 
-  private ArrayList<String> rules;
+  private ArrayList<JsonLeagueRule> rules;
 
   private ArrayList<JsonAdditionalMatch> additionalMatches;
 
