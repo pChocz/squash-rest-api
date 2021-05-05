@@ -15,7 +15,7 @@ public interface MatchDto {
 
   PlayerDto getSecondPlayer();
 
-  LocalDate getRoundDate();
+  LocalDate getDate();
 
   List<SetDto> getSets();
 

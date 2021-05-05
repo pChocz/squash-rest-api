@@ -49,6 +49,10 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
   private LocalDate date;
 
   @Setter
+  @Column(name = "season_number")
+  private int seasonNumber;
+
+  @Setter
   @Column(name = "type")
   @Enumerated(EnumType.STRING)
   private AdditionalMatchType type;

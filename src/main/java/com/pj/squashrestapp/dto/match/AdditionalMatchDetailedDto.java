@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.pj.squashrestapp.dto.AdditionalSetDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
@@ -27,19 +26,21 @@ import java.util.UUID;
  *
  */
 @Getter
-public class AdditionalMatchDetailedDto {
+public class AdditionalMatchDetailedDto implements MatchDto {
 
   private final UUID matchUuid;
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
   private final UUID leagueUuid;
   private final AdditionalMatchType type;
+  private final int seasonNumber;
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
 
-  private final List<AdditionalSetDto> sets;
+  private final List<SetDto> sets;
 
+  private final MatchStatus status;
 
   public AdditionalMatchDetailedDto(final AdditionalMatch match) {
     this.matchUuid = match.getUuid();
@@ -48,12 +49,15 @@ public class AdditionalMatchDetailedDto {
     this.leagueUuid = match.getLeague().getUuid();
     this.date = match.getDate();
     this.type = match.getType();
+    this.seasonNumber = match.getSeasonNumber();
 
     this.sets = new ArrayList<>();
     for (final AdditonalSetResult setResult : match.getSetResults()) {
-      this.sets.add(new AdditionalSetDto(setResult));
+      this.sets.add(new SetDto(setResult));
     }
-    this.sets.sort(Comparator.comparingInt(AdditionalSetDto::getSetNumber));
+    this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
+
+    this.status = new MatchValidator(match).checkStatus();
   }
 
   @Override

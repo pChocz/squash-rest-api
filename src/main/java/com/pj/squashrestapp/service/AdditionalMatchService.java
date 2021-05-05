@@ -40,7 +40,7 @@ public class AdditionalMatchService {
     if (league.isEmpty()) {
       throw new GeneralBadRequestException("League not valid!");
     }
-    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDesc(league.get());
+    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
     return buildDtoList(matches);
   }
 
@@ -78,7 +78,8 @@ public class AdditionalMatchService {
 
   @Transactional
   public void createNewAdditionalMatchEmpty(final UUID firstPlayerUuid, final UUID secondPlayerUuid,
-                                            final UUID leagueUuid, final LocalDate date, final AdditionalMatchType type) {
+                                            final UUID leagueUuid, final int seasonNumber,
+                                            final LocalDate date, final AdditionalMatchType type) {
 
     final Player firstPlayer = playerRepository.findByUuid(firstPlayerUuid);
     final Player secondPlayer = playerRepository.findByUuid(secondPlayerUuid);
@@ -96,10 +97,11 @@ public class AdditionalMatchService {
     match.setSecondPlayer(secondPlayer);
     match.setDate(date);
     match.setType(type);
+    match.setSeasonNumber(seasonNumber);
 
-    for (int l = 0; l < 3; l++) {
+    for (int setNumber = 1; setNumber <= 3; setNumber++) {
       final AdditonalSetResult setResult = new AdditonalSetResult();
-      setResult.setNumber(l + 1);
+      setResult.setNumber(setNumber);
       setResult.setFirstPlayerScore(null);
       setResult.setSecondPlayerScore(null);
 
@@ -167,5 +169,13 @@ public class AdditionalMatchService {
     }
   }
 
+  public AdditionalMatchDetailedDto getSingleMatch(final UUID matchUuid) {
+    final Optional<AdditionalMatch> matchOptional = additionalMatchRepository.findByUuid(matchUuid);
+    if (matchOptional.isPresent()) {
+      return new AdditionalMatchDetailedDto(matchOptional.get());
+    } else {
+      throw new GeneralBadRequestException("No such match!");
+    }
+  }
 
 }

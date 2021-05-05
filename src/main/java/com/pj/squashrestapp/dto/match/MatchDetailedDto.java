@@ -33,7 +33,7 @@ public class MatchDetailedDto implements MatchDto {
   private final UUID roundUuid;
   private final int roundNumber;
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private final LocalDate roundDate;
+  private final LocalDate date;
 
   private final UUID seasonUuid;
   private final int seasonNumber;
@@ -51,7 +51,7 @@ public class MatchDetailedDto implements MatchDto {
     this.firstPlayer = new PlayerDto(match.getFirstPlayer());
     this.secondPlayer = new PlayerDto(match.getSecondPlayer());
     this.roundGroupNumber = roundGroup.getNumber();
-    this.roundDate = round.getDate();
+    this.date = round.getDate();
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();
     this.seasonUuid = season.getUuid();

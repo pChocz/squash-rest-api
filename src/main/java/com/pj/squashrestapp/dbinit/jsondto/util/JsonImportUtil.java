@@ -69,9 +69,9 @@ public class JsonImportUtil {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
     final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer);
-    match.setUuid(jsonMatch.getUuid());
     match.setDate(jsonMatch.getDate());
     match.setType(jsonMatch.getType());
+    match.setSeasonNumber(jsonMatch.getSeasonNumber());
     return match;
   }
 

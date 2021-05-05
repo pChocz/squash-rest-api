@@ -33,11 +33,12 @@ public class PlayersScoreboardController {
   Scoreboard extractAllAgainstAll(@PathVariable final UUID leagueUuid,
                                   @PathVariable final UUID[] playersUuids,
                                   @RequestParam(required = false) final UUID seasonUuid,
-                                  @RequestParam(required = false) final Integer groupNumber) {
+                                  @RequestParam(required = false) final Integer groupNumber,
+                                  @RequestParam final boolean includeAdditionalMatches) {
 
     final Scoreboard scoreboard = (playersUuids.length == 1)
-            ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0], seasonUuid, groupNumber)
-            : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids, seasonUuid, groupNumber);
+            ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0], seasonUuid, groupNumber, includeAdditionalMatches)
+            : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids, seasonUuid, groupNumber, includeAdditionalMatches);
 
     return scoreboard;
   }

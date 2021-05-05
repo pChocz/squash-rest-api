@@ -54,9 +54,10 @@ public class AdditionalMatchController {
   void createNewAdditionalMatchEmpty(@RequestParam final UUID firstPlayerUuid,
                                      @RequestParam final UUID secondPlayerUuid,
                                      @RequestParam final UUID leagueUuid,
+                                     @RequestParam final int seasonNumber,
                                      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
                                      @RequestParam final AdditionalMatchType type) {
-    additionalMatchService.createNewAdditionalMatchEmpty(firstPlayerUuid, secondPlayerUuid, leagueUuid, date, type);
+    additionalMatchService.createNewAdditionalMatchEmpty(firstPlayerUuid, secondPlayerUuid, leagueUuid, seasonNumber, date, type);
   }
 
 
@@ -64,6 +65,13 @@ public class AdditionalMatchController {
   @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
   void deleteMatchByUuid(@PathVariable final UUID matchUuid) {
     additionalMatchService.deleteMatchByUuid(matchUuid);
+  }
+
+
+  @GetMapping(value = "/{matchUuid}")
+  ResponseEntity<?> getSingleMatch(@PathVariable final UUID matchUuid) {
+    final AdditionalMatchDetailedDto match = additionalMatchService.getSingleMatch(matchUuid);
+    return new ResponseEntity<>(match, HttpStatus.OK);
   }
 
 
@@ -131,6 +139,7 @@ public class AdditionalMatchController {
           final AdditionalMatch match = FakeMatch.createAdditional(twoPlayers.get(0), twoPlayers.get(1));
           match.setDate(date);
           match.setType(AdditionalMatchType.BONUS);
+          match.setSeasonNumber(season.getNumber());
           league.addAdditionalMatch(match);
         }
       }

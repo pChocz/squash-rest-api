@@ -1,12 +1,15 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.dto.MatchesGroupedDto;
+import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
+import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
-import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +30,9 @@ import java.util.stream.Collectors;
 public class MatchService {
 
   private final MatchRepository matchRepository;
+  private final AdditionalMatchRepository additionalMatchRepository;
   private final SetResultRepository setResultRepository;
+  private final SeasonRepository seasonRepository;
 
   public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
     final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
@@ -79,22 +84,46 @@ public class MatchService {
     }
   }
 
-  public MatchesSimplePaginated getMatchesPaginated(final Pageable pageable, final UUID leagueUuid,
-                                                    final UUID[] playersUuids,
-                                                    final UUID seasonUuid, final Integer groupNumber) {
+  public MatchesSimplePaginated getRoundMatchesPaginated(final Pageable pageable, final UUID leagueUuid,
+                                                         final UUID[] playersUuids,
+                                                         final UUID seasonUuid, final Integer groupNumber) {
 
-    final Page<Long> matchIds = (playersUuids.length == 1)
+    final Page<Long> roundMatchesIds = (playersUuids.length == 1)
             ? matchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber)
             : matchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
 
-    final List<Match> matches = matchRepository.findByIdIn(matchIds.getContent());
+    final List<Match> roundMatches = matchRepository.findByIdIn(roundMatchesIds.getContent());
 
-    final List<MatchSimpleDto> matchesDtos = matches
+    final List<MatchDto> roundMatchesDtos = roundMatches
             .stream()
             .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
 
-    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(matchIds, matchesDtos);
+    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(roundMatchesIds, roundMatchesDtos);
+    return matchesDtoPage;
+  }
+
+
+  public MatchesSimplePaginated getAdditionalMatchesPaginated(final Pageable pageable, final UUID leagueUuid,
+                                                              final UUID[] playersUuids, final UUID seasonUuid) {
+
+    final Integer seasonNumber = seasonUuid == null
+            ? null
+            : seasonRepository.findByUuid(seasonUuid).get().getNumber();
+
+    final Page<Long> additionalMatchesIds = (playersUuids.length == 1)
+            ? additionalMatchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonNumber)
+            : additionalMatchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonNumber);
+
+    final List<AdditionalMatch> additionalMatches = additionalMatchRepository.findByIdIn(additionalMatchesIds.getContent());
+
+    final List<MatchDto> additionalMatchesDtos = additionalMatches
+            .stream()
+            .map(AdditionalMatchSimpleDto::new)
+            .collect(Collectors.toList());
+
+
+    final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(additionalMatchesIds, additionalMatchesDtos);
     return matchesDtoPage;
   }
 

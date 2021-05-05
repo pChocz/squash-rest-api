@@ -13,23 +13,22 @@ public class SetValidator {
   private static final int REGULAR_SET_WINNING_ADVANTAGE_SCORE = 12;
   private static final int TIE_BREAK_WINNING_SCORE = 9;
 
-  final private SetResult setResult;
+  final private int setNumber;
+  final private Integer firstPlayerScore;
+  final private Integer secondPlayerScore;
 
   public SetStatus checkStatus() {
-    final int setNumber = setResult.getNumber();
-    final Integer firstScore = setResult.getFirstPlayerScore();
-    final Integer secondScore = setResult.getSecondPlayerScore();
 
-    if (firstScore == null && secondScore == null) {
+    if (firstPlayerScore == null && secondPlayerScore == null) {
       return SetStatus.EMPTY;
 
-    } else if (firstScore == null || secondScore == null) {
+    } else if (firstPlayerScore == null || secondPlayerScore == null) {
       return SetStatus.IN_PROGRESS;
 
     }
 
-    final int high = Math.max(firstScore, secondScore);
-    final int low = Math.min(firstScore, secondScore);
+    final int high = Math.max(firstPlayerScore, secondPlayerScore);
+    final int low = Math.min(firstPlayerScore, secondPlayerScore);
 
     if (isValidSet(setNumber, high, low)) {
       return checkWinner();
@@ -53,10 +52,10 @@ public class SetValidator {
   }
 
   public SetStatus checkWinner() {
-    return setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()
+    return firstPlayerScore > secondPlayerScore
             ? SetStatus.FIRST_PLAYER_WINS
 
-            : setResult.getFirstPlayerScore() < setResult.getSecondPlayerScore()
+            : firstPlayerScore < secondPlayerScore
             ? SetStatus.SECOND_PLAYER_WINS
 
             // will never happen

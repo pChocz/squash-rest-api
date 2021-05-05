@@ -65,9 +65,9 @@ public class JsonExportUtil {
 
     for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
       final JsonAdditionalMatch jsonAdditionalMatch = new JsonAdditionalMatch();
-      jsonAdditionalMatch.setUuid(additionalMatch.getUuid());
       jsonAdditionalMatch.setDate(additionalMatch.getDate());
       jsonAdditionalMatch.setType(additionalMatch.getType());
+      jsonAdditionalMatch.setSeasonNumber(additionalMatch.getSeasonNumber());
       jsonAdditionalMatch.setFirstPlayer(additionalMatch.getFirstPlayer().getUuid());
       jsonAdditionalMatch.setSecondPlayer(additionalMatch.getSecondPlayer().getUuid());
       jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));

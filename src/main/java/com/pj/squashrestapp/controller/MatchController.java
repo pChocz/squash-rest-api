@@ -56,7 +56,18 @@ public class MatchController {
                                          @RequestParam(required = false) final UUID seasonUuid,
                                          @RequestParam(required = false) final Integer groupNumber) {
 
-    final MatchesSimplePaginated matchesPaginated = matchService.getMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+    final MatchesSimplePaginated matchesPaginated = matchService.getRoundMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+    return matchesPaginated;
+  }
+
+  @GetMapping(value = "/for-league-for-players-additional/{leagueUuid}/{playersUuids}")
+  @ResponseBody
+  MatchesSimplePaginated matchesAdditionalPageable(@PageableDefault(sort = {"id", "date"}, direction = Sort.Direction.DESC) final Pageable pageable,
+                                                   @PathVariable final UUID leagueUuid,
+                                                   @PathVariable final UUID[] playersUuids,
+                                                   @RequestParam(required = false) final UUID seasonUuid) {
+
+    final MatchesSimplePaginated matchesPaginated = matchService.getAdditionalMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid);
     return matchesPaginated;
   }
 
