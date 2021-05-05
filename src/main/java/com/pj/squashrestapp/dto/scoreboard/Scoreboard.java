@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import lombok.Getter;
 
@@ -41,7 +42,7 @@ public class Scoreboard implements LoggableQuery {
     return matches
             .stream()
             .sorted(Comparator
-                    .comparing(MatchDto::getRoundDate)
+                    .comparing(MatchDto::getDate)
                     .reversed())
             .collect(Collectors.toList());
   }

@@ -1,6 +1,9 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.SetResult;
 
 /**
  *
@@ -11,6 +14,12 @@ public class MatchValidator {
   final private SetStatus setStatus1;
   final private SetStatus setStatus2;
   final private SetStatus setStatus3;
+
+  public MatchValidator(final AdditionalMatch match) {
+    this.setStatus1 = getSetResult(match, 1).checkStatus();
+    this.setStatus2 = getSetResult(match, 2).checkStatus();
+    this.setStatus3 = getSetResult(match, 3).checkStatus();
+  }
 
   public MatchValidator(final Match match) {
     this.setStatus1 = getSetResult(match, 1).checkStatus();
@@ -24,7 +33,23 @@ public class MatchValidator {
             .stream()
             .filter(set -> set.getNumber() == number)
             .findFirst()
-            .map(SetValidator::new)
+            .map((SetResult setResult) -> new SetValidator(
+                    setResult.getNumber(),
+                    setResult.getFirstPlayerScore(),
+                    setResult.getSecondPlayerScore()))
+            .orElse(null);
+  }
+
+  private SetValidator getSetResult(final AdditionalMatch match, final int number) {
+    return match
+            .getSetResults()
+            .stream()
+            .filter(set -> set.getNumber() == number)
+            .findFirst()
+            .map((AdditonalSetResult setResult) -> new SetValidator(
+                    setResult.getNumber(),
+                    setResult.getFirstPlayerScore(),
+                    setResult.getSecondPlayerScore()))
             .orElse(null);
   }
 

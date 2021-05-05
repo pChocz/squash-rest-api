@@ -16,12 +16,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JsonAdditionalMatch {
 
-  private UUID uuid;
-
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate date;
 
   private AdditionalMatchType type;
+
+  private int seasonNumber;
 
   @JsonProperty("p1")
   @SerializedName("p1")

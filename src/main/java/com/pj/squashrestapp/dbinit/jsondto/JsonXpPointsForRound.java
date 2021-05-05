@@ -37,4 +37,8 @@ public class JsonXpPointsForRound {
     return array;
   }
 
+  public int extractNumberOfPlayers() {
+    return Arrays.stream(this.buildPlayerSplitArray()).sum();
+  }
+
 }

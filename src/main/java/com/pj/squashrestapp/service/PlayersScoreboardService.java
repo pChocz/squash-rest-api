@@ -1,5 +1,9 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
+import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
+import com.pj.squashrestapp.dto.match.MatchSimpleDto;
+import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.dto.PlayerDto;
@@ -8,15 +12,22 @@ import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,10 +41,13 @@ import java.util.stream.Collectors;
 public class PlayersScoreboardService {
 
   private final MatchRepository matchRepository;
+  private final AdditionalMatchRepository additionalMatchRepository;
   private final PlayerRepository playerRepository;
+  private final SeasonRepository seasonRepository;
 
   public Scoreboard buildSingle(final UUID leagueUuid, final UUID playerUuid,
-                                final UUID seasonUuid, final Integer groupNumber) {
+                                final UUID seasonUuid, final Integer groupNumber,
+                                final boolean includeAdditionalMatches) {
 
     final List<Match> matches = matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(leagueUuid, playerUuid, seasonUuid, groupNumber);
 
@@ -49,17 +63,33 @@ public class PlayersScoreboardService {
   }
 
   public Scoreboard buildMultipleAllAgainstAll(final UUID leagueUuid, final UUID[] playersUuids,
-                                               final UUID seasonUuid, final Integer groupNumber) {
+                                               final UUID seasonUuid, final Integer groupNumber,
+                                               final boolean includeAdditionalMatches) {
 
-    final List<Match> matches = matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(leagueUuid, playersUuids, seasonUuid, groupNumber);
-
-    final List<MatchDto> matchesDtos = matches
+    final List<Match> roundMatches = matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(leagueUuid, playersUuids, seasonUuid, groupNumber);
+    final List<MatchDto> roundMatchesDtos = roundMatches
             .stream()
-            .map(MatchDetailedDto::new)
+            .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
 
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
+    final Collection<MatchDto> allMatches = new ArrayList<>();
+    allMatches.addAll(roundMatchesDtos);
 
+    if (includeAdditionalMatches) {
+      final Integer seasonNumber = seasonUuid == null
+              ? null
+              : seasonRepository.findByUuid(seasonUuid).get().getNumber();
+
+      final List<AdditionalMatch> additionalMatches = additionalMatchRepository.fetchForSeveralPlayersForLeagueForSeasonNumber(leagueUuid, playersUuids, seasonNumber);
+      final List<MatchDto> additionalMatchesDtos = additionalMatches
+              .stream()
+              .map(AdditionalMatchSimpleDto::new)
+              .collect(Collectors.toList());
+
+      allMatches.addAll(additionalMatchesDtos);
+    }
+
+    final Scoreboard scoreboard = new Scoreboard(allMatches);
     return scoreboard;
   }
 

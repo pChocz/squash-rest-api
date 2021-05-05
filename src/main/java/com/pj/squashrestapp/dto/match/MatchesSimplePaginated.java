@@ -23,9 +23,9 @@ public class MatchesSimplePaginated {
   final long min;
   final long max;
 
-  final List<MatchSimpleDto> matches;
+  final List<MatchDto> matches;
 
-  public MatchesSimplePaginated(final Page<Long> page, final List<MatchSimpleDto> matchesDtos) {
+  public MatchesSimplePaginated(final Page<Long> page, final List<MatchDto> matchesDtos) {
     this.size = page.getSize();
     this.total = page.getTotalElements();
     this.page = page.getNumber();
@@ -37,11 +37,11 @@ public class MatchesSimplePaginated {
     this.matches = getSortedMatches(matchesDtos);
   }
 
-  private List<MatchSimpleDto> getSortedMatches(final Collection<MatchSimpleDto> matches) {
+  private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {
     return matches
             .stream()
             .sorted(Comparator
-                    .comparing(MatchSimpleDto::getRoundDate)
+                    .comparing(MatchDto::getDate)
                     .reversed())
             .collect(Collectors.toList());
   }
