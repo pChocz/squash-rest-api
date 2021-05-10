@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 /**
  *
@@ -28,7 +29,19 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int matchesLost;
   private BigDecimal matchesRatio;
 
-  public HeadToHeadScoreboardRow(final PlayersStatsScoreboardRow row) {
+  private int firstSetsWon;
+  private int firstSetsLost;
+  private BigDecimal firstSetsRatio;
+
+  private int secondSetsWon;
+  private int secondSetsLost;
+  private BigDecimal secondSetsRatio;
+
+  private int tieBreaksWon;
+  private int tieBreaksLost;
+  private BigDecimal tieBreaksRatio;
+
+  public HeadToHeadScoreboardRow(final PlayersStatsScoreboardRow row, final Map<PlayerDto, Map<Integer, Integer>> splitPerSet) {
     this.player = row.getPlayer();
 
     this.pointsWon = row.getPointsWon();
@@ -42,6 +55,27 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
     this.matchesWon = row.getMatchesWon();
     this.matchesLost = row.getMatchesLost();
     this.matchesRatio = RoundingUtil.round( (float) 100 * matchesWon / (matchesWon + matchesLost), 1);
+
+    final PlayerDto opponent = splitPerSet
+            .keySet()
+            .stream()
+            .filter(playerDto -> !playerDto.equals(this.player))
+            .findFirst()
+            .orElseThrow();
+
+    this.firstSetsWon = splitPerSet.get(player).getOrDefault(1, 0);
+    this.firstSetsLost = splitPerSet.get(opponent).getOrDefault(1, 0);
+    this.firstSetsRatio = RoundingUtil.round( (float) 100 * firstSetsWon / (firstSetsWon + firstSetsLost), 1);
+
+    this.secondSetsWon = splitPerSet.get(player).getOrDefault(2, 0);
+    this.secondSetsLost = splitPerSet.get(opponent).getOrDefault(2, 0);
+    this.secondSetsRatio = RoundingUtil.round( (float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
+
+    this.tieBreaksWon = splitPerSet.get(player).getOrDefault(3, 0);
+    this.tieBreaksLost = splitPerSet.get(opponent).getOrDefault(3, 0);
+    if (tieBreaksWon + tieBreaksLost > 0) {
+      this.tieBreaksRatio = RoundingUtil.round((float) 100 * tieBreaksWon / (tieBreaksWon + tieBreaksLost), 1);
+    }
   }
 
   @Override
