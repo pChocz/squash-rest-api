@@ -37,6 +37,35 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   Optional<Match> findMatchByUuid(UUID uuid);
 
 
+
+
+
+  @Query("""
+          SELECT m FROM Match m
+          INNER JOIN m.roundGroup rg
+          INNER JOIN rg.round r
+          INNER JOIN r.season s
+          INNER JOIN s.league l
+          INNER JOIN m.firstPlayer p1
+          INNER JOIN m.secondPlayer p2
+              WHERE (p1.uuid IN :playersUuids 
+                 AND p2.uuid IN :playersUuids)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "roundGroup.round.season.league",
+  })
+  List<Match> fetchHeadToHead(@Param("playersUuids") UUID[] playersUuids);
+
+
+
+
+
+
+
+
   @Query("""
           SELECT m FROM Match m
           INNER JOIN m.roundGroup rg

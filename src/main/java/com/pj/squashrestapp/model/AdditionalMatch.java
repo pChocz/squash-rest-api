@@ -94,7 +94,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
   @Override
   public String toString() {
-    return "[" + getUuid() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
+    return "[" + uuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
   }
 
   private List<AdditonalSetResult> setResultsOrderedNonNull() {
@@ -117,6 +117,11 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
     return Comparator
             .comparing(AdditionalMatch::getDate)
             .compare(this, that);
+  }
+
+  public String detailedInfo() {
+    return "[" + uuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull()
+           + " (S: " + seasonNumber  + " | T: " + type + " | " + date + ")";
   }
 
 }

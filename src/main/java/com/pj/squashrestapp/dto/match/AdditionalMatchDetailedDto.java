@@ -32,6 +32,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
   private final UUID leagueUuid;
+  private final String leagueName;
   private final AdditionalMatchType type;
   private final int seasonNumber;
 
@@ -47,6 +48,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
     this.firstPlayer = new PlayerDto(match.getFirstPlayer());
     this.secondPlayer = new PlayerDto(match.getSecondPlayer());
     this.leagueUuid = match.getLeague().getUuid();
+    this.leagueName = match.getLeague().getName();
     this.date = match.getDate();
     this.type = match.getType();
     this.seasonNumber = match.getSeasonNumber();
