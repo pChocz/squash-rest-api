@@ -50,6 +50,37 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           SELECT m FROM AdditionalMatch m
             INNER JOIN m.firstPlayer p1
             INNER JOIN m.secondPlayer p2
+              WHERE (p1 = :player 
+                  OR p2 = :player)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+  })
+  List<AdditionalMatch> fetchAllForSinglePlayer(Player player);
+
+
+  @Query("""
+          SELECT m FROM AdditionalMatch m
+            INNER JOIN m.firstPlayer p1
+            INNER JOIN m.secondPlayer p2
+              WHERE (p1.uuid IN :playersUuids 
+                 AND p2.uuid IN :playersUuids)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "league"
+  })
+  List<AdditionalMatch> fetchHeadToHead(UUID[] playersUuids);
+
+
+  @Query("""
+          SELECT m FROM AdditionalMatch m
+            INNER JOIN m.firstPlayer p1
+            INNER JOIN m.secondPlayer p2
               WHERE (p1.uuid IN :playersUuids 
                  AND p2.uuid IN :playersUuids)
                  AND m.league = :league
@@ -81,6 +112,27 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           @Param("leagueUuid") UUID leagueUuid,
           @Param("playersUuids") UUID[] playersUuids,
           @Param("seasonNumber") Integer seasonNumber);
+
+
+  @Query("""
+          SELECT m FROM AdditionalMatch m
+          INNER JOIN m.league l
+          INNER JOIN m.firstPlayer p1
+          INNER JOIN m.secondPlayer p2
+            WHERE l.uuid = :leagueUuid
+              AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+              AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
+          """)
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults"
+  })
+  List<AdditionalMatch> fetchForSinglePlayerForLeagueForSeasonNumber(
+          @Param("leagueUuid") UUID leagueUuid,
+          @Param("playerUuid") UUID playerUuid,
+          @Param("seasonNumber") Integer seasonNumber);
+
 
   @Query("""
           SELECT m.id FROM AdditionalMatch m

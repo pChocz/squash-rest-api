@@ -51,12 +51,29 @@ public class PlayersScoreboardService {
 
     final List<Match> matches = matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(leagueUuid, playerUuid, seasonUuid, groupNumber);
 
-    final List<MatchDto> matchesDtos = matches
+    final List<MatchDto> roundMatchesDtos = matches
             .stream()
-            .map(MatchDetailedDto::new)
+            .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
 
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
+    final Collection<MatchDto> allMatches = new ArrayList<>();
+    allMatches.addAll(roundMatchesDtos);
+
+    if (includeAdditionalMatches) {
+      final Integer seasonNumber = seasonUuid == null
+              ? null
+              : seasonRepository.findByUuid(seasonUuid).get().getNumber();
+
+      final List<AdditionalMatch> additionalMatches = additionalMatchRepository.fetchForSinglePlayerForLeagueForSeasonNumber(leagueUuid, playerUuid, seasonNumber);
+      final List<MatchDto> additionalMatchesDtos = additionalMatches
+              .stream()
+              .map(AdditionalMatchSimpleDto::new)
+              .collect(Collectors.toList());
+
+      allMatches.addAll(additionalMatchesDtos);
+    }
+
+    final Scoreboard scoreboard = new Scoreboard(allMatches);
     scoreboard.makeItSinglePlayerScoreboard(playerUuid);
 
     return scoreboard;
@@ -97,24 +114,34 @@ public class PlayersScoreboardService {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
     final Player player = playerRepository.findByUuid(currentPlayerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
-    final List<Match> matches = matchRepository.fetchByOnePlayerAgainstAllForAllLeagues(currentPlayerUuid);
+    final List<Match> roundMatches = matchRepository.fetchByOnePlayerAgainstAllForAllLeagues(currentPlayerUuid);
+    final List<AdditionalMatch> additionalMatches = additionalMatchRepository.fetchAllForSinglePlayer(player);
 
-    final List<MatchDto> matchesDtos = matches
+    final List<MatchDto> roundMatchesDtos = roundMatches
             .stream()
             .map(MatchDetailedDto::new)
             .collect(Collectors.toList());
+
+    final List<MatchDto> additionalMatchesDtos = additionalMatches
+            .stream()
+            .map(AdditionalMatchSimpleDto::new)
+            .collect(Collectors.toList());
+
+    final List<MatchDto> allMatchesDtos = new ArrayList<>();
+    allMatchesDtos.addAll(roundMatchesDtos);
+    allMatchesDtos.addAll(additionalMatchesDtos);
 
     final Set<UUID> leagues = new HashSet<>();
     final Set<UUID> seasons = new HashSet<>();
     final Set<UUID> rounds = new HashSet<>();
 
-    for (final Match match : matches) {
+    for (final Match match : roundMatches) {
       leagues.add(match.getRoundGroup().getRound().getSeason().getLeague().getUuid());
       seasons.add(match.getRoundGroup().getRound().getSeason().getUuid());
       rounds.add(match.getRoundGroup().getRound().getUuid());
     }
 
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
+    final Scoreboard scoreboard = new Scoreboard(allMatchesDtos);
     final PlayersStatsScoreboardRow scoreboardRow = scoreboard.getRowForPlayer(playerDto);
 
     final PlayerSummary playerSummary = new PlayerSummary(scoreboardRow, leagues.size(), seasons.size(), rounds.size());
@@ -128,7 +155,7 @@ public class PlayersScoreboardService {
 
     final List<MatchDto> matchesDtos = matches
             .stream()
-            .map(MatchDetailedDto::new)
+            .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
 
     final Scoreboard scoreboard = new Scoreboard(matchesDtos);

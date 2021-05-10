@@ -109,14 +109,17 @@ public class AdditionalMatchService {
     }
 
     league.get().addAdditionalMatch(match);
+    log.info("Adding additional match!\n\t-> {}", match.detailedInfo());
   }
 
   public void deleteMatchByUuid(final UUID matchUuid) {
-    final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
-    if (match.isEmpty()) {
+    final Optional<AdditionalMatch> matchOptional = additionalMatchRepository.findByUuid(matchUuid);
+    if (matchOptional.isEmpty()) {
       throw new GeneralBadRequestException("Additional match not found!");
     }
-    additionalMatchRepository.delete(match.get());
+    final AdditionalMatch match = matchOptional.get();
+    additionalMatchRepository.delete(match);
+    log.info("Deleting additional match!\n\t-> {}", match.detailedInfo());
   }
 
   public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {

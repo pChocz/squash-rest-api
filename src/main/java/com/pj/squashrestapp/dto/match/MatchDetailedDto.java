@@ -15,8 +15,10 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -38,6 +40,8 @@ public class MatchDetailedDto implements MatchDto {
   private final UUID seasonUuid;
   private final int seasonNumber;
 
+  private final String leagueName;
+
   private final List<SetDto> sets;
 
   private final MatchStatus status;
@@ -56,11 +60,13 @@ public class MatchDetailedDto implements MatchDto {
     this.roundNumber = round.getNumber();
     this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
+    this.leagueName = season.getLeague().getName();
 
     this.sets = new ArrayList<>();
     for (final SetResult setResult : match.getSetResults()) {
       this.sets.add(new SetDto(setResult));
     }
+    this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
 
     this.status = new MatchValidator(match).checkStatus();
   }
