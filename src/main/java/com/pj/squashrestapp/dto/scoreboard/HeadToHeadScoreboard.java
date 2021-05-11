@@ -5,6 +5,8 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
+import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -45,6 +47,10 @@ public class HeadToHeadScoreboard implements LoggableQuery {
     winningSetsPerPlayer.put(matches.stream().findFirst().get().getFirstPlayer(), new HashMap<>());
     winningSetsPerPlayer.put(matches.stream().findFirst().get().getSecondPlayer(), new HashMap<>());
 
+    final Map<PlayerDto, Map<Integer, Integer>> winningMatchesPerPlayer = new HashMap<>();
+    winningMatchesPerPlayer.put(matches.stream().findFirst().get().getFirstPlayer(), new HashMap<>());
+    winningMatchesPerPlayer.put(matches.stream().findFirst().get().getSecondPlayer(), new HashMap<>());
+
     final List<PlayersStatsScoreboardRow> scoreboardRows = new ArrayList<>();
     for (final MatchDto match : getSortedMatches(matches)) {
       final PlayersStatsScoreboardRow scoreboardRowFirst = getScoreboardRowOrBuildNew(scoreboardRows, match.getFirstPlayer());
@@ -56,13 +62,31 @@ public class HeadToHeadScoreboard implements LoggableQuery {
       final PlayerDto firstPlayer = match.getFirstPlayer();
       final PlayerDto secondPlayer = match.getSecondPlayer();
 
+      int firstPlayerSetsWon = 0;
+      int secondPlayerSetsWon = 0;
       for (final SetDto set : match.getSets()) {
         if (set.getFirstPlayerScoreNullSafe() > set.getSecondPlayerScoreNullSafe()) {
+          firstPlayerSetsWon++;
           winningSetsPerPlayer.get(firstPlayer).merge(set.getSetNumber(), 1, Integer::sum);
 
         } else if (set.getFirstPlayerScoreNullSafe() < set.getSecondPlayerScoreNullSafe()) {
+          secondPlayerSetsWon++;
           winningSetsPerPlayer.get(secondPlayer).merge(set.getSetNumber(), 1, Integer::sum);
         }
+      }
+
+      if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 0) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(2, 1, Integer::sum);
+
+      } else if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 1) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(3, 1, Integer::sum);
+
+      } else if (firstPlayerSetsWon == 0 && secondPlayerSetsWon == 2) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(2, 1, Integer::sum);
+
+      } else if (firstPlayerSetsWon == 1 && secondPlayerSetsWon == 2) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(3, 1, Integer::sum);
+
       }
     }
     Collections.sort(scoreboardRows);
@@ -73,8 +97,8 @@ public class HeadToHeadScoreboard implements LoggableQuery {
 
     this.numberOfRegularMatches = numberOfMatches - numberOfTiebreaks;
 
-    winner = new HeadToHeadScoreboardRow(scoreboardRows.get(0), winningSetsPerPlayer);
-    looser = new HeadToHeadScoreboardRow(scoreboardRows.get(1), winningSetsPerPlayer);
+    winner = new HeadToHeadScoreboardRow(scoreboardRows.get(0), winningSetsPerPlayer, winningMatchesPerPlayer);
+    looser = new HeadToHeadScoreboardRow(scoreboardRows.get(1), winningSetsPerPlayer, winningMatchesPerPlayer);
   }
 
   private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {

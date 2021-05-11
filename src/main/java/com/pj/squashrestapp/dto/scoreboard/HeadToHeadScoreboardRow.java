@@ -29,6 +29,14 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int matchesLost;
   private BigDecimal matchesRatio;
 
+  private int regularMatchesWon;
+  private int regularMatchesLost;
+  private BigDecimal regularMatchesRatio;
+
+  private int tieBreakMatchesWon;
+  private int tieBreakMatchesLost;
+  private BigDecimal tieBreakMatchesRatio;
+
   private int firstSetsWon;
   private int firstSetsLost;
   private BigDecimal firstSetsRatio;
@@ -41,7 +49,10 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int tieBreaksLost;
   private BigDecimal tieBreaksRatio;
 
-  public HeadToHeadScoreboardRow(final PlayersStatsScoreboardRow row, final Map<PlayerDto, Map<Integer, Integer>> splitPerSet) {
+  public HeadToHeadScoreboardRow(final PlayersStatsScoreboardRow row,
+                                 final Map<PlayerDto, Map<Integer, Integer>> splitPerSet,
+                                 final Map<PlayerDto, Map<Integer, Integer>> splitPerMatch) {
+
     this.player = row.getPlayer();
 
     this.pointsWon = row.getPointsWon();
@@ -75,6 +86,18 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
     this.tieBreaksLost = splitPerSet.get(opponent).getOrDefault(3, 0);
     if (tieBreaksWon + tieBreaksLost > 0) {
       this.tieBreaksRatio = RoundingUtil.round((float) 100 * tieBreaksWon / (tieBreaksWon + tieBreaksLost), 1);
+    }
+
+    this.regularMatchesWon = splitPerMatch.get(player).getOrDefault(2, 0);
+    this.regularMatchesLost = splitPerMatch.get(opponent).getOrDefault(2, 0);
+    if (regularMatchesWon + regularMatchesLost > 0) {
+      this.regularMatchesRatio = RoundingUtil.round((float) 100 * regularMatchesWon / (regularMatchesWon + regularMatchesLost), 1);
+    }
+
+    this.tieBreakMatchesWon = splitPerMatch.get(player).getOrDefault(3, 0);
+    this.tieBreakMatchesLost = splitPerMatch.get(opponent).getOrDefault(3, 0);
+    if (tieBreakMatchesWon + tieBreakMatchesLost > 0) {
+      this.tieBreakMatchesRatio = RoundingUtil.round((float) 100 * tieBreakMatchesWon / (tieBreakMatchesWon + tieBreakMatchesLost), 1);
     }
   }
 
