@@ -35,6 +35,7 @@ public class RegistrationListener implements ApplicationListener<OnRegistrationC
     final String confirmationUrl = event.getFrontendUrl() + "confirm-registration/" + token;
 
     final String htmlContent = EmailTemplate.builder()
+            .isWithButton(true)
             .title(subject)
             .username(player.getUsername())
             .buttonLabel("Confirm Registration")

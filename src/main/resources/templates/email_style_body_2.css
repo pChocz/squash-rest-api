@@ -1,0 +1,54 @@
+body {
+    background-color: #fff
+}
+
+.logo a:hover, .logo a:focus {
+    color: #859bb1 !important
+}
+
+.mso .layout-has-border {
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc
+}
+
+.mso .layout-has-bottom-border {
+    border-bottom: 1px solid #ccc
+}
+
+.mso .border, .ie .border {
+    background-color: #ccc
+}
+
+.mso h1, .ie h1 {
+}
+
+.mso h1, .ie h1 {
+    font-size: 64px !important;
+    line-height: 63px !important
+}
+
+.mso h2, .ie h2 {
+}
+
+.mso h2, .ie h2 {
+    font-size: 30px !important;
+    line-height: 38px !important
+}
+
+.mso h3, .ie h3 {
+}
+
+.mso h3, .ie h3 {
+    font-size: 22px !important;
+    line-height: 31px !important
+}
+
+.mso .layout__inner, .ie .layout__inner {
+}
+
+.mso .footer__share-button p {
+}
+
+.mso .footer__share-button p {
+    font-family: sans-serif
+}

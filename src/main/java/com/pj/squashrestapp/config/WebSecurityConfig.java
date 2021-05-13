@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.config;
 
+import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.security.accessexceptionhandler.AccessDeniedExceptionHandler;
 import com.pj.squashrestapp.config.security.accessexceptionhandler.AuthenticationExceptionHandler;
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
@@ -8,6 +9,7 @@ import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -41,6 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final PlayerRepository playerRepository;
   private final TokenCreateService tokenCreateService;
   private final SecretKeyHolder secretKeyHolder;
+  private final EmailSendConfig emailSendConfig;
+
 
   @Override
   protected void configure(final HttpSecurity httpSecurity) throws Exception {
@@ -114,6 +118,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
     return source;
+  }
+
+  @Bean
+  public ApplicationListener applicationListener(){
+    return new AuthSuccessApplicationListener(emailSendConfig, playerRepository);
   }
 
 }

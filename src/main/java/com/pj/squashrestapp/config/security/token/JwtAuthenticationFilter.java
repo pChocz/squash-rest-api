@@ -1,17 +1,21 @@
 package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -29,19 +33,27 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PR
  *
  */
 @Slf4j
+@AllArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
+
+  private static final String[] IP_HEADER_CANDIDATES = {
+          "X-Forwarded-For",
+          "Proxy-Client-IP",
+          "WL-Proxy-Client-IP",
+          "HTTP_X_FORWARDED_FOR",
+          "HTTP_X_FORWARDED",
+          "HTTP_X_CLUSTER_CLIENT_IP",
+          "HTTP_CLIENT_IP",
+          "HTTP_FORWARDED_FOR",
+          "HTTP_FORWARDED",
+          "HTTP_VIA",
+          "REMOTE_ADDR"
+  };
 
   private final AuthenticationManager authenticationManager;
   private final TokenCreateService tokenCreateService;
   private final PlayerRepository playerRepository;
 
-  public JwtAuthenticationFilter(final AuthenticationManager authenticationManager,
-                                 final TokenCreateService tokenCreateService,
-                                 final PlayerRepository playerRepository) {
-    this.authenticationManager = authenticationManager;
-    this.tokenCreateService = tokenCreateService;
-    this.playerRepository = playerRepository;
-  }
 
   @Override
   public Authentication attemptAuthentication(final HttpServletRequest req,
@@ -60,8 +72,15 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       final long startTime = System.nanoTime();
       final var authentication = new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
       final var auth = authenticationManager.authenticate(authentication);
+      final String username = getPrincipal(auth).getUsername();
+      final String userIpAddress = extractIpAddress(req);
+      if (userIpAddress == null) {
+        log.info("User [{}] has logged in", username);
+      } else {
+        log.info("User [{}] has logged in from IP [{}]", username, userIpAddress);
+      }
       log.info("Authentication took {} s", GeneralUtil.getDurationSecondsRounded(startTime));
-      log.info("User [{}] has logged in", getPrincipal(auth).getUsername());
+
       return auth;
 
     } catch (final AuthenticationException e) {
@@ -71,6 +90,25 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
   private UserDetailsImpl getPrincipal(final Authentication auth) {
     return (UserDetailsImpl) auth.getPrincipal();
+  }
+
+  @SuppressWarnings("Convert2streamapi")
+  private String extractIpAddress(final HttpServletRequest req) {
+    if (req != null) {
+      for (final String header : IP_HEADER_CANDIDATES) {
+        final String ipListFromHeader = req.getHeader(header);
+        if (isValidIpList(ipListFromHeader)) {
+          return ipListFromHeader.split(",")[0];
+        }
+      }
+    }
+    return null;
+  }
+
+  private boolean isValidIpList(final String ipList) {
+    return ipList != null
+           && !ipList.isEmpty()
+           && !"unknown".equalsIgnoreCase(ipList);
   }
 
   @Override
