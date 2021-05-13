@@ -13,9 +13,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -35,20 +32,6 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PR
 @Slf4j
 @AllArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-
-  private static final String[] IP_HEADER_CANDIDATES = {
-          "X-Forwarded-For",
-          "Proxy-Client-IP",
-          "WL-Proxy-Client-IP",
-          "HTTP_X_FORWARDED_FOR",
-          "HTTP_X_FORWARDED",
-          "HTTP_X_CLUSTER_CLIENT_IP",
-          "HTTP_CLIENT_IP",
-          "HTTP_FORWARDED_FOR",
-          "HTTP_FORWARDED",
-          "HTTP_VIA",
-          "REMOTE_ADDR"
-  };
 
   private final AuthenticationManager authenticationManager;
   private final TokenCreateService tokenCreateService;
@@ -92,24 +75,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     return (UserDetailsImpl) auth.getPrincipal();
   }
 
-  @SuppressWarnings("Convert2streamapi")
   private String extractIpAddress(final HttpServletRequest req) {
-    if (req != null) {
-      for (final String header : IP_HEADER_CANDIDATES) {
-        final String ipListFromHeader = req.getHeader(header);
-        if (isValidIpList(ipListFromHeader)) {
-          return ipListFromHeader.split(",")[0];
-        }
-      }
-      return req.getRemoteAddr();
-    }
-    return null;
-  }
-
-  private boolean isValidIpList(final String ipList) {
-    return ipList != null
-           && !ipList.isEmpty()
-           && !"unknown".equalsIgnoreCase(ipList);
+    return req == null
+            ? null
+            : req.getRemoteAddr();
   }
 
   @Override
