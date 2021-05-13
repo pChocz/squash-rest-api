@@ -35,6 +35,7 @@ public class PasswordResetListener implements ApplicationListener<OnPasswordRese
     final String passwordResetUrl = event.getFrontendUrl() + "reset-password/" + token;
 
     final String htmlContent = EmailTemplate.builder()
+            .isWithButton(true)
             .title(subject)
             .username(player.getUsername())
             .buttonLabel("Reset Password")
