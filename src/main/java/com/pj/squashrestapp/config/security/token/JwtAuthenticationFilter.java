@@ -101,6 +101,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
           return ipListFromHeader.split(",")[0];
         }
       }
+      return req.getRemoteAddr();
     }
     return null;
   }
