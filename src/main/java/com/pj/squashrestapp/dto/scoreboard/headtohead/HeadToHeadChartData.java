@@ -22,38 +22,13 @@ public class HeadToHeadChartData {
     this.array = new Object[matchWinnersMap.size()][5];
 
     final ListIterator<MatchDto> iterator = new ArrayList<>(matchWinnersMap.keySet()).listIterator(matchWinnersMap.size());
-    PlayerDto previousMatchWinner = statsWinner;
-    int start = 0;
-    int end = 0;
     int i = 0;
     while (iterator.hasPrevious()) {
       final MatchDto match = iterator.previous();
       final PlayerDto matchWinner = matchWinnersMap.get(match);
-
-      final boolean isFirst = start == end;
-      final boolean isAscending = statsWinner.equals(matchWinner);
-      final boolean isChange = !previousMatchWinner.equals(matchWinner);
-
-      if (isFirst && isAscending) {
-        end++;
-
-      } else if (isFirst && !isAscending) {
-        end--;
-
-      } else if (isChange && isAscending) {
-        end += 2;
-
-      } else if (isChange && !isAscending) {
-        end -= 2;
-
-      } else if (!isChange && isAscending) {
-        start++;
-        end++;
-
-      } else if (!isChange && !isAscending) {
-        start--;
-        end--;
-      }
+      final boolean statsWinnerWon = matchWinner.equals(statsWinner);
+      final int start = statsWinnerWon ? 0 : 1;
+      final int end = statsWinnerWon ? 1 : 0;
 
       final DateTimeFormatter formatter = DateTimeFormatter.ofPattern(GeneralUtil.DATE_FORMAT);
       final String date = match.getDate().format(formatter);
@@ -65,9 +40,7 @@ public class HeadToHeadChartData {
       this.array[i][4] = end;
 
       i++;
-      previousMatchWinner = matchWinner;
     }
-
   }
 
 }
