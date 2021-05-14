@@ -1,12 +1,9 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
-import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
-import com.pj.squashrestapp.dto.match.MatchSimpleDto;
-import com.pj.squashrestapp.dto.scoreboard.HeadToHeadScoreboard;
-import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
+import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
@@ -16,8 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -36,7 +31,7 @@ public class HeadToHeadScoreboardService {
 
 
   public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid) {
-    final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
+    final UUID[] playersUuids = new UUID[]{firstPlayerUuid, secondPlayerUuid};
 
     final List<Match> roundMatches = matchRepository.fetchHeadToHead(playersUuids);
     final List<AdditionalMatch> additionalMatches = additionalMatchRepository.fetchHeadToHead(playersUuids);
