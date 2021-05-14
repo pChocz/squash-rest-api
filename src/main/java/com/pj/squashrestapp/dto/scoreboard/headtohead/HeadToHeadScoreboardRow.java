@@ -1,6 +1,8 @@
-package com.pj.squashrestapp.dto.scoreboard;
+package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
+import com.pj.squashrestapp.dto.scoreboard.ScoreboardRow;
 import com.pj.squashrestapp.util.RoundingUtil;
 import lombok.Getter;
 import lombok.Setter;
@@ -57,15 +59,15 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
     this.pointsWon = row.getPointsWon();
     this.pointsLost = row.getPointsLost();
-    this.pointsRatio = RoundingUtil.round( (float) 100 * pointsWon / (pointsWon + pointsLost), 1);
+    this.pointsRatio = RoundingUtil.round((float) 100 * pointsWon / (pointsWon + pointsLost), 1);
 
     this.setsWon = row.getSetsWon();
     this.setsLost = row.getSetsLost();
-    this.setsRatio = RoundingUtil.round( (float) 100 * setsWon / (setsWon + setsLost), 1);
+    this.setsRatio = RoundingUtil.round((float) 100 * setsWon / (setsWon + setsLost), 1);
 
     this.matchesWon = row.getMatchesWon();
     this.matchesLost = row.getMatchesLost();
-    this.matchesRatio = RoundingUtil.round( (float) 100 * matchesWon / (matchesWon + matchesLost), 1);
+    this.matchesRatio = RoundingUtil.round((float) 100 * matchesWon / (matchesWon + matchesLost), 1);
 
     final PlayerDto opponent = splitPerSet
             .keySet()
@@ -76,11 +78,11 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
     this.firstSetsWon = splitPerSet.get(player).getOrDefault(1, 0);
     this.firstSetsLost = splitPerSet.get(opponent).getOrDefault(1, 0);
-    this.firstSetsRatio = RoundingUtil.round( (float) 100 * firstSetsWon / (firstSetsWon + firstSetsLost), 1);
+    this.firstSetsRatio = RoundingUtil.round((float) 100 * firstSetsWon / (firstSetsWon + firstSetsLost), 1);
 
     this.secondSetsWon = splitPerSet.get(player).getOrDefault(2, 0);
     this.secondSetsLost = splitPerSet.get(opponent).getOrDefault(2, 0);
-    this.secondSetsRatio = RoundingUtil.round( (float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
+    this.secondSetsRatio = RoundingUtil.round((float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
 
     this.tieBreaksWon = splitPerSet.get(player).getOrDefault(3, 0);
     this.tieBreaksLost = splitPerSet.get(opponent).getOrDefault(3, 0);
