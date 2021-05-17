@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.dto.leaguestats.TrophyDto;
+import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
@@ -44,9 +45,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -135,9 +139,6 @@ public class LeagueService {
     final League league = fetchEntireLeague(leagueUuid);
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
-    // logo
-    final byte[] logoBytes = leagueLogoRepository.extractLogoBlobByLeagueUuid(leagueUuid);
-
     // per season stats
     final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);
 
@@ -145,40 +146,11 @@ public class LeagueService {
     final List<PlayerLeagueXpOveral> playerLeagueXpOveralList = overalXpPoints(league, xpPointsPerSplit);
     final EntireLeagueScoreboard scoreboard = new EntireLeagueScoreboard(league, playerLeagueXpOveralList);
 
-    // build overal stats
-    final OveralStats overalStats = new OveralStats(perSeasonStatsList, league.getTime(), league.getLocation());
-
-    // trophies
-    final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeague(league);
-
-    final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
-
-    final List<Integer> listOfSeasonNumbers = allTrophiesForLeague
-            .stream()
-            .map(TrophyForLeague::getSeasonNumber)
-            .distinct()
-            .sorted()
-            .collect(Collectors.toList());
-
-    for (final int seasonNumber : listOfSeasonNumbers) {
-
-      final List<TrophyForLeague> seasonTrophies = allTrophiesForLeague
-              .stream()
-              .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
-              .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
-              .collect(Collectors.toList());
-
-      leagueTrophiesPerSeason.add(new SeasonTrophies(seasonNumber, seasonTrophies));
-    }
-
     return LeagueStatsWrapper.builder()
             .leagueName(league.getName())
             .leagueUuid(league.getUuid())
-            .logoBytes(logoBytes)
-            .overalStats(overalStats)
             .perSeasonStats(perSeasonStatsList)
             .scoreboard(scoreboard)
-            .seasonTrophies(leagueTrophiesPerSeason)
             .build();
   }
 
@@ -317,6 +289,74 @@ public class LeagueService {
     }
 
     return leagueLogosMap;
+  }
+
+  public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+
+
+
+    final List<Long> playersIdsFirstPlayerForLeagueByUuid = leagueRepository.findPlayersIdsFirstPlayerForLeagueByUuid(leagueUuid);
+    final List<Long> playersIdsSecondPlayerForLeagueByUuid = leagueRepository.findPlayersIdsSecondPlayerForLeagueByUuid(leagueUuid);
+    final HashSet<Long> playersIds = new HashSet<>();
+    playersIds.addAll(playersIdsFirstPlayerForLeagueByUuid);
+    playersIds.addAll(playersIdsSecondPlayerForLeagueByUuid);
+    final int allPlayers = playersIds.size();
+
+
+
+    final Object[] counts = (Object[]) leagueRepository.findAllCountsForLeagueByUuid(leagueUuid);
+    final Long numberOfSeasons = (Long) counts[0];
+    final Long numberOfRounds = (Long) counts[1];
+    final Long numberOfMatches = (Long) counts[2];
+    final Long numberOfSets = (Long) counts[3];
+    final Long numberOfRallies = (Long) counts[4];
+
+
+
+    final List<Object> groupedPlayersForLeagueByUuid = leagueRepository.findRoundsPerSplitGroupedForLeagueByUuid(leagueUuid);
+    int countOfAttendices = 0;
+    int countOfGroups = 0;
+    for (final Object object : groupedPlayersForLeagueByUuid) {
+      final Object[] group = (Object[]) object;
+      final String split = (String) group[0];
+      final int count = ((Long) group[1]).intValue();
+      final int[] splitAsArray = Arrays
+              .stream(split.split("\\|"))
+              .map(String::trim)
+              .mapToInt(Integer::valueOf)
+              .toArray();
+      final int groupsPerRound = splitAsArray.length;
+      final int playersPerRound = Arrays.stream(splitAsArray).sum();
+      countOfGroups += groupsPerRound * count;
+      countOfAttendices += playersPerRound * count;
+    }
+    final float averagePlayersPerRound = (float) countOfAttendices / numberOfRounds;
+    final BigDecimal averagePlayersPerRoundRounded = RoundingUtil.round(averagePlayersPerRound, 1);
+    final float averagePlayersPerGroup = (float) countOfAttendices / countOfGroups;
+    final BigDecimal averagePlayersPerGroupRounded = RoundingUtil.round(averagePlayersPerGroup, 1);
+    final float averageGroupsPerRound = (float) countOfGroups / numberOfRounds;
+    final BigDecimal averageGroupsPerRoundRounded = RoundingUtil.round(averageGroupsPerRound, 1);
+
+
+
+    final OveralStats overalStats = OveralStats.builder()
+            .leagueUuid(league.getUuid())
+            .leagueName(league.getName())
+            .location(league.getLocation())
+            .time(league.getTime())
+            .seasons(numberOfSeasons.intValue())
+            .rounds(numberOfRounds.intValue())
+            .matches(numberOfMatches.intValue())
+            .sets(numberOfSets.intValue())
+            .points(numberOfRallies.intValue())
+            .players(allPlayers)
+            .averagePlayersPerRound(averagePlayersPerRoundRounded)
+            .averagePlayersPerGroup(averagePlayersPerGroupRounded)
+            .averageGroupsPerRound(averageGroupsPerRoundRounded)
+            .build();
+
+    return overalStats;
   }
 
 }

@@ -34,6 +34,11 @@ public class SetDto {
   }
 
   @JsonIgnore
+  public boolean isNonEmpty() {
+    return !isEmpty();
+  }
+
+  @JsonIgnore
   public boolean isTieBreak() {
     final int greaterScore = getGreaterScore();
     return greaterScore == 9;
