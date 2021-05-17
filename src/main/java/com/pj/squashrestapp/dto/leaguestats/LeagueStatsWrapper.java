@@ -19,11 +19,8 @@ public class LeagueStatsWrapper implements LoggableQuery {
 
   private final String leagueName;
   private final UUID leagueUuid;
-  private final byte[] logoBytes;
-  private final OveralStats overalStats;
   private final List<PerSeasonStats> perSeasonStats;
   private final EntireLeagueScoreboard scoreboard;
-  private final List<SeasonTrophies> seasonTrophies;
 
   @Override
   public String message() {

@@ -4,6 +4,7 @@ import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
+import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.service.LeagueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -103,5 +104,20 @@ public class LeagueController {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League has not been found!");
     }
   }
+
+
+  @GetMapping(value = "/overal-stats/{leagueUuid}")
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
+  OveralStats extractLeagueOveralStats(@PathVariable final UUID leagueUuid) {
+    try {
+      final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
+      return leagueOveralStats;
+
+    } catch (final NoSuchElementException e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League has not been found!");
+    }
+  }
+
 
 }

@@ -19,6 +19,7 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
 
   List<TrophyForLeague> findByLeague(League league);
 
+  List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
 
   Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophy(League league, int seasonNumber, Trophy trophy);
 

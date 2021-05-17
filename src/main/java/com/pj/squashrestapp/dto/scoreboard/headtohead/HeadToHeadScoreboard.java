@@ -5,8 +5,10 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,6 +16,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,58 +26,11 @@ import java.util.stream.Collectors;
 @Getter
 public class HeadToHeadScoreboard implements LoggableQuery {
 
-
-//        google.charts.load('current', {'packages':['corechart']});
-//      google.charts.setOnLoadCallback(drawChart);
-//      function drawChart() {
-//        var data = google.visualization.arrayToDataTable([
-//
-//          ['30.07.2020', 0, 0, -1, -1], // ja
-//          ['06.08.2020', -1, -1, -2, -2], // ja
-//          ['13.08.2020', -2, -2, -3, -3], // ja
-//          ['20.08.2020', -2, -2, -1, -1], // adam
-//          ['27.08.2020', -2, -2, -3, -3], // ja
-//          ['29.04.2021', -2, -2, -1, -1], // adam
-//          ['13.05.2021', -2, -2, -3, -3] // ja
-//
-//
-//
-//          // Treat the first row as data.
-//        ], true);
-//
-//        var options = {
-//          legend: 'none',
-//          bar: { groupWidth: '100%' }, // Remove space between bars.
-//          candlestick: {
-//            fallingColor: { strokeWidth: 0, fill: '#a52714' }, // red
-//            risingColor: { strokeWidth: 0, fill: '#0f9d58' }   // green
-//          },
-//          tooltip: {trigger: 'none'},
-//          vAxis: {
-//          	gridlines: {
-//            	interval: 0
-//            },
-//            minorGridlines: {
-//            	interval: 1
-//            }
-//        	},
-//          hAxis: {slantedText:true, slantedTextAngle:60 },
-//          animation: {
-//          	startup: true,
-//            duration: 1,
-//            easing: 'out'
-//          }
-//      };
-//
-//        var chart = new google.visualization.CandlestickChart(document.getElementById('chart_div'));
-//        chart.draw(data, options);
-//      }
-
   private final int numberOfMatches;
   private final HeadToHeadScoreboardRow winner;
   private final HeadToHeadScoreboardRow looser;
   private final Collection<MatchDto> matches;
-  private final HeadToHeadChartData chartData;
+  private final List<HeadToHeadChartRow> chartRows;
   private int numberOfRegularMatches;
   private int numberOfTiebreaks;
 
@@ -85,7 +41,7 @@ public class HeadToHeadScoreboard implements LoggableQuery {
     if (numberOfMatches == 0) {
       winner = null;
       looser = null;
-      chartData = null;
+      chartRows = new ArrayList<>();
       return;
     }
 
@@ -155,7 +111,28 @@ public class HeadToHeadScoreboard implements LoggableQuery {
     winner = new HeadToHeadScoreboardRow(scoreboardRows.get(0), winningSetsPerPlayer, winningMatchesPerPlayer);
     looser = new HeadToHeadScoreboardRow(scoreboardRows.get(1), winningSetsPerPlayer, winningMatchesPerPlayer);
 
-    this.chartData = new HeadToHeadChartData(matchWinnersMap, winner.getPlayer());
+    this.chartRows = construct(matchWinnersMap, winner.getPlayer());
+  }
+
+  private List<HeadToHeadChartRow> construct(final Map<MatchDto, PlayerDto> matchWinnersMap, final PlayerDto statsWinner) {
+    final List<HeadToHeadChartRow> rows = new ArrayList<>();
+    final ListIterator<MatchDto> iterator = new ArrayList<>(matchWinnersMap.keySet()).listIterator(matchWinnersMap.size());
+    while (iterator.hasPrevious()) {
+      final MatchDto match = iterator.previous();
+      final PlayerDto matchWinner = matchWinnersMap.get(match);
+      final int numberOfSets = extractNumberOfNonNullSets(match);
+      final boolean statsWinnerWon = matchWinner.equals(statsWinner);
+      rows.add(new HeadToHeadChartRow(match.getDate(), numberOfSets, statsWinnerWon));
+    }
+    return rows;
+  }
+
+  private int extractNumberOfNonNullSets(final MatchDto match) {
+    return (int) match
+            .getSets()
+            .stream()
+            .filter(SetDto::isNonEmpty)
+            .count();
   }
 
   private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {

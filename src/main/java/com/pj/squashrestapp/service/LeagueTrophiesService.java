@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
@@ -18,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -102,6 +104,28 @@ public class LeagueTrophiesService {
     } else {
       throw new NoSuchElementException("Trophy not found!");
     }
+  }
+
+  public List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(final UUID leagueUuid) {
+    final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeagueUuid(leagueUuid);
+    final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
+    final List<Integer> listOfSeasonNumbers = allTrophiesForLeague
+            .stream()
+            .map(TrophyForLeague::getSeasonNumber)
+            .distinct()
+            .sorted()
+            .collect(Collectors.toList());
+
+    for (final int seasonNumber : listOfSeasonNumbers) {
+      final List<TrophyForLeague> seasonTrophies = allTrophiesForLeague
+              .stream()
+              .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
+              .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
+              .collect(Collectors.toList());
+      leagueTrophiesPerSeason.add(new SeasonTrophies(seasonNumber, seasonTrophies));
+    }
+
+    return leagueTrophiesPerSeason;
   }
 
 }

@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.dto.TrophiesWonForLeague;
 import com.pj.squashrestapp.dto.Trophy;
@@ -58,6 +59,14 @@ public class LeagueTrophiesController {
   List<TrophiesWonForLeague> extractTrophiesForPlayer(@PathVariable final UUID playerUuid) {
     final List<TrophiesWonForLeague> trophiesWonForLeagues = leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
     return trophiesWonForLeagues;
+  }
+
+
+  @GetMapping(value = "/league/{leagueUuid}")
+  @ResponseBody
+  List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(@PathVariable final UUID leagueUuid) {
+    final List<SeasonTrophies> trophiesForSeasons = leagueTrophiesService.extractTrophiesForAllSeasonsForLeague(leagueUuid);
+    return trophiesForSeasons;
   }
 
 }
