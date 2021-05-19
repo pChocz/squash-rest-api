@@ -59,7 +59,7 @@ public class EmailTemplate {
             .replace(END_CONTENT_PLACEHOLDER, endContent);
 
     if (isWithButton) {
-      entireMessage =  entireMessage
+      entireMessage = entireMessage
               .replace(BUTTON_LABEL_PLACEHOLDER, buttonLabel)
               .replace(BUTTON_LINK_PLACEHOLDER, buttonLink);
     }

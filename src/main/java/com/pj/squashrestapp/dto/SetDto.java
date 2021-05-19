@@ -28,14 +28,14 @@ public class SetDto {
   }
 
   @JsonIgnore
-  public boolean isEmpty() {
-    return firstPlayerScore == null
-           && secondPlayerScore == null;
+  public boolean isNonEmpty() {
+    return !isEmpty();
   }
 
   @JsonIgnore
-  public boolean isNonEmpty() {
-    return !isEmpty();
+  public boolean isEmpty() {
+    return firstPlayerScore == null
+           && secondPlayerScore == null;
   }
 
   @JsonIgnore

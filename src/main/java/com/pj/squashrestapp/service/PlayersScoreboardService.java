@@ -1,18 +1,16 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
-import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
-import com.pj.squashrestapp.dto.match.MatchSimpleDto;
-import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
+import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
-import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -24,10 +22,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;

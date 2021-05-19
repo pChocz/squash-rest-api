@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,12 +36,12 @@ public class AdditionalMatchService {
   private final PlayerRepository playerRepository;
   private final LeagueRepository leagueRepository;
 
-  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
+  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeagueForSeasonNumber(final UUID leagueUuid, final int seasonNumber) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {
       throw new GeneralBadRequestException("League not valid!");
     }
-    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
+    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueAndSeasonNumberOrderByDateDescIdDesc(league.get(), seasonNumber);
     return buildDtoList(matches);
   }
 
@@ -49,6 +50,15 @@ public class AdditionalMatchService {
             .stream()
             .map(AdditionalMatchDetailedDto::new)
             .collect(Collectors.toList());
+  }
+
+  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
+    final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
+    if (league.isEmpty()) {
+      throw new GeneralBadRequestException("League not valid!");
+    }
+    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
+    return buildDtoList(matches);
   }
 
   public List<AdditionalMatchDetailedDto> getAdditionalMatchesForSinglePlayer(final UUID leagueUuid, final UUID playerUuid) {
@@ -123,7 +133,9 @@ public class AdditionalMatchService {
   }
 
   public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
-    final AdditionalMatch matchToModify = additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
+    final AdditionalMatch matchToModify = additionalMatchRepository
+            .findByUuid(matchUuid)
+            .orElseThrow(() -> new NoSuchElementException("Match does not exist!"));
 
     final String initialMatchResult = matchToModify.toString();
 

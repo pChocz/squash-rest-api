@@ -8,6 +8,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -62,7 +63,7 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({
-          NoSuchElementException.class
+          NoSuchElementException.class,
   })
   ResponseEntity<ErrorResponse> handleNoSuchElementException(
           final Exception ex,
@@ -83,7 +84,9 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
     );
   }
 
-  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ExceptionHandler({
+          MethodArgumentTypeMismatchException.class,
+  })
   ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
           final Exception ex,
           final HttpServletRequest request) {
@@ -102,9 +105,29 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({
+          AccessDeniedException.class,
+  })
+  ResponseEntity<ErrorResponse> handleAccessDeniedException(
+          final Exception ex,
+          final HttpServletRequest request) {
+
+    final HttpStatus httpStatus = HttpStatus.UNAUTHORIZED;
+
+    return new ResponseEntity<>(
+            ErrorResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .message(ex.getMessage())
+                    .status(httpStatus.value())
+                    .path(request.getRequestURI())
+                    .build(),
+            httpStatus
+    );
+  }
+
+  @ExceptionHandler({
           PasswordDoesNotMatchException.class,
           EmailAlreadyTakenException.class,
-          GeneralBadRequestException.class
+          GeneralBadRequestException.class,
   })
   ResponseEntity<ErrorResponse> handleBadRequestException(
           final Exception ex,
@@ -124,7 +147,7 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler({
-          WrongSignupDataException.class
+          WrongSignupDataException.class,
   })
   ResponseEntity<ErrorResponse> handleNotAcceptableException(
           final Exception ex,
@@ -147,7 +170,9 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
    * This method catches all exceptions that have not been
    * specifically declared in above methods.
    */
-  @ExceptionHandler(Exception.class)
+  @ExceptionHandler({
+          Exception.class,
+  })
   ResponseEntity<ErrorResponse> handleOtherException(
           final Exception ex,
           final HttpServletRequest request) {

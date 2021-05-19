@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
-import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.SeasonDto;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.Season;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -113,14 +113,14 @@ public class SeasonScoreboardDto implements LoggableQuery {
   }
 
   @Override
-  public String toString() {
-    return "S: " + this.getSeason().getSeasonNumber()
-           + "\t| " + this.getSeason().getLeagueName();
+  public String message() {
+    return toString();
   }
 
   @Override
-  public String message() {
-    return toString();
+  public String toString() {
+    return "S: " + this.getSeason().getSeasonNumber()
+           + "\t| " + this.getSeason().getLeagueName();
   }
 
 }
