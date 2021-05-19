@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dbinit.fake;
 
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.model.Player;
 import lombok.experimental.UtilityClass;
 
 import java.util.Collections;

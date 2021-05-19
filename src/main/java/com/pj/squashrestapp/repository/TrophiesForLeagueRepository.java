@@ -1,9 +1,9 @@
 package com.pj.squashrestapp.repository;
 
+import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import com.pj.squashrestapp.dto.Trophy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

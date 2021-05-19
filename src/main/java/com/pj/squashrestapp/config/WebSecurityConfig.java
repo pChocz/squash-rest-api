@@ -121,7 +121,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Bean
-  public ApplicationListener applicationListener(){
+  public ApplicationListener applicationListener() {
     return new AuthSuccessApplicationListener(emailSendConfig, playerRepository);
   }
 

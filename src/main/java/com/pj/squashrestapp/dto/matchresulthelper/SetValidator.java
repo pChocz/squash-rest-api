@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
-import com.pj.squashrestapp.model.SetResult;
 import lombok.AllArgsConstructor;
 
 /**

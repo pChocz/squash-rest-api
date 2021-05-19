@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.VerificationToken;
-import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;

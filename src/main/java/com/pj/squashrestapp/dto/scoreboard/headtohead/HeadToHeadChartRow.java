@@ -1,15 +1,8 @@
 package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
-import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.match.MatchDto;
-import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.ListIterator;
-import java.util.Map;
 
 /**
  *

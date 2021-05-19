@@ -25,48 +25,40 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  @Setter
-  @Column(name = "uuid",
-          nullable = false)
-  @EqualsAndHashCode.Include
-  private UUID uuid = UUID.randomUUID();
-
-  @Setter
-  @Column(name = "username", unique = true)
-  private String username;
-
-  @JsonIgnore
-  @Setter
-  @Column(name = "password")
-  private String password;
-
-  @Setter
-  @Column(name = "enabled")
-  private boolean enabled;
-
-  @Setter
-  @Column(name = "email", unique = true)
-  private String email;
-
-  @Setter
-  @Column(name = "password_session_uuid")
-  private UUID passwordSessionUuid;
-
   @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)
   private final Set<Authority> authorities = new HashSet<>();
-
   @JsonIgnore
   @ManyToMany(
           mappedBy = "players",
           fetch = FetchType.LAZY)
   private final Set<RoleForLeague> roles = new HashSet<>();
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+  @Setter
+  @Column(name = "uuid",
+          nullable = false)
+  @EqualsAndHashCode.Include
+  private UUID uuid = UUID.randomUUID();
+  @Setter
+  @Column(name = "username", unique = true)
+  private String username;
+  @JsonIgnore
+  @Setter
+  @Column(name = "password")
+  private String password;
+  @Setter
+  @Column(name = "enabled")
+  private boolean enabled;
+  @Setter
+  @Column(name = "email", unique = true)
+  private String email;
+  @Setter
+  @Column(name = "password_session_uuid")
+  private UUID passwordSessionUuid;
 
   public Player(final String username, final String email) {
     this.username = username;
