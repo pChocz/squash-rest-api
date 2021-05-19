@@ -5,8 +5,10 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -112,6 +114,27 @@ public class HeadToHeadScoreboard implements LoggableQuery {
     this.chartRows = construct(matchWinnersMap, winner.getPlayer());
   }
 
+  private List<HeadToHeadChartRow> construct(final Map<MatchDto, PlayerDto> matchWinnersMap, final PlayerDto statsWinner) {
+    final List<HeadToHeadChartRow> rows = new ArrayList<>();
+    final ListIterator<MatchDto> iterator = new ArrayList<>(matchWinnersMap.keySet()).listIterator(matchWinnersMap.size());
+    while (iterator.hasPrevious()) {
+      final MatchDto match = iterator.previous();
+      final PlayerDto matchWinner = matchWinnersMap.get(match);
+      final int numberOfSets = extractNumberOfNonNullSets(match);
+      final boolean statsWinnerWon = matchWinner.equals(statsWinner);
+      rows.add(new HeadToHeadChartRow(match.getDate(), numberOfSets, statsWinnerWon));
+    }
+    return rows;
+  }
+
+  private int extractNumberOfNonNullSets(final MatchDto match) {
+    return (int) match
+            .getSets()
+            .stream()
+            .filter(SetDto::isNonEmpty)
+            .count();
+  }
+
   private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {
     return matches
             .stream()
@@ -133,27 +156,6 @@ public class HeadToHeadScoreboard implements LoggableQuery {
       scoreboardRows.add(scoreboardRowFirst);
     }
     return scoreboardRowFirst;
-  }
-
-  private List<HeadToHeadChartRow> construct(final Map<MatchDto, PlayerDto> matchWinnersMap, final PlayerDto statsWinner) {
-    final List<HeadToHeadChartRow> rows = new ArrayList<>();
-    final ListIterator<MatchDto> iterator = new ArrayList<>(matchWinnersMap.keySet()).listIterator(matchWinnersMap.size());
-    while (iterator.hasPrevious()) {
-      final MatchDto match = iterator.previous();
-      final PlayerDto matchWinner = matchWinnersMap.get(match);
-      final int numberOfSets = extractNumberOfNonNullSets(match);
-      final boolean statsWinnerWon = matchWinner.equals(statsWinner);
-      rows.add(new HeadToHeadChartRow(match.getDate(), numberOfSets, statsWinnerWon));
-    }
-    return rows;
-  }
-
-  private int extractNumberOfNonNullSets(final MatchDto match) {
-    return (int) match
-            .getSets()
-            .stream()
-            .filter(SetDto::isNonEmpty)
-            .count();
   }
 
   @Override

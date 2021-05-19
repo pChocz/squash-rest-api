@@ -15,7 +15,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -54,7 +53,7 @@ public class BonusPointService {
                                                   final UUID seasonUuid,
                                                   final LocalDate date,
                                                   final int points) {
-    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
     final Player winner = playerRepository.findByUuid(winnerUuid);
     final Player looser = playerRepository.findByUuid(looserUuid);
 
@@ -73,7 +72,7 @@ public class BonusPointService {
 
   @Transactional
   public void deleteBonusPoint(final UUID uuid) {
-    final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow(() -> new NoSuchElementException("Bonus Point does not exist!"));
+    final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
     log.info("Removing: {}", bonusPoint);
     bonusPointRepository.delete(bonusPoint);
   }

@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class RoundService {
 
 
   public void deleteRound(final UUID roundUuid) {
-    final Round roundToDelete = roundRepository.findByUuid(roundUuid).orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
+    final Round roundToDelete = roundRepository.findByUuid(roundUuid).orElseThrow();
     roundRepository.delete(roundToDelete);
   }
 
@@ -55,7 +54,7 @@ public class RoundService {
                     .orElse(null))
             .collect(Collectors.toList());
 
-    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
 
     final List<List<Player>> playersPerGroup = playersUuids
             .stream()
@@ -132,7 +131,7 @@ public class RoundService {
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
-    final Round round = roundRepository.findByUuid(roundUuid).orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
+    final Round round = roundRepository.findByUuid(roundUuid).orElseThrow();
     round.setFinished(finishedState);
     roundRepository.save(round);
   }

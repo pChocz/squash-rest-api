@@ -99,6 +99,14 @@ public class AdminInitializerService {
     }
   }
 
+  private void persistLeaguesInitializeOnly(final List<JsonLeague> jsonLeagues) {
+    for (final JsonLeague jsonLeague : jsonLeagues) {
+      final League league = JsonImportUtil.constructLeague(jsonLeague);
+      leagueRepository.save(league);
+      createLeagueRoles(league);
+    }
+  }
+
   private void persistStandardAuthorities() {
     final Authority adminAuthority = new Authority(AuthorityType.ROLE_ADMIN);
     final Authority userAuthority = new Authority(AuthorityType.ROLE_USER);
@@ -120,11 +128,12 @@ public class AdminInitializerService {
     xpPointsRepository.saveAll(xpPoints);
   }
 
-  private void persistLeaguesInitializeOnly(final List<JsonLeague> jsonLeagues) {
+  private void persistAllLeaguesContent(final List<JsonLeague> jsonLeagues) {
     for (final JsonLeague jsonLeague : jsonLeagues) {
-      final League league = JsonImportUtil.constructLeague(jsonLeague);
+      final List<Player> allPlayers = playerRepository.findAll();
+
+      final League league = buildLeague(jsonLeague, allPlayers);
       leagueRepository.save(league);
-      createLeagueRoles(league);
     }
   }
 
@@ -141,15 +150,6 @@ public class AdminInitializerService {
       playerRepository.save(player);
       persistLeagueRoles(credentials, player);
       persistAuthorities(credentials, player);
-    }
-  }
-
-  private void persistAllLeaguesContent(final List<JsonLeague> jsonLeagues) {
-    for (final JsonLeague jsonLeague : jsonLeagues) {
-      final List<Player> allPlayers = playerRepository.findAll();
-
-      final League league = buildLeague(jsonLeague, allPlayers);
-      leagueRepository.save(league);
     }
   }
 
@@ -179,42 +179,6 @@ public class AdminInitializerService {
     }
 
     verificationTokenRepository.saveAll(verificationTokens);
-  }
-
-  private void createLeagueRoles(final League league) {
-    final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
-    league.addRoleForLeague(playerRole);
-    roleForLeagueRepository.save(playerRole);
-
-    final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
-    league.addRoleForLeague(moderatorRole);
-    roleForLeagueRepository.save(moderatorRole);
-  }
-
-  private void persistLeagueRoles(final JsonPlayerCredentials simpleCredentials, final Player player) {
-    final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
-    for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
-      final String leagueName = jsonLeagueRole.getLeague();
-      final String roleAsString = jsonLeagueRole.getRole();
-
-      final League league = leagueRepository.findByName(leagueName);
-      final LeagueRole role = LeagueRole.valueOf(roleAsString);
-
-      final RoleForLeague leagueRole = roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
-      player.addRole(leagueRole);
-      roleForLeagueRepository.save(leagueRole);
-    }
-  }
-
-  private void persistAuthorities(final JsonPlayerCredentials credentials, final Player player) {
-    final List<JsonAuthorities> jsonAuthorities = credentials.getAuthorities();
-    for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
-      final String authorityAsString = jsonAuthority.getAuthority();
-      final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);
-      final Authority authority = authorityRepository.findByType(authorityType);
-      player.addAuthority(authority);
-      authorityRepository.save(authority);
-    }
   }
 
   @Transactional
@@ -301,6 +265,42 @@ public class AdminInitializerService {
       league.addSeason(season);
     }
     return league;
+  }
+
+  private void createLeagueRoles(final League league) {
+    final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
+    league.addRoleForLeague(playerRole);
+    roleForLeagueRepository.save(playerRole);
+
+    final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
+    league.addRoleForLeague(moderatorRole);
+    roleForLeagueRepository.save(moderatorRole);
+  }
+
+  private void persistLeagueRoles(final JsonPlayerCredentials simpleCredentials, final Player player) {
+    final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
+    for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
+      final String leagueName = jsonLeagueRole.getLeague();
+      final String roleAsString = jsonLeagueRole.getRole();
+
+      final League league = leagueRepository.findByName(leagueName);
+      final LeagueRole role = LeagueRole.valueOf(roleAsString);
+
+      final RoleForLeague leagueRole = roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
+      player.addRole(leagueRole);
+      roleForLeagueRepository.save(leagueRole);
+    }
+  }
+
+  private void persistAuthorities(final JsonPlayerCredentials credentials, final Player player) {
+    final List<JsonAuthorities> jsonAuthorities = credentials.getAuthorities();
+    for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
+      final String authorityAsString = jsonAuthority.getAuthority();
+      final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);
+      final Authority authority = authorityRepository.findByType(authorityType);
+      player.addAuthority(authority);
+      authorityRepository.save(authority);
+    }
   }
 
 }

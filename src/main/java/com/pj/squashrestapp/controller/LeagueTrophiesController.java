@@ -1,9 +1,9 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dto.TrophiesWonForLeague;
-import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.model.TrophyForLeague;
+import com.pj.squashrestapp.dto.TrophiesWonForLeague;
+import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.service.LeagueTrophiesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

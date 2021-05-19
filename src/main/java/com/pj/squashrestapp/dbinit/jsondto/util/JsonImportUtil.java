@@ -65,16 +65,6 @@ public class JsonImportUtil {
     return match;
   }
 
-  private Player getCorrespondingPlayer(final List<Player> players, final UUID playerUuid) {
-    return players
-            .stream()
-            .filter(player -> player
-                    .getUuid()
-                    .equals(playerUuid))
-            .findFirst()
-            .orElse(null);
-  }
-
   public AdditionalMatch constructAdditionalMatch(final JsonAdditionalMatch jsonMatch, final List<Player> players) {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
@@ -83,6 +73,16 @@ public class JsonImportUtil {
     match.setType(jsonMatch.getType());
     match.setSeasonNumber(jsonMatch.getSeasonNumber());
     return match;
+  }
+
+  private Player getCorrespondingPlayer(final List<Player> players, final UUID playerUuid) {
+    return players
+            .stream()
+            .filter(player -> player
+                    .getUuid()
+                    .equals(playerUuid))
+            .findFirst()
+            .orElse(null);
   }
 
   public SetResult constructSetResult(final int setNumber, final JsonSetResult jsonSetResult) {

@@ -1,12 +1,12 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -39,7 +38,7 @@ public class PlayersRoundsStatsService {
 
 
   public List<PlayerSingleRoundStats> buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Player player = playerRepository.findByUuid(playerUuid);
 
     final List<Long> roundGroupsIds = roundGroupRepository.retrieveRoundGroupsIdsForPlayer(leagueUuid, playerUuid);

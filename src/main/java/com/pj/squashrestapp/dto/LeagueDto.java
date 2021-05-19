@@ -19,9 +19,9 @@ public class LeagueDto {
 
   private final UUID leagueUuid;
   private final String leagueName;
-  private final Set<SeasonDto> seasons;
   @Setter
   private byte[] leagueLogo;
+  private final Set<SeasonDto> seasons;
 
   public LeagueDto(final League league) {
     this.leagueUuid = league.getUuid();

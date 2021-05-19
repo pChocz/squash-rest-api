@@ -21,19 +21,6 @@ public class MatchValidator {
     this.setStatus3 = getSetResult(match, 3).checkStatus();
   }
 
-  private SetValidator getSetResult(final AdditionalMatch match, final int number) {
-    return match
-            .getSetResults()
-            .stream()
-            .filter(set -> set.getNumber() == number)
-            .findFirst()
-            .map((AdditonalSetResult setResult) -> new SetValidator(
-                    setResult.getNumber(),
-                    setResult.getFirstPlayerScore(),
-                    setResult.getSecondPlayerScore()))
-            .orElse(null);
-  }
-
   public MatchValidator(final Match match) {
     this.setStatus1 = getSetResult(match, 1).checkStatus();
     this.setStatus2 = getSetResult(match, 2).checkStatus();
@@ -47,6 +34,19 @@ public class MatchValidator {
             .filter(set -> set.getNumber() == number)
             .findFirst()
             .map((SetResult setResult) -> new SetValidator(
+                    setResult.getNumber(),
+                    setResult.getFirstPlayerScore(),
+                    setResult.getSecondPlayerScore()))
+            .orElse(null);
+  }
+
+  private SetValidator getSetResult(final AdditionalMatch match, final int number) {
+    return match
+            .getSetResults()
+            .stream()
+            .filter(set -> set.getNumber() == number)
+            .findFirst()
+            .map((AdditonalSetResult setResult) -> new SetValidator(
                     setResult.getNumber(),
                     setResult.getFirstPlayerScore(),
                     setResult.getSecondPlayerScore()))

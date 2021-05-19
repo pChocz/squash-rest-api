@@ -12,10 +12,10 @@ import java.util.List;
 public class PlayerLeagueXpOveral {
 
   private final PlayerDto player;
-  private final int average;
   private int totalPoints;
   private int countedPoints;
   private int attendices;
+  private final int average;
 
   public PlayerLeagueXpOveral(final List<SeasonScoreboardRowDto> playerDtoCollection) {
     this.player = playerDtoCollection.get(0).getPlayer();

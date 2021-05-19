@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;

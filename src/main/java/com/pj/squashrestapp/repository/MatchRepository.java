@@ -37,6 +37,9 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
   Optional<Match> findMatchByUuid(UUID uuid);
 
 
+
+
+
   @Query("""
           SELECT m FROM Match m
           INNER JOIN m.roundGroup rg
@@ -55,6 +58,12 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "roundGroup.round.season.league",
   })
   List<Match> fetchHeadToHead(@Param("playersUuids") UUID[] playersUuids);
+
+
+
+
+
+
 
 
   @Query("""

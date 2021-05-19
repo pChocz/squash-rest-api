@@ -18,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -36,7 +35,7 @@ public class MatchService {
   private final SeasonRepository seasonRepository;
 
   public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
-    final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow(() -> new NoSuchElementException("Match does not exist!"));
+    final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
 
     final String initialMatchResult = matchToModify.toString();
 
