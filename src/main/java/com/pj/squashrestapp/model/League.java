@@ -35,6 +35,20 @@ public class League implements Identifiable {
   public static EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {
   };
 
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private final List<RoleForLeague> rolesForLeague = new ArrayList<>();
+
+  @OneToMany(
+          mappedBy = "league",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private final List<TrophyForLeague> trophiesForLeague = new ArrayList<>();
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -79,20 +93,6 @@ public class League implements Identifiable {
           fetch = FetchType.LAZY,
           orphanRemoval = true)
   private Set<LeagueRule> rules = new HashSet<>();
-
-  @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
-  private final List<RoleForLeague> rolesForLeague = new ArrayList<>();
-
-  @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
-  private final List<TrophyForLeague> trophiesForLeague = new ArrayList<>();
 
   @Setter
   @OneToMany(

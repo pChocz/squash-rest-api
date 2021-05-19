@@ -19,11 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -57,13 +55,8 @@ public class LeagueController {
   @GetMapping(value = "/general-info/{leagueUuid}")
   @ResponseBody
   LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
-    try {
-      final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
-      return leagueGeneralInfo;
-
-    } catch (final NoSuchElementException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League has not been found!");
-    }
+    final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
+    return leagueGeneralInfo;
   }
 
 
@@ -96,13 +89,8 @@ public class LeagueController {
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
   @QueryLog
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
-    try {
-      final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueUuid(leagueUuid);
-      return leagueStatsWrapper;
-
-    } catch (final NoSuchElementException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League has not been found!");
-    }
+    final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueUuid(leagueUuid);
+    return leagueStatsWrapper;
   }
 
 
@@ -110,13 +98,8 @@ public class LeagueController {
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
   OveralStats extractLeagueOveralStats(@PathVariable final UUID leagueUuid) {
-    try {
-      final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
-      return leagueOveralStats;
-
-    } catch (final NoSuchElementException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "League has not been found!");
-    }
+    final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
+    return leagueOveralStats;
   }
 
 

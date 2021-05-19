@@ -2,7 +2,6 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -183,5 +182,14 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "league"
   })
   List<AdditionalMatch> findAllByLeagueOrderByDateDescIdDesc(League league);
+
+
+  @EntityGraph(attributePaths = {
+          "firstPlayer",
+          "secondPlayer",
+          "setResults",
+          "league"
+  })
+  List<AdditionalMatch> findAllByLeagueAndSeasonNumberOrderByDateDescIdDesc(League league, int seasonNumber);
 
 }

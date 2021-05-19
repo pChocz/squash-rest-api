@@ -1,13 +1,13 @@
 package com.pj.squashrestapp.dto.playerroundsstats;
 
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.Round;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,6 +89,19 @@ public class PlayerSingleRoundStats {
     }
   }
 
+  private int calculatePlaceInRound(final int roundGroupNumber, final int placeInGroup) {
+    final int[] splitAsArray = getSplitAsArray();
+    return placeInGroup + Arrays
+            .stream(splitAsArray, 0, roundGroupNumber - 1)
+            .sum();
+  }
+
+  private Predicate<? super MatchDetailedDto> predicate(final PlayerDto currentPlayer, final PlayerDto opponent) {
+    return (Predicate<MatchDetailedDto>) matchDetailedDto ->
+            Set.of(currentPlayer, opponent).equals(
+                    Set.of(matchDetailedDto.getFirstPlayer(), matchDetailedDto.getSecondPlayer()));
+  }
+
   private boolean hasCurrentPlayerWonMatch(final PlayerDto currentPlayer, final MatchDetailedDto match) {
     int firstPlayerWonSets = 0;
     int secondPlayerWonSets = 0;
@@ -107,19 +120,6 @@ public class PlayerSingleRoundStats {
             : match.getSecondPlayer();
 
     return currentPlayer.equals(winner);
-  }
-
-  private int calculatePlaceInRound(final int roundGroupNumber, final int placeInGroup) {
-    final int[] splitAsArray = getSplitAsArray();
-    return placeInGroup + Arrays
-            .stream(splitAsArray, 0, roundGroupNumber - 1)
-            .sum();
-  }
-
-  private Predicate<? super MatchDetailedDto> predicate(final PlayerDto currentPlayer, final PlayerDto opponent) {
-    return (Predicate<MatchDetailedDto>) matchDetailedDto ->
-            Set.of(currentPlayer, opponent).equals(
-                    Set.of(matchDetailedDto.getFirstPlayer(), matchDetailedDto.getSecondPlayer()));
   }
 
   private int[] getSplitAsArray() {

@@ -3,23 +3,12 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.pj.squashrestapp.dto.leaguestats.TrophyDto;
-import com.pj.squashrestapp.dto.match.MatchSimpleDto;
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.LeagueLogo;
-import com.pj.squashrestapp.model.LeagueRole;
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.RoleForLeague;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.dto.SetDto;
-import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.dto.leaguestats.PerSeasonStats;
@@ -27,6 +16,13 @@ import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueLogo;
+import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.RoleForLeague;
+import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -45,7 +41,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -53,6 +48,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -84,7 +80,7 @@ public class LeagueService {
    */
   public LeagueDto createNewLeague(final String leagueName) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow(() -> new NoSuchElementException("Player does not exist!"));
 
     final League league = new League(leagueName);
 
@@ -106,7 +102,7 @@ public class LeagueService {
   public void removeEmptyLeague(final UUID leagueUuid) {
     final League leagueToRemove = leagueRepository
             .findByUuid(leagueUuid)
-            .orElseThrow();
+            .orElseThrow(() -> new NoSuchElementException("League does not exist!"));
 
     final List<Player> leaguePlayers = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
     for (final Player player : leaguePlayers) {
@@ -127,7 +123,7 @@ public class LeagueService {
     final LeagueLogo leagueLogo = new LeagueLogo();
     leagueLogo.setPicture(logoBytes);
 
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
 
@@ -156,7 +152,9 @@ public class LeagueService {
 
   public League fetchEntireLeague(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository
+            .findByUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException("League does not exist!"));
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
   }
 
@@ -242,7 +240,9 @@ public class LeagueService {
 
   @Transactional
   public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository
+            .findByUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException("League does not exist!"));
     final LeagueDto leagueDto = new LeagueDto(league);
 
     final LeagueLogo leagueLogo = league.getLeagueLogo();
@@ -292,9 +292,9 @@ public class LeagueService {
   }
 
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-
-
+    final League league = leagueRepository
+            .findByUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException("League does not exist!"));
 
     final List<Long> playersIdsFirstPlayerForLeagueByUuid = leagueRepository.findPlayersIdsFirstPlayerForLeagueByUuid(leagueUuid);
     final List<Long> playersIdsSecondPlayerForLeagueByUuid = leagueRepository.findPlayersIdsSecondPlayerForLeagueByUuid(leagueUuid);
@@ -303,16 +303,12 @@ public class LeagueService {
     playersIds.addAll(playersIdsSecondPlayerForLeagueByUuid);
     final int allPlayers = playersIds.size();
 
-
-
     final Object[] counts = (Object[]) leagueRepository.findAllCountsForLeagueByUuid(leagueUuid);
     final Long numberOfSeasons = (Long) counts[0];
     final Long numberOfRounds = (Long) counts[1];
     final Long numberOfMatches = (Long) counts[2];
     final Long numberOfSets = (Long) counts[3];
     final Long numberOfRallies = (Long) counts[4];
-
-
 
     final List<Object> groupedPlayersForLeagueByUuid = leagueRepository.findRoundsPerSplitGroupedForLeagueByUuid(leagueUuid);
     int countOfAttendices = 0;
@@ -337,8 +333,6 @@ public class LeagueService {
     final BigDecimal averagePlayersPerGroupRounded = RoundingUtil.round(averagePlayersPerGroup, 1);
     final float averageGroupsPerRound = (float) countOfGroups / numberOfRounds;
     final BigDecimal averageGroupsPerRoundRounded = RoundingUtil.round(averageGroupsPerRound, 1);
-
-
 
     final OveralStats overalStats = OveralStats.builder()
             .leagueUuid(league.getUuid())

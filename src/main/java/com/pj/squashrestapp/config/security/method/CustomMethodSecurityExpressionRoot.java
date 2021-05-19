@@ -124,7 +124,7 @@ public class CustomMethodSecurityExpressionRoot
     }
     final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
     return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
-            || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
+           || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
   }
 
   public boolean isRoundOfMatchInProgress(final UUID matchUuid) {

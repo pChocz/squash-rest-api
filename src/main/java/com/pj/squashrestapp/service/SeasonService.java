@@ -212,7 +212,7 @@ public class SeasonService {
 
   @Transactional
   public SeasonDto extractSeasonDtoByUuid(final UUID seasonUuid) {
-    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
     final SeasonDto seasonDto = new SeasonDto(season);
     return seasonDto;
   }
@@ -244,7 +244,7 @@ public class SeasonService {
   @Transactional
   public Season createNewSeason(final int seasonNumber, final LocalDate startDate,
                                 final UUID leagueUuid, final String xpPointsType) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
     final Season season = new Season(seasonNumber, startDate, xpPointsType);
     league.addSeason(season);
     leagueRepository.save(league);
@@ -252,7 +252,7 @@ public class SeasonService {
   }
 
   public void deleteSeason(final UUID seasonUuid) {
-    final Season seasonToDelete = seasonRepository.findByUuid(seasonUuid).orElseThrow();
+    final Season seasonToDelete = seasonRepository.findByUuid(seasonUuid).orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
 
     final JsonSeason jsonSeason = backupService.seasonToJson(seasonUuid);
     final String seasonJsonContent = GsonUtil.gsonWithDateAndDateTime().toJson(jsonSeason);
