@@ -3,9 +3,9 @@ package com.pj.squashrestapp.dto.scoreboard;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.aspects.LoggableQuery;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
-import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RomanUtil;
@@ -93,13 +93,13 @@ public class RoundScoreboard implements LoggableQuery {
   }
 
   @Override
-  public String toString() {
-    return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
+  public String message() {
+    return toString();
   }
 
   @Override
-  public String message() {
-    return toString();
+  public String toString() {
+    return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
   }
 
 }

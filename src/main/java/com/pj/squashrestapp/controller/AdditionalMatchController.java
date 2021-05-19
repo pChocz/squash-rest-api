@@ -6,7 +6,6 @@ import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
@@ -44,7 +43,9 @@ import java.util.UUID;
 public class AdditionalMatchController {
 
   private final AdditionalMatchService additionalMatchService;
-
+  private final LeagueRepository leagueRepository;
+  private final PlayerRepository playerRepository;
+  private final AdditionalMatchRepository additionalMatchRepository;
 
   @PostMapping
   @PreAuthorize("""
@@ -60,20 +61,17 @@ public class AdditionalMatchController {
     additionalMatchService.createNewAdditionalMatchEmpty(firstPlayerUuid, secondPlayerUuid, leagueUuid, seasonNumber, date, type);
   }
 
-
   @DeleteMapping("{matchUuid}")
   @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
   void deleteMatchByUuid(@PathVariable final UUID matchUuid) {
     additionalMatchService.deleteMatchByUuid(matchUuid);
   }
 
-
   @GetMapping(value = "/{matchUuid}")
   ResponseEntity<?> getSingleMatch(@PathVariable final UUID matchUuid) {
     final AdditionalMatchDetailedDto match = additionalMatchService.getSingleMatch(matchUuid);
     return new ResponseEntity<>(match, HttpStatus.OK);
   }
-
 
   @PutMapping(value = "/{matchUuid}")
   @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
@@ -84,13 +82,11 @@ public class AdditionalMatchController {
     additionalMatchService.modifySingleScore(matchUuid, setNumber, player, newScore);
   }
 
-
   @GetMapping("/all-for-league/{leagueUuid}")
   ResponseEntity<?> getAdditionalMatchesForLeague(@PathVariable final UUID leagueUuid) {
     final List<AdditionalMatchDetailedDto> additionalMatchesForLeague = additionalMatchService.getAdditionalMatchesForLeague(leagueUuid);
     return new ResponseEntity<>(additionalMatchesForLeague, HttpStatus.OK);
   }
-
 
   @GetMapping("/single-player/{leagueUuid}/{playerUuid}")
   ResponseEntity<?> getAdditionalMatchesForSinglePlayerForLeague(@PathVariable final UUID leagueUuid,
@@ -99,31 +95,12 @@ public class AdditionalMatchController {
     return new ResponseEntity<>(additionalMatchesForSinglePlayer, HttpStatus.OK);
   }
 
-
   @GetMapping("/multiple-players/{leagueUuid}/{playersUuids}")
   ResponseEntity<?> getAdditionalMatchesForMultiplePlayers(@PathVariable final UUID leagueUuid,
                                                            @PathVariable final UUID[] playersUuids) {
     final List<AdditionalMatchDetailedDto> additionalMatchesForMultiplePlayers = additionalMatchService.getAdditionalMatchesForMultiplePlayers(leagueUuid, playersUuids);
     return new ResponseEntity<>(additionalMatchesForMultiplePlayers, HttpStatus.OK);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  private final LeagueRepository leagueRepository;
-  private final PlayerRepository playerRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
 
   @PostMapping("create-dummy")
   void createDummyAdditionalMatches() {
@@ -133,7 +110,7 @@ public class AdditionalMatchController {
 
       for (final Season season : league.getSeasons()) {
         LocalDate date = season.getStartDate();
-        for (int i=0; i<20; i++) {
+        for (int i = 0; i < 20; i++) {
           date = date.plusDays(1);
           final List<Player> twoPlayers = FakeUtil.pickTwoRandomPlayers(leaguePlayers);
           final AdditionalMatch match = FakeMatch.createAdditional(twoPlayers.get(0), twoPlayers.get(1));
@@ -152,31 +129,6 @@ public class AdditionalMatchController {
     final List<AdditionalMatch> all = additionalMatchRepository.findAll();
     additionalMatchRepository.deleteAll(all);
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

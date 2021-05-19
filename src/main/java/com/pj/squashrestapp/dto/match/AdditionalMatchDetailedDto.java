@@ -8,11 +8,6 @@ import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditonalSetResult;
-import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.RoundGroup;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 

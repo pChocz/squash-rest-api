@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import org.springframework.data.jpa.repository.EntityGraph;

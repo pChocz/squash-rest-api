@@ -2,7 +2,6 @@ package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import lombok.Getter;
 
@@ -113,17 +112,17 @@ public class Scoreboard implements LoggableQuery {
   }
 
   @Override
+  public String message() {
+    return toString();
+  }
+
+  @Override
   public String toString() {
     return "matches: " + numberOfMatches + " | " +
            scoreboardRows
                    .stream()
                    .map(PlayersStatsScoreboardRow::toString)
                    .collect(Collectors.joining(", "));
-  }
-
-  @Override
-  public String message() {
-    return toString();
   }
 
 }

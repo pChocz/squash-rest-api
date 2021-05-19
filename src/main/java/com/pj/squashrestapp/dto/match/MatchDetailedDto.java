@@ -1,15 +1,15 @@
 package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.SetDto;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.SetDto;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  *

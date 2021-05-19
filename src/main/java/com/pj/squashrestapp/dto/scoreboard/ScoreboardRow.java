@@ -11,32 +11,6 @@ import java.util.stream.Collectors;
  */
 public interface ScoreboardRow {
 
-  PlayerDto getPlayer();
-
-  int getPointsWon();
-
-  int getPointsLost();
-
-  void setPointsWon(int value);
-
-  void setPointsLost(int value);
-
-  int getSetsWon();
-
-  int getSetsLost();
-
-  void setSetsWon(int value);
-
-  void setSetsLost(int value);
-
-  int getMatchesWon();
-
-  int getMatchesLost();
-
-  void setMatchesWon(int value);
-
-  void setMatchesLost(int value);
-
   default void applyMatch(final MatchDto match) {
     final List<Integer> pointsWonPerSet = extractPointsWon(match);
     final List<Integer> pointsLostPerSet = extractPointsLost(match);
@@ -91,6 +65,32 @@ public interface ScoreboardRow {
             .collect(Collectors.toList());
     return list;
   }
+
+  int getPointsWon();
+
+  int getPointsLost();
+
+  void setPointsLost(int value);
+
+  int getSetsWon();
+
+  int getSetsLost();
+
+  void setSetsLost(int value);
+
+  int getMatchesWon();
+
+  int getMatchesLost();
+
+  PlayerDto getPlayer();
+
+  void setMatchesLost(int value);
+
+  void setMatchesWon(int value);
+
+  void setSetsWon(int value);
+
+  void setPointsWon(int value);
 
   default int getPointsBalance() {
     return getPointsWon() - getPointsLost();
