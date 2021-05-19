@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -100,6 +99,10 @@ public class PlayerService {
     }
   }
 
+  public Player getPlayer(final String usernameOrEmail) {
+    return playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase()).orElse(null);
+  }
+
   public void createAndPersistVerificationToken(final UUID token, final Player user) {
     final LocalDateTime expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusDays(VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS);
     final VerificationToken verificationToken = new VerificationToken(token, user, expirationDateTime);
@@ -133,6 +136,7 @@ public class PlayerService {
     // todo: implement!
   }
 
+
   public List<PlayerDetailedDto> getAllPlayers() {
     final List<Player> allPlayers = playerRepository.findAll();
     final List<PlayerDetailedDto> allPlayersDetailedInfo = allPlayers
@@ -144,9 +148,35 @@ public class PlayerService {
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow(() -> new NoSuchElementException("Player does not exist!"));
+    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
+  }
+
+  @Transactional
+  public PlayerDetailedDto unassignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    player.removeRole(roleForLeague);
+
+    playerRepository.save(player);
+
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
+  }
+
+  @Transactional
+  public PlayerDetailedDto assignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    player.addRole(roleForLeague);
+
+    playerRepository.save(player);
+
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
   }
 
   public void changeCurrentSessionPlayerEmail(final String newEmail) {
@@ -189,23 +219,6 @@ public class PlayerService {
     assignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
   }
 
-  public Player getPlayer(final String usernameOrEmail) {
-    return playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase()).orElse(null);
-  }
-
-  @Transactional
-  public PlayerDetailedDto assignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
-    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow(() -> new NoSuchElementException("Player does not exist!"));
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
-    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-    player.addRole(roleForLeague);
-
-    playerRepository.save(player);
-
-    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-    return playerDetailedDto;
-  }
-
   @Transactional
   public void leaveLeague(final String leagueName) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -225,19 +238,6 @@ public class PlayerService {
     }
 
     unassignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
-  }
-
-  @Transactional
-  public PlayerDetailedDto unassignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
-    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow(() -> new NoSuchElementException("Player does not exist!"));
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
-    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-    player.removeRole(roleForLeague);
-
-    playerRepository.save(player);
-
-    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-    return playerDetailedDto;
   }
 
   public void changeCurrentSessionPlayerPassword(final String oldPassword, final String newPassword) {

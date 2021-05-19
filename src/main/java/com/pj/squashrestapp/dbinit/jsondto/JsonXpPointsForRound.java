@@ -17,6 +17,13 @@ public class JsonXpPointsForRound {
   private String numberOfPlayersCsv;
   private List<String> pointsCsv;
 
+  public int[] buildPlayerSplitArray() {
+    return Arrays.stream(numberOfPlayersCsv.split(","))
+            .map(String::trim)
+            .mapToInt(Integer::valueOf)
+            .toArray();
+  }
+
   public int[][] buildXpPointsArray() {
     final int[][] array = new int[pointsCsv.size()][];
     int i = 0;
@@ -32,13 +39,6 @@ public class JsonXpPointsForRound {
 
   public int extractNumberOfPlayers() {
     return Arrays.stream(this.buildPlayerSplitArray()).sum();
-  }
-
-  public int[] buildPlayerSplitArray() {
-    return Arrays.stream(numberOfPlayersCsv.split(","))
-            .map(String::trim)
-            .mapToInt(Integer::valueOf)
-            .toArray();
   }
 
 }

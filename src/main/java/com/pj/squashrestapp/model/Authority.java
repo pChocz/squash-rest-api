@@ -26,6 +26,10 @@ import java.util.Set;
 @NoArgsConstructor
 public class Authority {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
@@ -33,9 +37,7 @@ public class Authority {
           inverseJoinColumns = @JoinColumn(name = "player_id")
   )
   private final Set<Player> players = new HashSet<>();
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+
   @Setter
   @Enumerated(EnumType.STRING)
   private AuthorityType type;

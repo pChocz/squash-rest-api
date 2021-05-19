@@ -1,9 +1,9 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;

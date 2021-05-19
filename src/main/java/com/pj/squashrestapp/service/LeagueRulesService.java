@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 /**
@@ -27,7 +26,7 @@ public class LeagueRulesService {
 
   @Transactional
   public void addNewLeagueRule(final UUID leagueUuid, final String rule) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
 
     final LeagueRule leagueRule = new LeagueRule(rule);
     league.addRuleForLeague(leagueRule);
@@ -36,12 +35,12 @@ public class LeagueRulesService {
   }
 
   public void deleteRule(final UUID ruleUuid) {
-    final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow(() -> new NoSuchElementException("League rule does not exist!"));
+    final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow();
     leagueRulesRepository.delete(leagueRule);
   }
 
   public List<LeagueRule> extractRulesForLeague(final UUID leagueUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final List<LeagueRule> rules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(league);
     return rules;
   }

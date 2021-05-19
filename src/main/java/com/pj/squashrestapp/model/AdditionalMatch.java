@@ -121,7 +121,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
   public String detailedInfo() {
     return "[" + uuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull()
-           + " (S: " + seasonNumber + " | T: " + type + " | " + date + ")";
+           + " (S: " + seasonNumber  + " | T: " + type + " | " + date + ")";
   }
 
 }

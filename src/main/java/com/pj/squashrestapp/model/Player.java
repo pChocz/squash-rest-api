@@ -25,18 +25,6 @@ import java.util.UUID;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Player {
 
-  @JsonIgnore
-  @ManyToMany(
-          mappedBy = "players",
-          fetch = FetchType.LAZY)
-  private final Set<Authority> authorities = new HashSet<>();
-
-  @JsonIgnore
-  @ManyToMany(
-          mappedBy = "players",
-          fetch = FetchType.LAZY)
-  private final Set<RoleForLeague> roles = new HashSet<>();
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -67,6 +55,18 @@ public class Player {
   @Setter
   @Column(name = "password_session_uuid")
   private UUID passwordSessionUuid;
+
+  @JsonIgnore
+  @ManyToMany(
+          mappedBy = "players",
+          fetch = FetchType.LAZY)
+  private final Set<Authority> authorities = new HashSet<>();
+
+  @JsonIgnore
+  @ManyToMany(
+          mappedBy = "players",
+          fetch = FetchType.LAZY)
+  private final Set<RoleForLeague> roles = new HashSet<>();
 
   public Player(final String username, final String email) {
     this.username = username;

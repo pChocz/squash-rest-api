@@ -28,18 +28,6 @@ public class FakeMatch {
     return match;
   }
 
-  private boolean isDrawAfterTwoSetsAdditional(final AdditionalMatch match) {
-    int diff = 0;
-    for (final AdditonalSetResult setResult : match.getSetResults()) {
-      if (setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()) {
-        diff++;
-      } else {
-        diff--;
-      }
-    }
-    return diff == 0;
-  }
-
   public Match create(final Player firstPlayer, final Player secondPlayer) {
     final Match match = new Match(firstPlayer, secondPlayer);
 
@@ -58,6 +46,18 @@ public class FakeMatch {
   private boolean isDrawAfterTwoSets(final Match match) {
     int diff = 0;
     for (final SetResult setResult : match.getSetResults()) {
+      if (setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()) {
+        diff++;
+      } else {
+        diff--;
+      }
+    }
+    return diff == 0;
+  }
+
+  private boolean isDrawAfterTwoSetsAdditional(final AdditionalMatch match) {
+    int diff = 0;
+    for (final AdditonalSetResult setResult : match.getSetResults()) {
       if (setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()) {
         diff++;
       } else {

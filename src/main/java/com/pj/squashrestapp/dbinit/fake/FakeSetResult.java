@@ -20,6 +20,12 @@ public class FakeSetResult {
     return new AdditonalSetResult(setNumber, result[0], result[1]);
   }
 
+  SetResult create(final int setNumber) {
+    final int winningSetScore = generateWinningPoints(setNumber);
+    final int[] result = createFakeSetResultArray(winningSetScore);
+    return new SetResult(setNumber, result[0], result[1]);
+  }
+
   private int generateWinningPoints(final int setNumber) {
     return setNumber > 2
             ? WINNING_TIE_BREAK_SCORE
@@ -50,12 +56,6 @@ public class FakeSetResult {
     return winningPoints == WINNING_REGULAR_SET_SCORE
             ? FakeUtil.randomBetweenTwoIntegers(0, winningPoints)
             : FakeUtil.randomBetweenTwoIntegers(0, WINNING_TIE_BREAK_SCORE - 1);
-  }
-
-  SetResult create(final int setNumber) {
-    final int winningSetScore = generateWinningPoints(setNumber);
-    final int[] result = createFakeSetResultArray(winningSetScore);
-    return new SetResult(setNumber, result[0], result[1]);
   }
 
   SetResult createNullSet(final int setNumber) {

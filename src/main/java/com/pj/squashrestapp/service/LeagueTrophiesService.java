@@ -1,13 +1,13 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.dto.LeagueDtoSimple;
-import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.TrophiesWonForLeague;
-import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
+import com.pj.squashrestapp.dto.LeagueDtoSimple;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.TrophiesWonForLeague;
+import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;

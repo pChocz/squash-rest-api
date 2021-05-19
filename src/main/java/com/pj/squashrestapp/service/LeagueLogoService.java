@@ -7,11 +7,14 @@ import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.NoSuchElementException;
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,7 +56,7 @@ public class LeagueLogoService {
     final LeagueLogo leagueLogo = new LeagueLogo();
     leagueLogo.setPicture(logoBytes);
 
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow(() -> new NoSuchElementException("League does not exist!"));
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
 
@@ -63,7 +66,7 @@ public class LeagueLogoService {
   public void deleteLogoForLeague(final UUID leagueUuid) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {
-      throw new GeneralBadRequestException("League with UUID [" + leagueUuid + "] not found!");
+      throw new GeneralBadRequestException("League with UUID [" + leagueUuid  + "] not found!");
     }
 
     final Optional<LeagueLogo> leagueLogo = leagueLogoRepository.findByLeague(league.get());

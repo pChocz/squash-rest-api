@@ -109,17 +109,17 @@ public class Match implements Identifiable, Comparable<Match> {
     return "[" + getUuid() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
   }
 
-  private List<SetResult> setResultsOrderedNonNull() {
+  public List<SetResult> getSetResultsOrdered() {
     return setResults
             .stream()
-            .filter(SetResult::nonNull)
             .sorted(Comparator.comparingInt(SetResult::getNumber))
             .collect(Collectors.toList());
   }
 
-  public List<SetResult> getSetResultsOrdered() {
+  private List<SetResult> setResultsOrderedNonNull() {
     return setResults
             .stream()
+            .filter(SetResult::nonNull)
             .sorted(Comparator.comparingInt(SetResult::getNumber))
             .collect(Collectors.toList());
   }

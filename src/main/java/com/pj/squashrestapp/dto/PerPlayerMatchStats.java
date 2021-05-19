@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.dto;
 
+import com.pj.squashrestapp.dto.PlayerDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
