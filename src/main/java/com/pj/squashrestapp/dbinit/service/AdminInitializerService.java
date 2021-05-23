@@ -244,7 +244,7 @@ public class AdminInitializerService {
         additionalMatch.addSetResult(setResult);
       }
 
-      if (jsonAdditionalMatch.getSets().size() == 0) {
+      if (jsonAdditionalMatch.getSets().isEmpty()) {
         additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(1));
         additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(2));
         additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));

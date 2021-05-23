@@ -53,7 +53,7 @@ public class Season implements Identifiable, Comparable<Season> {
 
     @Override
     public void setChildren(final League parent) {
-      parent.setSeasons(new TreeSet<Season>());
+      parent.setSeasons(new TreeSet<>());
     }
   };
 

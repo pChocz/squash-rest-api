@@ -98,18 +98,8 @@ public class SeasonScoreboardDto implements LoggableQuery {
             .reversed());
   }
 
-  public void sortByPretendersPoints() {
-    seasonScoreboardRows.sort(Comparator
-            .comparing(SeasonScoreboardRowDto::getCountedPointsPretenders)
-            .reversed());
-  }
-
   public boolean previousSeasonExists() {
     return this.previousSeasonUuid != null;
-  }
-
-  public boolean nextSeasonExists() {
-    return this.nextSeasonUuid != null;
   }
 
   @Override

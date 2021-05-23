@@ -104,16 +104,4 @@ public interface ScoreboardRow {
     return getMatchesWon() - getMatchesLost();
   }
 
-//  default int getPointsPlayed() {
-//    return getPointsWon() + getPointsLost();
-//  }
-//
-//  default int getSetsPlayed() {
-//    return getSetsWon() + getSetsLost();
-//  }
-//
-//  default int getMatchesPlayed() {
-//    return getMatchesWon() + getMatchesLost();
-//  }
-
 }

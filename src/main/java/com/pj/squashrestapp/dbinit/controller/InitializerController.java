@@ -35,13 +35,14 @@ import java.util.List;
 @RequestMapping("/init")
 @RequiredArgsConstructor
 public class InitializerController {
+  // @el (Security : com.pj.squashrestapp.config.security.method.CustomMethodSecurityExpressionRoot)
 
   private final FakeLeagueService fakeLeagueService;
   private final AdminInitializerService adminInitializerService;
 
 
   @PostMapping(value = "/leagues")
-  @PreAuthorize("isAdmin()")
+  @PreAuthorize("Security.isAdmin()")
   void createFakeLeague(@RequestParam final MultipartFile initFakeLeagues) throws IOException {
 
     final String jsonContent = IOUtils.toString(initFakeLeagues.getInputStream(), Charset.defaultCharset());
@@ -65,7 +66,7 @@ public class InitializerController {
   }
 
   @GetMapping(value = "/argon2")
-  @PreAuthorize("isAdmin()")
+  @PreAuthorize("Security.isAdmin()")
   @SecretMethod
   ResponseEntity<String> checkArgon2(@RequestParam final String rawPassword,
                                      @RequestParam final int saltLength,
