@@ -5,12 +5,11 @@ import java.util.Comparator;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- *
- */
+/** */
 @Getter
 @Setter
-public class PlayersStatsScoreboardRow implements Comparable<PlayersStatsScoreboardRow>, ScoreboardRow {
+public class PlayersStatsScoreboardRow
+    implements Comparable<PlayersStatsScoreboardRow>, ScoreboardRow {
 
   private final PlayerDto player;
 
@@ -29,12 +28,11 @@ public class PlayersStatsScoreboardRow implements Comparable<PlayersStatsScorebo
 
   @Override
   public int compareTo(final PlayersStatsScoreboardRow that) {
-    return Comparator
-            .comparingDouble(PlayersStatsScoreboardRow::getMatchesRatio)
-            .thenComparingDouble(PlayersStatsScoreboardRow::getSetsRatio)
-            .thenComparingDouble(PlayersStatsScoreboardRow::getPointsRatio)
-            .reversed()
-            .compare(this, that);
+    return Comparator.comparingDouble(PlayersStatsScoreboardRow::getMatchesRatio)
+        .thenComparingDouble(PlayersStatsScoreboardRow::getSetsRatio)
+        .thenComparingDouble(PlayersStatsScoreboardRow::getPointsRatio)
+        .reversed()
+        .compare(this, that);
   }
 
   private double getMatchesRatio() {
@@ -53,5 +51,4 @@ public class PlayersStatsScoreboardRow implements Comparable<PlayersStatsScorebo
   public String toString() {
     return player.getUsername();
   }
-
 }

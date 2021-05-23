@@ -15,9 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- *
- */
+/** */
 @Entity
 @Table(name = "verification_tokens")
 @Getter
@@ -38,9 +36,7 @@ public class VerificationToken {
   private UUID token;
 
   @Setter
-  @Column(name = "expiration_date_time",
-          nullable = false,
-          updatable = false)
+  @Column(name = "expiration_date_time", nullable = false, updatable = false)
   private LocalDateTime expirationDateTime;
 
   public VerificationToken(final UUID token, final Player player, final LocalDateTime expirationDateTime) {
@@ -48,5 +44,4 @@ public class VerificationToken {
     this.player = player;
     this.expirationDateTime = expirationDateTime;
   }
-
 }

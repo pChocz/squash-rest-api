@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class AdditionalMatchDetailedDto implements MatchDto {
 
@@ -60,5 +58,4 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   public String toString() {
     return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

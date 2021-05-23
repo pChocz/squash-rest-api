@@ -7,9 +7,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
-/**
- *
- */
+/** */
 @Getter
 public class MatchesSimplePaginated {
 
@@ -30,24 +28,21 @@ public class MatchesSimplePaginated {
     this.page = page.getNumber();
     this.pages = page.getTotalPages();
     this.min = page.getNumber() * page.getSize() + 1;
-    this.max = (page.getNumber() == page.getTotalPages() - 1)
+    this.max =
+        (page.getNumber() == page.getTotalPages() - 1)
             ? page.getTotalElements()
             : (page.getNumber() + 1) * matchesDtos.size();
     this.matches = getSortedMatches(matchesDtos);
   }
 
   private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {
-    return matches
-            .stream()
-            .sorted(Comparator
-                    .comparing(MatchDto::getDate)
-                    .reversed())
-            .collect(Collectors.toList());
+    return matches.stream()
+        .sorted(Comparator.comparing(MatchDto::getDate).reversed())
+        .collect(Collectors.toList());
   }
 
   @Override
   public String toString() {
     return "matches: " + matches.size() + " | page: " + page + "/" + pages;
   }
-
 }

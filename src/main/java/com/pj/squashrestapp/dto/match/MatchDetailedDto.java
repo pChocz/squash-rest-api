@@ -18,9 +18,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class MatchDetailedDto implements MatchDto {
 
@@ -32,6 +30,7 @@ public class MatchDetailedDto implements MatchDto {
 
   private final UUID roundUuid;
   private final int roundNumber;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
 
@@ -73,5 +72,4 @@ public class MatchDetailedDto implements MatchDto {
   public String toString() {
     return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

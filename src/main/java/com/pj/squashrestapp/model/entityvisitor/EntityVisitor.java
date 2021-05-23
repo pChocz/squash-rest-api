@@ -32,7 +32,6 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
         children.add(object);
       }
     }
-
   }
 
   public P getParent(final T visitingObject) {
@@ -46,5 +45,4 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
   public Set<T> getChildren(final P parent) {
     throw new UnsupportedOperationException();
   }
-
 }

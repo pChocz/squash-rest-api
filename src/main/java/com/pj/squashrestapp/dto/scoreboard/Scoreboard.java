@@ -13,9 +13,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class Scoreboard implements LoggableQuery {
 
@@ -27,30 +25,26 @@ public class Scoreboard implements LoggableQuery {
     this.scoreboardRows = new ArrayList<>();
 
     for (final MatchDto match : getSortedMatches(matches)) {
-      final PlayersStatsScoreboardRow scoreboardRowFirst = getScoreboardRowOrBuildNew(match.getFirstPlayer());
+      final PlayersStatsScoreboardRow scoreboardRowFirst =
+          getScoreboardRowOrBuildNew(match.getFirstPlayer());
       scoreboardRowFirst.applyMatch(match);
 
-      final PlayersStatsScoreboardRow scoreboardRowSecond = getScoreboardRowOrBuildNew(match.getSecondPlayer());
+      final PlayersStatsScoreboardRow scoreboardRowSecond =
+          getScoreboardRowOrBuildNew(match.getSecondPlayer());
       scoreboardRowSecond.applyMatch(match);
     }
     Collections.sort(scoreboardRows);
   }
 
   private List<MatchDto> getSortedMatches(final Collection<MatchDto> matches) {
-    return matches
-            .stream()
-            .sorted(Comparator
-                    .comparing(MatchDto::getDate)
-                    .reversed())
-            .collect(Collectors.toList());
+    return matches.stream()
+        .sorted(Comparator.comparing(MatchDto::getDate).reversed())
+        .collect(Collectors.toList());
   }
 
   private PlayersStatsScoreboardRow getScoreboardRowOrBuildNew(final PlayerDto player) {
-    PlayersStatsScoreboardRow scoreboardRowFirst = scoreboardRows
-            .stream()
-            .filter(e -> e.getPlayer().equals(player))
-            .findFirst()
-            .orElse(null);
+    PlayersStatsScoreboardRow scoreboardRowFirst =
+        scoreboardRows.stream().filter(e -> e.getPlayer().equals(player)).findFirst().orElse(null);
 
     if (scoreboardRowFirst == null) {
       scoreboardRowFirst = new PlayersStatsScoreboardRow(player);
@@ -83,11 +77,10 @@ public class Scoreboard implements LoggableQuery {
   }
 
   public PlayersStatsScoreboardRow getRowForPlayer(final PlayerDto player) {
-    return this.scoreboardRows
-            .stream()
-            .filter(row -> row.getPlayer().equals(player))
-            .findFirst()
-            .orElse(new PlayersStatsScoreboardRow(player));
+    return this.scoreboardRows.stream()
+        .filter(row -> row.getPlayer().equals(player))
+        .findFirst()
+        .orElse(new PlayersStatsScoreboardRow(player));
   }
 
   public void reverse() {
@@ -117,11 +110,11 @@ public class Scoreboard implements LoggableQuery {
 
   @Override
   public String toString() {
-    return "matches: " + numberOfMatches + " | " +
-           scoreboardRows
-                   .stream()
-                   .map(PlayersStatsScoreboardRow::toString)
-                   .collect(Collectors.joining(", "));
+    return "matches: "
+        + numberOfMatches
+        + " | "
+        + scoreboardRows.stream()
+            .map(PlayersStatsScoreboardRow::toString)
+            .collect(Collectors.joining(", "));
   }
-
 }

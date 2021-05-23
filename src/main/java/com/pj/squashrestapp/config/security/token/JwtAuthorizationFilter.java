@@ -20,27 +20,26 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
   private final SecretKeyHolder secretKeyHolder;
   private final PlayerRepository playerRepository;
 
-  public JwtAuthorizationFilter(final AuthenticationManager authManager,
-                                final SecretKeyHolder secretKeyHolder,
-                                final PlayerRepository playerRepository) {
+  public JwtAuthorizationFilter(
+      final AuthenticationManager authManager,
+      final SecretKeyHolder secretKeyHolder,
+      final PlayerRepository playerRepository) {
     super(authManager);
     this.secretKeyHolder = secretKeyHolder;
     this.playerRepository = playerRepository;
   }
 
   @Override
-  protected void doFilterInternal(final HttpServletRequest req,
-                                  final HttpServletResponse res,
-                                  final FilterChain chain) throws IOException, ServletException {
+  protected void doFilterInternal(
+      final HttpServletRequest req, final HttpServletResponse res, final FilterChain chain)
+      throws IOException, ServletException {
     final UsernamePasswordAuthenticationToken authentication = getAuthentication(req);
     if (authentication != null) {
       SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -49,6 +48,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   /**
+   *
+   *
    * <pre>
    * User authentication is performed in this method, based on the
    * token received in the HTTP request.
@@ -73,8 +74,8 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
     final String token = tokenWithHeader.replace(TOKEN_PREFIX, "");
 
     try {
-      final Claims claims = Jwts
-              .parserBuilder()
+      final Claims claims =
+          Jwts.parserBuilder()
               .setSigningKey(secretKeyHolder.getSecretKey())
               .build()
               .parseClaimsJws(token)
@@ -83,34 +84,37 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       final String playerUuidAsString = claims.get("uid", String.class);
       final UUID playerUuid = UUID.fromString(playerUuidAsString);
 
-      final Player player = playerRepository
+      final Player player =
+          playerRepository
               .fetchForAuthorizationByUuid(playerUuid)
               .orElseThrow(() -> new RuntimeException("User with given UUID does not exist!"));
 
-      log.debug("\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
-              player.getUuid(),
-              player.getUsername(),
-              claims.getIssuedAt(),
-              claims.getExpiration());
+      log.debug(
+          "\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
+          player.getUuid(),
+          player.getUsername(),
+          claims.getIssuedAt(),
+          claims.getExpiration());
 
       final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);
 
       // checking if the account is activated
       if (!userDetailsImpl.isEnabled()) {
-        throw new AccountNotActivatedException("Account has not been activated, maybe you should check your emails!");
+        throw new AccountNotActivatedException(
+            "Account has not been activated, maybe you should check your emails!");
       }
 
       // checking if password session UUID matches
       final UUID tokenPasswordSessionUuid = UUID.fromString(claims.get("pid", String.class));
       final UUID userPasswordSessionUuid = userDetailsImpl.getPasswordSessionUuid();
       if (!tokenPasswordSessionUuid.equals(userPasswordSessionUuid)) {
-        throw new RuntimeException("Password Session Token is invalid (which means that the password has been changed recently).");
+        throw new RuntimeException(
+            "Password Session Token is invalid (which means that the password has been changed recently).");
       }
 
-      final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-              userDetailsImpl,
-              userDetailsImpl.getPassword(),
-              userDetailsImpl.getAuthorities());
+      final UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
+          new UsernamePasswordAuthenticationToken(
+              userDetailsImpl, userDetailsImpl.getPassword(), userDetailsImpl.getAuthorities());
       return usernamePasswordAuthenticationToken;
 
     } catch (final Exception e) {
@@ -118,5 +122,4 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       return null;
     }
   }
-
 }

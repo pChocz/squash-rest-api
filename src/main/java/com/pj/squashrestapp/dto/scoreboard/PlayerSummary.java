@@ -13,12 +13,17 @@ public class PlayerSummary implements LoggableQuery {
 
   @Override
   public String toString() {
-    return scoreboardRow.getPlayer() + " | leagues: " + leagues + " | seasons: " + seasons + " | rounds: " + rounds;
+    return scoreboardRow.getPlayer()
+        + " | leagues: "
+        + leagues
+        + " | seasons: "
+        + seasons
+        + " | rounds: "
+        + rounds;
   }
 
   @Override
   public String message() {
     return "Dashboard";
   }
-
 }

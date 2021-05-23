@@ -17,9 +17,7 @@ import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class PlayerSingleRoundStats {
@@ -31,19 +29,14 @@ public class PlayerSingleRoundStats {
   final RoundGroupScoreboardRow row;
   final List<RoundOpponent> roundOpponents;
 
-
-  public PlayerSingleRoundStats(final Player player, final Round round, final List<Integer> xpPoints) {
+  public PlayerSingleRoundStats(
+      final Player player, final Round round, final List<Integer> xpPoints) {
     this.seasonNumber = round.getSeason().getNumber();
     this.split = round.getSplit();
     this.round = new RoundDto(round);
 
-    final List<MatchDetailedDto> matches = round
-            .getRoundGroups()
-            .stream()
-            .findFirst()
-            .orElseThrow()
-            .getMatches()
-            .stream()
+    final List<MatchDetailedDto> matches =
+        round.getRoundGroups().stream().findFirst().orElseThrow().getMatches().stream()
             .map(MatchDetailedDto::new)
             .collect(Collectors.toList());
 
@@ -54,17 +47,15 @@ public class PlayerSingleRoundStats {
     }
     this.roundGroupNumber = roundGroupScoreboard.getRoundGroupNumber();
 
-    final RoundGroupScoreboardRow correctRow = roundGroupScoreboard
-            .getScoreboardRows()
-            .stream()
-            .filter(row -> row
-                    .getPlayer()
-                    .getUuid()
-                    .equals(player.getUuid()))
+    final RoundGroupScoreboardRow correctRow =
+        roundGroupScoreboard.getScoreboardRows().stream()
+            .filter(row -> row.getPlayer().getUuid().equals(player.getUuid()))
             .findFirst()
             .orElseThrow();
 
-    correctRow.setPlaceInRound(calculatePlaceInRound(roundGroupScoreboard.getRoundGroupNumber(), correctRow.getPlaceInGroup()));
+    correctRow.setPlaceInRound(
+        calculatePlaceInRound(
+            roundGroupScoreboard.getRoundGroupNumber(), correctRow.getPlaceInGroup()));
     correctRow.setXpEarned(xpPoints.get(correctRow.getPlaceInRound() - 1));
 
     this.row = correctRow;
@@ -77,11 +68,8 @@ public class PlayerSingleRoundStats {
 
       } else {
         final PlayerDto opponent = row.getPlayer();
-        final MatchDetailedDto match = matches
-                .stream()
-                .filter(predicate(currentPlayer, opponent))
-                .findFirst()
-                .orElseThrow();
+        final MatchDetailedDto match =
+            matches.stream().filter(predicate(currentPlayer, opponent)).findFirst().orElseThrow();
         final boolean hasWon = hasCurrentPlayerWonMatch(currentPlayer, match);
         this.roundOpponents.add(new RoundOpponent(opponent, hasWon, row.getPlaceInGroup()));
       }
@@ -90,18 +78,20 @@ public class PlayerSingleRoundStats {
 
   private int calculatePlaceInRound(final int roundGroupNumber, final int placeInGroup) {
     final int[] splitAsArray = getSplitAsArray();
-    return placeInGroup + Arrays
-            .stream(splitAsArray, 0, roundGroupNumber - 1)
-            .sum();
+    return placeInGroup + Arrays.stream(splitAsArray, 0, roundGroupNumber - 1).sum();
   }
 
-  private Predicate<? super MatchDetailedDto> predicate(final PlayerDto currentPlayer, final PlayerDto opponent) {
-    return (Predicate<MatchDetailedDto>) matchDetailedDto ->
-            Set.of(currentPlayer, opponent).equals(
+  private Predicate<? super MatchDetailedDto> predicate(
+      final PlayerDto currentPlayer, final PlayerDto opponent) {
+    return (Predicate<MatchDetailedDto>)
+        matchDetailedDto ->
+            Set.of(currentPlayer, opponent)
+                .equals(
                     Set.of(matchDetailedDto.getFirstPlayer(), matchDetailedDto.getSecondPlayer()));
   }
 
-  private boolean hasCurrentPlayerWonMatch(final PlayerDto currentPlayer, final MatchDetailedDto match) {
+  private boolean hasCurrentPlayerWonMatch(
+      final PlayerDto currentPlayer, final MatchDetailedDto match) {
     int firstPlayerWonSets = 0;
     int secondPlayerWonSets = 0;
     for (final SetDto set : match.getSets()) {
@@ -114,15 +104,15 @@ public class PlayerSingleRoundStats {
       }
     }
 
-    final PlayerDto winner = firstPlayerWonSets > secondPlayerWonSets
-            ? match.getFirstPlayer()
-            : match.getSecondPlayer();
+    final PlayerDto winner =
+        firstPlayerWonSets > secondPlayerWonSets ? match.getFirstPlayer() : match.getSecondPlayer();
 
     return currentPlayer.equals(winner);
   }
 
   private int[] getSplitAsArray() {
-    final int[] splitAsArray = Arrays.stream(this.split.split("\\|"))
+    final int[] splitAsArray =
+        Arrays.stream(this.split.split("\\|"))
             .map(String::trim)
             .mapToInt(Integer::valueOf)
             .toArray();
@@ -133,5 +123,4 @@ public class PlayerSingleRoundStats {
   public String toString() {
     return "S: " + seasonNumber + " | R: " + round.getRoundNumber() + " | RG: " + roundGroupNumber;
   }
-
 }

@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class RoundScoreboard implements LoggableQuery {
 
@@ -29,16 +27,18 @@ public class RoundScoreboard implements LoggableQuery {
 
   private final UUID roundUuid;
   private final int roundNumber;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT, timezone = "UTC")
   private final LocalDate roundDate;
-  @JsonIgnore
-  private final List<Integer> playersPerGroup;
+
+  @JsonIgnore private final List<Integer> playersPerGroup;
   private final List<RoundGroupScoreboard> roundGroupScoreboards;
   private boolean finishedState;
   private UUID previousRoundUuid;
   private UUID nextRoundUuid;
 
-  public RoundScoreboard(final Round round, final UUID previousRoundUuid, final UUID nextRoundUuid) {
+  public RoundScoreboard(
+      final Round round, final UUID previousRoundUuid, final UUID nextRoundUuid) {
     this.previousRoundUuid = previousRoundUuid;
     this.nextRoundUuid = nextRoundUuid;
 
@@ -100,5 +100,4 @@ public class RoundScoreboard implements LoggableQuery {
   public String toString() {
     return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
   }
-
 }

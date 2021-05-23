@@ -9,9 +9,7 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- *
- */
+/** */
 @Getter
 @Setter
 public class HeadToHeadScoreboardRow implements ScoreboardRow {
@@ -50,9 +48,10 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int tieBreaksLost;
   private BigDecimal tieBreaksRatio;
 
-  public HeadToHeadScoreboardRow(final PlayersStatsScoreboardRow row,
-                                 final Map<PlayerDto, Map<Integer, Integer>> splitPerSet,
-                                 final Map<PlayerDto, Map<Integer, Integer>> splitPerMatch) {
+  public HeadToHeadScoreboardRow(
+      final PlayersStatsScoreboardRow row,
+      final Map<PlayerDto, Map<Integer, Integer>> splitPerSet,
+      final Map<PlayerDto, Map<Integer, Integer>> splitPerMatch) {
 
     this.player = row.getPlayer();
 
@@ -66,39 +65,46 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
     this.matchesWon = row.getMatchesWon();
     this.matchesLost = row.getMatchesLost();
-    this.matchesRatio = RoundingUtil.round((float) 100 * matchesWon / (matchesWon + matchesLost), 1);
+    this.matchesRatio =
+        RoundingUtil.round((float) 100 * matchesWon / (matchesWon + matchesLost), 1);
 
-    final PlayerDto opponent = splitPerSet
-            .keySet()
-            .stream()
+    final PlayerDto opponent =
+        splitPerSet.keySet().stream()
             .filter(playerDto -> !playerDto.equals(this.player))
             .findFirst()
             .orElseThrow();
 
     this.firstSetsWon = splitPerSet.get(player).getOrDefault(1, 0);
     this.firstSetsLost = splitPerSet.get(opponent).getOrDefault(1, 0);
-    this.firstSetsRatio = RoundingUtil.round((float) 100 * firstSetsWon / (firstSetsWon + firstSetsLost), 1);
+    this.firstSetsRatio =
+        RoundingUtil.round((float) 100 * firstSetsWon / (firstSetsWon + firstSetsLost), 1);
 
     this.secondSetsWon = splitPerSet.get(player).getOrDefault(2, 0);
     this.secondSetsLost = splitPerSet.get(opponent).getOrDefault(2, 0);
-    this.secondSetsRatio = RoundingUtil.round((float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
+    this.secondSetsRatio =
+        RoundingUtil.round((float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
 
     this.tieBreaksWon = splitPerSet.get(player).getOrDefault(3, 0);
     this.tieBreaksLost = splitPerSet.get(opponent).getOrDefault(3, 0);
     if (tieBreaksWon + tieBreaksLost > 0) {
-      this.tieBreaksRatio = RoundingUtil.round((float) 100 * tieBreaksWon / (tieBreaksWon + tieBreaksLost), 1);
+      this.tieBreaksRatio =
+          RoundingUtil.round((float) 100 * tieBreaksWon / (tieBreaksWon + tieBreaksLost), 1);
     }
 
     this.regularMatchesWon = splitPerMatch.get(player).getOrDefault(2, 0);
     this.regularMatchesLost = splitPerMatch.get(opponent).getOrDefault(2, 0);
     if (regularMatchesWon + regularMatchesLost > 0) {
-      this.regularMatchesRatio = RoundingUtil.round((float) 100 * regularMatchesWon / (regularMatchesWon + regularMatchesLost), 1);
+      this.regularMatchesRatio =
+          RoundingUtil.round(
+              (float) 100 * regularMatchesWon / (regularMatchesWon + regularMatchesLost), 1);
     }
 
     this.tieBreakMatchesWon = splitPerMatch.get(player).getOrDefault(3, 0);
     this.tieBreakMatchesLost = splitPerMatch.get(opponent).getOrDefault(3, 0);
     if (tieBreakMatchesWon + tieBreakMatchesLost > 0) {
-      this.tieBreakMatchesRatio = RoundingUtil.round((float) 100 * tieBreakMatchesWon / (tieBreakMatchesWon + tieBreakMatchesLost), 1);
+      this.tieBreakMatchesRatio =
+          RoundingUtil.round(
+              (float) 100 * tieBreakMatchesWon / (tieBreakMatchesWon + tieBreakMatchesLost), 1);
     }
   }
 
@@ -106,5 +112,4 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   public String toString() {
     return player.getUsername();
   }
-
 }

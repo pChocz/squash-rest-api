@@ -12,8 +12,6 @@ public class RoundingUtil {
   }
 
   public BigDecimal round(final float number, final int decimalPlaces) {
-    return new BigDecimal(number)
-            .setScale(decimalPlaces, RoundingMode.HALF_UP);
+    return new BigDecimal(number).setScale(decimalPlaces, RoundingMode.HALF_UP);
   }
-
 }

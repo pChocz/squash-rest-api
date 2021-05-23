@@ -15,9 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- *
- */
+/** */
 @Entity
 @Table(name = "refresh_tokens")
 @Getter
@@ -38,15 +36,13 @@ public class RefreshToken {
   private UUID token;
 
   @Setter
-  @Column(name = "expiration_date_time",
-          nullable = false,
-          updatable = false)
+  @Column(name = "expiration_date_time", nullable = false, updatable = false)
   private LocalDateTime expirationDateTime;
 
-  public RefreshToken(final UUID token, final Player player, final LocalDateTime expirationDateTime) {
+  public RefreshToken(
+      final UUID token, final Player player, final LocalDateTime expirationDateTime) {
     this.token = token;
     this.player = player;
     this.expirationDateTime = expirationDateTime;
   }
-
 }

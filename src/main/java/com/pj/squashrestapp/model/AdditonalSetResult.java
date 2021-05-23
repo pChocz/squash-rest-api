@@ -43,7 +43,8 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
   @JoinColumn(name = "match_id")
   private AdditionalMatch match;
 
-  public AdditonalSetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
+  public AdditonalSetResult(
+      final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
     this.secondPlayerScore = secondPlayerScore;
@@ -56,14 +57,10 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
 
   @Override
   public int compareTo(final AdditonalSetResult that) {
-    return Comparator
-            .comparingInt(AdditonalSetResult::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(AdditonalSetResult::getNumber).compare(this, that);
   }
 
   public boolean nonNull() {
-    return this.getFirstPlayerScore() != null
-           && this.getSecondPlayerScore() != null;
+    return this.getFirstPlayerScore() != null && this.getSecondPlayerScore() != null;
   }
-
 }

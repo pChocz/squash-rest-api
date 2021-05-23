@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class TrophiesWonForLeague {
 
@@ -17,15 +15,16 @@ public class TrophiesWonForLeague {
   private final LeagueDtoSimple league;
   private final List<TrophiesWonForSeason> trophiesPerSeason;
 
-  public TrophiesWonForLeague(final PlayerDto player,
-                              final LeagueDtoSimple league,
-                              final List<TrophyForLeague> trophiesForLeague) {
+  public TrophiesWonForLeague(
+      final PlayerDto player,
+      final LeagueDtoSimple league,
+      final List<TrophyForLeague> trophiesForLeague) {
     this.player = player;
     this.league = league;
     this.trophiesPerSeason = new ArrayList<>();
 
-    final List<Integer> listOfSeasonNumbers = trophiesForLeague
-            .stream()
+    final List<Integer> listOfSeasonNumbers =
+        trophiesForLeague.stream()
             .map(TrophyForLeague::getSeasonNumber)
             .distinct()
             .sorted(Comparator.reverseOrder())
@@ -34,8 +33,8 @@ public class TrophiesWonForLeague {
     for (final int seasonNumber : listOfSeasonNumbers) {
       final TrophiesWonForSeason trophiesWonForSeason = new TrophiesWonForSeason(seasonNumber);
 
-      final List<TrophyForLeague> seasonTrophies = trophiesForLeague
-              .stream()
+      final List<TrophyForLeague> seasonTrophies =
+          trophiesForLeague.stream()
               .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
               .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
               .collect(Collectors.toList());
@@ -46,7 +45,6 @@ public class TrophiesWonForLeague {
 
       this.trophiesPerSeason.add(trophiesWonForSeason);
     }
-
   }
 
   @Override
@@ -55,10 +53,6 @@ public class TrophiesWonForLeague {
   }
 
   private int getNumberOfTrophies() {
-    return trophiesPerSeason
-            .stream()
-            .mapToInt(t -> t.getTrophies().size())
-            .sum();
+    return trophiesPerSeason.stream().mapToInt(t -> t.getTrophies().size()).sum();
   }
-
 }

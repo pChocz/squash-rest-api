@@ -10,9 +10,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Helper class that extracts jwt.secret key from the application.yml
- * file and builds cryptographic key needed for the authenticaton and
- * autorization purposes within the Spring Security framework.
+ * Helper class that extracts jwt.secret key from the application.yml file and builds cryptographic
+ * key needed for the authenticaton and autorization purposes within the Spring Security framework.
  */
 @Setter
 @Configuration
@@ -26,5 +25,4 @@ public class SecretKeyHolder {
   public Key getSecretKey() {
     return Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
   }
-
 }

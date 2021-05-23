@@ -28,40 +28,39 @@ import lombok.Setter;
 
 @Entity
 @Table(
-        name = "rounds",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"season_id", "number"})})
+    name = "rounds",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"season_id", "number"})})
 @Getter
 @NoArgsConstructor
 public class Round implements Identifiable, Comparable<Round> {
 
-  public static EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {
-  };
+  public static EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL =
+      new EntityVisitor<>(Round.class) {};
 
-  public static EntityVisitor<Round, Season> ENTITY_VISITOR = new EntityVisitor<>(Round.class) {
-    @Override
-    public Season getParent(final Round visitingObject) {
-      return visitingObject.getSeason();
-    }
+  public static EntityVisitor<Round, Season> ENTITY_VISITOR =
+      new EntityVisitor<>(Round.class) {
+        @Override
+        public Season getParent(final Round visitingObject) {
+          return visitingObject.getSeason();
+        }
 
-    @Override
-    public Set<Round> getChildren(final Season parent) {
-      return parent.getRounds();
-    }
+        @Override
+        public Set<Round> getChildren(final Season parent) {
+          return parent.getRounds();
+        }
 
-    @Override
-    public void setChildren(final Season parent) {
-      parent.setRounds(new TreeSet<Round>());
-    }
-  };
+        @Override
+        public void setChildren(final Season parent) {
+          parent.setRounds(new TreeSet<Round>());
+        }
+      };
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
@@ -74,10 +73,10 @@ public class Round implements Identifiable, Comparable<Round> {
 
   @Setter
   @OneToMany(
-          mappedBy = "round",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "round",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<RoundGroup> roundGroups = new TreeSet<>();
 
   @JsonIgnore
@@ -110,18 +109,13 @@ public class Round implements Identifiable, Comparable<Round> {
   }
 
   public List<RoundGroup> getRoundGroupsOrdered() {
-    return this
-            .getRoundGroups()
-            .stream()
-            .sorted(Comparator.comparingInt(RoundGroup::getNumber))
-            .collect(Collectors.toList());
+    return this.getRoundGroups().stream()
+        .sorted(Comparator.comparingInt(RoundGroup::getNumber))
+        .collect(Collectors.toList());
   }
 
   @Override
   public int compareTo(final Round that) {
-    return Comparator
-            .comparingInt(Round::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(Round::getNumber).compare(this, that);
   }
-
 }

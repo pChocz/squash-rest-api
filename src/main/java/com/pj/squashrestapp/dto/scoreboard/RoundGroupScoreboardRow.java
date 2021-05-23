@@ -5,11 +5,7 @@ import java.util.Comparator;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- *
- *
- *
- */
+/** */
 @Getter
 @Setter
 public class RoundGroupScoreboardRow implements Comparable<RoundGroupScoreboardRow>, ScoreboardRow {
@@ -35,14 +31,12 @@ public class RoundGroupScoreboardRow implements Comparable<RoundGroupScoreboardR
 
   @Override
   public int compareTo(final RoundGroupScoreboardRow that) {
-    return Comparator
-            .comparingInt(RoundGroupScoreboardRow::getMatchesBalance)
-            .thenComparingInt(RoundGroupScoreboardRow::getSetsBalance)
-            .thenComparingInt(RoundGroupScoreboardRow::getPointsBalance)
-            .thenComparingInt(RoundGroupScoreboardRow::getSetsWon)
-            .thenComparingInt(RoundGroupScoreboardRow::getPointsWon)
-            .reversed()
-            .compare(this, that);
+    return Comparator.comparingInt(RoundGroupScoreboardRow::getMatchesBalance)
+        .thenComparingInt(RoundGroupScoreboardRow::getSetsBalance)
+        .thenComparingInt(RoundGroupScoreboardRow::getPointsBalance)
+        .thenComparingInt(RoundGroupScoreboardRow::getSetsWon)
+        .thenComparingInt(RoundGroupScoreboardRow::getPointsWon)
+        .reversed()
+        .compare(this, that);
   }
-
 }

@@ -2,9 +2,7 @@ package com.pj.squashrestapp.util;
 
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class PasswordStrengthValidator {
 
@@ -17,5 +15,4 @@ public class PasswordStrengthValidator {
   public boolean isValid(final String password) {
     return password.matches(PATTERN);
   }
-
 }

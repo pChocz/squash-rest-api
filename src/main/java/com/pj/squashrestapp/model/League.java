@@ -31,63 +31,70 @@ import lombok.Setter;
 @NoArgsConstructor
 public class League implements Identifiable {
 
-  public static EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {
-  };
+  public static EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL =
+      new EntityVisitor<>(League.class) {};
+
   @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "league",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private final List<RoleForLeague> rolesForLeague = new ArrayList<>();
+
   @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "league",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private final List<TrophyForLeague> trophiesForLeague = new ArrayList<>();
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
+
   @Setter
   @Column(name = "name", unique = true)
   private String name;
+
   @Setter
   @Column(name = "location")
   private String location;
+
   @Setter
   @Column(name = "time")
   private String time;
+
   @Setter
-  @OneToOne(
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
   @JoinColumn(name = "league_logo_id")
   private LeagueLogo leagueLogo;
+
   @Setter
   @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "league",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<Season> seasons = new TreeSet<>();
+
   @Setter
   @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "league",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<LeagueRule> rules = new HashSet<>();
+
   @Setter
   @OneToMany(
-          mappedBy = "league",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "league",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<AdditionalMatch> additionalMatches = new TreeSet<>();
 
   public League(final String name) {
@@ -125,11 +132,8 @@ public class League implements Identifiable {
   }
 
   public List<Season> getSeasonsOrdered() {
-    return this
-            .getSeasons()
-            .stream()
-            .sorted(Comparator.comparingInt(Season::getNumber))
-            .collect(Collectors.toList());
+    return this.getSeasons().stream()
+        .sorted(Comparator.comparingInt(Season::getNumber))
+        .collect(Collectors.toList());
   }
-
 }

@@ -26,8 +26,7 @@ public class LeagueRule {
   private Long id;
 
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
@@ -47,5 +46,4 @@ public class LeagueRule {
   public LeagueRule(final String rule) {
     this.rule = rule;
   }
-
 }

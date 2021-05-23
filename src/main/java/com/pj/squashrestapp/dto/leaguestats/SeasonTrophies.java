@@ -6,9 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class SeasonTrophies {
 
@@ -20,12 +18,7 @@ public class SeasonTrophies {
     this.trophies = new ArrayList<>();
     for (final TrophyForLeague trophyForLeague : trophies) {
       this.trophies.add(
-              new TrophyDto(
-                      trophyForLeague.getTrophy(),
-                      new PlayerDto(trophyForLeague.getPlayer())
-              )
-      );
+          new TrophyDto(trophyForLeague.getTrophy(), new PlayerDto(trophyForLeague.getPlayer())));
     }
   }
-
 }

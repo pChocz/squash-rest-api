@@ -6,9 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Builder
 @Getter
 @AllArgsConstructor
@@ -27,5 +25,4 @@ public class OveralStats {
   private final int matches;
   private final int sets;
   private final int points;
-
 }

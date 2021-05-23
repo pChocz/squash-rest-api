@@ -9,9 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class LeagueDto {
@@ -19,16 +17,14 @@ public class LeagueDto {
   private final UUID leagueUuid;
   private final String leagueName;
   private final Set<SeasonDto> seasons;
-  @Setter
-  private byte[] leagueLogo;
+  @Setter private byte[] leagueLogo;
 
   public LeagueDto(final League league) {
     this.leagueUuid = league.getUuid();
     this.leagueName = league.getName();
 
-    this.seasons = league
-            .getSeasons()
-            .stream()
+    this.seasons =
+        league.getSeasons().stream()
             .map(SeasonDto::new)
             .collect(Collectors.toCollection(TreeSet::new));
   }
@@ -37,5 +33,4 @@ public class LeagueDto {
   public String toString() {
     return leagueName;
   }
-
 }

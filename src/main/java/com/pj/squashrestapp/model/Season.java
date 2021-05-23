@@ -29,40 +29,39 @@ import lombok.Setter;
 
 @Entity
 @Table(
-        name = "seasons",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"league_id", "number"})})
+    name = "seasons",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"league_id", "number"})})
 @Getter
 @NoArgsConstructor
 public class Season implements Identifiable, Comparable<Season> {
 
-  public static EntityVisitor<Season, League> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Season.class) {
-  };
+  public static EntityVisitor<Season, League> ENTITY_VISITOR_FINAL =
+      new EntityVisitor<>(Season.class) {};
 
-  public static EntityVisitor<Season, League> ENTITY_VISITOR = new EntityVisitor<>(Season.class) {
-    @Override
-    public League getParent(final Season visitingObject) {
-      return visitingObject.getLeague();
-    }
+  public static EntityVisitor<Season, League> ENTITY_VISITOR =
+      new EntityVisitor<>(Season.class) {
+        @Override
+        public League getParent(final Season visitingObject) {
+          return visitingObject.getLeague();
+        }
 
-    @Override
-    public Set<Season> getChildren(final League parent) {
-      return parent.getSeasons();
-    }
+        @Override
+        public Set<Season> getChildren(final League parent) {
+          return parent.getSeasons();
+        }
 
-    @Override
-    public void setChildren(final League parent) {
-      parent.setSeasons(new TreeSet<Season>());
-    }
-  };
+        @Override
+        public void setChildren(final League parent) {
+          parent.setSeasons(new TreeSet<Season>());
+        }
+      };
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
@@ -79,18 +78,18 @@ public class Season implements Identifiable, Comparable<Season> {
 
   @Setter
   @OneToMany(
-          mappedBy = "season",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "season",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<Round> rounds = new TreeSet<>();
 
   @Setter
   @OneToMany(
-          mappedBy = "season",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "season",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<BonusPoint> bonusPoints = new HashSet<>();
 
   @JsonIgnore
@@ -121,27 +120,20 @@ public class Season implements Identifiable, Comparable<Season> {
   }
 
   public List<Round> getRoundsOrdered() {
-    return this
-            .getRounds()
-            .stream()
-            .sorted(Comparator.comparingInt(Round::getNumber))
-            .collect(Collectors.toList());
+    return this.getRounds().stream()
+        .sorted(Comparator.comparingInt(Round::getNumber))
+        .collect(Collectors.toList());
   }
 
   public List<Round> getFinishedRoundsOrdered() {
-    return this
-            .getRounds()
-            .stream()
-            .filter(Round::isFinished)
-            .sorted(Comparator.comparingInt(Round::getNumber))
-            .collect(Collectors.toList());
+    return this.getRounds().stream()
+        .filter(Round::isFinished)
+        .sorted(Comparator.comparingInt(Round::getNumber))
+        .collect(Collectors.toList());
   }
 
   @Override
   public int compareTo(final Season that) {
-    return Comparator
-            .comparingInt(Season::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(Season::getNumber).compare(this, that);
   }
-
 }

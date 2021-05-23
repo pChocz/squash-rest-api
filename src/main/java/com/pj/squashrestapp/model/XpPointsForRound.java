@@ -20,15 +20,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @Table(name = "xp_points_for_round")
 @Getter
 @NoArgsConstructor
 public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRound> {
 
-  public static EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(XpPointsForRound.class) {
-  };
+  public static EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL =
+      new EntityVisitor<>(XpPointsForRound.class) {};
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,10 +47,10 @@ public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRou
 
   @Setter
   @OneToMany(
-          mappedBy = "xpPointsForRound",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "xpPointsForRound",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<XpPointsForRoundGroup> xpPointsForRoundGroups;
 
   public XpPointsForRound(final String type, final int[] splitAsArray, final int[][] points) {
@@ -60,16 +59,14 @@ public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRou
     this.split = GeneralUtil.intArrayToString(splitAsArray);
     this.xpPointsForRoundGroups = new TreeSet<XpPointsForRoundGroup>();
     for (int i = 1; i <= points.length; i++) {
-      final XpPointsForRoundGroup xpPointsForRoundGroup = new XpPointsForRoundGroup(i, points, this);
+      final XpPointsForRoundGroup xpPointsForRoundGroup =
+          new XpPointsForRoundGroup(i, points, this);
       this.xpPointsForRoundGroups.add(xpPointsForRoundGroup);
     }
   }
 
   @Override
   public int compareTo(final XpPointsForRound that) {
-    return Comparator
-            .comparingInt(XpPointsForRound::getNumberOfPlayers)
-            .compare(this, that);
+    return Comparator.comparingInt(XpPointsForRound::getNumberOfPlayers).compare(this, that);
   }
-
 }

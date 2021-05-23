@@ -26,32 +26,32 @@ import lombok.Setter;
 
 @Entity
 @Table(
-        name = "round_groups",
-        uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"round_id", "number"})})
+    name = "round_groups",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"round_id", "number"})})
 @Getter
 @NoArgsConstructor
 public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
-  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(RoundGroup.class) {
-  };
+  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL =
+      new EntityVisitor<>(RoundGroup.class) {};
 
-  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR = new EntityVisitor<>(RoundGroup.class) {
-    @Override
-    public Round getParent(final RoundGroup visitingObject) {
-      return visitingObject.getRound();
-    }
+  public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR =
+      new EntityVisitor<>(RoundGroup.class) {
+        @Override
+        public Round getParent(final RoundGroup visitingObject) {
+          return visitingObject.getRound();
+        }
 
-    @Override
-    public Set<RoundGroup> getChildren(final Round parent) {
-      return parent.getRoundGroups();
-    }
+        @Override
+        public Set<RoundGroup> getChildren(final Round parent) {
+          return parent.getRoundGroups();
+        }
 
-    @Override
-    public void setChildren(final Round parent) {
-      parent.setRoundGroups(new TreeSet<RoundGroup>());
-    }
-  };
+        @Override
+        public void setChildren(final Round parent) {
+          parent.setRoundGroups(new TreeSet<RoundGroup>());
+        }
+      };
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,10 +63,10 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
   @Setter
   @OneToMany(
-          mappedBy = "roundGroup",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "roundGroup",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<Match> matches = new TreeSet<>();
 
   @JsonIgnore
@@ -90,17 +90,13 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
   }
 
   public List<Match> getMatchesOrdered() {
-    return matches
-            .stream()
-            .sorted(Comparator.comparingInt(Match::getNumber))
-            .collect(Collectors.toList());
+    return matches.stream()
+        .sorted(Comparator.comparingInt(Match::getNumber))
+        .collect(Collectors.toList());
   }
 
   @Override
   public int compareTo(final RoundGroup that) {
-    return Comparator
-            .comparingInt(RoundGroup::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(RoundGroup::getNumber).compare(this, that);
   }
-
 }

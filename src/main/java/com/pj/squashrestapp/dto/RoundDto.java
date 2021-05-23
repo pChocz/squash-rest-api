@@ -8,19 +8,18 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class RoundDto {
 
   private final UUID roundUuid;
   private final int roundNumber;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate roundDate;
-  private final boolean isFinished;
 
+  private final boolean isFinished;
 
   public RoundDto(final Round round) {
     this.roundUuid = round.getUuid();
@@ -28,5 +27,4 @@ public class RoundDto {
     this.isFinished = round.isFinished();
     this.roundDate = round.getDate();
   }
-
 }

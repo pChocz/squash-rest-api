@@ -58,5 +58,4 @@ public class TrophyForLeague {
   public String toString() {
     return trophy.toString() + " - " + player.getUsername();
   }
-
 }

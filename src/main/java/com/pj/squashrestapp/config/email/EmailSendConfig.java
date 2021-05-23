@@ -17,9 +17,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Setter
 @Configuration
@@ -41,7 +39,6 @@ public class EmailSendConfig {
 
   @Value(value = "${smtp_port:}")
   private String smtpPort;
-
 
   public void sendEmail(final String receiver, final String subject, final Object content) {
     final Properties properties = buildProperties();
@@ -68,34 +65,28 @@ public class EmailSendConfig {
   }
 
   private Session buildSession(final Properties properties) {
-    return Session.getInstance(properties,
-            new Authenticator() {
-              @Override
-              protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmailAdress, password);
-              }
-            }
-    );
+    return Session.getInstance(
+        properties,
+        new Authenticator() {
+          @Override
+          protected PasswordAuthentication getPasswordAuthentication() {
+            return new PasswordAuthentication(senderEmailAdress, password);
+          }
+        });
   }
 
-  private Message prepareMessage(final Session session, final String receiver,
-                                 final String subject, final Object content) throws MessagingException, UnsupportedEncodingException {
+  private Message prepareMessage(
+      final Session session, final String receiver, final String subject, final Object content)
+      throws MessagingException, UnsupportedEncodingException {
     final Message message = new MimeMessage(session);
     message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
 
-    message.addRecipients(
-            Message.RecipientType.TO,
-            InternetAddress.parse(receiver)
-    );
+    message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
 
-    message.addRecipients(
-            Message.RecipientType.BCC,
-            InternetAddress.parse(senderEmailAdress)
-    );
+    message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAdress));
 
     message.setSubject(subject);
     message.setContent(content, "text/html; charset=UTF-8");
     return message;
   }
-
 }

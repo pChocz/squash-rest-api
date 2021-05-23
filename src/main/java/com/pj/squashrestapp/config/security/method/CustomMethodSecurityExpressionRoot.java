@@ -18,21 +18,18 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.core.Authentication;
 
 /**
- * Main class that provides access to specific Entities. It provides
- * methods for securing RestController methods by Spring Security
- * annotations.
+ * Main class that provides access to specific Entities. It provides methods for securing
+ * RestController methods by Spring Security annotations.
  *
- * NOTE:
- * Methods from this class are called by annotations only, so they are
- * not tracked natively by IDE and must be manually searched for within
- * the {@link com.pj.squashrestapp.controller} package.
+ * <p>NOTE: Methods from this class are called by annotations only, so they are not tracked natively
+ * by IDE and must be manually searched for within the {@link com.pj.squashrestapp.controller}
+ * package.
  */
 @SuppressWarnings("unused")
 @Getter
 @Setter
-public class CustomMethodSecurityExpressionRoot
-        extends SecurityExpressionRoot
-        implements MethodSecurityExpressionOperations {
+public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
+    implements MethodSecurityExpressionOperations {
 
   private final UserDetailsImpl principal;
 
@@ -47,8 +44,7 @@ public class CustomMethodSecurityExpressionRoot
   private Object returnObject;
 
   /**
-   * Constructor assigns principal field based on
-   * the authentication of current session.
+   * Constructor assigns principal field based on the authentication of current session.
    *
    * @param authentication authentication object
    */
@@ -114,7 +110,7 @@ public class CustomMethodSecurityExpressionRoot
       return true;
     }
     return principal.getUuid().equals(firstPlayerUuid)
-           || principal.getUuid().equals(secondPlayerUuid);
+        || principal.getUuid().equals(secondPlayerUuid);
   }
 
   public boolean isPlayerOfAdditionalMatch(final UUID matchUuid) {
@@ -123,7 +119,7 @@ public class CustomMethodSecurityExpressionRoot
     }
     final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
     return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
-           || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
+        || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
   }
 
   public boolean isRoundOfMatchInProgress(final UUID matchUuid) {
@@ -131,5 +127,4 @@ public class CustomMethodSecurityExpressionRoot
     final boolean isRoundFinished = round.isFinished();
     return !isRoundFinished;
   }
-
 }

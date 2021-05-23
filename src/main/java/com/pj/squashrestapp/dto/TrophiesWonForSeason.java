@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class TrophiesWonForSeason {
 
@@ -21,5 +19,4 @@ public class TrophiesWonForSeason {
   public void addTrophy(final Trophy trophy) {
     this.trophies.add(trophy);
   }
-
 }

@@ -5,9 +5,7 @@ import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class SetDto {
 
@@ -34,8 +32,7 @@ public class SetDto {
 
   @JsonIgnore
   public boolean isEmpty() {
-    return firstPlayerScore == null
-           && secondPlayerScore == null;
+    return firstPlayerScore == null && secondPlayerScore == null;
   }
 
   @JsonIgnore
@@ -46,10 +43,8 @@ public class SetDto {
 
   private int getGreaterScore() {
     return firstPlayerScore > secondPlayerScore
-            ? firstPlayerScore
-            : firstPlayerScore < secondPlayerScore
-            ? secondPlayerScore
-            : 0;
+        ? firstPlayerScore
+        : firstPlayerScore < secondPlayerScore ? secondPlayerScore : 0;
   }
 
   @Override
@@ -59,16 +54,11 @@ public class SetDto {
 
   @JsonIgnore
   public Integer getFirstPlayerScoreNullSafe() {
-    return firstPlayerScore == null
-            ? 0
-            : firstPlayerScore;
+    return firstPlayerScore == null ? 0 : firstPlayerScore;
   }
 
   @JsonIgnore
   public Integer getSecondPlayerScoreNullSafe() {
-    return secondPlayerScore == null
-            ? 0
-            : secondPlayerScore;
+    return secondPlayerScore == null ? 0 : secondPlayerScore;
   }
-
 }

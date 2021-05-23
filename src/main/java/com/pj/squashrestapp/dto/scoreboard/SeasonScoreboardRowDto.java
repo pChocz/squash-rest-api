@@ -11,15 +11,12 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto> {
 
-  @EqualsAndHashCode.Include
-  private final PlayerDto player;
+  @EqualsAndHashCode.Include private final PlayerDto player;
   private final Map<Integer, Integer> roundNumberToXpMapAll;
   private final Map<Integer, Integer> roundNumberToXpMapPretenders;
   private final int bonusPoints;
@@ -42,13 +39,18 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private int matchesLost;
   private int matchesBalance;
 
-  public SeasonScoreboardRowDto(final PlayerDto player, final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+  public SeasonScoreboardRowDto(
+      final PlayerDto player, final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
     this.player = player;
     this.roundNumberToXpMapAll = new HashMap<>();
     this.roundNumberToXpMapPretenders = new HashMap<>();
 
     final UUID currentPlayerUuid = player.getUuid();
     this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerUuid);
+  }
+
+  private static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {
+    return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
   }
 
   public void addXpForRound(final int roundNumber, final Integer xpEarned) {
@@ -64,8 +66,10 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.totalPoints = totalPointsForRounds + bonusPoints;
 
     final int numberOfRoundsThatCount = countedRounds;
-    final int countedPointsForRounds = getPointsForNumberOfRounds(roundNumberToXpMapAll, numberOfRoundsThatCount);
-    this.countedPointsPretenders = getPointsForNumberOfRounds(roundNumberToXpMapPretenders, numberOfRoundsThatCount);
+    final int countedPointsForRounds =
+        getPointsForNumberOfRounds(roundNumberToXpMapAll, numberOfRoundsThatCount);
+    this.countedPointsPretenders =
+        getPointsForNumberOfRounds(roundNumberToXpMapPretenders, numberOfRoundsThatCount);
 
     final int eightBestPointsForRounds = getPointsForNumberOfRounds(roundNumberToXpMapAll, 8);
     this.countedPoints = countedPointsForRounds + bonusPoints;
@@ -76,35 +80,25 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   }
 
   private int getTotalPointsForRounds(final Map<Integer, Integer> roundNumberToXpMap) {
-    return roundNumberToXpMap
-            .values()
-            .stream()
-            .mapToInt(points -> points)
-            .sum();
+    return roundNumberToXpMap.values().stream().mapToInt(points -> points).sum();
   }
 
-  private int getPointsForNumberOfRounds(final Map<Integer, Integer> roundNumberToXpMap, final int numberOfRounds) {
-    return roundNumberToXpMap
-            .values()
-            .stream()
-            .sorted(Comparator.reverseOrder())
-            .limit(numberOfRounds)
-            .mapToInt(points -> points)
-            .sum();
+  private int getPointsForNumberOfRounds(
+      final Map<Integer, Integer> roundNumberToXpMap, final int numberOfRounds) {
+    return roundNumberToXpMap.values().stream()
+        .sorted(Comparator.reverseOrder())
+        .limit(numberOfRounds)
+        .mapToInt(points -> points)
+        .sum();
   }
 
   @Override
   public int compareTo(final SeasonScoreboardRowDto that) {
-    return Comparator
-            .comparingInt(SeasonScoreboardRowDto::getCountedPoints)
-            .thenComparingInt(SeasonScoreboardRowDto::getTotalPoints)
-            .thenComparingDouble(SeasonScoreboardRowDto::getAverageAsDouble)
-            .reversed()
-            .compare(this, that);
-  }
-
-  private static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {
-    return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
+    return Comparator.comparingInt(SeasonScoreboardRowDto::getCountedPoints)
+        .thenComparingInt(SeasonScoreboardRowDto::getTotalPoints)
+        .thenComparingDouble(SeasonScoreboardRowDto::getAverageAsDouble)
+        .reversed()
+        .compare(this, that);
   }
 
   public void addScoreboardRow(final RoundGroupScoreboardRow scoreboardRow) {
@@ -120,5 +114,4 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.matchesLost += scoreboardRow.getMatchesLost();
     this.matchesBalance += scoreboardRow.getMatchesBalance();
   }
-
 }

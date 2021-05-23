@@ -11,15 +11,12 @@ import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerDetailedDto {
 
-  @EqualsAndHashCode.Include
-  final UUID uuid;
+  @EqualsAndHashCode.Include final UUID uuid;
   final String username;
   final String email;
   final List<AuthorityType> authorities;
@@ -43,15 +40,13 @@ public class PlayerDetailedDto {
   }
 
   public boolean isPlayerForLeague(final String leagueName) {
-    return this.leagueRoles
-            .stream()
-            .filter(leagueRoleDto -> leagueRoleDto.getLeagueRole().equals(LeagueRole.PLAYER))
-            .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueName().equals(leagueName));
+    return this.leagueRoles.stream()
+        .filter(leagueRoleDto -> leagueRoleDto.getLeagueRole().equals(LeagueRole.PLAYER))
+        .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueName().equals(leagueName));
   }
 
   @Override
   public String toString() {
     return username + " | uuid: " + uuid;
   }
-
 }

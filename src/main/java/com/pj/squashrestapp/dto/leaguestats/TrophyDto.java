@@ -4,9 +4,7 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.Trophy;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class TrophyDto {
 
@@ -17,5 +15,4 @@ public class TrophyDto {
     this.trophy = trophy;
     this.player = player;
   }
-
 }

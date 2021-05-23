@@ -8,9 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class PerLeagueMatchStats {
 
@@ -28,5 +26,4 @@ public class PerLeagueMatchStats {
     }
     this.perPlayer.sort(Comparator.comparingLong(PerPlayerMatchStats::getMatches).reversed());
   }
-
 }

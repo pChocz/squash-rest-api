@@ -29,18 +29,20 @@ public class RoleForLeague {
   @JsonIgnore
   @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(
-          joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
-          inverseJoinColumns = @JoinColumn(name = "player_id")
-  )
+      joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
+      inverseJoinColumns = @JoinColumn(name = "player_id"))
   private final Set<Player> players = new HashSet<>();
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @JsonIgnore
   @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id")
   private League league;
+
   @Setter
   @Column(name = "league_role")
   @Enumerated(EnumType.STRING)
@@ -54,5 +56,4 @@ public class RoleForLeague {
   public String toString() {
     return leagueRole.name();
   }
-
 }

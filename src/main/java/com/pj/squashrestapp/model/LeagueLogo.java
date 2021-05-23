@@ -30,5 +30,4 @@ public class LeagueLogo {
   @Lob
   @Type(type = "org.hibernate.type.ImageType")
   private byte[] picture;
-
 }

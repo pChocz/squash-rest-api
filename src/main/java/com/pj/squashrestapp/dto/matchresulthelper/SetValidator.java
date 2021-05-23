@@ -2,9 +2,7 @@ package com.pj.squashrestapp.dto.matchresulthelper;
 
 import lombok.AllArgsConstructor;
 
-/**
- *
- */
+/** */
 @AllArgsConstructor
 public class SetValidator {
 
@@ -12,9 +10,9 @@ public class SetValidator {
   private static final int REGULAR_SET_WINNING_ADVANTAGE_SCORE = 12;
   private static final int TIE_BREAK_WINNING_SCORE = 9;
 
-  final private int setNumber;
-  final private Integer firstPlayerScore;
-  final private Integer secondPlayerScore;
+  private final int setNumber;
+  private final Integer firstPlayerScore;
+  private final Integer secondPlayerScore;
 
   public SetStatus checkStatus() {
 
@@ -23,7 +21,6 @@ public class SetValidator {
 
     } else if (firstPlayerScore == null || secondPlayerScore == null) {
       return SetStatus.IN_PROGRESS;
-
     }
 
     final int high = Math.max(firstPlayerScore, secondPlayerScore);
@@ -46,15 +43,13 @@ public class SetValidator {
 
     } else {
       return false;
-
     }
   }
 
   public SetStatus checkWinner() {
     return firstPlayerScore > secondPlayerScore
-            ? SetStatus.FIRST_PLAYER_WINS
-
-            : firstPlayerScore < secondPlayerScore
+        ? SetStatus.FIRST_PLAYER_WINS
+        : firstPlayerScore < secondPlayerScore
             ? SetStatus.SECOND_PLAYER_WINS
 
             // will never happen
@@ -91,5 +86,4 @@ public class SetValidator {
   private boolean isInRange(final int value, final int min, final int max) {
     return value >= min && value <= max;
   }
-
 }

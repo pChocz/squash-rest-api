@@ -10,5 +10,4 @@ public class ClassId<T> {
 
   private final Class<T> clazz;
   private final Long id;
-
 }

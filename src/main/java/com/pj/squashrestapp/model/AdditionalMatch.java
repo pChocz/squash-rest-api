@@ -39,8 +39,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
   private Long id;
 
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @Setter
@@ -68,10 +67,10 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
   @Setter
   @OneToMany(
-          mappedBy = "match",
-          cascade = CascadeType.ALL,
-          fetch = FetchType.LAZY,
-          orphanRemoval = true)
+      mappedBy = "match",
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY,
+      orphanRemoval = true)
   private Set<AdditonalSetResult> setResults = new TreeSet<>();
 
   @JsonIgnore
@@ -79,7 +78,6 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "league_id")
   private League league;
-
 
   public AdditionalMatch(final Player firstPlayer, final Player secondPlayer) {
     this.firstPlayer = firstPlayer;
@@ -93,34 +91,49 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
   @Override
   public String toString() {
-    return "[" + uuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
+    return "["
+        + uuid
+        + "] "
+        + firstPlayer
+        + " vs. "
+        + secondPlayer
+        + " : "
+        + setResultsOrderedNonNull();
   }
 
   private List<AdditonalSetResult> setResultsOrderedNonNull() {
-    return setResults
-            .stream()
-            .filter(AdditonalSetResult::nonNull)
-            .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
-            .collect(Collectors.toList());
+    return setResults.stream()
+        .filter(AdditonalSetResult::nonNull)
+        .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
+        .collect(Collectors.toList());
   }
 
   public List<AdditonalSetResult> getSetResultsOrdered() {
-    return setResults
-            .stream()
-            .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
-            .collect(Collectors.toList());
+    return setResults.stream()
+        .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
+        .collect(Collectors.toList());
   }
 
   @Override
   public int compareTo(final AdditionalMatch that) {
-    return Comparator
-            .comparing(AdditionalMatch::getDate)
-            .compare(this, that);
+    return Comparator.comparing(AdditionalMatch::getDate).compare(this, that);
   }
 
   public String detailedInfo() {
-    return "[" + uuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull()
-           + " (S: " + seasonNumber + " | T: " + type + " | " + date + ")";
+    return "["
+        + uuid
+        + "] "
+        + firstPlayer
+        + " vs. "
+        + secondPlayer
+        + " : "
+        + setResultsOrderedNonNull()
+        + " (S: "
+        + seasonNumber
+        + " | T: "
+        + type
+        + " | "
+        + date
+        + ")";
   }
-
 }

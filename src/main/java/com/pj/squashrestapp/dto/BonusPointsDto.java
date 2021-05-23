@@ -7,17 +7,17 @@ import java.time.LocalDate;
 import java.util.UUID;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public final class BonusPointsDto {
 
   final PlayerDto winner;
   final PlayerDto looser;
   final UUID uuid;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   final LocalDate date;
+
   final int points;
 
   public BonusPointsDto(final BonusPoint bonusPoint) {
@@ -32,5 +32,4 @@ public final class BonusPointsDto {
   public String toString() {
     return winner + " | " + looser + " | " + points;
   }
-
 }

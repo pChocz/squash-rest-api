@@ -1,8 +1,6 @@
 package com.pj.squashrestapp.config.security.token;
 
-/**
- * Several constants related to the token authentication.
- */
+/** Several constants related to the token authentication. */
 public final class TokenConstants {
 
   public static final String TOKEN_PREFIX = "Bearer ";
@@ -21,5 +19,4 @@ public final class TokenConstants {
 
   /** Refresh token expiration time in days */
   public static final long REFRESH_TOKEN_EXPIRATION_TIME_DAYS = 30;
-
 }

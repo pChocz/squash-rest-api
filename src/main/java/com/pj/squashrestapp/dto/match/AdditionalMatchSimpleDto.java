@@ -15,9 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class AdditionalMatchSimpleDto implements MatchDto {
 
@@ -51,5 +49,4 @@ public class AdditionalMatchSimpleDto implements MatchDto {
   public String toString() {
     return firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

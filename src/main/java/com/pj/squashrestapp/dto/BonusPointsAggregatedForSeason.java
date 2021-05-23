@@ -6,9 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public final class BonusPointsAggregatedForSeason {
 
@@ -28,9 +26,6 @@ public final class BonusPointsAggregatedForSeason {
   }
 
   public int forPlayer(final UUID playerUuid) {
-    return (int) this
-            .pointsPerPlayerId
-            .get(playerUuid);
+    return (int) this.pointsPerPlayerId.get(playerUuid);
   }
-
 }

@@ -17,9 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/**
- *
- */
+/** */
 @Entity
 @Table(name = "password_reset_tokens")
 @Getter
@@ -42,9 +40,7 @@ public class PasswordResetToken {
   private Player player;
 
   @Setter
-  @Column(name = "expiration_date_time",
-          nullable = false,
-          updatable = false)
+  @Column(name = "expiration_date_time", nullable = false, updatable = false)
   private LocalDateTime expirationDateTime;
 
   public PasswordResetToken(final UUID token, final Player player) {
@@ -52,5 +48,4 @@ public class PasswordResetToken {
     this.player = player;
     this.expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusHours(EXPIRATION_TIME_HOURS);
   }
-
 }
