@@ -11,5 +11,4 @@ public class JsonRoundGroup {
   private int number;
   private ArrayList<JsonPlayer> players;
   private ArrayList<JsonMatch> matches;
-
 }

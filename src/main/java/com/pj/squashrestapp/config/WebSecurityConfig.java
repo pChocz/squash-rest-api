@@ -29,9 +29,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
-/**
- *
- */
+/** */
 @Configuration
 @EnableWebSecurity
 @EnableWebMvc
@@ -45,7 +43,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final SecretKeyHolder secretKeyHolder;
   private final EmailSendConfig emailSendConfig;
 
-
   @Override
   protected void configure(final HttpSecurity httpSecurity) throws Exception {
 
@@ -54,45 +51,70 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     // set up of endpoints permissions
     httpSecurity
-            .authorizeRequests()
-            // allowing not authenticated players view scoreboard for rounds and seasons
-            .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*").permitAll()
-            .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*").permitAll()
-            .antMatchers(HttpMethod.GET, "/league-logos/season/*").permitAll()
-            .antMatchers(HttpMethod.GET, "/league-logos/round/*").permitAll()
-            .antMatchers(HttpMethod.GET, "/league-logos/*").permitAll()
-            // allowing to initialize the database
-            .antMatchers(HttpMethod.POST, "/init/json").permitAll()
-            // allowing regular endpoints to be accessible
-            .antMatchers(HttpMethod.GET, "/access/reset-password-player/**").permitAll()
-            .antMatchers(HttpMethod.GET, "/access/refresh-token/*").permitAll()
-            .antMatchers(HttpMethod.POST, "/access/sign-up").permitAll()
-            .antMatchers(HttpMethod.POST, "/access/request-password-reset").permitAll()
-            .antMatchers(HttpMethod.POST, "/access/confirm-password-reset").permitAll()
-            .antMatchers(HttpMethod.POST, "/access/confirm-registration").permitAll()
-            .antMatchers(HttpMethod.POST, "/login").permitAll()
-            .anyRequest().authenticated();
+        .authorizeRequests()
+        // allowing not authenticated players view scoreboard for rounds and seasons
+        .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/league-logos/season/*")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/league-logos/round/*")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/league-logos/*")
+        .permitAll()
+        // allowing to initialize the database
+        .antMatchers(HttpMethod.POST, "/init/json")
+        .permitAll()
+        // allowing regular endpoints to be accessible
+        .antMatchers(HttpMethod.GET, "/access/reset-password-player/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/access/refresh-token/*")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/access/sign-up")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/access/request-password-reset")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/access/confirm-password-reset")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/access/confirm-registration")
+        .permitAll()
+        .antMatchers(HttpMethod.POST, "/login")
+        .permitAll()
+        .anyRequest()
+        .authenticated();
 
     // authentication and authorization filters
     httpSecurity
-            .addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenCreateService, playerRepository))
-            .addFilter(new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
+        .addFilter(
+            new JwtAuthenticationFilter(
+                authenticationManager(), tokenCreateService, playerRepository))
+        .addFilter(
+            new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
 
     // this disables session creation on Spring Security
     httpSecurity.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
     // exception handling for unauthenticated/unathorized accesses
-    httpSecurity.exceptionHandling()
-            .authenticationEntryPoint(AuthenticationExceptionHandler::new)
-            .accessDeniedHandler(AccessDeniedExceptionHandler::new);
+    httpSecurity
+        .exceptionHandling()
+        .authenticationEntryPoint(AuthenticationExceptionHandler::new)
+        .accessDeniedHandler(AccessDeniedExceptionHandler::new);
   }
 
   @Override
   public void configure(final WebSecurity webSecurity) throws Exception {
     webSecurity
-            .ignoring().mvcMatchers(HttpMethod.OPTIONS, "/**")
-            .and()
-            .ignoring().mvcMatchers("/swagger-ui.html/**", "/configuration/**", "/swagger-resources/**", "/v2/api-docs", "/webjars/**");
+        .ignoring()
+        .mvcMatchers(HttpMethod.OPTIONS, "/**")
+        .and()
+        .ignoring()
+        .mvcMatchers(
+            "/swagger-ui.html/**",
+            "/configuration/**",
+            "/swagger-resources/**",
+            "/v2/api-docs",
+            "/webjars/**");
   }
 
   @Bean
@@ -124,5 +146,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   public ApplicationListener applicationListener() {
     return new AuthSuccessApplicationListener(emailSendConfig, playerRepository);
   }
-
 }

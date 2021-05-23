@@ -7,21 +7,14 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- */
+/** */
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
 
   @Override
-  @EntityGraph(attributePaths = {
-          "player"
-  })
+  @EntityGraph(attributePaths = {"player"})
   List<VerificationToken> findAll();
-
 
   VerificationToken findByToken(UUID token);
 
-
   List<VerificationToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
-
 }

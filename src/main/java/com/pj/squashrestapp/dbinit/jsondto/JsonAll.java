@@ -19,5 +19,4 @@ public class JsonAll {
   private final List<JsonPlayerCredentials> credentials;
   private final List<JsonRefreshToken> refreshTokens;
   private final List<JsonVerificationToken> verificationTokens;
-
 }

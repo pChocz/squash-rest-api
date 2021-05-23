@@ -31,5 +31,4 @@ public class JsonAdditionalMatch {
   private UUID secondPlayer;
 
   private ArrayList<JsonSetResult> sets;
-
 }

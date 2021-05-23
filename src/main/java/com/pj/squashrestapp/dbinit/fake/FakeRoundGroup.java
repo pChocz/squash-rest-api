@@ -6,9 +6,7 @@ import com.pj.squashrestapp.model.RoundGroup;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeRoundGroup {
 
@@ -26,5 +24,4 @@ public class FakeRoundGroup {
     }
     return roundGroup;
   }
-
 }

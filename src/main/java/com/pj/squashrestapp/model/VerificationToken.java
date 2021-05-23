@@ -39,7 +39,8 @@ public class VerificationToken {
   @Column(name = "expiration_date_time", nullable = false, updatable = false)
   private LocalDateTime expirationDateTime;
 
-  public VerificationToken(final UUID token, final Player player, final LocalDateTime expirationDateTime) {
+  public VerificationToken(
+      final UUID token, final Player player, final LocalDateTime expirationDateTime) {
     this.token = token;
     this.player = player;
     this.expirationDateTime = expirationDateTime;

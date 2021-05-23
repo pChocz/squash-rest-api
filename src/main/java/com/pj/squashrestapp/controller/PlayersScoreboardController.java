@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/players-scoreboards")
@@ -25,23 +23,25 @@ public class PlayersScoreboardController {
 
   private final PlayersScoreboardService playersScoreboardService;
 
-
   @GetMapping(value = "/{leagueUuid}/{playersUuids}")
   @ResponseBody
   @QueryLog
-  Scoreboard extractAllAgainstAll(@PathVariable final UUID leagueUuid,
-                                  @PathVariable final UUID[] playersUuids,
-                                  @RequestParam(required = false) final UUID seasonUuid,
-                                  @RequestParam(required = false) final Integer groupNumber,
-                                  @RequestParam final boolean includeAdditionalMatches) {
+  Scoreboard extractAllAgainstAll(
+      @PathVariable final UUID leagueUuid,
+      @PathVariable final UUID[] playersUuids,
+      @RequestParam(required = false) final UUID seasonUuid,
+      @RequestParam(required = false) final Integer groupNumber,
+      @RequestParam final boolean includeAdditionalMatches) {
 
-    final Scoreboard scoreboard = (playersUuids.length == 1)
-            ? playersScoreboardService.buildSingle(leagueUuid, playersUuids[0], seasonUuid, groupNumber, includeAdditionalMatches)
-            : playersScoreboardService.buildMultipleAllAgainstAll(leagueUuid, playersUuids, seasonUuid, groupNumber, includeAdditionalMatches);
+    final Scoreboard scoreboard =
+        (playersUuids.length == 1)
+            ? playersScoreboardService.buildSingle(
+                leagueUuid, playersUuids[0], seasonUuid, groupNumber, includeAdditionalMatches)
+            : playersScoreboardService.buildMultipleAllAgainstAll(
+                leagueUuid, playersUuids, seasonUuid, groupNumber, includeAdditionalMatches);
 
     return scoreboard;
   }
-
 
   @GetMapping(value = "/me-against-all/{leagueUuid}")
   @ResponseBody
@@ -50,7 +50,6 @@ public class PlayersScoreboardController {
     return scoreboard;
   }
 
-
   @GetMapping(value = "/me-against-all")
   @ResponseBody
   @QueryLog
@@ -58,5 +57,4 @@ public class PlayersScoreboardController {
     final PlayerSummary playerSummary = playersScoreboardService.buildMeAgainstAllForAllLeagues();
     return playerSummary;
   }
-
 }

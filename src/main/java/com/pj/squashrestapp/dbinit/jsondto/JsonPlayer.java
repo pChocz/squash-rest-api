@@ -9,5 +9,4 @@ import lombok.NoArgsConstructor;
 public class JsonPlayer {
 
   private UUID uuid;
-
 }

@@ -54,5 +54,4 @@ public class JsonHallOfFameSeason {
   @JsonProperty("cov")
   @SerializedName("cov")
   private List<UUID> coviders;
-
 }

@@ -21,9 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,23 +32,23 @@ public class AdditionalMatchService {
   private final PlayerRepository playerRepository;
   private final LeagueRepository leagueRepository;
 
+  private static List<AdditionalMatchDetailedDto> buildDtoList(
+      final List<AdditionalMatch> matches) {
+    return matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
+  }
+
   public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {
       throw new GeneralBadRequestException("League not valid!");
     }
-    final List<AdditionalMatch> matches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
+    final List<AdditionalMatch> matches =
+        additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
     return buildDtoList(matches);
   }
 
-  private static List<AdditionalMatchDetailedDto> buildDtoList(final List<AdditionalMatch> matches) {
-    return matches
-            .stream()
-            .map(AdditionalMatchDetailedDto::new)
-            .collect(Collectors.toList());
-  }
-
-  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForSinglePlayer(final UUID leagueUuid, final UUID playerUuid) {
+  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForSinglePlayer(
+      final UUID leagueUuid, final UUID playerUuid) {
 
     final Player player = playerRepository.findByUuid(playerUuid);
     if (player == null) {
@@ -62,23 +60,30 @@ public class AdditionalMatchService {
       throw new GeneralBadRequestException("League not valid!");
     }
 
-    final List<AdditionalMatch> matches = additionalMatchRepository.fetchForSinglePlayerForLeague(player, league.get());
+    final List<AdditionalMatch> matches =
+        additionalMatchRepository.fetchForSinglePlayerForLeague(player, league.get());
     return buildDtoList(matches);
   }
 
-  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForMultiplePlayers(final UUID leagueUuid, final UUID[] playersUuids) {
+  public List<AdditionalMatchDetailedDto> getAdditionalMatchesForMultiplePlayers(
+      final UUID leagueUuid, final UUID[] playersUuids) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {
       throw new GeneralBadRequestException("League not valid!");
     }
-    final List<AdditionalMatch> matches = additionalMatchRepository.fetchForMultiplePlayersForLeague(playersUuids, league.get());
+    final List<AdditionalMatch> matches =
+        additionalMatchRepository.fetchForMultiplePlayersForLeague(playersUuids, league.get());
     return buildDtoList(matches);
   }
 
   @Transactional
-  public void createNewAdditionalMatchEmpty(final UUID firstPlayerUuid, final UUID secondPlayerUuid,
-                                            final UUID leagueUuid, final int seasonNumber,
-                                            final LocalDate date, final AdditionalMatchType type) {
+  public void createNewAdditionalMatchEmpty(
+      final UUID firstPlayerUuid,
+      final UUID secondPlayerUuid,
+      final UUID leagueUuid,
+      final int seasonNumber,
+      final LocalDate date,
+      final AdditionalMatchType type) {
 
     final Player firstPlayer = playerRepository.findByUuid(firstPlayerUuid);
     final Player secondPlayer = playerRepository.findByUuid(secondPlayerUuid);
@@ -121,14 +126,15 @@ public class AdditionalMatchService {
     log.info("Deleting additional match!\n\t-> {}", match.detailedInfo());
   }
 
-  public void modifySingleScore(final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
-    final AdditionalMatch matchToModify = additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
+  public void modifySingleScore(
+      final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
+    final AdditionalMatch matchToModify =
+        additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
 
     final String initialMatchResult = matchToModify.toString();
 
-    final AdditonalSetResult setToModify = matchToModify
-            .getSetResults()
-            .stream()
+    final AdditonalSetResult setToModify =
+        matchToModify.getSetResults().stream()
             .filter(set -> set.getNumber() == setNumber)
             .findFirst()
             .orElse(null);
@@ -152,7 +158,10 @@ public class AdditionalMatchService {
 
     additonalSetResultRepository.save(setToModify);
 
-    log.info("Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, matchToModify);
+    log.info(
+        "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
+        initialMatchResult,
+        matchToModify);
   }
 
   private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
@@ -179,5 +188,4 @@ public class AdditionalMatchService {
       throw new GeneralBadRequestException("No such match!");
     }
   }
-
 }

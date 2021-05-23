@@ -17,9 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/xp-points")
@@ -28,7 +26,6 @@ public class XpPointsController {
 
   private final XpPointsService xpPointsService;
 
-
   @GetMapping
   @ResponseBody
   List<XpPointsForTable> extractAllForTable() {
@@ -36,14 +33,13 @@ public class XpPointsController {
     return xpPointsForTableList;
   }
 
-
   @GetMapping("/{type}")
   @ResponseBody
   List<XpPointsForTable> extractAllForTableForType(@PathVariable final String type) {
-    final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTableForType(type);
+    final List<XpPointsForTable> xpPointsForTableList =
+        xpPointsService.buildXpPointsForTableForType(type);
     return xpPointsForTableList;
   }
-
 
   @GetMapping("/types")
   @ResponseBody
@@ -52,23 +48,20 @@ public class XpPointsController {
     return xpPointsTypes;
   }
 
-
   @PostMapping
   @PreAuthorize("isAdmin()")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void addNewXpPoints(@RequestParam final String type,
-                      @RequestParam final int[] split,
-                      @RequestParam final String[] points) {
+  void addNewXpPoints(
+      @RequestParam final String type,
+      @RequestParam final int[] split,
+      @RequestParam final String[] points) {
     xpPointsService.addNewXpPoints(type, split, points);
   }
-
 
   @DeleteMapping
   @PreAuthorize("isAdmin()")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void deleteExistingXpPoints(@RequestParam final String type,
-                              @RequestParam final int[] split) {
+  void deleteExistingXpPoints(@RequestParam final String type, @RequestParam final int[] split) {
     xpPointsService.deleteExistingXpPoints(type, split);
   }
-
 }

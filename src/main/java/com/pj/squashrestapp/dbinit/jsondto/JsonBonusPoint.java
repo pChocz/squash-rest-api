@@ -21,5 +21,4 @@ public class JsonBonusPoint {
   private UUID looser;
 
   private int points;
-
 }

@@ -15,9 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Controller that provides methods to perform a backup of the database to a JSON file.
- */
+/** Controller that provides methods to perform a backup of the database to a JSON file. */
 @Slf4j
 @RestController
 @RequestMapping("/backup")
@@ -26,14 +24,12 @@ public class BackupController {
 
   private final BackupService backupService;
 
-
   @GetMapping("/rounds/{roundUuid}")
   @PreAuthorize("isAdmin()")
   ResponseEntity<JsonRound> backupSingleRound(@PathVariable final UUID roundUuid) {
     final JsonRound roundJson = backupService.roundToJson(roundUuid);
     return new ResponseEntity<>(roundJson, HttpStatus.OK);
   }
-
 
   @GetMapping("/leagues/{leagueUuid}")
   @PreAuthorize("isAdmin()")
@@ -42,12 +38,11 @@ public class BackupController {
     return new ResponseEntity<>(leagueJson, HttpStatus.OK);
   }
 
-
   @GetMapping("/all")
   @PreAuthorize("isAdmin()")
   ResponseEntity<JsonAll> backupAll() {
-    final JsonAll jsonAll = JsonAll
-            .builder()
+    final JsonAll jsonAll =
+        JsonAll.builder()
             .xpPoints(backupService.allXpPoints())
             .leagues(backupService.allLeagues())
             .credentials(backupService.allPlayersCredentials())
@@ -56,5 +51,4 @@ public class BackupController {
             .build();
     return new ResponseEntity<>(jsonAll, HttpStatus.OK);
   }
-
 }

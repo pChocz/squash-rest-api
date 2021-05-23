@@ -40,9 +40,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -57,18 +55,20 @@ public class SeasonService {
   private final SeasonRepository seasonRepository;
   private final LeagueRepository leagueRepository;
 
-
-  public SeasonScoreboardDto getSeasonScoreboardDtoForLeagueStats(final Season season,
-                                                                  final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-                                                                  final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+  public SeasonScoreboardDto getSeasonScoreboardDtoForLeagueStats(
+      final Season season,
+      final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
     final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
-    return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+    return buildSeasonScoreboardDto(
+        seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
-  public SeasonScoreboardDto buildSeasonScoreboardDto(final SeasonScoreboardDto seasonScoreboardDto,
-                                                      final Season season,
-                                                      final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-                                                      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+  public SeasonScoreboardDto buildSeasonScoreboardDto(
+      final SeasonScoreboardDto seasonScoreboardDto,
+      final Season season,
+      final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
     for (final Round round : season.getFinishedRoundsOrdered()) {
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
@@ -85,9 +85,8 @@ public class SeasonService {
         for (final RoundGroupScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
 
           final PlayerDto player = scoreboardRow.getPlayer();
-          final SeasonScoreboardRowDto seasonScoreboardRowDto = seasonScoreboardDto
-                  .getSeasonScoreboardRows()
-                  .stream()
+          final SeasonScoreboardRowDto seasonScoreboardRowDto =
+              seasonScoreboardDto.getSeasonScoreboardRows().stream()
                   .filter(p -> p.getPlayer().equals(player))
                   .findFirst()
                   .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedForSeason));
@@ -96,11 +95,13 @@ public class SeasonService {
 
           // if it's not the first group, count pretenders points as well
           if (scoreboardRow.getPlaceInGroup() != scoreboardRow.getPlaceInRound()) {
-            seasonScoreboardRowDto.addXpForRoundPretendents(round.getNumber(), scoreboardRow.getXpEarned());
+            seasonScoreboardRowDto.addXpForRoundPretendents(
+                round.getNumber(), scoreboardRow.getXpEarned());
           }
 
           seasonScoreboardRowDto.addXpForRound(round.getNumber(), scoreboardRow.getXpEarned());
-          final boolean containsPlayer = seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
+          final boolean containsPlayer =
+              seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
           if (!containsPlayer) {
             seasonScoreboardDto.getSeasonScoreboardRows().add(seasonScoreboardRowDto);
           }
@@ -108,8 +109,10 @@ public class SeasonService {
       }
     }
 
-    for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
+    for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
+        seasonScoreboardDto.getSeasonScoreboardRows()) {
+      seasonScoreboardRowDto.calculateFinishedRow(
+          seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
     }
 
     seasonScoreboardDto.sortByCountedPoints();
@@ -117,7 +120,8 @@ public class SeasonService {
   }
 
   public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
-    // first - get all the players that have already played in the season (need to extract entire season scoreboard)
+    // first - get all the players that have already played in the season (need to extract entire
+    // season scoreboard)
     final SeasonScoreboardDto currentSeasonScoreboardDto = overalScoreboard(seasonUuid);
 
     final SeasonScoreboardDto seasonScoreboardDto;
@@ -131,19 +135,18 @@ public class SeasonService {
       seasonScoreboardDto.sortByTotalPoints();
     }
 
-    final List<PlayerDto> seasonPlayersSorted = seasonScoreboardDto
-            .getSeasonScoreboardRows()
-            .stream()
+    final List<PlayerDto> seasonPlayersSorted =
+        seasonScoreboardDto.getSeasonScoreboardRows().stream()
             .map(SeasonScoreboardRowDto::getPlayer)
             .collect(Collectors.toList());
 
     // second - get all the players from entire League
     final UUID leagueUuid = seasonScoreboardDto.getSeason().getLeagueUuid();
-    final List<Player> leaguePlayers = playerRepository.fetchGeneralInfoSorted(leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
-    final List<PlayerDto> leaguePlayersDtos = leaguePlayers
-            .stream()
-            .map(PlayerDto::new)
-            .collect(Collectors.toList());
+    final List<Player> leaguePlayers =
+        playerRepository.fetchGeneralInfoSorted(
+            leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
+    final List<PlayerDto> leaguePlayersDtos =
+        leaguePlayers.stream().map(PlayerDto::new).collect(Collectors.toList());
 
     for (final PlayerDto player : leaguePlayersDtos) {
       if (!seasonPlayersSorted.contains(player)) {
@@ -160,52 +163,64 @@ public class SeasonService {
   }
 
   private SeasonScoreboardDto buildSeasonScoreboardDto(final UUID seasonUuid) {
-    final List<SetResult> setResultListForSeason = setResultRepository.fetchBySeasonUuid(seasonUuid);
+    final List<SetResult> setResultListForSeason =
+        setResultRepository.fetchBySeasonUuid(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
 
     Season season = EntityGraphBuildUtil.reconstructSeason(setResultListForSeason, seasonId);
     if (season == null) {
-      season = seasonRepository
+      season =
+          seasonRepository
               .findSeasonByUuid(seasonUuid)
               .orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
     }
 
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit =
+        xpPointsService.buildAllAsIntegerMultimap();
 
-    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointService.extractBonusPointsAggregatedForSeason(seasonUuid);
+    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
+        bonusPointService.extractBonusPointsAggregatedForSeason(seasonUuid);
 
-    final SeasonScoreboardDto seasonScoreboardDto = getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+    final SeasonScoreboardDto seasonScoreboardDto =
+        getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
     return seasonScoreboardDto;
   }
 
-  public SeasonScoreboardDto getSeasonScoreboardDto(final Season season,
-                                                    final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-                                                    final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+  public SeasonScoreboardDto getSeasonScoreboardDto(
+      final Season season,
+      final ArrayListMultimap<String, Integer> xpPointsPerSplit,
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
     final int currentSeasonNumber = season.getNumber();
     final League currentLeague = season.getLeague();
 
-    final UUID previousSeasonUuid = seasonRepository
+    final UUID previousSeasonUuid =
+        seasonRepository
             .findByLeagueAndNumber(currentLeague, currentSeasonNumber - 1)
             .map(Season::getUuid)
             .orElse(null);
 
-    final UUID nextSeasonUuid = seasonRepository
+    final UUID nextSeasonUuid =
+        seasonRepository
             .findByLeagueAndNumber(currentLeague, currentSeasonNumber + 1)
             .map(Season::getUuid)
             .orElse(null);
 
-    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
+    final SeasonScoreboardDto seasonScoreboardDto =
+        new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
 
-    return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+    return buildSeasonScoreboardDto(
+        seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
   public SeasonScoreboardDto buildCurrentSeasonScoreboardOfLeague(final UUID leagueUuid) {
-    final List<Season> currentSeason = seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
+    final List<Season> currentSeason =
+        seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
     if (currentSeason.isEmpty()) {
       throw new GeneralBadRequestException("No seasons");
     }
-    final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(currentSeason.get(0).getUuid());
+    final SeasonScoreboardDto seasonScoreboardDto =
+        buildSeasonScoreboardDto(currentSeason.get(0).getUuid());
     return seasonScoreboardDto;
   }
 
@@ -217,22 +232,18 @@ public class SeasonService {
   }
 
   public List<PlayerDto> extractSeasonPlayers(final UUID seasonUuid) {
-    final Set<PlayerDto> playersFirst = seasonRepository
-            .extractSeasonPlayersFirst(seasonUuid)
-            .stream()
+    final Set<PlayerDto> playersFirst =
+        seasonRepository.extractSeasonPlayersFirst(seasonUuid).stream()
             .map(PlayerDto::new)
             .collect(Collectors.toSet());
 
-    final Set<PlayerDto> playersSecond = seasonRepository
-            .extractSeasonPlayersSecond(seasonUuid)
-            .stream()
+    final Set<PlayerDto> playersSecond =
+        seasonRepository.extractSeasonPlayersSecond(seasonUuid).stream()
             .map(PlayerDto::new)
             .collect(Collectors.toSet());
 
-    final List<PlayerDto> merged = Stream
-            .concat(
-                    playersFirst.stream(),
-                    playersSecond.stream())
+    final List<PlayerDto> merged =
+        Stream.concat(playersFirst.stream(), playersSecond.stream())
             .distinct()
             .sorted(Comparator.comparing(PlayerDto::getUsername))
             .collect(Collectors.toList());
@@ -241,8 +252,11 @@ public class SeasonService {
   }
 
   @Transactional
-  public Season createNewSeason(final int seasonNumber, final LocalDate startDate,
-                                final UUID leagueUuid, final String xpPointsType) {
+  public Season createNewSeason(
+      final int seasonNumber,
+      final LocalDate startDate,
+      final UUID leagueUuid,
+      final String xpPointsType) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Season season = new Season(seasonNumber, startDate, xpPointsType);
     league.addSeason(season);
@@ -259,5 +273,4 @@ public class SeasonService {
 
     seasonRepository.delete(seasonToDelete);
   }
-
 }

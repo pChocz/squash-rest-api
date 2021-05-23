@@ -24,5 +24,4 @@ public class JsonSeason {
   private ArrayList<JsonBonusPoint> bonusPoints;
 
   private ArrayList<JsonRound> rounds;
-
 }

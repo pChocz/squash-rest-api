@@ -9,9 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Aspect
 @Component
@@ -26,10 +24,10 @@ public class LogQueryAspect {
   @AfterReturning(pointcut = "loggableQueryMethodsPointcut()", returning = "result")
   public void logQueries(final JoinPoint joinPoint, final Object result) {
     if (result instanceof LoggableQuery) {
-      log.info("QUERY\t{}\t{}",
-              GeneralUtil.extractSessionUsername(),
-              ((LoggableQuery) result).message());
+      log.info(
+          "QUERY\t{}\t{}",
+          GeneralUtil.extractSessionUsername(),
+          ((LoggableQuery) result).message());
     }
   }
-
 }

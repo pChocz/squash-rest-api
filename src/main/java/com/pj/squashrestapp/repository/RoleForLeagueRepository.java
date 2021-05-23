@@ -7,18 +7,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- */
+/** */
 public interface RoleForLeagueRepository extends JpaRepository<RoleForLeague, Long> {
 
-
-  @EntityGraph(attributePaths = {
-          "players"
-  })
+  @EntityGraph(attributePaths = {"players"})
   RoleForLeague findByLeagueAndLeagueRole(League league, LeagueRole leagueRole);
 
-
   List<RoleForLeague> findByLeague(League league);
-
 }

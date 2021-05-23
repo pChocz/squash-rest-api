@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 /**
  * Set of scheduled tasks to be performed on regular basis.
  *
- * NOTE: Spring cron does not follow the same format as UNIX cron expressions.
- * Proper explanation can be found below:
+ * <p>NOTE: Spring cron does not follow the same format as UNIX cron expressions. Proper explanation
+ * can be found below:
  *
+ * <pre>
  * 1 2 3 4 5 6
  * * * * * * *
  * - - - - - -
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
  * | | ------------- Hour           (0 - 23)
  * | --------------- Minute         (0 - 59)
  * ----------------- Seconds        (0 - 59)
+ * </pre>
  */
 @Slf4j
 @Component
@@ -35,12 +37,11 @@ public class ScheduledTasks {
   private final TokenRemovalService tokenRemovalService;
 
   /**
-   * Permanently removes all expired temporary tokens from database.
-   * It is performed at midnight every day.
+   * Permanently removes all expired temporary tokens from database. It is performed at midnight
+   * every day.
    */
   @Scheduled(cron = CRON_EVERYDAY_AT_MIDNIGHT, zone = "UTC")
   public void cronScheduledEveryday() {
     tokenRemovalService.removeExpiredTokensFromDb();
   }
-
 }

@@ -11,5 +11,4 @@ public class JsonLeagueRule {
   private UUID uuid;
   private String rule;
   private Double orderValue;
-
 }

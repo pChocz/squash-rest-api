@@ -12,16 +12,17 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
-/**
- *
- */
+/** */
 public class AccessDeniedExceptionHandler {
 
-  public AccessDeniedExceptionHandler(final HttpServletRequest request,
-                                      final HttpServletResponse response,
-                                      final AccessDeniedException e) throws IOException {
+  public AccessDeniedExceptionHandler(
+      final HttpServletRequest request,
+      final HttpServletResponse response,
+      final AccessDeniedException e)
+      throws IOException {
 
-    final UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
+    final UsernamePasswordAuthenticationToken token =
+        (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
     final String username = token.getName();
     final String[] authorities = extractAuthoritiesFromToken(token);
 
@@ -29,7 +30,8 @@ public class AccessDeniedExceptionHandler {
     response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
     try (final PrintWriter writer = response.getWriter()) {
-      writer.write(new JSONObject()
+      writer.write(
+          new JSONObject()
               .appendField("status", HttpServletResponse.SC_FORBIDDEN)
               .appendField("user", username)
               .appendField("authorities", authorities)
@@ -37,15 +39,11 @@ public class AccessDeniedExceptionHandler {
               .appendField("message", "FORBIDDEN")
               .toString());
     }
-
   }
 
   private String[] extractAuthoritiesFromToken(final UsernamePasswordAuthenticationToken token) {
-    return token
-            .getAuthorities()
-            .stream()
-            .map(GrantedAuthority::getAuthority)
-            .toArray(String[]::new);
+    return token.getAuthorities().stream()
+        .map(GrantedAuthority::getAuthority)
+        .toArray(String[]::new);
   }
-
 }

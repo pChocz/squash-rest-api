@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/players")
@@ -31,7 +29,6 @@ import org.springframework.web.server.ResponseStatusException;
 public class PlayerController {
 
   private final PlayerService playerService;
-
 
   @GetMapping(value = "/all")
   @ResponseBody
@@ -48,51 +45,55 @@ public class PlayerController {
     return aboutMeInfo;
   }
 
-
   @PutMapping(value = "/role-unassign/{playerUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  PlayerDetailedDto unassignLeagueRole(@PathVariable final UUID playerUuid,
-                                       @RequestParam final UUID leagueUuid,
-                                       @RequestParam final LeagueRole leagueRole) {
+  PlayerDetailedDto unassignLeagueRole(
+      @PathVariable final UUID playerUuid,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final LeagueRole leagueRole) {
 
-    final PlayerDetailedDto playerDetailedDto = playerService.unassignLeagueRole(playerUuid, leagueUuid, leagueRole);
+    final PlayerDetailedDto playerDetailedDto =
+        playerService.unassignLeagueRole(playerUuid, leagueUuid, leagueRole);
     return playerDetailedDto;
   }
-
 
   @PutMapping(value = "/role-assign/{playerUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  PlayerDetailedDto assignLeagueRole(@PathVariable final UUID playerUuid,
-                                     @RequestParam final UUID leagueUuid,
-                                     @RequestParam final LeagueRole leagueRole) {
+  PlayerDetailedDto assignLeagueRole(
+      @PathVariable final UUID playerUuid,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final LeagueRole leagueRole) {
 
-    final PlayerDetailedDto playerDetailedDto = playerService.assignLeagueRole(playerUuid, leagueUuid, leagueRole);
+    final PlayerDetailedDto playerDetailedDto =
+        playerService.assignLeagueRole(playerUuid, leagueUuid, leagueRole);
     return playerDetailedDto;
   }
-
 
   @PostMapping(value = "/newEnabled")
   @ResponseBody
   @PreAuthorize("isAdmin()")
-  PlayerDetailedDto createNewPlayerEnabled(@RequestParam final String username,
-                                           @RequestParam final String email,
-                                           @RequestParam final String password) {
+  PlayerDetailedDto createNewPlayerEnabled(
+      @RequestParam final String username,
+      @RequestParam final String email,
+      @RequestParam final String password) {
 
     final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
     final String lowerCaseEmailAdress = email.toLowerCase();
 
-    final boolean isValid = playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+    final boolean isValid =
+        playerService.isValidSignupData(
+            correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
     if (isValid) {
-      final Player newPlayer = playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+      final Player newPlayer =
+          playerService.registerNewUser(
+              correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
       playerService.enableUser(newPlayer);
       return new PlayerDetailedDto(newPlayer);
 
     } else {
       throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data!");
-
     }
   }
-
 }

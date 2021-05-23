@@ -10,36 +10,35 @@ import java.util.Collections;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeSeason {
 
-  public Season create(final int seasonNumber,
-                       final LocalDate seasonStartDate,
-                       final int numberOfRounds,
-                       final List<Player> allPlayers,
-                       final int minNumberOfAttendingPlayers,
-                       final int maxNumberOfAttendingPlayers,
-                       final String xpPointsType) {
+  public Season create(
+      final int seasonNumber,
+      final LocalDate seasonStartDate,
+      final int numberOfRounds,
+      final List<Player> allPlayers,
+      final int minNumberOfAttendingPlayers,
+      final int maxNumberOfAttendingPlayers,
+      final String xpPointsType) {
 
     final Season season = new Season(seasonNumber, seasonStartDate, xpPointsType);
 
     LocalDate roundDate = seasonStartDate;
     for (int roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
       Collections.shuffle(allPlayers);
-      final int numberOfRoundPlayers = FakeUtil.randomBetweenTwoIntegers(minNumberOfAttendingPlayers, maxNumberOfAttendingPlayers);
+      final int numberOfRoundPlayers =
+          FakeUtil.randomBetweenTwoIntegers(
+              minNumberOfAttendingPlayers, maxNumberOfAttendingPlayers);
       final List<Player> roundPlayers = allPlayers.subList(0, numberOfRoundPlayers);
-      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = FakePlayersSelector.select(roundPlayers);
+      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped =
+          FakePlayersSelector.select(roundPlayers);
       final Round round = FakeRound.create(roundNumber, roundDate, attendingPlayersGrouped);
       season.addRound(round);
 
-      final List<BonusPoint> bonusPoints = FakeBonusPoints.create(
-              roundPlayers,
-              round.getDate(),
-              0, 3,
-              1, 3);
+      final List<BonusPoint> bonusPoints =
+          FakeBonusPoints.create(roundPlayers, round.getDate(), 0, 3, 1, 3);
 
       for (final BonusPoint bonusPoint : bonusPoints) {
         season.addBonusPoint(bonusPoint);
@@ -50,5 +49,4 @@ public class FakeSeason {
 
     return season;
   }
-
 }

@@ -14,9 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/scoreboards")
@@ -25,7 +23,6 @@ public class ScoreboardController {
 
   private final ScoreboardService scoreboardService;
   private final SeasonService seasonService;
-
 
   @GetMapping(value = "/seasons/{seasonUuid}")
   @ResponseBody
@@ -38,26 +35,26 @@ public class ScoreboardController {
   @GetMapping(value = "/current-season-for-league/{leagueUuid}")
   @ResponseBody
   SeasonScoreboardDto scoreboardForCurrentSeasonOfLeague(@PathVariable final UUID leagueUuid) {
-    final SeasonScoreboardDto seasonScoreboardDto = seasonService.buildCurrentSeasonScoreboardOfLeague(leagueUuid);
+    final SeasonScoreboardDto seasonScoreboardDto =
+        seasonService.buildCurrentSeasonScoreboardOfLeague(leagueUuid);
     return seasonScoreboardDto;
   }
-
 
   @GetMapping(value = "/most-recent-round-for-player/{playerUuid}")
   @ResponseBody
   RoundScoreboard scoreboardForMostRecentRoundOfPlayer(@PathVariable final UUID playerUuid) {
-    final RoundScoreboard roundScoreboard = scoreboardService.buildMostRecentRoundOfPlayer(playerUuid);
+    final RoundScoreboard roundScoreboard =
+        scoreboardService.buildMostRecentRoundOfPlayer(playerUuid);
     return roundScoreboard;
   }
-
 
   @GetMapping(value = "/most-recent-round-for-league/{leagueUuid}")
   @ResponseBody
   RoundScoreboard scoreboardForMostRecentRoundOfLeague(@PathVariable final UUID leagueUuid) {
-    final RoundScoreboard roundScoreboard = scoreboardService.buildMostRecentRoundOfLeague(leagueUuid);
+    final RoundScoreboard roundScoreboard =
+        scoreboardService.buildMostRecentRoundOfLeague(leagueUuid);
     return roundScoreboard;
   }
-
 
   @GetMapping(value = "/rounds/{roundUuid}")
   @ResponseBody
@@ -66,5 +63,4 @@ public class ScoreboardController {
     final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
     return roundScoreboard;
   }
-
 }

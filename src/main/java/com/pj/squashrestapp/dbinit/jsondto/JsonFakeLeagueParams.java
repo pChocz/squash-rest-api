@@ -22,5 +22,4 @@ public class JsonFakeLeagueParams {
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
-
 }

@@ -6,9 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
-/**
- *
- */
+/** */
 @Getter
 @Setter
 public class OnRegistrationCompleteEvent extends ApplicationEvent {
@@ -17,11 +15,11 @@ public class OnRegistrationCompleteEvent extends ApplicationEvent {
   private Locale locale;
   private Player player;
 
-  public OnRegistrationCompleteEvent(final Player player, final Locale locale, final String frontendUrl) {
+  public OnRegistrationCompleteEvent(
+      final Player player, final Locale locale, final String frontendUrl) {
     super(player);
     this.player = player;
     this.locale = locale;
     this.frontendUrl = frontendUrl;
   }
-
 }

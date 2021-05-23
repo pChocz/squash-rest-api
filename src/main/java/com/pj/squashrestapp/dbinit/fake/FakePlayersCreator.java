@@ -7,9 +7,7 @@ import java.util.List;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakePlayersCreator {
 
@@ -35,5 +33,4 @@ public class FakePlayersCreator {
     final String firstNameLowercase = name.substring(0, name.indexOf(" ")).toLowerCase();
     return passwordEncoder.encode(firstNameLowercase);
   }
-
 }

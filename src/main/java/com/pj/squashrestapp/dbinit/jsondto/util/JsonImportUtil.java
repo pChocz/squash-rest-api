@@ -65,16 +65,14 @@ public class JsonImportUtil {
   }
 
   private Player getCorrespondingPlayer(final List<Player> players, final UUID playerUuid) {
-    return players
-            .stream()
-            .filter(player -> player
-                    .getUuid()
-                    .equals(playerUuid))
-            .findFirst()
-            .orElse(null);
+    return players.stream()
+        .filter(player -> player.getUuid().equals(playerUuid))
+        .findFirst()
+        .orElse(null);
   }
 
-  public AdditionalMatch constructAdditionalMatch(final JsonAdditionalMatch jsonMatch, final List<Player> players) {
+  public AdditionalMatch constructAdditionalMatch(
+      final JsonAdditionalMatch jsonMatch, final List<Player> players) {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
     final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer);
@@ -92,7 +90,8 @@ public class JsonImportUtil {
     return setResult;
   }
 
-  public AdditonalSetResult constructAdditionalSetResult(final int setNumber, final JsonSetResult jsonSetResult) {
+  public AdditonalSetResult constructAdditionalSetResult(
+      final int setNumber, final JsonSetResult jsonSetResult) {
     final AdditonalSetResult setResult = new AdditonalSetResult();
     setResult.setNumber(setNumber);
     setResult.setFirstPlayerScore(jsonSetResult.getFirstPlayerResult());
@@ -132,11 +131,11 @@ public class JsonImportUtil {
     round.setSplit(GeneralUtil.integerListToString(splitList));
   }
 
-  public TrophyForLeague constructLeagueTrophy(final JsonLeagueTrophy jsonLeagueTrophy,
-                                               final List<Player> players) {
+  public TrophyForLeague constructLeagueTrophy(
+      final JsonLeagueTrophy jsonLeagueTrophy, final List<Player> players) {
 
-    final Player player = players
-            .stream()
+    final Player player =
+        players.stream()
             .filter(p -> p.getUuid().equals(jsonLeagueTrophy.getPlayerUuid()))
             .findFirst()
             .orElseThrow();
@@ -149,7 +148,8 @@ public class JsonImportUtil {
     return trophyForLeague;
   }
 
-  public BonusPoint constructBonusPoints(final JsonBonusPoint jsonBonusPoint, final List<Player> players) {
+  public BonusPoint constructBonusPoints(
+      final JsonBonusPoint jsonBonusPoint, final List<Player> players) {
     final BonusPoint bonusPoint = new BonusPoint();
     bonusPoint.setUuid(jsonBonusPoint.getUuid());
     bonusPoint.setDate(jsonBonusPoint.getDate());
@@ -175,5 +175,4 @@ public class JsonImportUtil {
     leagueLogo.setPicture(logoBytes);
     return leagueLogo;
   }
-
 }

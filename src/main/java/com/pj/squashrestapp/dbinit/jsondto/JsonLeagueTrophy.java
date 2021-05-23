@@ -14,5 +14,4 @@ public class JsonLeagueTrophy {
   private UUID playerUuid;
 
   private Trophy trophy;
-
 }

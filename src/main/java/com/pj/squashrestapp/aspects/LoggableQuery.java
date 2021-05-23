@@ -1,14 +1,8 @@
 package com.pj.squashrestapp.aspects;
 
-/**
- *
- */
+/** */
 public interface LoggableQuery {
 
-  /**
-   *
-   * @return
-   */
+  /** @return */
   String message();
-
 }

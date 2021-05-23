@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeUtil {
 
@@ -29,5 +27,4 @@ public class FakeUtil {
     Collections.shuffle(copy);
     return copy.subList(0, 3);
   }
-
 }

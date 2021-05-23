@@ -29,9 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/access")
@@ -43,40 +41,35 @@ public class UserAccessController {
   private final TokenRemovalService tokenRemovalService;
   private final TokenCreateService tokenCreateService;
 
-
   @GetMapping(value = "/reset-password-player/{passwordResetToken}")
   @ResponseBody
   PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {
-    final PlayerDetailedDto player = tokenRemovalService.extractPlayerByPasswordResetToken(passwordResetToken);
+    final PlayerDetailedDto player =
+        tokenRemovalService.extractPlayerByPasswordResetToken(passwordResetToken);
     return player;
   }
 
-
   @SecretMethod
   @PutMapping(value = "/change-my-password")
-  void changeMyPassword(@RequestParam final String oldPassword,
-                        @RequestParam final String newPassword) {
+  void changeMyPassword(
+      @RequestParam final String oldPassword, @RequestParam final String newPassword) {
     playerService.changeCurrentSessionPlayerPassword(oldPassword, newPassword);
   }
-
 
   @PutMapping(value = "/change-my-email")
   void changeMyEmail(@RequestParam final String newEmail) {
     playerService.changeCurrentSessionPlayerEmail(newEmail);
   }
 
-
   @PutMapping(value = "/join-league")
   void joinNewLeague(@RequestParam final String leagueName) {
     playerService.joinNewLeague(leagueName);
   }
 
-
   @PutMapping(value = "/leave-league")
   void leaveLeague(@RequestParam final String leagueName) {
     playerService.leaveLeague(leagueName);
   }
-
 
   @PostMapping(value = "/logout")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -84,39 +77,45 @@ public class UserAccessController {
     log.info("User [{}] has logged out", GeneralUtil.extractSessionUsername());
   }
 
-
   @SecretMethod
   @PostMapping(value = "/sign-up")
   @ResponseBody
-  PlayerDetailedDto signUpPlayer(@RequestParam final String username,
-                                 @RequestParam final String email,
-                                 @RequestParam final String password,
-                                 @RequestParam final String frontendUrl,
-                                 final HttpServletRequest request) {
+  PlayerDetailedDto signUpPlayer(
+      @RequestParam final String username,
+      @RequestParam final String email,
+      @RequestParam final String password,
+      @RequestParam final String frontendUrl,
+      final HttpServletRequest request) {
 
     final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
     final String lowerCaseEmailAdress = email.toLowerCase();
 
-    final boolean isValid = playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+    final boolean isValid =
+        playerService.isValidSignupData(
+            correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
     if (isValid) {
-      final Player newPlayer = playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
-      eventPublisher.publishEvent(new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), frontendUrl));
+      final Player newPlayer =
+          playerService.registerNewUser(
+              correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+      eventPublisher.publishEvent(
+          new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), frontendUrl));
       return new PlayerDetailedDto(newPlayer);
     }
     return null;
   }
 
-
   @PostMapping(value = "/request-password-reset")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void requestResetPassword(@RequestParam final String usernameOrEmail,
-                            @RequestParam final String frontendUrl,
-                            final HttpServletRequest request) {
+  void requestResetPassword(
+      @RequestParam final String usernameOrEmail,
+      @RequestParam final String frontendUrl,
+      final HttpServletRequest request) {
 
     final Player player = playerService.getPlayer(usernameOrEmail);
 
     if (player != null) {
-      eventPublisher.publishEvent(new OnPasswordResetEvent(player, request.getLocale(), frontendUrl));
+      eventPublisher.publishEvent(
+          new OnPasswordResetEvent(player, request.getLocale(), frontendUrl));
 
     } else {
 
@@ -135,17 +134,12 @@ public class UserAccessController {
     }
   }
 
-
-  /**
-   * Invalidates all tokens (JWT and Refresh tokens) for
-   * all players without ADMIN authority.
-   */
+  /** Invalidates all tokens (JWT and Refresh tokens) for all players without ADMIN authority. */
   @PostMapping(value = "/invalidate-all-tokens")
   @PreAuthorize("isAdmin()")
   void invalidateAllTokens() {
     playerService.invalidateAllTokens();
   }
-
 
   /**
    * Invalidates all tokens (JWT and Refresh tokens) for a single player
@@ -158,28 +152,25 @@ public class UserAccessController {
     playerService.invalidateTokensForPlayer(playerUuid);
   }
 
-
   @GetMapping(value = "/refresh-token/{oldRefreshTokenUuid}")
   @ResponseBody
   TokenPair refreshToken(@PathVariable final UUID oldRefreshTokenUuid) {
-    final TokenPair tokenPair = tokenCreateService.attemptToCreateNewTokensPair(oldRefreshTokenUuid);
+    final TokenPair tokenPair =
+        tokenCreateService.attemptToCreateNewTokensPair(oldRefreshTokenUuid);
     return tokenPair;
   }
-
 
   @SecretMethod
   @PostMapping(value = "/confirm-password-reset")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmResetPassword(@RequestParam final UUID token,
-                            @RequestParam final String newPassword) {
+  void confirmResetPassword(
+      @RequestParam final UUID token, @RequestParam final String newPassword) {
     playerService.changeCurrentSessionPlayerPassword(token, newPassword);
   }
-
 
   @PostMapping("/confirm-registration")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   void confirmRegistration(@RequestParam final UUID token) {
     playerService.activateUserWithToken(token);
   }
-
 }

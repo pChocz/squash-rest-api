@@ -1,11 +1,8 @@
 package com.pj.squashrestapp.config.exceptions;
 
-
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 public class WrongSignupDataException extends RuntimeException {
 
@@ -13,5 +10,4 @@ public class WrongSignupDataException extends RuntimeException {
     super(message);
     log.error(message);
   }
-
 }

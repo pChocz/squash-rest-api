@@ -26,5 +26,4 @@ public class JsonLeague {
   private ArrayList<JsonLeagueRule> rules;
 
   private ArrayList<JsonAdditionalMatch> additionalMatches;
-
 }

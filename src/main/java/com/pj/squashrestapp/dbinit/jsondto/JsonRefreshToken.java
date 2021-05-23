@@ -17,7 +17,7 @@ public class JsonRefreshToken {
 
   @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
   private LocalDateTime expirationDateTime;
+
   private UUID playerUuid;
   private UUID token;
-
 }

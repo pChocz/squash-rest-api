@@ -7,18 +7,17 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeBonusPoints {
 
-  List<BonusPoint> create(final List<Player> players,
-                          final LocalDate date,
-                          final int minOccurs,
-                          final int maxOccurs,
-                          final int minPoints,
-                          final int maxPoints) {
+  List<BonusPoint> create(
+      final List<Player> players,
+      final LocalDate date,
+      final int minOccurs,
+      final int maxOccurs,
+      final int minPoints,
+      final int maxPoints) {
 
     final List<BonusPoint> bonusPoints = new ArrayList<>();
     final int occurs = FakeUtil.randomBetweenTwoIntegers(minOccurs, maxOccurs);
@@ -26,10 +25,10 @@ public class FakeBonusPoints {
     for (int i = 0; i < occurs; i++) {
       final int points = FakeUtil.randomBetweenTwoIntegers(minPoints, maxPoints);
       final List<Player> twoRandomPlayers = FakeUtil.pickTwoRandomPlayers(players);
-      bonusPoints.add(new BonusPoint(twoRandomPlayers.get(0), twoRandomPlayers.get(1), points, date));
+      bonusPoints.add(
+          new BonusPoint(twoRandomPlayers.get(0), twoRandomPlayers.get(1), points, date));
     }
 
     return bonusPoints;
   }
-
 }

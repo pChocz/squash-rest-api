@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/league-rules")
@@ -29,15 +27,12 @@ public class LeagueRulesController {
 
   private final LeagueRulesService leagueRulesService;
 
-
   @PutMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void addNewLeagueRule(@PathVariable final UUID leagueUuid,
-                        @RequestParam final String rule) {
+  void addNewLeagueRule(@PathVariable final UUID leagueUuid, @RequestParam final String rule) {
     leagueRulesService.addNewLeagueRule(leagueUuid, rule);
   }
-
 
   @DeleteMapping(value = "/{ruleUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -46,12 +41,10 @@ public class LeagueRulesController {
     leagueRulesService.deleteRule(ruleUuid);
   }
 
-
   @GetMapping(value = "/{leagueUuid}")
   @ResponseBody
   List<LeagueRule> extractRulesForLeague(@PathVariable final UUID leagueUuid) {
     final List<LeagueRule> leagueRules = leagueRulesService.extractRulesForLeague(leagueUuid);
     return leagueRules;
   }
-
 }

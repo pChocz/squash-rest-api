@@ -21,5 +21,4 @@ public class JsonPlayerCredentials {
   private UUID passwordSessionUuid;
   private List<JsonLeagueRoles> leagueRoles;
   private List<JsonAuthorities> authorities;
-
 }

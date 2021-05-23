@@ -11,9 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -21,7 +19,6 @@ public class LeagueRulesService {
 
   private final LeagueRulesRepository leagueRulesRepository;
   private final LeagueRepository leagueRepository;
-
 
   @Transactional
   public void addNewLeagueRule(final UUID leagueUuid, final String rule) {
@@ -40,8 +37,8 @@ public class LeagueRulesService {
 
   public List<LeagueRule> extractRulesForLeague(final UUID leagueUuid) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final List<LeagueRule> rules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(league);
+    final List<LeagueRule> rules =
+        leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(league);
     return rules;
   }
-
 }

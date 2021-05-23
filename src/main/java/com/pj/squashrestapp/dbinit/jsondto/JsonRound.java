@@ -14,8 +14,9 @@ public class JsonRound {
 
   private UUID uuid;
   private int number;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate date;
-  private ArrayList<JsonRoundGroup> groups;
 
+  private ArrayList<JsonRoundGroup> groups;
 }

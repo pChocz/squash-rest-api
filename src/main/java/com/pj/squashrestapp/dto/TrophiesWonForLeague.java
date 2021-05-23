@@ -19,6 +19,7 @@ public class TrophiesWonForLeague {
       final PlayerDto player,
       final LeagueDtoSimple league,
       final List<TrophyForLeague> trophiesForLeague) {
+
     this.player = player;
     this.league = league;
     this.trophiesPerSeason = new ArrayList<>();

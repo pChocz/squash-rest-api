@@ -55,9 +55,9 @@ import org.springframework.stereotype.Service;
 /**
  * ex. of deserializing list with GSON:
  *
- final Type listOfMyClassObject = new TypeToken<ArrayList<JsonLeague>>() {}.getType();
- final List<JsonLeague> jsonLeagues = GsonUtil.gsonWithDateAndDateTime().fromJson(initLeagueJsonContent, listOfMyClassObject);
- *
+ * <p>final Type listOfMyClassObject = new TypeToken<ArrayList<JsonLeague>>() {}.getType(); final
+ * List<JsonLeague> jsonLeagues = GsonUtil.gsonWithDateAndDateTime().fromJson(initLeagueJsonContent,
+ * listOfMyClassObject);
  */
 @Slf4j
 @Service
@@ -72,7 +72,6 @@ public class AdminInitializerService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
 
-
   public boolean initialize(final String initAllJsonContent) {
     final Player adminPlayer = playerRepository.findByUsername("Admin");
 
@@ -85,7 +84,8 @@ public class AdminInitializerService {
 
       persistStandardAuthorities();
 
-      final JsonAll jsonAll = GsonUtil.gsonWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
+      final JsonAll jsonAll =
+          GsonUtil.gsonWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
       persistXpPointsFromJson(jsonAll.getXpPoints());
       persistLeaguesInitializeOnly(jsonAll.getLeagues());
       persistCredentials(jsonAll.getCredentials());
@@ -190,7 +190,8 @@ public class AdminInitializerService {
     roleForLeagueRepository.save(moderatorRole);
   }
 
-  private void persistLeagueRoles(final JsonPlayerCredentials simpleCredentials, final Player player) {
+  private void persistLeagueRoles(
+      final JsonPlayerCredentials simpleCredentials, final Player player) {
     final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
     for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
       final String leagueName = jsonLeagueRole.getLeague();
@@ -199,7 +200,8 @@ public class AdminInitializerService {
       final League league = leagueRepository.findByName(leagueName);
       final LeagueRole role = LeagueRole.valueOf(roleAsString);
 
-      final RoleForLeague leagueRole = roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
+      final RoleForLeague leagueRole =
+          roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
       player.addRole(leagueRole);
       roleForLeagueRepository.save(leagueRole);
     }
@@ -221,7 +223,8 @@ public class AdminInitializerService {
     final League league = leagueRepository.findByName(jsonLeague.getName());
 
     for (final JsonLeagueTrophy jsonLeagueTrophy : jsonLeague.getTrophies()) {
-      final TrophyForLeague trophyForLeague = JsonImportUtil.constructLeagueTrophy(jsonLeagueTrophy, players);
+      final TrophyForLeague trophyForLeague =
+          JsonImportUtil.constructLeagueTrophy(jsonLeagueTrophy, players);
       league.addTrophyForLeague(trophyForLeague);
     }
 
@@ -234,12 +237,14 @@ public class AdminInitializerService {
     }
 
     for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
-      final AdditionalMatch additionalMatch = JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players);
+      final AdditionalMatch additionalMatch =
+          JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players);
 
       for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
         final int setNumber = i + 1;
         final JsonSetResult jsonSetResult = jsonAdditionalMatch.getSets().get(i);
-        final AdditonalSetResult setResult = JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
+        final AdditonalSetResult setResult =
+            JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
         additionalMatch.addSetResult(setResult);
       }
 
@@ -281,7 +286,8 @@ public class AdminInitializerService {
             for (int i = 0; i < jsonMatch.getSets().size(); i++) {
               final int setNumber = i + 1;
               final JsonSetResult jsonSetResult = jsonMatch.getSets().get(i);
-              final SetResult setResult = JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
+              final SetResult setResult =
+                  JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
               match.addSetResult(setResult);
             }
 
@@ -301,5 +307,4 @@ public class AdminInitializerService {
     }
     return league;
   }
-
 }

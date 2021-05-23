@@ -16,5 +16,4 @@ public class JsonSetResult {
   @JsonProperty("p2")
   @SerializedName("p2")
   private Integer secondPlayerResult;
-
 }

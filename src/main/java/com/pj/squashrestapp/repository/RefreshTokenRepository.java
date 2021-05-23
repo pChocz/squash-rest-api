@@ -8,27 +8,18 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-/**
- *
- */
+/** */
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 
   @Override
-  @EntityGraph(attributePaths = {
-          "player"
-  })
+  @EntityGraph(attributePaths = {"player"})
   List<RefreshToken> findAll();
-
 
   List<RefreshToken> findAllByPlayer(Player player);
 
-
   List<RefreshToken> findAllByPlayerIn(List<Player> players);
-
 
   RefreshToken findByToken(UUID token);
 
-
   List<RefreshToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
-
 }

@@ -11,29 +11,28 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeRound {
 
-  Round create(final int roundNumber,
-               final LocalDate roundDate,
-               final ArrayListMultimap<Integer, Player> roundGroupNumberToPlayersMultimap) {
+  Round create(
+      final int roundNumber,
+      final LocalDate roundDate,
+      final ArrayListMultimap<Integer, Player> roundGroupNumberToPlayersMultimap) {
 
     final Round round = new Round(roundNumber, roundDate);
 
     final Set<Integer> roundGroupsNumbers = roundGroupNumberToPlayersMultimap.keySet();
 
     for (final int roundGroupNumber : roundGroupsNumbers) {
-      final List<Player> roundGroupPlayers = roundGroupNumberToPlayersMultimap.get(roundGroupNumber);
+      final List<Player> roundGroupPlayers =
+          roundGroupNumberToPlayersMultimap.get(roundGroupNumber);
       final RoundGroup roundGroup = FakeRoundGroup.create(roundGroupNumber, roundGroupPlayers);
       round.addRoundGroup(roundGroup);
     }
 
-    final List<Integer> countPerRound = roundGroupNumberToPlayersMultimap
-            .keySet()
-            .stream()
+    final List<Integer> countPerRound =
+        roundGroupNumberToPlayersMultimap.keySet().stream()
             .map(roundGroupNumberToPlayersMultimap::get)
             .map(List::size)
             .collect(Collectors.toList());
@@ -43,5 +42,4 @@ public class FakeRound {
 
     return round;
   }
-
 }

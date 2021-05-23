@@ -5,9 +5,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-/**
- *
- */
+/** */
 @Data
 @NoArgsConstructor
 public class JsonXpPointsForRound {
@@ -20,10 +18,8 @@ public class JsonXpPointsForRound {
     final int[][] array = new int[pointsCsv.size()][];
     int i = 0;
     for (final String string : pointsCsv) {
-      final int[] groupPoints = Arrays.stream(string.split(","))
-              .map(String::trim)
-              .mapToInt(Integer::valueOf)
-              .toArray();
+      final int[] groupPoints =
+          Arrays.stream(string.split(",")).map(String::trim).mapToInt(Integer::valueOf).toArray();
       array[i++] = groupPoints;
     }
     return array;
@@ -35,9 +31,8 @@ public class JsonXpPointsForRound {
 
   public int[] buildPlayerSplitArray() {
     return Arrays.stream(numberOfPlayersCsv.split(","))
-            .map(String::trim)
-            .mapToInt(Integer::valueOf)
-            .toArray();
+        .map(String::trim)
+        .mapToInt(Integer::valueOf)
+        .toArray();
   }
-
 }

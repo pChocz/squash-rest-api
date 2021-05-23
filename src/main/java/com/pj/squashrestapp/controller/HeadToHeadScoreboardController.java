@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/head-to-head")
@@ -23,14 +21,13 @@ public class HeadToHeadScoreboardController {
 
   private final HeadToHeadScoreboardService headToHeadScoreboardService;
 
-
   @GetMapping(value = "/{firstPlayerUuid}/{secondPlayerUuid}")
   @ResponseBody
   @QueryLog
-  HeadToHeadScoreboard headToHead(@PathVariable final UUID firstPlayerUuid,
-                                  @PathVariable final UUID secondPlayerUuid) {
-    final HeadToHeadScoreboard scoreboard = headToHeadScoreboardService.build(firstPlayerUuid, secondPlayerUuid);
+  HeadToHeadScoreboard headToHead(
+      @PathVariable final UUID firstPlayerUuid, @PathVariable final UUID secondPlayerUuid) {
+    final HeadToHeadScoreboard scoreboard =
+        headToHeadScoreboardService.build(firstPlayerUuid, secondPlayerUuid);
     return scoreboard;
   }
-
 }
