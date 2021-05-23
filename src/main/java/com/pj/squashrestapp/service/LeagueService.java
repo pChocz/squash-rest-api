@@ -30,8 +30,10 @@ import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
@@ -237,7 +239,10 @@ public class LeagueService {
 
   @Transactional
   public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository
+        .findByUuid(leagueUuid)
+        .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
+
     final LeagueDto leagueDto = new LeagueDto(league);
 
     final LeagueLogo leagueLogo = league.getLeagueLogo();
@@ -287,7 +292,9 @@ public class LeagueService {
   }
 
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League league = leagueRepository
+        .findByUuid(leagueUuid)
+        .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
 
 
     final List<Long> playersIdsFirstPlayerForLeagueByUuid = leagueRepository.findPlayersIdsFirstPlayerForLeagueByUuid(leagueUuid);

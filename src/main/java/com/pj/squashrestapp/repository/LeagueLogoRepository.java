@@ -31,7 +31,7 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN League l ON l.leagueLogo = ll
               WHERE l.uuid = :leagueUuid
               """)
-  byte[] extractLogoBlobByLeagueUuid(UUID leagueUuid);
+  Optional<byte[]> extractLogoBlobByLeagueUuid(UUID leagueUuid);
 
 
   @Query("""
@@ -40,7 +40,7 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN Season s ON s.league = l
               WHERE s.uuid = :seasonUuid
               """)
-  byte[] extractLogoBlobBySeasonUuid(UUID seasonUuid);
+  Optional<byte[]> extractLogoBlobBySeasonUuid(UUID seasonUuid);
 
 
   @Query("""
@@ -50,6 +50,6 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN Round r ON r.season = s
               WHERE r.uuid = :roundUuid
               """)
-  byte[] extractLogoBlobByRoundUuid(UUID roundUuid);
+  Optional<byte[]> extractLogoBlobByRoundUuid(UUID roundUuid);
 
 }

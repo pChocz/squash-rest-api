@@ -52,7 +52,7 @@ public class Round implements Identifiable, Comparable<Round> {
 
     @Override
     public void setChildren(final Season parent) {
-      parent.setRounds(new TreeSet<Round>());
+      parent.setRounds(new TreeSet<>());
     }
   };
 

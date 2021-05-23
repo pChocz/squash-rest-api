@@ -5,18 +5,16 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,19 +23,24 @@ public class LeagueLogoService {
   private final LeagueLogoRepository leagueLogoRepository;
   private final LeagueRepository leagueRepository;
 
-
   public byte[] extractLeagueLogoBySeasonUuid(final UUID seasonUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository.extractLogoBlobBySeasonUuid(seasonUuid);
+    final byte[] leagueLogoBytes = leagueLogoRepository
+        .extractLogoBlobBySeasonUuid(seasonUuid)
+        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 
   public byte[] extractLeagueLogoByRoundUuid(final UUID roundUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository.extractLogoBlobByRoundUuid(roundUuid);
+    final byte[] leagueLogoBytes = leagueLogoRepository
+        .extractLogoBlobByRoundUuid(roundUuid)
+        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 
   public byte[] extractLeagueLogo(final UUID leagueUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository.extractLogoBlobByLeagueUuid(leagueUuid);
+    final byte[] leagueLogoBytes = leagueLogoRepository
+        .extractLogoBlobByLeagueUuid(leagueUuid)
+        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 
@@ -67,12 +70,12 @@ public class LeagueLogoService {
 
     final Optional<LeagueLogo> leagueLogo = leagueLogoRepository.findByLeague(league.get());
     if (leagueLogo.isEmpty()) {
-      throw new GeneralBadRequestException("No logo exists for the league [" + league.get().getName());
+      throw new GeneralBadRequestException(
+          "No logo exists for the league [" + league.get().getName());
     }
 
     league.get().setLeagueLogo(null);
     leagueLogoRepository.delete(leagueLogo.get());
     leagueRepository.save(league.get());
   }
-
 }

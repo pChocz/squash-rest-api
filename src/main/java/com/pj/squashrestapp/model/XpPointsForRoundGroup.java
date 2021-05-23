@@ -21,6 +21,7 @@ import javax.persistence.Table;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
 
 @Entity
 @Table(name = "xp_points_for_round_group")
@@ -44,7 +45,7 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
 
     @Override
     public void setChildren(final XpPointsForRound parent) {
-      parent.setXpPointsForRoundGroups(new TreeSet<XpPointsForRoundGroup>());
+      parent.setXpPointsForRoundGroups(new TreeSet<>());
     }
   };
 
@@ -74,10 +75,10 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
     this.roundGroupNumber = roundGroupNumber;
     this.xpPointsForRound = xpPointsForRound;
 
-    int placesInAllRoundsBefore = 0;
-    for (int i = 1; i < roundGroupNumber; i++) {
-      placesInAllRoundsBefore += allPoints[i - 1].length;
-    }
+    final int placesInAllRoundsBefore = IntStream
+            .range(1, roundGroupNumber)
+            .map(i -> allPoints[i - 1].length)
+            .sum();
 
     this.xpPointsForPlaces = new TreeSet<>();
     for (int i = 1; i <= allPoints[roundGroupNumber - 1].length; i++) {

@@ -42,7 +42,7 @@ public class LeagueRulesController {
 
   @DeleteMapping(value = "/{ruleUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  @PreAuthorize("hasRoleForLeagueOfRule(#ruleUuid, 'MODERATOR')")
   void deleteRuleForLeague(@PathVariable final UUID ruleUuid) {
     leagueRulesService.deleteRule(ruleUuid);
   }

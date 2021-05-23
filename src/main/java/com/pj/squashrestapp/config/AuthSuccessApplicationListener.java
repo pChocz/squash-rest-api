@@ -19,8 +19,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AuthSuccessApplicationListener implements ApplicationListener<AuthenticationSuccessEvent> {
 
-  private final static UUID ADMIN_UUID = UUID.fromString("73992a9c-fea3-4a24-a95b-91e1e840c26a");
-
   private final EmailSendConfig emailSendConfig;
   private final PlayerRepository playerRepository;
 
@@ -35,7 +33,7 @@ public class AuthSuccessApplicationListener implements ApplicationListener<Authe
 
   private void sendEmailToAdmin() {
     final long startTime = System.nanoTime();
-    final Player admin = playerRepository.findByUuid(ADMIN_UUID);
+    final Player admin = playerRepository.findByUuid(GeneralUtil.ADMIN_UUID);
     final String receiver = admin.getEmail();
     final String subject = "Recruiter login";
 

@@ -32,7 +32,7 @@ public class LeagueRule {
   private UUID uuid = UUID.randomUUID();
 
   @Setter
-  @Column(name = "orderValue")
+  @Column(name = "order_value")
   private Double orderValue;
 
   @Setter

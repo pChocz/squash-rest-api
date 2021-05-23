@@ -15,6 +15,7 @@ import java.util.Map;
  */
 @Getter
 @Setter
+@SuppressWarnings("ClassWithTooManyMethods")
 public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
   private final PlayerDto player;
