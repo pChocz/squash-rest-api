@@ -14,6 +14,7 @@ public class UsernameValidator {
 
   private final String ALL_LETTERS = "\\p{L}";
   private final String NUMBERS = "0-9";
+  @SuppressWarnings("RegExpRedundantEscape")
   private final String OTHER_ALLOWED = "\\_\\-";
   private final String SPACE = "\\s";
 

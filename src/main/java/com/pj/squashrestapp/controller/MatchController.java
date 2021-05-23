@@ -35,9 +35,9 @@ public class MatchController {
   @PutMapping(value = "/{matchUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("""
-          Security.hasRoleForMatch(#matchUuid, 'MODERATOR')
+          hasRoleForMatch(#matchUuid, 'MODERATOR')
           or
-          (Security.hasRoleForMatch(#matchUuid, 'PLAYER') and Security.isRoundOfMatchInProgress(#matchUuid))
+          (hasRoleForMatch(#matchUuid, 'PLAYER') and isRoundOfMatchInProgress(#matchUuid))
           """)
   void updateSingleScore(@PathVariable final UUID matchUuid,
                          @RequestParam final int setNumber,
