@@ -23,7 +23,6 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.GsonUtil;
 import lombok.RequiredArgsConstructor;
@@ -111,7 +110,7 @@ public class SeasonService {
     }
 
     for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getCountedRounds());
+      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
     }
 
     seasonScoreboardDto.sortByCountedPoints();
@@ -169,7 +168,7 @@ public class SeasonService {
     if (season == null) {
       season = seasonRepository
               .findSeasonByUuid(seasonUuid)
-              .orElseThrow(() -> new NoSuchElementException(ErrorCode.SEASON_NOT_FOUND));
+              .orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
     }
 
     final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();

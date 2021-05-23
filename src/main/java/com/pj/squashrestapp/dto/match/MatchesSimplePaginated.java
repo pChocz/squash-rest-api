@@ -30,10 +30,10 @@ public class MatchesSimplePaginated {
     this.total = page.getTotalElements();
     this.page = page.getNumber();
     this.pages = page.getTotalPages();
-    this.min = (long) page.getNumber() * page.getSize() + 1;
+    this.min = page.getNumber() * page.getSize() + 1;
     this.max = (page.getNumber() == page.getTotalPages() - 1)
             ? page.getTotalElements()
-            : (long) (page.getNumber() + 1) * matchesDtos.size();
+            : (page.getNumber() + 1) * matchesDtos.size();
     this.matches = getSortedMatches(matchesDtos);
   }
 

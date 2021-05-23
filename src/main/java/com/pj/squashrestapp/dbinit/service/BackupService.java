@@ -135,12 +135,11 @@ public class BackupService {
   }
 
   public List<JsonPlayerCredentials> allPlayersCredentials() {
-    final List<JsonPlayerCredentials> playerCredentials;
+    final List<JsonPlayerCredentials> playerCredentials = new ArrayList<>();
     final List<Player> players = playerRepository.findAll();
-    playerCredentials = players
-            .stream()
-            .map(this::buildPlayerCredentialsJson)
-            .collect(Collectors.toList());
+    for (final Player player : players) {
+      playerCredentials.add(buildPlayerCredentialsJson(player));
+    }
     return playerCredentials;
   }
 

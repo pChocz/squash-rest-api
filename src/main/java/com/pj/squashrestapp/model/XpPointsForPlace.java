@@ -39,7 +39,7 @@ public class XpPointsForPlace implements Identifiable, Comparable<XpPointsForPla
 
     @Override
     public void setChildren(final XpPointsForRoundGroup parent) {
-      parent.setXpPointsForPlaces(new TreeSet<>());
+      parent.setXpPointsForPlaces(new TreeSet<XpPointsForPlace>());
     }
   };
 

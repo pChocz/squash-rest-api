@@ -20,14 +20,10 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class GeneralUtil {
 
-  public static final UUID ADMIN_UUID = UUID.fromString("73992a9c-fea3-4a24-a95b-91e1e840c26a");
-  public static final String DECIMAL_FORMAT = "###,###.#";
-  public static final char DOT_DECIMAL_SEPARATOR = '.';
-  public static final char SPACE_GROUPING_SEPARATOR = ' ';
-  public static final String DATE_FORMAT = "yyyy-MM-dd";
-  public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-  public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
-  public static final ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
+  public final static String DATE_FORMAT = "yyyy-MM-dd";
+  public final static String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+  public final static TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
+  public final static ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
 
   public LocalDateTime toLocalDateTimeUtc(final Date date) {
     return LocalDateTime.ofInstant(
@@ -81,9 +77,7 @@ public class GeneralUtil {
       final int cp = string.codePointAt(s);
       sb.appendCodePoint(lod ? Character.toLowerCase(cp) : Character.toUpperCase(cp));
       lod = Character.isLetterOrDigit(cp);
-      if (!Character.isBmpCodePoint(cp)) {
-        s++;
-      }
+      if (!Character.isBmpCodePoint(cp)) s++;
     }
     return sb.toString();
   }

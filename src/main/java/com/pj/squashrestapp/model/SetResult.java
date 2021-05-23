@@ -39,7 +39,7 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
 
     @Override
     public void setChildren(final Match parent) {
-      parent.setSetResults(new TreeSet<>());
+      parent.setSetResults(new TreeSet<SetResult>());
     }
   };
 

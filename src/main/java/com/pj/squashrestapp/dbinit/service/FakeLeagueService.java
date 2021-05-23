@@ -139,7 +139,7 @@ public class FakeLeagueService {
         final SeasonScoreboardDto seasonScoreboardDto = seasonService.getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
 
         for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-          seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getCountedRounds());
+          seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
         }
         seasonScoreboardDto.sortByCountedPoints();
 

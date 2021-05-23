@@ -4,11 +4,12 @@ import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 /**
  *
@@ -16,8 +17,9 @@ import org.springframework.data.jpa.repository.Query;
 public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeague, Long> {
 
 
-  List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
+  List<TrophyForLeague> findByLeague(League league);
 
+  List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
 
   Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophy(League league, int seasonNumber, Trophy trophy);
 
