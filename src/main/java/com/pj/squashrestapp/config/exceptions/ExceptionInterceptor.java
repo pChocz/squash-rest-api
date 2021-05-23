@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.config.exceptions;
 
 import com.pj.squashrestapp.config.ErrorResponse;
+import com.pj.squashrestapp.util.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -92,7 +93,7 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(
             ErrorResponse.builder()
                     .timestamp(LocalDateTime.now())
-                    .message("Wrong data format. Are you sure you didn't type it yourself?")
+                    .message(ErrorCode.WRONG_DATA_FORMAT)
                     .status(httpStatus.value())
                     .path(request.getRequestURI())
                     .build(),
