@@ -1,13 +1,10 @@
 package com.pj.squashrestapp.dto;
 
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class XpPointsForTable {
 
@@ -31,5 +28,4 @@ public class XpPointsForTable {
   public String toString() {
     return split;
   }
-
 }

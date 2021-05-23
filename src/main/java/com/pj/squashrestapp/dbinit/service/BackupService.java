@@ -31,20 +31,17 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.service.XpPointsService;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -85,14 +82,13 @@ public class BackupService {
 
       final String splitCsv = xpPointsForRound.getSplit().replace(" | ", ", ");
 
-      final List<String> pointsCsv = xpPointsForRound
-              .getXpPointsForRoundGroups()
-              .stream()
-              .map(xpPointsForRoundGroup -> xpPointsForRoundGroup
-                      .getXpPointsForPlaces()
-                      .stream()
-                      .map(xpPointsForPlace -> String.valueOf(xpPointsForPlace.getPoints()))
-                      .collect(Collectors.toList()))
+      final List<String> pointsCsv =
+          xpPointsForRound.getXpPointsForRoundGroups().stream()
+              .map(
+                  xpPointsForRoundGroup ->
+                      xpPointsForRoundGroup.getXpPointsForPlaces().stream()
+                          .map(xpPointsForPlace -> String.valueOf(xpPointsForPlace.getPoints()))
+                          .collect(Collectors.toList()))
               .map(roundGroupPointsList -> String.join(", ", roundGroupPointsList))
               .collect(Collectors.toList());
 
@@ -104,9 +100,8 @@ public class BackupService {
     }
 
     jsonXpPointsForRoundAll.sort(
-            Comparator.comparing(JsonXpPointsForRound::getType)
-                    .thenComparingInt(JsonXpPointsForRound::extractNumberOfPlayers)
-    );
+        Comparator.comparing(JsonXpPointsForRound::getType)
+            .thenComparingInt(JsonXpPointsForRound::extractNumberOfPlayers));
 
     return jsonXpPointsForRoundAll;
   }
@@ -115,10 +110,8 @@ public class BackupService {
   public List<JsonLeague> allLeagues() {
     final List<UUID> allLeaguesUuids = leagueRepository.findUuids();
     log.info("Backing up {} leagues", allLeaguesUuids.size());
-    final List<JsonLeague> jsonLeagues = allLeaguesUuids
-            .stream()
-            .map(this::leagueToJson)
-            .collect(Collectors.toList());
+    final List<JsonLeague> jsonLeagues =
+        allLeaguesUuids.stream().map(this::leagueToJson).collect(Collectors.toList());
     log.info("Finished backing up all leagues");
     return jsonLeagues;
   }
@@ -201,5 +194,4 @@ public class BackupService {
     }
     return jsonVerificationTokens;
   }
-
 }

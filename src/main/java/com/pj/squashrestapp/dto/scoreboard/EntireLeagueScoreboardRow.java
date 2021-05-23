@@ -5,9 +5,7 @@ import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class EntireLeagueScoreboardRow {
@@ -31,8 +29,9 @@ public class EntireLeagueScoreboardRow {
   private final int matchesLost;
   private final int matchesBalance;
 
-  public EntireLeagueScoreboardRow(final PlayerLeagueXpOveral playerLeagueXpOveral,
-                                   final RoundGroupScoreboardRow scoreboardRowForPlayer) {
+  public EntireLeagueScoreboardRow(
+      final PlayerLeagueXpOveral playerLeagueXpOveral,
+      final RoundGroupScoreboardRow scoreboardRowForPlayer) {
     this.player = playerLeagueXpOveral.getPlayer();
 
     this.xpTotal = playerLeagueXpOveral.getTotalPoints();
@@ -52,5 +51,4 @@ public class EntireLeagueScoreboardRow {
     this.matchesLost = scoreboardRowForPlayer.getMatchesLost();
     this.matchesBalance = scoreboardRowForPlayer.getMatchesBalance();
   }
-
 }

@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.service;
 
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
+
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
@@ -9,19 +11,14 @@ import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
-
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,6 @@ public class TokenRemovalService {
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final PlayerRepository playerRepository;
 
-
   public PlayerDetailedDto extractPlayerByPasswordResetToken(final UUID token) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
     final UUID playerUuid = passwordResetToken.getPlayer().getUuid();
@@ -41,16 +37,20 @@ public class TokenRemovalService {
     return playerDetailedDto;
   }
 
-  /**
-   * Finds all expired temporary tokens in the database and removes them permanently.
-   */
+  /** Finds all expired temporary tokens in the database and removes them permanently. */
   public void removeExpiredTokensFromDb() {
     final LocalDateTime now = LocalDateTime.now(UTC_ZONE_ID);
 
-    final List<VerificationToken> expiredVerificationTokens = verificationTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final List<RefreshToken> expiredRefreshTokens = refreshTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final List<PasswordResetToken> expiredPasswordResetTokens = passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
-    final int tokensCount = expiredVerificationTokens.size() + expiredRefreshTokens.size() + expiredPasswordResetTokens.size();
+    final List<VerificationToken> expiredVerificationTokens =
+        verificationTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final List<RefreshToken> expiredRefreshTokens =
+        refreshTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final List<PasswordResetToken> expiredPasswordResetTokens =
+        passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
+    final int tokensCount =
+        expiredVerificationTokens.size()
+            + expiredRefreshTokens.size()
+            + expiredPasswordResetTokens.size();
 
     if (tokensCount > 0) {
       verificationTokenRepository.deleteAll(expiredVerificationTokens);
@@ -62,5 +62,4 @@ public class TokenRemovalService {
       log.info("No expired tokens to remove this time");
     }
   }
-
 }

@@ -22,19 +22,16 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @UtilityClass
 public class JsonExportUtil {
@@ -46,12 +43,7 @@ public class JsonExportUtil {
     jsonLeague.setTime(league.getTime());
     jsonLeague.setLocation(league.getLocation());
     jsonLeague.setLogoBase64(
-            Base64
-                    .getEncoder()
-                    .encodeToString(
-                            league
-                                    .getLeagueLogo()
-                                    .getPicture()));
+        Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
     jsonLeague.setRules(buildRules(league.getRules()));
     jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
     jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints));
@@ -74,7 +66,8 @@ public class JsonExportUtil {
     return rules;
   }
 
-  private ArrayList<JsonAdditionalMatch> buildAdditionalMatches(final Set<AdditionalMatch> additionalMatchesForLeague) {
+  private ArrayList<JsonAdditionalMatch> buildAdditionalMatches(
+      final Set<AdditionalMatch> additionalMatchesForLeague) {
     final ArrayList<JsonAdditionalMatch> additionalMatches = new ArrayList<>();
 
     for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
@@ -92,16 +85,21 @@ public class JsonExportUtil {
     return additionalMatches;
   }
 
-  private ArrayList<JsonSeason> buildSeasonsJson(final List<Season> seasonsOrdered, final List<BonusPoint> bonusPoints) {
+  private ArrayList<JsonSeason> buildSeasonsJson(
+      final List<Season> seasonsOrdered, final List<BonusPoint> bonusPoints) {
     final ArrayList<JsonSeason> jsonSeasons = new ArrayList<>();
     for (final Season season : seasonsOrdered) {
-      final List<BonusPoint> bonusPointsForSeason = bonusPoints.stream().filter(bonusPoint -> bonusPoint.getSeason().equals(season)).collect(Collectors.toList());
+      final List<BonusPoint> bonusPointsForSeason =
+          bonusPoints.stream()
+              .filter(bonusPoint -> bonusPoint.getSeason().equals(season))
+              .collect(Collectors.toList());
       jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason));
     }
     return jsonSeasons;
   }
 
-  private ArrayList<JsonLeagueTrophy> buildTrophiesList(final List<TrophyForLeague> trophiesForLeague) {
+  private ArrayList<JsonLeagueTrophy> buildTrophiesList(
+      final List<TrophyForLeague> trophiesForLeague) {
     final ArrayList<JsonLeagueTrophy> trophies = new ArrayList<>();
 
     for (final TrophyForLeague trophyForLeague : trophiesForLeague) {
@@ -129,7 +127,8 @@ public class JsonExportUtil {
     return jsonSetResults;
   }
 
-  public JsonSeason buildSeasonJson(final Season season, final List<BonusPoint> bonusPointsForSeason) {
+  public JsonSeason buildSeasonJson(
+      final Season season, final List<BonusPoint> bonusPointsForSeason) {
     final JsonSeason jsonSeason = new JsonSeason();
     jsonSeason.setUuid(season.getUuid());
     jsonSeason.setNumber(season.getNumber());
@@ -142,8 +141,7 @@ public class JsonExportUtil {
   }
 
   private boolean isNotNull(final AdditonalSetResult setResult) {
-    return setResult.getFirstPlayerScore() != null
-           && setResult.getSecondPlayerScore() != null;
+    return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
   }
 
   private ArrayList<JsonBonusPoint> buildBonusPoints(final List<BonusPoint> bonusPoints) {
@@ -233,8 +231,6 @@ public class JsonExportUtil {
   }
 
   private boolean isNotNull(final SetResult setResult) {
-    return setResult.getFirstPlayerScore() != null
-           && setResult.getSecondPlayerScore() != null;
+    return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
   }
-
 }

@@ -10,23 +10,22 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class MatchSimpleDto implements MatchDto {
 
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
+
   private final List<SetDto> sets;
   private final MatchStatus status;
 
@@ -39,7 +38,8 @@ public class MatchSimpleDto implements MatchDto {
     this.date = round.getDate();
 
     this.sets = new ArrayList<>();
-    for (final SetResult setResult : match.getSetResults().stream().sorted().collect(Collectors.toList())) {
+    for (final SetResult setResult :
+        match.getSetResults().stream().sorted().collect(Collectors.toList())) {
       this.sets.add(new SetDto(setResult));
     }
 
@@ -50,5 +50,4 @@ public class MatchSimpleDto implements MatchDto {
   public String toString() {
     return firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

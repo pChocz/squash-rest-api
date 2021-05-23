@@ -1,10 +1,7 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import java.util.Comparator;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,7 +11,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Comparator;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "additional_set_results")
@@ -44,7 +43,8 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
   @JoinColumn(name = "match_id")
   private AdditionalMatch match;
 
-  public AdditonalSetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
+  public AdditonalSetResult(
+      final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
     this.secondPlayerScore = secondPlayerScore;
@@ -57,14 +57,10 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
 
   @Override
   public int compareTo(final AdditonalSetResult that) {
-    return Comparator
-            .comparingInt(AdditonalSetResult::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(AdditonalSetResult::getNumber).compare(this, that);
   }
 
   public boolean nonNull() {
-    return this.getFirstPlayerScore() != null
-           && this.getSecondPlayerScore() != null;
+    return this.getFirstPlayerScore() != null && this.getSecondPlayerScore() != null;
   }
-
 }

@@ -2,14 +2,11 @@ package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.RoleForLeague;
+import java.util.UUID;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class LeagueRoleDto {
@@ -23,5 +20,4 @@ public class LeagueRoleDto {
     this.leagueName = role.getLeague().getName();
     this.leagueRole = role.getLeagueRole();
   }
-
 }

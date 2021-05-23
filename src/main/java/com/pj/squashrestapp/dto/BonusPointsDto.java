@@ -3,22 +3,21 @@ package com.pj.squashrestapp.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public final class BonusPointsDto {
 
   final PlayerDto winner;
   final PlayerDto looser;
   final UUID uuid;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   final LocalDate date;
+
   final int points;
 
   public BonusPointsDto(final BonusPoint bonusPoint) {
@@ -33,5 +32,4 @@ public final class BonusPointsDto {
   public String toString() {
     return winner + " | " + looser + " | " + points;
   }
-
 }

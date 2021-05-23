@@ -4,16 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.RomanUtil;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Getter
 public class SeasonDto implements Comparable<SeasonDto> {
@@ -40,14 +37,11 @@ public class SeasonDto implements Comparable<SeasonDto> {
 
   @Override
   public int compareTo(final SeasonDto that) {
-    return Comparator
-            .comparingInt(SeasonDto::getSeasonNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(SeasonDto::getSeasonNumber).compare(this, that);
   }
 
   @Override
   public String toString() {
     return "S: " + seasonNumber + " | " + leagueName + " | uuid: " + seasonUuid;
   }
-
 }

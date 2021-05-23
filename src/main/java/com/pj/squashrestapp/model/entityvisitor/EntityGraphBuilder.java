@@ -41,5 +41,4 @@ public class EntityGraphBuilder {
       visit(parent);
     }
   }
-
 }

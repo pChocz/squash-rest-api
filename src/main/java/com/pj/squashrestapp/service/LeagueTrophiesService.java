@@ -11,13 +11,6 @@ import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -25,10 +18,14 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import javax.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -42,10 +39,11 @@ public class LeagueTrophiesService {
   public List<TrophiesWonForLeague> extractTrophiesForPlayer(final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
-    final List<TrophyForLeague> trophiesForPlayer = trophiesForLeagueRepository.findAllByPlayerUuid(playerUuid);
+    final List<TrophyForLeague> trophiesForPlayer =
+        trophiesForLeagueRepository.findAllByPlayerUuid(playerUuid);
 
-    final List<LeagueDtoSimple> leagues = trophiesForPlayer
-            .stream()
+    final List<LeagueDtoSimple> leagues =
+        trophiesForPlayer.stream()
             .map(TrophyForLeague::getLeague)
             .map(LeagueDtoSimple::new)
             .distinct()
@@ -53,11 +51,12 @@ public class LeagueTrophiesService {
 
     final List<TrophiesWonForLeague> trophiesWonForLeagues = new ArrayList<>();
     for (final LeagueDtoSimple league : leagues) {
-      final List<TrophyForLeague> hallOfFameForLeague = trophiesForPlayer
-              .stream()
+      final List<TrophyForLeague> hallOfFameForLeague =
+          trophiesForPlayer.stream()
               .filter(hof -> hof.getLeague().getUuid().equals(league.getLeagueUuid()))
               .collect(Collectors.toList());
-      final TrophiesWonForLeague trophiesWonForLeague = new TrophiesWonForLeague(playerDto, league, hallOfFameForLeague);
+      final TrophiesWonForLeague trophiesWonForLeague =
+          new TrophiesWonForLeague(playerDto, league, hallOfFameForLeague);
       trophiesWonForLeagues.add(trophiesWonForLeague);
     }
 
@@ -65,24 +64,30 @@ public class LeagueTrophiesService {
   }
 
   @Transactional
-  public TrophyForLeague addNewTrophy(final UUID playerUuid, final UUID leagueUuid,
-                                      final int seasonNumber, final Trophy trophy) {
+  public TrophyForLeague addNewTrophy(
+      final UUID playerUuid, final UUID leagueUuid, final int seasonNumber, final Trophy trophy) {
 
     final League league = leagueRepository.findByUuid(leagueUuid).get();
 
     if (trophy.isAllowMultiple()) {
       final Player player = playerRepository.findByUuid(playerUuid);
-      final Optional<TrophyForLeague> trophyForLeague = trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophyAndPlayer(league, seasonNumber, trophy, player);
+      final Optional<TrophyForLeague> trophyForLeague =
+          trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophyAndPlayer(
+              league, seasonNumber, trophy, player);
       if (trophyForLeague.isPresent()) {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Trophy of that type already exists for this player!");
+        throw new ResponseStatusException(
+            HttpStatus.CONFLICT, "Trophy of that type already exists for this player!");
       }
 
     } else {
-      final Optional<TrophyForLeague> trophyForLeague = trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophy(league, seasonNumber, trophy);
+      final Optional<TrophyForLeague> trophyForLeague =
+          trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophy(
+              league, seasonNumber, trophy);
       if (trophyForLeague.isPresent()) {
-        throw new ResponseStatusException(HttpStatus.CONFLICT, "Trophy already existing and does not allow to add more of that type!");
+        throw new ResponseStatusException(
+            HttpStatus.CONFLICT,
+            "Trophy already existing and does not allow to add more of that type!");
       }
-
     }
 
     final Player player = playerRepository.findByUuid(playerUuid);
@@ -94,11 +99,13 @@ public class LeagueTrophiesService {
     return newTrophyForLeague;
   }
 
-  public void removeTrophy(final UUID playerUuid, final UUID leagueUuid,
-                           final int seasonNumber, final Trophy trophy) {
+  public void removeTrophy(
+      final UUID playerUuid, final UUID leagueUuid, final int seasonNumber, final Trophy trophy) {
     final League league = leagueRepository.findByUuid(leagueUuid).get();
     final Player player = playerRepository.findByUuid(playerUuid);
-    final Optional<TrophyForLeague> trophyForLeague = trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophyAndPlayer(league, seasonNumber, trophy, player);
+    final Optional<TrophyForLeague> trophyForLeague =
+        trophiesForLeagueRepository.findByLeagueAndSeasonNumberAndTrophyAndPlayer(
+            league, seasonNumber, trophy, player);
     if (trophyForLeague.isPresent()) {
       trophiesForLeagueRepository.delete(trophyForLeague.get());
     } else {
@@ -107,18 +114,19 @@ public class LeagueTrophiesService {
   }
 
   public List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(final UUID leagueUuid) {
-    final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeagueUuid(leagueUuid);
+    final List<TrophyForLeague> allTrophiesForLeague =
+        trophiesForLeagueRepository.findByLeagueUuid(leagueUuid);
     final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
-    final List<Integer> listOfSeasonNumbers = allTrophiesForLeague
-            .stream()
+    final List<Integer> listOfSeasonNumbers =
+        allTrophiesForLeague.stream()
             .map(TrophyForLeague::getSeasonNumber)
             .distinct()
             .sorted()
             .collect(Collectors.toList());
 
     for (final int seasonNumber : listOfSeasonNumbers) {
-      final List<TrophyForLeague> seasonTrophies = allTrophiesForLeague
-              .stream()
+      final List<TrophyForLeague> seasonTrophies =
+          allTrophiesForLeague.stream()
               .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
               .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
               .collect(Collectors.toList());
@@ -127,5 +135,4 @@ public class LeagueTrophiesService {
 
     return leagueTrophiesPerSeason;
   }
-
 }

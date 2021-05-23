@@ -1,13 +1,10 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import java.util.List;
 import lombok.Getter;
 
-import java.util.List;
-
-/**
- *
- */
+/** */
 @Getter
 public class PlayerLeagueXpOveral {
 
@@ -29,5 +26,4 @@ public class PlayerLeagueXpOveral {
     }
     this.average = totalPoints / attendices;
   }
-
 }

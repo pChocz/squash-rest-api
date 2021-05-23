@@ -1,10 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import java.time.LocalDate;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,8 +13,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import java.time.LocalDate;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "bonus_points")
@@ -29,8 +28,7 @@ public class BonusPoint {
   private Long id;
 
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   private UUID uuid = UUID.randomUUID();
 
   @JsonIgnore
@@ -53,10 +51,11 @@ public class BonusPoint {
   @JoinColumn(name = "looser_id")
   private Player looser;
 
-  @Setter
-  private int points;
+  @Setter private int points;
 
-  public BonusPoint(final Player winner, final Player looser, final int points, final LocalDate date) {
+  public BonusPoint(
+      final Player winner, final Player looser, final int points, final LocalDate date) {
+
     this.winner = winner;
     this.looser = looser;
     this.points = points;
@@ -65,7 +64,12 @@ public class BonusPoint {
 
   @Override
   public String toString() {
-    return uuid + " -> " + winner.getUsername() + " vs. " + looser.getUsername() + " | Points: " + points;
+    return uuid
+        + " -> "
+        + winner.getUsername()
+        + " vs. "
+        + looser.getUsername()
+        + " | Points: "
+        + points;
   }
-
 }

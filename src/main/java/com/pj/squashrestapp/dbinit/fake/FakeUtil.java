@@ -2,16 +2,13 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.Player;
-import lombok.experimental.UtilityClass;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeUtil {
 
@@ -30,5 +27,4 @@ public class FakeUtil {
     Collections.shuffle(copy);
     return copy.subList(0, 3);
   }
-
 }

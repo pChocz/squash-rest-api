@@ -6,6 +6,9 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.service.LeagueService;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,13 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/leagues")
@@ -35,14 +32,12 @@ public class LeagueController {
 
   private final LeagueService leagueService;
 
-
   @PostMapping
   @ResponseBody
   LeagueDto createNewLeague(@RequestParam final String leagueName) {
     final LeagueDto leagueDto = leagueService.createNewLeague(leagueName);
     return leagueDto;
   }
-
 
   @DeleteMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -51,14 +46,12 @@ public class LeagueController {
     leagueService.removeEmptyLeague(leagueUuid);
   }
 
-
   @GetMapping(value = "/general-info/{leagueUuid}")
   @ResponseBody
   LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
     final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
     return leagueGeneralInfo;
   }
-
 
   @GetMapping(value = "/general-info")
   @ResponseBody
@@ -67,7 +60,6 @@ public class LeagueController {
     return allLeaguesGeneralInfo;
   }
 
-
   @GetMapping(value = "/all-logos")
   @ResponseBody
   Map<UUID, byte[]> extractAllLeaguesLogosMap() {
@@ -75,14 +67,13 @@ public class LeagueController {
     return allLeaguesLogos;
   }
 
-
   @GetMapping(value = "/players/{leagueUuid}")
   @ResponseBody
   List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
-    final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
+    final List<PlayerDto> playersGeneralInfo =
+        leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
   }
-
 
   @GetMapping(value = "/stats/{leagueUuid}")
   @ResponseBody
@@ -93,7 +84,6 @@ public class LeagueController {
     return leagueStatsWrapper;
   }
 
-
   @GetMapping(value = "/overal-stats/{leagueUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
@@ -101,6 +91,4 @@ public class LeagueController {
     final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
     return leagueOveralStats;
   }
-
-
 }

@@ -6,19 +6,16 @@ import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
+import java.util.Collection;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-/**
- *
- */
+/** */
 @Getter
 public class UserDetailsImpl implements UserDetails {
 
@@ -46,10 +43,9 @@ public class UserDetailsImpl implements UserDetails {
   }
 
   private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {
-    return authorities
-            .stream()
-            .map(authority -> new SimpleGrantedAuthority(authority.getType().name()))
-            .collect(Collectors.toSet());
+    return authorities.stream()
+        .map(authority -> new SimpleGrantedAuthority(authority.getType().name()))
+        .collect(Collectors.toSet());
   }
 
   private Multimap<UUID, LeagueRole> extractRolesForLeagues(final Set<RoleForLeague> roles) {
@@ -66,9 +62,6 @@ public class UserDetailsImpl implements UserDetails {
 
   public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
     final Collection<LeagueRole> rolesForLeague = rolesForLeagues.get(leagueUuid);
-    return (rolesForLeague == null)
-            ? false
-            : rolesForLeague.contains(role);
+    return (rolesForLeague == null) ? false : rolesForLeague.contains(role);
   }
-
 }

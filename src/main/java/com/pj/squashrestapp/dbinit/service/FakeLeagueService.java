@@ -25,20 +25,17 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.service.XpPointsService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -56,7 +53,8 @@ public class FakeLeagueService {
   private final TrophiesForLeagueRepository trophiesForLeagueRepository;
   private final PasswordEncoder passwordEncoder;
 
-  public void buildLeagues(final List<JsonFakeLeagueParams> jsonFakeLeagueParamsList) throws IOException {
+  public void buildLeagues(final List<JsonFakeLeagueParams> jsonFakeLeagueParamsList)
+      throws IOException {
     log.info("-- START building of {} fake leagues --", jsonFakeLeagueParamsList.size());
 
     for (final JsonFakeLeagueParams jsonFakeLeagueParams : jsonFakeLeagueParamsList) {
@@ -92,14 +90,18 @@ public class FakeLeagueService {
     league.addRoleForLeague(playerRole);
     final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
 
-    log.info("Creating {} players (including password hashing) and assigning roles/authorities...", numberOfAllPlayers);
+    log.info(
+        "Creating {} players (including password hashing) and assigning roles/authorities...",
+        numberOfAllPlayers);
     final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers, passwordEncoder);
-    FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
+    FakePlayersRoleAssigner.assignRolesAndAuthorities(
+        players, moderatorRole, playerRole, userAuthority);
 
     log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);
     LocalDate seasonStartDate = startDate;
     for (int seasonNumber = 1; seasonNumber <= numberOfCompletedSeasons; seasonNumber++) {
-      final Season season = FakeSeason.create(
+      final Season season =
+          FakeSeason.create(
               seasonNumber,
               seasonStartDate,
               NUMBER_OF_ROUNDS_COMPLETE,
@@ -112,7 +114,8 @@ public class FakeLeagueService {
       seasonStartDate = seasonStartDate.plusWeeks(WEEKS_BETWEEN_SEASONS_STARTS);
     }
     if (numberOfRoundsInLastSeason > 0) {
-      final Season season = FakeSeason.create(
+      final Season season =
+          FakeSeason.create(
               numberOfCompletedSeasons + 1,
               seasonStartDate,
               numberOfRoundsInLastSeason,
@@ -123,28 +126,38 @@ public class FakeLeagueService {
       league.addSeason(season);
     }
 
-    log.info("Persisting {} items (seasons/rounds/roundGroups/matches/sets + players) to PostreSQL DB...", extractNumberOfEntities(league, players));
+    log.info(
+        "Persisting {} items (seasons/rounds/roundGroups/matches/sets + players) to PostreSQL DB...",
+        extractNumberOfEntities(league, players));
     playerRepository.saveAll(players);
     authorityRepository.save(userAuthority);
     leagueRepository.save(league);
 
     log.info("Calculating scoreboards to fill the Hall of Fame...");
 
-    // only after persisting the league we can calculate the scoreboard (as some of the logic is based on the Id)
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+    // only after persisting the league we can calculate the scoreboard (as some of the logic is
+    // based on the Id)
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit =
+        xpPointsService.buildAllAsIntegerMultimap();
     for (final Season season : league.getSeasons()) {
       if (season.getRounds().size() == 10) {
         final List<BonusPoint> bonusPoints = new ArrayList<>(season.getBonusPoints());
-        final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = new BonusPointsAggregatedForSeason(season.getUuid(), bonusPoints);
-        final SeasonScoreboardDto seasonScoreboardDto = seasonService.getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+        final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
+            new BonusPointsAggregatedForSeason(season.getUuid(), bonusPoints);
+        final SeasonScoreboardDto seasonScoreboardDto =
+            seasonService.getSeasonScoreboardDto(
+                season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
 
-        for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
-          seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
+        for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
+            seasonScoreboardDto.getSeasonScoreboardRows()) {
+          seasonScoreboardRowDto.calculateFinishedRow(
+              seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
         }
         seasonScoreboardDto.sortByCountedPoints();
 
         final List<Player> allPlayers = playerRepository.findAll();
-        final List<TrophyForLeague> trophiesForLeague = FakeLeagueHallOfFame.create(seasonScoreboardDto, allPlayers);
+        final List<TrophyForLeague> trophiesForLeague =
+            FakeLeagueHallOfFame.create(seasonScoreboardDto, allPlayers);
         for (final TrophyForLeague trophyForLeague : trophiesForLeague) {
           league.addTrophyForLeague(trophyForLeague);
         }
@@ -157,11 +170,11 @@ public class FakeLeagueService {
 
   private int extractNumberOfEntities(final League league, final List<Player> players) {
     return extractNumberOfSeasons(league)
-           + extractNumberOfRounds(league)
-           + extractNumberOfRoundGroups(league)
-           + extractNumberOfMatches(league)
-           + extractNumberOfSets(league)
-           + players.size();
+        + extractNumberOfRounds(league)
+        + extractNumberOfRoundGroups(league)
+        + extractNumberOfMatches(league)
+        + extractNumberOfSets(league)
+        + players.size();
   }
 
   private String extractLeagueDetails(final League league) {
@@ -170,82 +183,59 @@ public class FakeLeagueService {
     final int numberOfMatches = extractNumberOfMatches(league);
 
     return new StringBuilder()
-            .append("\n\t Details of league " + league.getName() + "\n")
-            .append("\t\t League ID:\t " + league.getId() + "\n")
-            .append("\t\t Seasons:\t " + numberOfSeasons + "\n")
-            .append("\t\t Rounds:\t " + numberOfRounds + "\n")
-            .append("\t\t Matches:\t " + numberOfMatches + "\n")
-            .toString();
+        .append("\n\t Details of league " + league.getName() + "\n")
+        .append("\t\t League ID:\t " + league.getId() + "\n")
+        .append("\t\t Seasons:\t " + numberOfSeasons + "\n")
+        .append("\t\t Rounds:\t " + numberOfRounds + "\n")
+        .append("\t\t Matches:\t " + numberOfMatches + "\n")
+        .toString();
   }
 
   private int extractNumberOfSeasons(final League league) {
-    return league
-            .getSeasons()
-            .size();
+    return league.getSeasons().size();
   }
 
   private int extractNumberOfRounds(final League league) {
-    return league
-            .getSeasons()
-            .stream()
-            .mapToInt(season -> season
-                    .getRounds()
-                    .size())
-            .sum();
+    return league.getSeasons().stream().mapToInt(season -> season.getRounds().size()).sum();
   }
 
   private int extractNumberOfRoundGroups(final League league) {
-    return league
-            .getSeasons()
-            .stream()
-            .mapToInt(season -> season
-                    .getRounds()
-                    .stream()
-                    .mapToInt(round -> round
-                            .getRoundGroups()
-                            .size())
-                    .sum())
-            .sum();
+    return league.getSeasons().stream()
+        .mapToInt(
+            season ->
+                season.getRounds().stream().mapToInt(round -> round.getRoundGroups().size()).sum())
+        .sum();
   }
 
   private int extractNumberOfMatches(final League league) {
-    return league
-            .getSeasons()
-            .stream()
-            .mapToInt(season -> season
-                    .getRounds()
-                    .stream()
-                    .mapToInt(round -> round
-                            .getRoundGroups()
-                            .stream()
-                            .mapToInt(roundGroup -> roundGroup
-                                    .getMatches()
-                                    .size())
-                            .sum())
+    return league.getSeasons().stream()
+        .mapToInt(
+            season ->
+                season.getRounds().stream()
+                    .mapToInt(
+                        round ->
+                            round.getRoundGroups().stream()
+                                .mapToInt(roundGroup -> roundGroup.getMatches().size())
+                                .sum())
                     .sum())
-            .sum();
+        .sum();
   }
 
   private int extractNumberOfSets(final League league) {
-    return league
-            .getSeasons()
-            .stream()
-            .mapToInt(season -> season
-                    .getRounds()
-                    .stream()
-                    .mapToInt(round -> round
-                            .getRoundGroups()
-                            .stream()
-                            .mapToInt(roundGroup -> roundGroup
-                                    .getMatches()
-                                    .stream()
-                                    .mapToInt(match -> match
-                                            .getSetResults()
-                                            .size())
-                                    .sum())
-                            .sum())
+    return league.getSeasons().stream()
+        .mapToInt(
+            season ->
+                season.getRounds().stream()
+                    .mapToInt(
+                        round ->
+                            round.getRoundGroups().stream()
+                                .mapToInt(
+                                    roundGroup ->
+                                        roundGroup.getMatches().stream()
+                                            .mapToInt(match -> match.getSetResults().size())
+                                            .sum())
+                                .sum())
                     .sum())
-            .sum();
+        .sum();
   }
-
 }

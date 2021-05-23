@@ -1,5 +1,8 @@
 package com.pj.squashrestapp.service;
 
+import static com.pj.squashrestapp.config.security.token.TokenConstants.VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS;
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
+
 import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
@@ -23,6 +26,11 @@ import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -32,18 +40,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static com.pj.squashrestapp.config.security.token.TokenConstants.VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS;
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -59,10 +56,13 @@ public class PlayerService {
   private final PasswordEncoder passwordEncoder;
 
   @SuppressWarnings("OverlyComplexMethod")
-  public boolean isValidSignupData(final String username, final String email, final String password) throws WrongSignupDataException {
+  public boolean isValidSignupData(final String username, final String email, final String password)
+      throws WrongSignupDataException {
     final List<Player> allPlayers = playerRepository.findAll();
-    final Set<String> allUsernames = allPlayers.stream().map(Player::getUsername).collect(Collectors.toSet());
-    final Set<String> allEmails = allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
+    final Set<String> allUsernames =
+        allPlayers.stream().map(Player::getUsername).collect(Collectors.toSet());
+    final Set<String> allEmails =
+        allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
 
     final boolean usernameTaken = allUsernames.contains(username);
     final boolean emailTaken = allEmails.contains(email);
@@ -79,7 +79,8 @@ public class PlayerService {
       message = "Username is already taken!";
 
     } else if (!UsernameValidator.isValid(username)) {
-      message = "Username is not valid, it must contain 5-20 characters. Allowed characters are letters, numbers, dashes, underscores and spaces";
+      message =
+          "Username is not valid, it must contain 5-20 characters. Allowed characters are letters, numbers, dashes, underscores and spaces";
 
     } else if (!EmailValidator.getInstance().isValid(email)) {
       message = "Email is not valid!";
@@ -100,8 +101,10 @@ public class PlayerService {
   }
 
   public void createAndPersistVerificationToken(final UUID token, final Player user) {
-    final LocalDateTime expirationDateTime = LocalDateTime.now(UTC_ZONE_ID).plusDays(VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS);
-    final VerificationToken verificationToken = new VerificationToken(token, user, expirationDateTime);
+    final LocalDateTime expirationDateTime =
+        LocalDateTime.now(UTC_ZONE_ID).plusDays(VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS);
+    final VerificationToken verificationToken =
+        new VerificationToken(token, user, expirationDateTime);
     verificationTokenRepository.save(verificationToken);
   }
 
@@ -134,16 +137,17 @@ public class PlayerService {
 
   public List<PlayerDetailedDto> getAllPlayers() {
     final List<Player> allPlayers = playerRepository.findAll();
-    final List<PlayerDetailedDto> allPlayersDetailedInfo = allPlayers
-            .stream()
-            .map(PlayerDetailedDto::new)
-            .collect(Collectors.toList());
+    final List<PlayerDetailedDto> allPlayersDetailedInfo =
+        allPlayers.stream().map(PlayerDetailedDto::new).collect(Collectors.toList());
     return allPlayersDetailedInfo;
   }
 
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
+    final Player player =
+        playerRepository
+            .fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase())
+            .orElseThrow();
     final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
     return userBasicInfo;
   }
@@ -153,13 +157,17 @@ public class PlayerService {
     final Player player = playerRepository.findByUsername(auth.getName());
 
     final List<Player> allPlayers = playerRepository.findAll();
-    final Set<String> allEmails = allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
+    final Set<String> allEmails =
+        allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
     final boolean emailValid = !allEmails.contains(newEmail);
 
     if (emailValid) {
       player.setEmail(newEmail);
       playerRepository.save(player);
-      log.info("Email for user {} has been succesfully changed to {}.", player.getUsername(), player.getEmail());
+      log.info(
+          "Email for user {} has been succesfully changed to {}.",
+          player.getUsername(),
+          player.getEmail());
 
     } else {
       log.warn("Attempt to change email but it's already taken");
@@ -189,14 +197,18 @@ public class PlayerService {
   }
 
   public Player getPlayer(final String usernameOrEmail) {
-    return playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase()).orElse(null);
+    return playerRepository
+        .fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase())
+        .orElse(null);
   }
 
   @Transactional
-  public PlayerDetailedDto assignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+  public PlayerDetailedDto assignLeagueRole(
+      final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
     final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    final RoleForLeague roleForLeague =
+        roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
     player.addRole(roleForLeague);
 
     playerRepository.save(player);
@@ -227,10 +239,12 @@ public class PlayerService {
   }
 
   @Transactional
-  public PlayerDetailedDto unassignLeagueRole(final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
+  public PlayerDetailedDto unassignLeagueRole(
+      final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
     final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+    final RoleForLeague roleForLeague =
+        roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
     player.removeRole(roleForLeague);
 
     playerRepository.save(player);
@@ -239,7 +253,8 @@ public class PlayerService {
     return playerDetailedDto;
   }
 
-  public void changeCurrentSessionPlayerPassword(final String oldPassword, final String newPassword) {
+  public void changeCurrentSessionPlayerPassword(
+      final String oldPassword, final String newPassword) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.findByUsername(auth.getName());
     final String oldPasswordHashed = player.getPassword();
@@ -266,10 +281,12 @@ public class PlayerService {
       throw new GeneralBadRequestException("It seems that we do not have matching token!");
 
     } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
-      throw new GeneralBadRequestException("Password reset token has already expired. You must request new one!");
+      throw new GeneralBadRequestException(
+          "Password reset token has already expired. You must request new one!");
 
     } else if (!PasswordStrengthValidator.isValid(newPassword)) {
-      throw new GeneralBadRequestException("Password is too weak (or too long). It must contain at least 5 characters (and not more than 100).");
+      throw new GeneralBadRequestException(
+          "Password is too weak (or too long). It must contain at least 5 characters (and not more than 100).");
 
     } else {
       final Player player = passwordResetToken.getPlayer();
@@ -305,9 +322,8 @@ public class PlayerService {
   }
 
   public void invalidateAllTokens() {
-    final List<Player> nonAdminPlayers = playerRepository
-            .findAll()
-            .stream()
+    final List<Player> nonAdminPlayers =
+        playerRepository.findAll().stream()
             .filter(this::isNonAdminPlayer)
             .collect(Collectors.toList());
 
@@ -317,16 +333,14 @@ public class PlayerService {
 
     playerRepository.saveAll(nonAdminPlayers);
 
-    final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayerIn(nonAdminPlayers);
+    final List<RefreshToken> playerRefreshTokens =
+        refreshTokenRepository.findAllByPlayerIn(nonAdminPlayers);
     refreshTokenRepository.deleteAll(playerRefreshTokens);
-
   }
 
   private boolean isNonAdminPlayer(final Player player) {
-    return player
-            .getAuthorities()
-            .stream()
-            .noneMatch(authority -> authority.getType() == AuthorityType.ROLE_ADMIN);
+    return player.getAuthorities().stream()
+        .noneMatch(authority -> authority.getType() == AuthorityType.ROLE_ADMIN);
   }
 
   public void invalidateTokensForPlayer(final UUID playerUuid) {
@@ -337,5 +351,4 @@ public class PlayerService {
     final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
     refreshTokenRepository.deleteAll(playerRefreshTokens);
   }
-
 }

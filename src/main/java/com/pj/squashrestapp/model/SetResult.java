@@ -3,10 +3,9 @@ package com.pj.squashrestapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,9 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "set_results")
@@ -26,22 +25,23 @@ import java.util.TreeSet;
 @NoArgsConstructor
 public class SetResult implements Identifiable, Comparable<SetResult> {
 
-  public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
-    @Override
-    public Match getParent(final SetResult visitingObject) {
-      return visitingObject.getMatch();
-    }
+  public static EntityVisitor<SetResult, Match> ENTITY_VISITOR =
+      new EntityVisitor<>(SetResult.class) {
+        @Override
+        public Match getParent(final SetResult visitingObject) {
+          return visitingObject.getMatch();
+        }
 
-    @Override
-    public Set<SetResult> getChildren(final Match parent) {
-      return parent.getSetResults();
-    }
+        @Override
+        public Set<SetResult> getChildren(final Match parent) {
+          return parent.getSetResults();
+        }
 
-    @Override
-    public void setChildren(final Match parent) {
-      parent.setSetResults(new TreeSet<SetResult>());
-    }
-  };
+        @Override
+        public void setChildren(final Match parent) {
+          parent.setSetResults(new TreeSet<SetResult>());
+        }
+      };
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -65,7 +65,8 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
   @JoinColumn(name = "match_id")
   private Match match;
 
-  public SetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
+  public SetResult(
+      final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
     this.secondPlayerScore = secondPlayerScore;
@@ -78,14 +79,10 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
 
   @Override
   public int compareTo(final SetResult that) {
-    return Comparator
-            .comparingInt(SetResult::getNumber)
-            .compare(this, that);
+    return Comparator.comparingInt(SetResult::getNumber).compare(this, that);
   }
 
   public boolean nonNull() {
-    return this.getFirstPlayerScore() != null
-           && this.getSecondPlayerScore() != null;
+    return this.getFirstPlayerScore() != null && this.getSecondPlayerScore() != null;
   }
-
 }

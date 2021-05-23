@@ -1,11 +1,9 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,9 +12,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "players")
@@ -26,36 +25,39 @@ import java.util.UUID;
 public class Player {
 
   @JsonIgnore
-  @ManyToMany(
-          mappedBy = "players",
-          fetch = FetchType.LAZY)
+  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
   private final Set<Authority> authorities = new HashSet<>();
+
   @JsonIgnore
-  @ManyToMany(
-          mappedBy = "players",
-          fetch = FetchType.LAZY)
+  @ManyToMany(mappedBy = "players", fetch = FetchType.LAZY)
   private final Set<RoleForLeague> roles = new HashSet<>();
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @Setter
-  @Column(name = "uuid",
-          nullable = false)
+  @Column(name = "uuid", nullable = false)
   @EqualsAndHashCode.Include
   private UUID uuid = UUID.randomUUID();
+
   @Setter
   @Column(name = "username", unique = true)
   private String username;
+
   @JsonIgnore
   @Setter
   @Column(name = "password")
   private String password;
+
   @Setter
   @Column(name = "enabled")
   private boolean enabled;
+
   @Setter
   @Column(name = "email", unique = true)
   private String email;
+
   @Setter
   @Column(name = "password_session_uuid")
   private UUID passwordSessionUuid;
@@ -92,5 +94,4 @@ public class Player {
   public String toString() {
     return username;
   }
-
 }

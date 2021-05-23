@@ -3,15 +3,12 @@ package com.pj.squashrestapp.dto;
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class PerLeagueMatchStats {
 
@@ -29,5 +26,4 @@ public class PerLeagueMatchStats {
     }
     this.perPlayer.sort(Comparator.comparingLong(PerPlayerMatchStats::getMatches).reversed());
   }
-
 }

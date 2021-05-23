@@ -24,23 +24,26 @@ public class LeagueLogoService {
   private final LeagueRepository leagueRepository;
 
   public byte[] extractLeagueLogoBySeasonUuid(final UUID seasonUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository
-        .extractLogoBlobBySeasonUuid(seasonUuid)
-        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
+    final byte[] leagueLogoBytes =
+        leagueLogoRepository
+            .extractLogoBlobBySeasonUuid(seasonUuid)
+            .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 
   public byte[] extractLeagueLogoByRoundUuid(final UUID roundUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository
-        .extractLogoBlobByRoundUuid(roundUuid)
-        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
+    final byte[] leagueLogoBytes =
+        leagueLogoRepository
+            .extractLogoBlobByRoundUuid(roundUuid)
+            .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 
   public byte[] extractLeagueLogo(final UUID leagueUuid) {
-    final byte[] leagueLogoBytes = leagueLogoRepository
-        .extractLogoBlobByLeagueUuid(leagueUuid)
-        .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
+    final byte[] leagueLogoBytes =
+        leagueLogoRepository
+            .extractLogoBlobByLeagueUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
     return leagueLogoBytes;
   }
 

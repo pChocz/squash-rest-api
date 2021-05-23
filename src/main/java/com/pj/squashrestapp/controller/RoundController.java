@@ -3,6 +3,9 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,13 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/rounds")
@@ -33,31 +30,26 @@ public class RoundController {
 
   private final RoundService roundService;
 
-
   @PostMapping
   @ResponseBody
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
   UUID newRound(
-          @RequestBody
-          @RequestParam final int roundNumber,
-          @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
-          @RequestParam final UUID seasonUuid,
-          @RequestParam final List<UUID[]> playersUuids) {
+      @RequestBody @RequestParam final int roundNumber,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
+      @RequestParam final UUID seasonUuid,
+      @RequestParam final List<UUID[]> playersUuids) {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersUuids);
     log.info("created round {}", round.getUuid());
     return round.getUuid();
   }
 
-
   @PutMapping(value = "{roundUuid}/{finishedState}")
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void updateRoundFinishState(
-          @PathVariable final UUID roundUuid,
-          @PathVariable final boolean finishedState) {
+      @PathVariable final UUID roundUuid, @PathVariable final boolean finishedState) {
     roundService.updateRoundFinishedState(roundUuid, finishedState);
     log.info("update round {}: finished state: {}", roundUuid, finishedState);
   }
-
 
   @GetMapping(value = "league-uuid/{roundUuid}")
   @ResponseBody
@@ -65,12 +57,10 @@ public class RoundController {
     return roundService.extractLeagueUuid(roundUuid);
   }
 
-
   @DeleteMapping(value = "/{roundUuid}")
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void deleteRound(@PathVariable final UUID roundUuid) {
     roundService.deleteRound(roundUuid);
     log.info("Round {} has been deleted", roundUuid);
   }
-
 }

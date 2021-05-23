@@ -2,14 +2,11 @@ package com.pj.squashrestapp.dto;
 
 import com.google.common.util.concurrent.AtomicLongMap;
 import com.pj.squashrestapp.model.BonusPoint;
-import lombok.Getter;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public final class BonusPointsAggregatedForSeason {
 
@@ -29,9 +26,6 @@ public final class BonusPointsAggregatedForSeason {
   }
 
   public int forPlayer(final UUID playerUuid) {
-    return (int) this
-            .pointsPerPlayerId
-            .get(playerUuid);
+    return (int) this.pointsPerPlayerId.get(playerUuid);
   }
-
 }

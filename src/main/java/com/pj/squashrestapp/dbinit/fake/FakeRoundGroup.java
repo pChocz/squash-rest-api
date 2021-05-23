@@ -3,13 +3,10 @@ package com.pj.squashrestapp.dbinit.fake;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoundGroup;
+import java.util.List;
 import lombok.experimental.UtilityClass;
 
-import java.util.List;
-
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeRoundGroup {
 
@@ -27,5 +24,4 @@ public class FakeRoundGroup {
     }
     return roundGroup;
   }
-
 }

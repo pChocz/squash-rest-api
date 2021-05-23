@@ -1,22 +1,18 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.Player;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerDto {
 
-  @EqualsAndHashCode.Include
-  private final UUID uuid;
+  @EqualsAndHashCode.Include private final UUID uuid;
   private final String username;
 
   public PlayerDto(final Player player) {
@@ -28,5 +24,4 @@ public class PlayerDto {
   public String toString() {
     return username;
   }
-
 }

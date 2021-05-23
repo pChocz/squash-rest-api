@@ -2,9 +2,7 @@ package com.pj.squashrestapp.util;
 
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class UsernameValidator {
 
@@ -14,14 +12,16 @@ public class UsernameValidator {
 
   private final String ALL_LETTERS = "\\p{L}";
   private final String NUMBERS = "0-9";
+
   @SuppressWarnings("RegExpRedundantEscape")
   private final String OTHER_ALLOWED = "\\_\\-";
+
   private final String SPACE = "\\s";
 
-  private final String PATTERN = "^[" + ALL_LETTERS + NUMBERS + OTHER_ALLOWED + SPACE + "]" + MIN_MAX_CHAR + "$";
+  private final String PATTERN =
+      "^[" + ALL_LETTERS + NUMBERS + OTHER_ALLOWED + SPACE + "]" + MIN_MAX_CHAR + "$";
 
   public boolean isValid(final String username) {
     return username.matches(PATTERN);
   }
-
 }

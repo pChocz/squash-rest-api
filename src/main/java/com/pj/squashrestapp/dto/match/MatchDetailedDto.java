@@ -11,17 +11,14 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class MatchDetailedDto implements MatchDto {
 
@@ -33,6 +30,7 @@ public class MatchDetailedDto implements MatchDto {
 
   private final UUID roundUuid;
   private final int roundNumber;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
 
@@ -74,5 +72,4 @@ public class MatchDetailedDto implements MatchDto {
   public String toString() {
     return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

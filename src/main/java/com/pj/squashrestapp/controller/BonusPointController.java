@@ -4,6 +4,10 @@ import com.pj.squashrestapp.dto.BonusPointsDto;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,14 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/bonus-points")
@@ -35,19 +32,20 @@ public class BonusPointController {
 
   private final BonusPointService bonusPointService;
 
-
   @PostMapping
   @ResponseBody
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
-  BonusPoint apply(@RequestParam final UUID winnerUuid,
-                   @RequestParam final UUID looserUuid,
-                   @RequestParam final UUID seasonUuid,
-                   @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
-                   @RequestParam final int points) {
-    final BonusPoint bonusPoint = bonusPointService.applyBonusPointsForTwoPlayers(winnerUuid, looserUuid, seasonUuid, date, points);
+  BonusPoint apply(
+      @RequestParam final UUID winnerUuid,
+      @RequestParam final UUID looserUuid,
+      @RequestParam final UUID seasonUuid,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
+      @RequestParam final int points) {
+    final BonusPoint bonusPoint =
+        bonusPointService.applyBonusPointsForTwoPlayers(
+            winnerUuid, looserUuid, seasonUuid, date, points);
     return bonusPoint;
   }
-
 
   @DeleteMapping("/{uuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -56,16 +54,12 @@ public class BonusPointController {
     bonusPointService.deleteBonusPoint(uuid);
   }
 
-
   @GetMapping("/seasons/{seasonUuid}")
   @ResponseBody
   List<BonusPointsDto> extractForSeason(@PathVariable final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(seasonUuid);
-    final List<BonusPointsDto> bonusPointsForSeason = bonusPoints
-            .stream()
-            .map(BonusPointsDto::new)
-            .collect(Collectors.toList());
+    final List<BonusPointsDto> bonusPointsForSeason =
+        bonusPoints.stream().map(BonusPointsDto::new).collect(Collectors.toList());
     return bonusPointsForSeason;
   }
-
 }

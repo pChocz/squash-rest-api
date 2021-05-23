@@ -9,5 +9,4 @@ public class JsonLeagueRoles {
 
   private String league;
   private String role;
-
 }

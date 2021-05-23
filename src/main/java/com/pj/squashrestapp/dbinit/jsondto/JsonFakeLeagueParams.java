@@ -2,10 +2,9 @@ package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
@@ -23,5 +22,4 @@ public class JsonFakeLeagueParams {
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
-
 }

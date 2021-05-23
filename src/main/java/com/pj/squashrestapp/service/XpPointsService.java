@@ -10,18 +10,15 @@ import com.pj.squashrestapp.model.XpPointsForRoundGroup;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,7 +29,8 @@ public class XpPointsService {
   public ArrayListMultimap<String, Integer> buildAllAsIntegerMultimap() {
     final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAll();
     final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
-    final ArrayListMultimap<String, Integer> multimap = EntityGraphBuildUtil.reconstructXpPointsForRound(allPointsForRounds, allPoints);
+    final ArrayListMultimap<String, Integer> multimap =
+        EntityGraphBuildUtil.reconstructXpPointsForRound(allPointsForRounds, allPoints);
     return multimap;
   }
 
@@ -44,7 +42,8 @@ public class XpPointsService {
   private List<XpPointsForRound> buildAllAsNativeObjectForType(final String type) {
     final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAllByType(type);
     final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAllByType(type);
-    final List<XpPointsForRound> xpPointsForRound = EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
+    final List<XpPointsForRound> xpPointsForRound =
+        EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
     return xpPointsForRound;
   }
 
@@ -57,15 +56,18 @@ public class XpPointsService {
       final int numberOfPlayers = xpPointsForRound.getNumberOfPlayers();
       final XpPointsForTable xpPointsForTable = new XpPointsForTable(type, split, numberOfPlayers);
 
-      for (final XpPointsForRoundGroup xpPointsForRoundGroup : xpPointsForRound.getXpPointsForRoundGroups()) {
+      for (final XpPointsForRoundGroup xpPointsForRoundGroup :
+          xpPointsForRound.getXpPointsForRoundGroups()) {
         final int groupNumber = xpPointsForRoundGroup.getRoundGroupNumber();
 
-        for (final XpPointsForPlace xpPointsForPlace : xpPointsForRoundGroup.getXpPointsForPlaces()) {
+        for (final XpPointsForPlace xpPointsForPlace :
+            xpPointsForRoundGroup.getXpPointsForPlaces()) {
           final int placeInRound = xpPointsForPlace.getPlaceInRound();
           final int placeInGroup = xpPointsForPlace.getPlaceInRoundGroup();
           final int points = xpPointsForPlace.getPoints();
 
-          final XpPointsDto xpPointsDto = new XpPointsDto(placeInRound, placeInGroup, groupNumber, points);
+          final XpPointsDto xpPointsDto =
+              new XpPointsDto(placeInRound, placeInGroup, groupNumber, points);
           xpPointsForTable.addPoints(xpPointsDto);
         }
       }
@@ -82,9 +84,11 @@ public class XpPointsService {
   }
 
   public List<XpPointsForRound> buildAllAsNativeObject() {
-    final List<XpPointsForRound> allPointsForRounds = xpPointsRepository.findAllByOrderByNumberOfPlayersAscSplitAsc();
+    final List<XpPointsForRound> allPointsForRounds =
+        xpPointsRepository.findAllByOrderByNumberOfPlayersAscSplitAsc();
     final List<XpPointsForPlace> allPoints = xpPointsRepository.fetchAll();
-    final List<XpPointsForRound> xpPointsForRound = EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
+    final List<XpPointsForRound> xpPointsForRound =
+        EntityGraphBuildUtil.reconstructXpPointsList(allPointsForRounds, allPoints);
     return xpPointsForRound;
   }
 
@@ -97,9 +101,11 @@ public class XpPointsService {
     final int[][] points = preparePointsArray(split, pointsAsString);
 
     final String splitAsString = GeneralUtil.intArrayToString(split);
-    final Optional<XpPointsForRound> xpPointsOptional = xpPointsRepository.findByTypeAndSplit(type, splitAsString);
+    final Optional<XpPointsForRound> xpPointsOptional =
+        xpPointsRepository.findByTypeAndSplit(type, splitAsString);
     if (xpPointsOptional.isPresent()) {
-      throw new GeneralBadRequestException("Xp Points for type [" + type + "] and split [" + splitAsString + "] already exist!");
+      throw new GeneralBadRequestException(
+          "Xp Points for type [" + type + "] and split [" + splitAsString + "] already exist!");
     }
 
     final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, split, points);
@@ -111,7 +117,8 @@ public class XpPointsService {
 
     int i = 0;
     for (final String pointsPerGroup : pointsAsString) {
-      points[i] = Arrays.stream(pointsPerGroup.split("\\|"))
+      points[i] =
+          Arrays.stream(pointsPerGroup.split("\\|"))
               .map(String::trim)
               .mapToInt(Integer::valueOf)
               .toArray();
@@ -127,12 +134,13 @@ public class XpPointsService {
 
   public void deleteExistingXpPoints(final String type, final int[] split) {
     final String splitAsString = GeneralUtil.intArrayToString(split);
-    final Optional<XpPointsForRound> xpPoints = xpPointsRepository.findByTypeAndSplit(type, splitAsString);
+    final Optional<XpPointsForRound> xpPoints =
+        xpPointsRepository.findByTypeAndSplit(type, splitAsString);
     if (xpPoints.isPresent()) {
       xpPointsRepository.delete(xpPoints.get());
     } else {
-      throw new GeneralBadRequestException("Xp Points for type [" + type + "] and split [" + splitAsString + "] does not exist!");
+      throw new GeneralBadRequestException(
+          "Xp Points for type [" + type + "] and split [" + splitAsString + "] does not exist!");
     }
   }
-
 }

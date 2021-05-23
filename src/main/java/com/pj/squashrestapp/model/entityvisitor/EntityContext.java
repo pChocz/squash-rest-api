@@ -23,5 +23,4 @@ public class EntityContext {
     final Object object = visitedMap.get(classId);
     return classId.getClazz().cast(object);
   }
-
 }

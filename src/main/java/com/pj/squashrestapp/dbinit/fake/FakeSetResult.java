@@ -4,9 +4,7 @@ import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeSetResult {
 
@@ -21,9 +19,7 @@ public class FakeSetResult {
   }
 
   private int generateWinningPoints(final int setNumber) {
-    return setNumber > 2
-            ? WINNING_TIE_BREAK_SCORE
-            : WINNING_REGULAR_SET_SCORE;
+    return setNumber > 2 ? WINNING_TIE_BREAK_SCORE : WINNING_REGULAR_SET_SCORE;
   }
 
   private int[] createFakeSetResultArray(final int winningPoints) {
@@ -48,8 +44,8 @@ public class FakeSetResult {
 
   private int generateLoosingPoints(final int winningPoints) {
     return winningPoints == WINNING_REGULAR_SET_SCORE
-            ? FakeUtil.randomBetweenTwoIntegers(0, winningPoints)
-            : FakeUtil.randomBetweenTwoIntegers(0, WINNING_TIE_BREAK_SCORE - 1);
+        ? FakeUtil.randomBetweenTwoIntegers(0, winningPoints)
+        : FakeUtil.randomBetweenTwoIntegers(0, WINNING_TIE_BREAK_SCORE - 1);
   }
 
   SetResult create(final int setNumber) {
@@ -65,5 +61,4 @@ public class FakeSetResult {
   AdditonalSetResult createNullSetAdditional(final int setNumber) {
     return new AdditonalSetResult(setNumber, null, null);
   }
-
 }

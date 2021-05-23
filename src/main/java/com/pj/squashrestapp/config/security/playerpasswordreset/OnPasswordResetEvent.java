@@ -1,15 +1,12 @@
 package com.pj.squashrestapp.config.security.playerpasswordreset;
 
 import com.pj.squashrestapp.model.Player;
+import java.util.Locale;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
-import java.util.Locale;
-
-/**
- *
- */
+/** */
 @Getter
 @Setter
 public class OnPasswordResetEvent extends ApplicationEvent {
@@ -24,5 +21,4 @@ public class OnPasswordResetEvent extends ApplicationEvent {
     this.locale = locale;
     this.frontendUrl = frontendUrl;
   }
-
 }

@@ -2,11 +2,10 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.XpPointsForPlace;
 import com.pj.squashrestapp.model.XpPointsForRound;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  *

@@ -1,13 +1,12 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.List;
 import java.util.UUID;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -22,5 +21,4 @@ public class JsonPlayerCredentials {
   private UUID passwordSessionUuid;
   private List<JsonLeagueRoles> leagueRoles;
   private List<JsonAuthorities> authorities;
-
 }

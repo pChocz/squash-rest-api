@@ -14,20 +14,19 @@ import org.springframework.security.authentication.AuthenticationTrustResolverIm
 import org.springframework.security.core.Authentication;
 
 /**
- * Class that allows to implement custom method security logic.
- * Implementation is done by {@link CustomMethodSecurityExpressionRoot} class.
+ * Class that allows to implement custom method security logic. Implementation is done by {@link
+ * CustomMethodSecurityExpressionRoot} class.
  */
-public class CustomMethodSecurityExpressionHandler
-        extends DefaultMethodSecurityExpressionHandler {
+public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
   private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
   private ApplicationContext applicationContext;
 
   @Override
   protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-          final Authentication authentication,
-          final MethodInvocation invocation) {
-    final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(authentication);
+      final Authentication authentication, final MethodInvocation invocation) {
+    final CustomMethodSecurityExpressionRoot root =
+        new CustomMethodSecurityExpressionRoot(authentication);
     root.setThis(invocation.getThis());
     root.setPermissionEvaluator(getPermissionEvaluator());
     root.setTrustResolver(this.trustResolver);
@@ -45,5 +44,4 @@ public class CustomMethodSecurityExpressionHandler
     super.setApplicationContext(applicationContext);
     this.applicationContext = applicationContext;
   }
-
 }

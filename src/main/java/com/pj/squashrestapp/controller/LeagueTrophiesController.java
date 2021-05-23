@@ -5,6 +5,8 @@ import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.service.LeagueTrophiesService;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,12 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/trophies")
@@ -31,42 +28,42 @@ public class LeagueTrophiesController {
 
   private final LeagueTrophiesService leagueTrophiesService;
 
-
   @PostMapping
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  TrophyForLeague addTrophy(@RequestParam final UUID playerUuid,
-                            @RequestParam final UUID leagueUuid,
-                            @RequestParam final int seasonNumber,
-                            @RequestParam final Trophy trophy) {
-    final TrophyForLeague trophyForLeague = leagueTrophiesService.addNewTrophy(playerUuid, leagueUuid, seasonNumber, trophy);
+  TrophyForLeague addTrophy(
+      @RequestParam final UUID playerUuid,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final int seasonNumber,
+      @RequestParam final Trophy trophy) {
+    final TrophyForLeague trophyForLeague =
+        leagueTrophiesService.addNewTrophy(playerUuid, leagueUuid, seasonNumber, trophy);
     return trophyForLeague;
   }
 
-
   @DeleteMapping
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void removeTrophy(@RequestParam final UUID playerUuid,
-                    @RequestParam final UUID leagueUuid,
-                    @RequestParam final int seasonNumber,
-                    @RequestParam final Trophy trophy) {
+  void removeTrophy(
+      @RequestParam final UUID playerUuid,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final int seasonNumber,
+      @RequestParam final Trophy trophy) {
     leagueTrophiesService.removeTrophy(playerUuid, leagueUuid, seasonNumber, trophy);
   }
-
 
   @GetMapping(value = "/{playerUuid}")
   @ResponseBody
   List<TrophiesWonForLeague> extractTrophiesForPlayer(@PathVariable final UUID playerUuid) {
-    final List<TrophiesWonForLeague> trophiesWonForLeagues = leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
+    final List<TrophiesWonForLeague> trophiesWonForLeagues =
+        leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
     return trophiesWonForLeagues;
   }
-
 
   @GetMapping(value = "/league/{leagueUuid}")
   @ResponseBody
   List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(@PathVariable final UUID leagueUuid) {
-    final List<SeasonTrophies> trophiesForSeasons = leagueTrophiesService.extractTrophiesForAllSeasonsForLeague(leagueUuid);
+    final List<SeasonTrophies> trophiesForSeasons =
+        leagueTrophiesService.extractTrophiesForAllSeasonsForLeague(leagueUuid);
     return trophiesForSeasons;
   }
-
 }

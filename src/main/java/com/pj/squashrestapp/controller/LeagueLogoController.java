@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.service.LeagueLogoService;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.UUID;
-
-/**
- *
- */
+/** */
 @Slf4j
 @RestController
 @RequestMapping("/league-logos")
@@ -30,15 +27,13 @@ public class LeagueLogoController {
 
   private final LeagueLogoService leagueLogoService;
 
-
   @PutMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void replaceLogoForLeague(@PathVariable final UUID leagueUuid,
-                            @RequestParam final MultipartFile leagueLogoFile) {
+  void replaceLogoForLeague(
+      @PathVariable final UUID leagueUuid, @RequestParam final MultipartFile leagueLogoFile) {
     leagueLogoService.replaceLogoForLeague(leagueUuid, leagueLogoFile);
   }
-
 
   @DeleteMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -47,14 +42,12 @@ public class LeagueLogoController {
     leagueLogoService.deleteLogoForLeague(leagueUuid);
   }
 
-
   @GetMapping(value = "/season/{seasonUuid}")
   @ResponseBody
   String extractLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogoBySeasonUuid(seasonUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
-
 
   @GetMapping(value = "/round/{roundUuid}")
   @ResponseBody
@@ -63,12 +56,10 @@ public class LeagueLogoController {
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 
-
   @GetMapping(value = "/{leagueUuid}")
   @ResponseBody
   String extractLeagueLogo(@PathVariable final UUID leagueUuid) {
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
-
 }

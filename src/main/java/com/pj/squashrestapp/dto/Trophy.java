@@ -5,7 +5,6 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum Trophy {
-
   LEAGUE_1ST(false),
   LEAGUE_2ND(false),
   LEAGUE_3RD(false),
@@ -21,7 +20,5 @@ public enum Trophy {
   ALL_ROUNDS_ATTENDEE(true),
   ;
 
-  @Getter
-  private final boolean allowMultiple;
-
+  @Getter private final boolean allowMultiple;
 }

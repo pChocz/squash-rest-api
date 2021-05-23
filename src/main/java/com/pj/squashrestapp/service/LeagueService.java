@@ -33,15 +33,6 @@ import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
-import java.util.NoSuchElementException;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,12 +41,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-/**
- *
- */
+/** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -73,15 +70,18 @@ public class LeagueService {
   private final TrophiesForLeagueRepository trophiesForLeagueRepository;
 
   /**
-   * This method creates the league itself as well as both roles (USER, MODERATOR)
-   * that can be assigned to the players later.
+   * This method creates the league itself as well as both roles (USER, MODERATOR) that can be
+   * assigned to the players later.
    *
    * @param leagueName name of the league to create
    * @return league DTO object
    */
   public LeagueDto createNewLeague(final String leagueName) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase()).orElseThrow();
+    final Player player =
+        playerRepository
+            .fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase())
+            .orElseThrow();
 
     final League league = new League(leagueName);
 
@@ -101,16 +101,11 @@ public class LeagueService {
   }
 
   public void removeEmptyLeague(final UUID leagueUuid) {
-    final League leagueToRemove = leagueRepository
-            .findByUuid(leagueUuid)
-            .orElseThrow();
+    final League leagueToRemove = leagueRepository.findByUuid(leagueUuid).orElseThrow();
 
     final List<Player> leaguePlayers = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
     for (final Player player : leaguePlayers) {
-      player.getRoles()
-              .removeIf(roleForLeague -> roleForLeague
-                      .getLeague()
-                      .equals(leagueToRemove));
+      player.getRoles().removeIf(roleForLeague -> roleForLeague.getLeague().equals(leagueToRemove));
     }
     playerRepository.saveAll(leaguePlayers);
 
@@ -131,28 +126,31 @@ public class LeagueService {
     leagueLogoRepository.save(leagueLogo);
   }
 
-
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final League league = fetchEntireLeague(leagueUuid);
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
+    final ArrayListMultimap<String, Integer> xpPointsPerSplit =
+        xpPointsService.buildAllAsIntegerMultimap();
 
     // per season stats
     final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);
 
     // per player scoreboards
-    final List<PlayerLeagueXpOveral> playerLeagueXpOveralList = overalXpPoints(league, xpPointsPerSplit);
-    final EntireLeagueScoreboard scoreboard = new EntireLeagueScoreboard(league, playerLeagueXpOveralList);
+    final List<PlayerLeagueXpOveral> playerLeagueXpOveralList =
+        overalXpPoints(league, xpPointsPerSplit);
+    final EntireLeagueScoreboard scoreboard =
+        new EntireLeagueScoreboard(league, playerLeagueXpOveralList);
 
     return LeagueStatsWrapper.builder()
-            .leagueName(league.getName())
-            .leagueUuid(league.getUuid())
-            .perSeasonStats(perSeasonStatsList)
-            .scoreboard(scoreboard)
-            .build();
+        .leagueName(league.getName())
+        .leagueUuid(league.getUuid())
+        .perSeasonStats(perSeasonStatsList)
+        .scoreboard(scoreboard)
+        .build();
   }
 
   public League fetchEntireLeague(final UUID leagueUuid) {
-    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
+    final List<SetResult> setResultListForLeague =
+        setResultRepository.fetchByLeagueUuid(leagueUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
   }
@@ -184,12 +182,14 @@ public class LeagueService {
       }
 
       final float tieBreakMatchesPercents = (float) 100 * tieBreaks / matches;
-      final BigDecimal tieBreakMatchesPercentsRounded = RoundingUtil.round(tieBreakMatchesPercents, 1);
+      final BigDecimal tieBreakMatchesPercentsRounded =
+          RoundingUtil.round(tieBreakMatchesPercents, 1);
 
       final float playersAverage = (float) playersAttendicesMap.size() / season.getRounds().size();
       final BigDecimal playersAverageRounded = RoundingUtil.round(playersAverage, 1);
 
-      perSeasonStatsList.add(PerSeasonStats.builder()
+      perSeasonStatsList.add(
+          PerSeasonStats.builder()
               .seasonNumber(season.getNumber())
               .seasonStartDate(season.getStartDate())
               .seasonUuid(season.getUuid())
@@ -208,28 +208,33 @@ public class LeagueService {
     return perSeasonStatsList;
   }
 
-  public List<PlayerLeagueXpOveral> overalXpPoints(final League league,
-                                                   final ArrayListMultimap<String, Integer> xpPointsPerSplit) {
+  public List<PlayerLeagueXpOveral> overalXpPoints(
+      final League league, final ArrayListMultimap<String, Integer> xpPointsPerSplit) {
 
-    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague = bonusPointService.extractBonusPointsAggregatedForLeague(league.getUuid());
+    final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague =
+        bonusPointService.extractBonusPointsAggregatedForLeague(league.getUuid());
 
     final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
     for (final Season season : league.getSeasons()) {
-      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason = bonusPointsAggregatedForLeague.forSeason(season.getUuid());
-      final SeasonScoreboardDto scoreboardDto = seasonService.getSeasonScoreboardDtoForLeagueStats(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
+          bonusPointsAggregatedForLeague.forSeason(season.getUuid());
+      final SeasonScoreboardDto scoreboardDto =
+          seasonService.getSeasonScoreboardDtoForLeagueStats(
+              season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
       seasonScoreboardDtoList.add(scoreboardDto);
     }
 
-    final ArrayListMultimap<PlayerDto, SeasonScoreboardRowDto> playersMap = ArrayListMultimap.create();
+    final ArrayListMultimap<PlayerDto, SeasonScoreboardRowDto> playersMap =
+        ArrayListMultimap.create();
     for (final SeasonScoreboardDto seasonScoreboardDto : seasonScoreboardDtoList) {
-      for (final SeasonScoreboardRowDto seasonScoreboardRowDto : seasonScoreboardDto.getSeasonScoreboardRows()) {
+      for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
+          seasonScoreboardDto.getSeasonScoreboardRows()) {
         playersMap.put(seasonScoreboardRowDto.getPlayer(), seasonScoreboardRowDto);
       }
     }
 
-    final List<PlayerLeagueXpOveral> playerLeagueXpOveralList = playersMap
-            .keySet()
-            .stream()
+    final List<PlayerLeagueXpOveral> playerLeagueXpOveralList =
+        playersMap.keySet().stream()
             .map(playerDto -> new PlayerLeagueXpOveral(playersMap.get(playerDto)))
             .sorted(Comparator.comparingInt(PlayerLeagueXpOveral::getTotalPoints).reversed())
             .collect(Collectors.toList());
@@ -239,9 +244,10 @@ public class LeagueService {
 
   @Transactional
   public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
-    final League league = leagueRepository
-        .findByUuid(leagueUuid)
-        .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
+    final League league =
+        leagueRepository
+            .findByUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
 
     final LeagueDto leagueDto = new LeagueDto(league);
 
@@ -255,20 +261,18 @@ public class LeagueService {
 
   public List<LeagueDto> buildGeneralInfoForAllLeagues() {
     final List<League> leagues = leagueRepository.findAllGeneralInfo();
-    final List<LeagueDto> leaguesDtos = leagues
-            .stream()
-            .map(LeagueDto::new)
-            .collect(Collectors.toList());
+    final List<LeagueDto> leaguesDtos =
+        leagues.stream().map(LeagueDto::new).collect(Collectors.toList());
     return leaguesDtos;
   }
 
   public List<PlayerDto> extractLeaguePlayersGeneral(final UUID leagueUuid) {
-    final List<Player> players = playerRepository.fetchGeneralInfoSorted(leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
+    final List<Player> players =
+        playerRepository.fetchGeneralInfoSorted(
+            leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
 
-    final List<PlayerDto> playersDtos = players
-            .stream()
-            .map(PlayerDto::new)
-            .collect(Collectors.toList());
+    final List<PlayerDto> playersDtos =
+        players.stream().map(PlayerDto::new).collect(Collectors.toList());
 
     return playersDtos;
   }
@@ -281,29 +285,29 @@ public class LeagueService {
 
     for (final League league : leagues) {
       final UUID uuid = league.getUuid();
-      leagueLogos
-              .stream()
-              .filter(logo -> logo.getLeague().getUuid().equals(uuid))
-              .findFirst()
-              .ifPresent(logo -> leagueLogosMap.put(uuid, logo.getPicture()));
+      leagueLogos.stream()
+          .filter(logo -> logo.getLeague().getUuid().equals(uuid))
+          .findFirst()
+          .ifPresent(logo -> leagueLogosMap.put(uuid, logo.getPicture()));
     }
 
     return leagueLogosMap;
   }
 
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
-    final League league = leagueRepository
-        .findByUuid(leagueUuid)
-        .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
+    final League league =
+        leagueRepository
+            .findByUuid(leagueUuid)
+            .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
 
-
-    final List<Long> playersIdsFirstPlayerForLeagueByUuid = leagueRepository.findPlayersIdsFirstPlayerForLeagueByUuid(leagueUuid);
-    final List<Long> playersIdsSecondPlayerForLeagueByUuid = leagueRepository.findPlayersIdsSecondPlayerForLeagueByUuid(leagueUuid);
+    final List<Long> playersIdsFirstPlayerForLeagueByUuid =
+        leagueRepository.findPlayersIdsFirstPlayerForLeagueByUuid(leagueUuid);
+    final List<Long> playersIdsSecondPlayerForLeagueByUuid =
+        leagueRepository.findPlayersIdsSecondPlayerForLeagueByUuid(leagueUuid);
     final HashSet<Long> playersIds = new HashSet<>();
     playersIds.addAll(playersIdsFirstPlayerForLeagueByUuid);
     playersIds.addAll(playersIdsSecondPlayerForLeagueByUuid);
     final int allPlayers = playersIds.size();
-
 
     final Object[] counts = (Object[]) leagueRepository.findAllCountsForLeagueByUuid(leagueUuid);
     final Long numberOfSeasons = (Long) counts[0];
@@ -312,19 +316,16 @@ public class LeagueService {
     final Long numberOfSets = (Long) counts[3];
     final Long numberOfRallies = (Long) counts[4];
 
-
-    final List<Object> groupedPlayersForLeagueByUuid = leagueRepository.findRoundsPerSplitGroupedForLeagueByUuid(leagueUuid);
+    final List<Object> groupedPlayersForLeagueByUuid =
+        leagueRepository.findRoundsPerSplitGroupedForLeagueByUuid(leagueUuid);
     int countOfAttendices = 0;
     int countOfGroups = 0;
     for (final Object object : groupedPlayersForLeagueByUuid) {
       final Object[] group = (Object[]) object;
       final String split = (String) group[0];
       final int count = ((Long) group[1]).intValue();
-      final int[] splitAsArray = Arrays
-              .stream(split.split("\\|"))
-              .map(String::trim)
-              .mapToInt(Integer::valueOf)
-              .toArray();
+      final int[] splitAsArray =
+          Arrays.stream(split.split("\\|")).map(String::trim).mapToInt(Integer::valueOf).toArray();
       final int groupsPerRound = splitAsArray.length;
       final int playersPerRound = Arrays.stream(splitAsArray).sum();
       countOfGroups += groupsPerRound * count;
@@ -337,8 +338,8 @@ public class LeagueService {
     final float averageGroupsPerRound = (float) countOfGroups / numberOfRounds;
     final BigDecimal averageGroupsPerRoundRounded = RoundingUtil.round(averageGroupsPerRound, 1);
 
-
-    final OveralStats overalStats = OveralStats.builder()
+    final OveralStats overalStats =
+        OveralStats.builder()
             .leagueUuid(league.getUuid())
             .leagueName(league.getName())
             .location(league.getLocation())
@@ -356,5 +357,4 @@ public class LeagueService {
 
     return overalStats;
   }
-
 }

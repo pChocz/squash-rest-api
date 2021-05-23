@@ -1,10 +1,9 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.ArrayList;
 import java.util.UUID;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -27,5 +26,4 @@ public class JsonLeague {
   private ArrayList<JsonLeagueRule> rules;
 
   private ArrayList<JsonAdditionalMatch> additionalMatches;
-
 }

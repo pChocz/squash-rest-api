@@ -2,6 +2,8 @@ package com.pj.squashrestapp.aspects;
 
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -12,12 +14,7 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-
-/**
- *
- */
+/** */
 @Slf4j
 @Aspect
 @Component
@@ -51,7 +48,6 @@ public class LogControllerAspect {
     // empty
   }
 
-
   /**
    * Logging aspect that matches all non-void repository and service methods.
    *
@@ -59,8 +55,9 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it so it can be passed to the client
    */
-//  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
-  public Object logAllServiceAndRepositoryMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+  //  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
+  public Object logAllServiceAndRepositoryMethods(final ProceedingJoinPoint proceedingJoinPoint)
+      throws Throwable {
     final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
     final String className = methodSignature.getDeclaringType().getSimpleName();
     final String methodName = methodSignature.getName();
@@ -81,11 +78,12 @@ public class LogControllerAspect {
       throw throwable;
 
     } finally {
-      log.info("DEBUG\t{}\t{}ms\t{}.{}",
-              hibernateQueryInterceptor.getQueryCount(),
-              stopWatch.getTotalTimeMillis(),
-              className,
-              methodName);
+      log.info(
+          "DEBUG\t{}\t{}ms\t{}.{}",
+          hibernateQueryInterceptor.getQueryCount(),
+          stopWatch.getTotalTimeMillis(),
+          className,
+          methodName);
     }
   }
 
@@ -97,7 +95,8 @@ public class LogControllerAspect {
    * @throws Throwable rethrows exception after logging it so it can be passed to the client
    */
   @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
-  public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
+  public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint)
+      throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
     final Object[] args = proceedingJoinPoint.getArgs();
 
@@ -123,12 +122,14 @@ public class LogControllerAspect {
       throw throwable;
 
     } finally {
-      log.info("REST-REQUEST\t{}\t{}\t{}ms\t{}.{}{}",
-              hibernateQueryInterceptor.getQueryCount(),
-              username,
-              stopWatch.getTotalTimeMillis(),
-              className, methodName, isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
+      log.info(
+          "REST-REQUEST\t{}\t{}\t{}ms\t{}.{}{}",
+          hibernateQueryInterceptor.getQueryCount(),
+          username,
+          stopWatch.getTotalTimeMillis(),
+          className,
+          methodName,
+          isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
     }
   }
-
 }

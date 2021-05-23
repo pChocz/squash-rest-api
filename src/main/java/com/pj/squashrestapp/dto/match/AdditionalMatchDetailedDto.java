@@ -9,17 +9,14 @@ import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditonalSetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class AdditionalMatchDetailedDto implements MatchDto {
 
@@ -61,5 +58,4 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   public String toString() {
     return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }
-
 }

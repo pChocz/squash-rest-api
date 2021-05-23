@@ -7,14 +7,9 @@ import org.springframework.security.access.expression.method.MethodSecurityExpre
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
-/**
- *
- */
+/** */
 @Configuration
-@EnableGlobalMethodSecurity(
-        prePostEnabled = true,
-        securedEnabled = true,
-        jsr250Enabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 @AllArgsConstructor
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
@@ -22,9 +17,9 @@ public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
   @Override
   protected MethodSecurityExpressionHandler createExpressionHandler() {
-    final CustomMethodSecurityExpressionHandler handler = new CustomMethodSecurityExpressionHandler();
+    final CustomMethodSecurityExpressionHandler handler =
+        new CustomMethodSecurityExpressionHandler();
     handler.setApplicationContext(applicationContext);
     return handler;
   }
-
 }

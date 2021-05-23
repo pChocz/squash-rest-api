@@ -7,9 +7,7 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.experimental.UtilityClass;
 
-/**
- *
- */
+/** */
 @UtilityClass
 public class FakeMatch {
 
@@ -66,5 +64,4 @@ public class FakeMatch {
     }
     return diff == 0;
   }
-
 }

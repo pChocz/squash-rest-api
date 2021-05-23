@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.model.entityvisitor;
 
-import lombok.Getter;
-
 import java.util.Set;
+import lombok.Getter;
 
 @Getter
 @SuppressWarnings({"unchecked", "MethodWithMoreThanThreeNegations", "JavaDoc"})
@@ -33,7 +32,6 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
         children.add(object);
       }
     }
-
   }
 
   public P getParent(final T visitingObject) {
@@ -47,5 +45,4 @@ public abstract class EntityVisitor<T extends Identifiable, P extends Identifiab
   public Set<T> getChildren(final P parent) {
     throw new UnsupportedOperationException();
   }
-
 }

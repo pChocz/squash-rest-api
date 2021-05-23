@@ -4,9 +4,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import lombok.Getter;
 
-/**
- *
- */
+/** */
 @Getter
 public class MatchesGroupedDto {
 
@@ -20,12 +18,9 @@ public class MatchesGroupedDto {
     final Player firstPlayer = (Player) array[1];
     final Player secondPlayer = (Player) array[2];
 
-    this.opponent = firstPlayer.equals(currentPlayer)
-            ? secondPlayer
-            : firstPlayer;
+    this.opponent = firstPlayer.equals(currentPlayer) ? secondPlayer : firstPlayer;
 
     this.count = (long) array[0];
     this.league = (League) array[3];
   }
-
 }

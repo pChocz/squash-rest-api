@@ -1,12 +1,9 @@
 package com.pj.squashrestapp.util;
 
+import java.util.TreeMap;
 import lombok.experimental.UtilityClass;
 
-import java.util.TreeMap;
-
-/**
- *
- */
+/** */
 @UtilityClass
 @SuppressWarnings({"MagicNumber", "JavaDoc"})
 public class RomanUtil {
@@ -36,5 +33,4 @@ public class RomanUtil {
     }
     return map.get(l) + toRoman(number - l);
   }
-
 }

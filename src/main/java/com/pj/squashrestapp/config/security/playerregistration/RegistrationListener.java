@@ -4,11 +4,10 @@ import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.email.EmailTemplate;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
-
-import java.util.UUID;
 
 /**
  *

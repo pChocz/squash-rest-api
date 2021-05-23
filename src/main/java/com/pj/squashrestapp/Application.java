@@ -1,17 +1,14 @@
 package com.pj.squashrestapp;
 
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE;
+
+import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import javax.annotation.PostConstruct;
-import java.util.TimeZone;
-
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE;
-
-/**
- * Entry Point for the entire application.
- */
+/** Entry Point for the entire application. */
 @EnableScheduling
 @SpringBootApplication
 @SuppressWarnings({"JavaDoc", "resource"})
@@ -25,5 +22,4 @@ public class Application {
   void setUtcTimezone() {
     TimeZone.setDefault(UTC_ZONE);
   }
-
 }

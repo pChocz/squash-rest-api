@@ -2,11 +2,10 @@ package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.annotations.SerializedName;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -55,5 +54,4 @@ public class JsonHallOfFameSeason {
   @JsonProperty("cov")
   @SerializedName("cov")
   private List<UUID> coviders;
-
 }
