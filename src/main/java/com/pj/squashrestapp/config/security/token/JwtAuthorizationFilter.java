@@ -1,25 +1,24 @@
 package com.pj.squashrestapp.config.security.token;
 
+import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
+
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import java.io.IOException;
+import java.util.UUID;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.UUID;
-
-import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
-import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 /**
  *

@@ -2,12 +2,11 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Methods in this class implement 2 quite cool performance solutions:

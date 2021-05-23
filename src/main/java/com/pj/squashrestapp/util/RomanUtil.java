@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.util;
 
-import lombok.experimental.UtilityClass;
-
 import java.util.TreeMap;
+import lombok.experimental.UtilityClass;
 
 /**
  *

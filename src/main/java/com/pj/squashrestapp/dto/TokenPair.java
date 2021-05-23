@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.dto;
 
-import lombok.Value;
-
 import java.util.UUID;
+import lombok.Value;
 
 /**
  *

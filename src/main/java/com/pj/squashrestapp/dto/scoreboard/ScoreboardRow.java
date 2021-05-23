@@ -2,7 +2,6 @@ package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
-
 import java.util.List;
 import java.util.stream.Collectors;
 

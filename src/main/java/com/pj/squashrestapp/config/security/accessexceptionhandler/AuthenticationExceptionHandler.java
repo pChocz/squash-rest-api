@@ -1,15 +1,14 @@
 package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
-import net.minidev.json.JSONObject;
-import org.springframework.security.core.AuthenticationException;
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
-
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import net.minidev.json.JSONObject;
+import org.springframework.security.core.AuthenticationException;
 
 /**
  *

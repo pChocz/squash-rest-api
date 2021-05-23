@@ -3,9 +3,8 @@ package com.pj.squashrestapp.dbinit.fake;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
-import lombok.experimental.UtilityClass;
-
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
 /**
  *

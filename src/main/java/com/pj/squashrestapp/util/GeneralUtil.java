@@ -1,9 +1,6 @@
 package com.pj.squashrestapp.util;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
-import lombok.experimental.UtilityClass;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -13,6 +10,8 @@ import java.util.List;
 import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  *

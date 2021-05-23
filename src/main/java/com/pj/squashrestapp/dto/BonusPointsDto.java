@@ -3,10 +3,9 @@ package com.pj.squashrestapp.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Getter;
 
 /**
  *

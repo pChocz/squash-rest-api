@@ -5,11 +5,10 @@ import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
-import lombok.experimental.UtilityClass;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
 /**
  *

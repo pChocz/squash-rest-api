@@ -5,12 +5,11 @@ import com.pj.squashrestapp.config.email.EmailTemplate;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
-
-import java.util.UUID;
 
 /**
  * Just sending an email about recruiter login to the admin

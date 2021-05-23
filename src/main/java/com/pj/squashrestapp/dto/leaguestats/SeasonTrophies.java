@@ -2,10 +2,9 @@ package com.pj.squashrestapp.dto.leaguestats;
 
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.TrophyForLeague;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
 
 /**
  *

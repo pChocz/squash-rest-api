@@ -1,10 +1,9 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.util.Arrays;
 import java.util.List;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *

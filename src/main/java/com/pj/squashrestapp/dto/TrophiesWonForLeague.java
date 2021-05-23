@@ -1,12 +1,11 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.TrophyForLeague;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  *

@@ -3,8 +3,6 @@ package com.pj.squashrestapp.dto.scoreboard;
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  *

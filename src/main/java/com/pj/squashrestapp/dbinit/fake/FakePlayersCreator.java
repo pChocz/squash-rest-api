@@ -2,11 +2,10 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.Player;
 import com.thedeanda.lorem.LoremIpsum;
-import lombok.experimental.UtilityClass;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.experimental.UtilityClass;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  *

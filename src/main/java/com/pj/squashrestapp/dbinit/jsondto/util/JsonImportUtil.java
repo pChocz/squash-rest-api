@@ -22,14 +22,13 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.experimental.UtilityClass;
-
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class JsonImportUtil {

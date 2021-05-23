@@ -2,9 +2,8 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.model.Player;
-import lombok.experimental.UtilityClass;
-
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
 /**
  *

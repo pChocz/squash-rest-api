@@ -1,12 +1,11 @@
 package com.pj.squashrestapp.dto.match;
 
-import lombok.Getter;
-import org.springframework.data.domain.Page;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 /**
  *

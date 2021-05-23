@@ -4,12 +4,11 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.RomanUtil;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *

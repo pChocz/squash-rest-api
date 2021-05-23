@@ -1,10 +1,9 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.dto.PlayerDto;
+import java.util.Comparator;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Comparator;
 
 /**
  *

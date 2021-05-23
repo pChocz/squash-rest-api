@@ -1,13 +1,12 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.BonusPoint;
-import lombok.Getter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  *

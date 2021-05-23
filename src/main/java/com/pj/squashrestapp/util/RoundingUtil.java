@@ -1,9 +1,8 @@
 package com.pj.squashrestapp.util;
 
-import lombok.experimental.UtilityClass;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class RoundingUtil {

@@ -2,11 +2,10 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Player;
-import lombok.experimental.UtilityClass;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
 /**
  *

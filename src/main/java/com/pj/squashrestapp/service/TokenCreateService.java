@@ -1,24 +1,23 @@
 package com.pj.squashrestapp.service;
 
+import static com.pj.squashrestapp.config.security.token.TokenConstants.ACCESS_TOKEN_EXPIRATION_TIME_DAYS;
+import static com.pj.squashrestapp.config.security.token.TokenConstants.REFRESH_TOKEN_EXPIRATION_TIME_DAYS;
+
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
-import java.util.UUID;
-
-import static com.pj.squashrestapp.config.security.token.TokenConstants.ACCESS_TOKEN_EXPIRATION_TIME_DAYS;
-import static com.pj.squashrestapp.config.security.token.TokenConstants.REFRESH_TOKEN_EXPIRATION_TIME_DAYS;
 
 /**
  *

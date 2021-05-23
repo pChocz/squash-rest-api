@@ -1,11 +1,10 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.Player;
+import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-
-import java.util.UUID;
 
 /**
  *

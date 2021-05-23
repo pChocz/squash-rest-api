@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
-import lombok.Getter;
-
 import java.time.LocalDate;
+import lombok.Getter;
 
 /**
  *

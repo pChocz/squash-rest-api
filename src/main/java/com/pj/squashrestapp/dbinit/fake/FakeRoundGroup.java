@@ -3,9 +3,8 @@ package com.pj.squashrestapp.dbinit.fake;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoundGroup;
-import lombok.experimental.UtilityClass;
-
 import java.util.List;
+import lombok.experimental.UtilityClass;
 
 /**
  *

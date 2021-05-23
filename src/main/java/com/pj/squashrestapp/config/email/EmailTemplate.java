@@ -1,12 +1,11 @@
 package com.pj.squashrestapp.config.email;
 
-import lombok.Builder;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import lombok.Builder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 
 /**
  *

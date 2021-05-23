@@ -13,10 +13,9 @@ import com.pj.squashrestapp.model.XpPointsForRoundGroup;
 import com.pj.squashrestapp.model.entityvisitor.ClassId;
 import com.pj.squashrestapp.model.entityvisitor.EntityGraphBuilder;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
-import lombok.experimental.UtilityClass;
-
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.experimental.UtilityClass;
 
 /**
  * Entity Graph Reconstructor for the {@link SetResult} class that

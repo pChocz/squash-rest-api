@@ -1,17 +1,16 @@
 package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
 /**
  *

@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.model.entityvisitor;
 
-import lombok.Getter;
-
 import java.util.Set;
+import lombok.Getter;
 
 @Getter
 @SuppressWarnings({"unchecked", "MethodWithMoreThanThreeNegations", "JavaDoc"})

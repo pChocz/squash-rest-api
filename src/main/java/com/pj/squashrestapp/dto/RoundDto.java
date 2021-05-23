@@ -3,11 +3,10 @@ package com.pj.squashrestapp.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.util.GeneralUtil;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.time.LocalDate;
 import java.util.UUID;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *

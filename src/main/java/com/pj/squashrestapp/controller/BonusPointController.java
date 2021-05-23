@@ -4,6 +4,10 @@ import com.pj.squashrestapp.dto.BonusPointsDto;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,11 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  *

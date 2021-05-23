@@ -5,6 +5,9 @@ import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,10 +22,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
 
 /**
  *

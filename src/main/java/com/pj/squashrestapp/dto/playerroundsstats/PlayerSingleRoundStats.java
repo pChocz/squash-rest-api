@@ -8,15 +8,14 @@ import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *

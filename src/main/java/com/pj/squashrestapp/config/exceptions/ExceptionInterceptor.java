@@ -2,6 +2,10 @@ package com.pj.squashrestapp.config.exceptions;
 
 import com.pj.squashrestapp.config.ErrorResponse;
 import com.pj.squashrestapp.util.ErrorCode;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.NoSuchElementException;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -14,11 +18,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.NoSuchElementException;
 
 /**
  * Exception interceptors - this class defines what should specific exceptions
