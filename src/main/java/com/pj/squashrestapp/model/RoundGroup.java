@@ -50,7 +50,7 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
     @Override
     public void setChildren(final Round parent) {
-      parent.setRoundGroups(new TreeSet<>());
+      parent.setRoundGroups(new TreeSet<RoundGroup>());
     }
   };
 

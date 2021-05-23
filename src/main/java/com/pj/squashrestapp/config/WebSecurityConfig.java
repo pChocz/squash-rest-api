@@ -39,12 +39,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-  private static final int ARGON_SALT_LENGTH = 16;
-  private static final int ARGON_HASH_LENGTH = 32;
-  private static final int ARGON_PARALLELISM = 1;
-  private static final int ARGON_MEMORY_COST = 32768;
-  private static final int ARGON_ITERATIONS_COUNT = 12;
-
   private final UserDetailsService userDetailsService;
   private final PlayerRepository playerRepository;
   private final TokenCreateService tokenCreateService;
@@ -111,7 +105,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public PasswordEncoder passwordEncoder() {
-    return new Argon2PasswordEncoder(ARGON_SALT_LENGTH, ARGON_HASH_LENGTH, ARGON_PARALLELISM, ARGON_MEMORY_COST, ARGON_ITERATIONS_COUNT);
+    return new Argon2PasswordEncoder(16, 32, 1, 32768, 12);
   }
 
   @Override

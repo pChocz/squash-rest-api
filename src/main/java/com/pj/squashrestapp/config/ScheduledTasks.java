@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.service.AppStatsSendingService;
 import com.pj.squashrestapp.service.TokenRemovalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,11 +31,8 @@ public class ScheduledTasks {
   private static final String CRON_EVERY_FULL_MINUTE = "0 * * * * *";
   private static final String CRON_EVERY_FULL_HOUR = "0 0 * * * *";
   private static final String CRON_EVERYDAY_AT_MIDNIGHT = "0 0 0 * * *";
-  private static final String CRON_EVERY_MONDAY_AFTER_MIDNIGHT = "0 5 0 * * 0";
 
   private final TokenRemovalService tokenRemovalService;
-  private final AppStatsSendingService appStatsSendingService;
-
 
   /**
    * Permanently removes all expired temporary tokens from database.
@@ -45,16 +41,6 @@ public class ScheduledTasks {
   @Scheduled(cron = CRON_EVERYDAY_AT_MIDNIGHT, zone = "UTC")
   public void cronScheduledEveryday() {
     tokenRemovalService.removeExpiredTokensFromDb();
-  }
-
-
-  /**
-   * Sends an email with app statistics to Admin.
-   * It is performed few minutes after midnight every monday.
-   */
-  @Scheduled(cron = CRON_EVERY_MONDAY_AFTER_MIDNIGHT, zone = "UTC")
-  public void cronScheduledEveryMonday() {
-    appStatsSendingService.sendStatsRelatedEmail();
   }
 
 }

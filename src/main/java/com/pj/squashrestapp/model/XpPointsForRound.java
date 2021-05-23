@@ -59,7 +59,7 @@ public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRou
     this.type = type;
     this.numberOfPlayers = Arrays.stream(splitAsArray).sum();
     this.split = GeneralUtil.intArrayToString(splitAsArray);
-    this.xpPointsForRoundGroups = new TreeSet<>();
+    this.xpPointsForRoundGroups = new TreeSet<XpPointsForRoundGroup>();
     for (int i = 1; i <= points.length; i++) {
       final XpPointsForRoundGroup xpPointsForRoundGroup = new XpPointsForRoundGroup(i, points, this);
       this.xpPointsForRoundGroups.add(xpPointsForRoundGroup);

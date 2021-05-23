@@ -53,7 +53,7 @@ public class Match implements Identifiable, Comparable<Match> {
 
     @Override
     public void setChildren(final RoundGroup parent) {
-      parent.setMatches(new TreeSet<>());
+      parent.setMatches(new TreeSet<Match>());
     }
   };
 
@@ -86,7 +86,7 @@ public class Match implements Identifiable, Comparable<Match> {
           cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           orphanRemoval = true)
-  private Set<SetResult> setResults = new TreeSet<>();
+  private Set<SetResult> setResults = new TreeSet<SetResult>();
 
   @JsonIgnore
   @Setter

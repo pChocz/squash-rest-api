@@ -47,10 +47,13 @@ public class PlayersScoreboardService {
 
     final List<Match> matches = matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(leagueUuid, playerUuid, seasonUuid, groupNumber);
 
-    final Collection<MatchDto> allMatches = matches
+    final List<MatchDto> roundMatchesDtos = matches
             .stream()
             .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
+
+    final Collection<MatchDto> allMatches = new ArrayList<>();
+    allMatches.addAll(roundMatchesDtos);
 
     if (includeAdditionalMatches) {
       final Integer seasonNumber = seasonUuid == null
@@ -77,11 +80,13 @@ public class PlayersScoreboardService {
                                                final boolean includeAdditionalMatches) {
 
     final List<Match> roundMatches = matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(leagueUuid, playersUuids, seasonUuid, groupNumber);
-
-    final Collection<MatchDto> allMatches = roundMatches
+    final List<MatchDto> roundMatchesDtos = roundMatches
             .stream()
             .map(MatchSimpleDto::new)
             .collect(Collectors.toList());
+
+    final Collection<MatchDto> allMatches = new ArrayList<>();
+    allMatches.addAll(roundMatchesDtos);
 
     if (includeAdditionalMatches) {
       final Integer seasonNumber = seasonUuid == null

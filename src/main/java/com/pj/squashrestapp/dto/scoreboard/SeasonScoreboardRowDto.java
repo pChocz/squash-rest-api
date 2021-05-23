@@ -60,7 +60,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.roundNumberToXpMapPretenders.put(roundNumber, xpEarned);
   }
 
-  public void calculateFinishedRow(final int countedRounds) {
+  public void calculateFinishedRow(final int finishedRounds, final int countedRounds) {
     final int totalPointsForRounds = getTotalPointsForRounds(roundNumberToXpMapAll);
     this.totalPoints = totalPointsForRounds + bonusPoints;
 

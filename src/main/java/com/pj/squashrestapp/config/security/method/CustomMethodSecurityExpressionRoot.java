@@ -6,7 +6,6 @@ import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
-import com.pj.squashrestapp.repository.LeagueRulesRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -43,7 +42,6 @@ public class CustomMethodSecurityExpressionRoot
   private SeasonRepository seasonRepository;
   private BonusPointRepository bonusPointRepository;
   private AdditionalMatchRepository additionalMatchRepository;
-  private LeagueRulesRepository leagueRulesRepository;
 
   private Object target;
   private Object filterObject;
@@ -77,14 +75,6 @@ public class CustomMethodSecurityExpressionRoot
     if (principal.isAdmin()) {
       return true;
     }
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
-
-  public boolean hasRoleForLeagueOfRule(final UUID ruleUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
-    }
-    final UUID leagueUuid = leagueRulesRepository.retrieveLeagueUuidOfRule(ruleUuid);
     return principal.hasRoleForLeague(leagueUuid, role);
   }
 

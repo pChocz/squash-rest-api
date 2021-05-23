@@ -162,10 +162,10 @@ public class JsonExportUtil {
   }
 
   private ArrayList<JsonRound> buildRoundsJson(final List<Round> roundsOrdered) {
-    final ArrayList<JsonRound> jsonRounds = roundsOrdered
-            .stream()
-            .map(JsonExportUtil::buildRoundJson)
-            .collect(Collectors.toCollection(ArrayList::new));
+    final ArrayList<JsonRound> jsonRounds = new ArrayList<>();
+    for (final Round round : roundsOrdered) {
+      jsonRounds.add(buildRoundJson(round));
+    }
     return jsonRounds;
   }
 
