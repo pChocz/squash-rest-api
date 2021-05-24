@@ -163,9 +163,9 @@ public class HeadToHeadScoreboard implements LoggableQuery {
   @Override
   public String toString() {
     if (winner != null && looser != null) {
-      return "h2h: " + winner.getPlayer() + " v. " + looser.getPlayer();
+      return "HEAD-2-HEAD: " + winner.getPlayer() + " v. " + looser.getPlayer();
     } else {
-      return "h2h: EMPTY";
+      return "HEAD-2-HEAD: EMPTY";
     }
   }
 }

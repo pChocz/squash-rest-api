@@ -1,15 +1,21 @@
 package com.pj.squashrestapp.config.email;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 import javax.mail.Authenticator;
+import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,6 +45,22 @@ public class EmailSendConfig {
 
   @Value(value = "${smtp_port:}")
   private String smtpPort;
+
+  public void sendEmailWithAttachment(
+      final String receiver, final String subject, final Object content, final File... files) {
+    final Properties properties = buildProperties();
+    final Session session = buildSession(properties);
+
+    try {
+      final Message message = prepareMessageWithAttachments(session, receiver, subject, content, files);
+      Transport.send(message);
+      log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
+
+    } catch (final MessagingException | UnsupportedEncodingException e) {
+      log.error("[{}] email to [{}] has not been sent!", subject, receiver);
+      log.error("Exception", e);
+    }
+  }
 
   public void sendEmail(final String receiver, final String subject, final Object content) {
     final Properties properties = buildProperties();
@@ -80,13 +102,39 @@ public class EmailSendConfig {
       throws MessagingException, UnsupportedEncodingException {
     final Message message = new MimeMessage(session);
     message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
-
     message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
-
     message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAdress));
-
     message.setSubject(subject);
     message.setContent(content, "text/html; charset=UTF-8");
+    return message;
+  }
+
+  private Message prepareMessageWithAttachments(
+      final Session session, final String receiver, final String subject, final Object content, final File... files)
+      throws MessagingException, UnsupportedEncodingException {
+    final Message message = new MimeMessage(session);
+    message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
+    message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
+    message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAdress));
+    message.setSubject(subject);
+
+    final BodyPart messageBodyPart = new MimeBodyPart();
+    messageBodyPart.setContent(content, "text/html; charset=UTF-8");
+
+    final MimeBodyPart attachmentPart = new MimeBodyPart();
+    for (final File file : files) {
+      try {
+        attachmentPart.attachFile(file);
+      } catch (final IOException e) {
+        log.error("Cannot attach file {}", file);
+      }
+    }
+
+    final Multipart multipart = new MimeMultipart();
+    multipart.addBodyPart(messageBodyPart);
+    multipart.addBodyPart(attachmentPart);
+
+    message.setContent(multipart);
     return message;
   }
 }

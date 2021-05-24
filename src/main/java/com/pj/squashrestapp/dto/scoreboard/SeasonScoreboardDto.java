@@ -97,6 +97,6 @@ public class SeasonScoreboardDto implements LoggableQuery {
 
   @Override
   public String toString() {
-    return "S: " + this.getSeason().getSeasonNumber() + "\t| " + this.getSeason().getLeagueName();
+    return "Season Scoreboard - S: " + this.getSeason().getSeasonNumber() + " | " + this.getSeason().getLeagueName();
   }
 }

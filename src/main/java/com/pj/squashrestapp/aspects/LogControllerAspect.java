@@ -123,7 +123,7 @@ public class LogControllerAspect {
 
     } finally {
       log.info(
-          "REST-REQUEST\t{}\t{}\t{}ms\t{}.{}{}",
+          "REST-REQUEST  {}  {}  {}ms  {}.{}{}",
           hibernateQueryInterceptor.getQueryCount(),
           username,
           stopWatch.getTotalTimeMillis(),
