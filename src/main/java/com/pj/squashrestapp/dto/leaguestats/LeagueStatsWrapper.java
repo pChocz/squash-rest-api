@@ -26,6 +26,6 @@ public class LeagueStatsWrapper implements LoggableQuery {
 
   @Override
   public String toString() {
-    return "League Stats: " + leagueName + " | " + leagueUuid;
+    return "League Stats - " + leagueName;
   }
 }

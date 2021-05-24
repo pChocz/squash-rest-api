@@ -98,6 +98,6 @@ public class RoundScoreboard implements LoggableQuery {
 
   @Override
   public String toString() {
-    return "R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
+    return "Round Scoreboard - R: " + roundNumber + " | S: " + seasonNumber + " | " + leagueName;
   }
 }

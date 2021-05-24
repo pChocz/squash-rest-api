@@ -25,7 +25,7 @@ public class LogQueryAspect {
   public void logQueries(final JoinPoint joinPoint, final Object result) {
     if (result instanceof LoggableQuery) {
       log.info(
-          "QUERY\t{}\t{}",
+          "QUERY         |  {}  |  {}",
           GeneralUtil.extractSessionUsername(),
           ((LoggableQuery) result).message());
     }

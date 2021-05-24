@@ -1,6 +1,6 @@
 <configuration>
 
-    <property name="PATTERN" value="%-54(%d{yyyy-MM-dd HH:mm:ss} [%thread]) %-5level %logger{36} - %msg%n"/>
+    <property name="PATTERN" value="%d{HH:mm:ss.SSS} | %5p | %-30.30logger{30} | %msg%n"/>
     <property name="LOG-THRESHOLD" value="INFO"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -15,7 +15,7 @@
     <appender name="OUT-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>out.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>out.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/out.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
             <totalSizeCap>1GB</totalSizeCap>
         </rollingPolicy>
