@@ -8,7 +8,7 @@ import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
-import com.pj.squashrestapp.dto.SetDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.dto.leaguestats.PerSeasonStats;

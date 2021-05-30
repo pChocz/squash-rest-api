@@ -2,7 +2,6 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.model.Match;

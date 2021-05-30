@@ -31,7 +31,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
           "firstPlayer",
           "secondPlayer",
           "setResults",
-          "roundGroup.round.season"
+          "roundGroup.round.season.league"
   })
   Optional<Match> findMatchByUuid(UUID uuid);
 

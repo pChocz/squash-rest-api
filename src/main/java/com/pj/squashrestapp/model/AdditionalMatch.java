@@ -71,7 +71,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
       cascade = CascadeType.ALL,
       fetch = FetchType.LAZY,
       orphanRemoval = true)
-  private Set<AdditonalSetResult> setResults = new TreeSet<>();
+  private Set<AdditionalSetResult> setResults = new TreeSet<>();
 
   @JsonIgnore
   @Setter
@@ -84,7 +84,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
     this.secondPlayer = secondPlayer;
   }
 
-  public void addSetResult(final AdditonalSetResult setResult) {
+  public void addSetResult(final AdditionalSetResult setResult) {
     this.setResults.add(setResult);
     setResult.setMatch(this);
   }
@@ -101,16 +101,16 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
         + setResultsOrderedNonNull();
   }
 
-  private List<AdditonalSetResult> setResultsOrderedNonNull() {
+  private List<AdditionalSetResult> setResultsOrderedNonNull() {
     return setResults.stream()
-        .filter(AdditonalSetResult::nonNull)
-        .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
+        .filter(AdditionalSetResult::nonNull)
+        .sorted(Comparator.comparingInt(AdditionalSetResult::getNumber))
         .collect(Collectors.toList());
   }
 
-  public List<AdditonalSetResult> getSetResultsOrdered() {
+  public List<AdditionalSetResult> getSetResultsOrdered() {
     return setResults.stream()
-        .sorted(Comparator.comparingInt(AdditonalSetResult::getNumber))
+        .sorted(Comparator.comparingInt(AdditionalSetResult::getNumber))
         .collect(Collectors.toList());
   }
 
@@ -135,5 +135,9 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
         + " | "
         + date
         + ")";
+  }
+
+  public int getNumberOfSets() {
+    return setResults.size();
   }
 }

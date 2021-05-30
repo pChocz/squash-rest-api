@@ -130,4 +130,8 @@ public class Match implements Identifiable, Comparable<Match> {
   public int compareTo(final Match that) {
     return Comparator.comparingLong(Match::getNumber).compare(this, that);
   }
+
+  public int getNumberOfSets() {
+    return setResults.size();
+  }
 }

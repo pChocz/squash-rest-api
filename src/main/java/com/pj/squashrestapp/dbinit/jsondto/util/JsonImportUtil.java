@@ -10,7 +10,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
@@ -90,9 +90,9 @@ public class JsonImportUtil {
     return setResult;
   }
 
-  public AdditonalSetResult constructAdditionalSetResult(
+  public AdditionalSetResult constructAdditionalSetResult(
       final int setNumber, final JsonSetResult jsonSetResult) {
-    final AdditonalSetResult setResult = new AdditonalSetResult();
+    final AdditionalSetResult setResult = new AdditionalSetResult();
     setResult.setNumber(setNumber);
     setResult.setFirstPlayerScore(jsonSetResult.getFirstPlayerResult());
     setResult.setSecondPlayerScore(jsonSetResult.getSecondPlayerResult());
@@ -107,8 +107,8 @@ public class JsonImportUtil {
     return setResult;
   }
 
-  public AdditonalSetResult constructEmptyAdditionalSetResult(final int setNumber) {
-    final AdditonalSetResult setResult = new AdditonalSetResult();
+  public AdditionalSetResult constructEmptyAdditionalSetResult(final int setNumber) {
+    final AdditionalSetResult setResult = new AdditionalSetResult();
     setResult.setNumber(setNumber);
     setResult.setFirstPlayerScore(null);
     setResult.setSecondPlayerScore(null);
@@ -164,6 +164,13 @@ public class JsonImportUtil {
     league.setName(jsonLeague.getName());
     league.setTime(jsonLeague.getTime());
     league.setLocation(jsonLeague.getLocation());
+    league.setMatchFormatType(jsonLeague.getMatchFormatType());
+    league.setRegularSetWinningPoints(jsonLeague.getRegularSetWinningPoints());
+    league.setTiebreakWinningPoints(jsonLeague.getTiebreakWinningPoints());
+    league.setRegularSetWinningType(jsonLeague.getRegularSetWinningType());
+    league.setTiebreakWinningType(jsonLeague.getTiebreakWinningType());
+    league.setNumberOfRoundsPerSeason(jsonLeague.getNumberOfRoundsPerSeason());
+    league.setRoundsToBeDeducted(jsonLeague.getRoundsToBeDeducted());
     league.setLeagueLogo(constructLeagueLogo(jsonLeague));
     league.setUuid(jsonLeague.getUuid());
     return league;

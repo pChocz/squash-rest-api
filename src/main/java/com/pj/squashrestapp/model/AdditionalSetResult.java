@@ -19,7 +19,7 @@ import lombok.Setter;
 @Table(name = "additional_set_results")
 @Getter
 @NoArgsConstructor
-public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
+public class AdditionalSetResult implements Comparable<AdditionalSetResult> {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,7 +43,7 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
   @JoinColumn(name = "match_id")
   private AdditionalMatch match;
 
-  public AdditonalSetResult(
+  public AdditionalSetResult(
       final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {
     this.number = number;
     this.firstPlayerScore = firstPlayerScore;
@@ -56,8 +56,8 @@ public class AdditonalSetResult implements Comparable<AdditonalSetResult> {
   }
 
   @Override
-  public int compareTo(final AdditonalSetResult that) {
-    return Comparator.comparingInt(AdditonalSetResult::getNumber).compare(this, that);
+  public int compareTo(final AdditionalSetResult that) {
+    return Comparator.comparingInt(AdditionalSetResult::getNumber).compare(this, that);
   }
 
   public boolean nonNull() {

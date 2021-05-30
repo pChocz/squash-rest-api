@@ -12,7 +12,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSetResult;
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRule;
@@ -42,6 +42,13 @@ public class JsonExportUtil {
     jsonLeague.setName(league.getName());
     jsonLeague.setTime(league.getTime());
     jsonLeague.setLocation(league.getLocation());
+    jsonLeague.setMatchFormatType(league.getMatchFormatType());
+    jsonLeague.setRegularSetWinningPoints(league.getRegularSetWinningPoints());
+    jsonLeague.setTiebreakWinningPoints(league.getTiebreakWinningPoints());
+    jsonLeague.setRegularSetWinningType(league.getRegularSetWinningType());
+    jsonLeague.setTiebreakWinningType(league.getTiebreakWinningType());
+    jsonLeague.setNumberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason());
+    jsonLeague.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
     jsonLeague.setLogoBase64(
         Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
     jsonLeague.setRules(buildRules(league.getRules()));
@@ -115,7 +122,7 @@ public class JsonExportUtil {
 
   private ArrayList<JsonSetResult> buildSetResultsJson(final AdditionalMatch match) {
     final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
-    for (final AdditonalSetResult setResult : match.getSetResultsOrdered()) {
+    for (final AdditionalSetResult setResult : match.getSetResultsOrdered()) {
       if (isNotNull(setResult)) {
         final JsonSetResult jsonSetResult = new JsonSetResult();
         jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
@@ -140,7 +147,7 @@ public class JsonExportUtil {
     return jsonSeason;
   }
 
-  private boolean isNotNull(final AdditonalSetResult setResult) {
+  private boolean isNotNull(final AdditionalSetResult setResult) {
     return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
   }
 

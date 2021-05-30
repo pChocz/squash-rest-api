@@ -1,15 +1,17 @@
-package com.pj.squashrestapp.dto;
+package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
+import lombok.Setter;
 
 /** */
 @Getter
 public class SetDto {
 
-  private final int setNumber;
+  @Setter
+  private int setNumber;
   private final Integer firstPlayerScore;
   private final Integer secondPlayerScore;
 
@@ -19,10 +21,34 @@ public class SetDto {
     this.secondPlayerScore = setResult.getSecondPlayerScore();
   }
 
-  public SetDto(final AdditonalSetResult setResult) {
+  public SetDto(final AdditionalSetResult setResult) {
     this.setNumber = setResult.getNumber();
     this.firstPlayerScore = setResult.getFirstPlayerScore();
     this.secondPlayerScore = setResult.getSecondPlayerScore();
+  }
+
+  public SetDto(final String setResultAsString) {
+    this.setNumber = -1;
+    final String[] scoreSplitted = setResultAsString.split(":");
+    final String firstPlayerScoreAsString = scoreSplitted[0].trim();
+    final String secondPlayerScoreAsString = scoreSplitted[1].trim();
+
+    Integer firstPlayerScore;
+    try {
+      firstPlayerScore = Integer.parseInt(firstPlayerScoreAsString);
+    } catch (final NumberFormatException e) {
+      firstPlayerScore = null;
+    }
+
+    Integer secondPlayerScore;
+    try {
+      secondPlayerScore = Integer.parseInt(secondPlayerScoreAsString);
+    } catch (final NumberFormatException e) {
+      secondPlayerScore = null;
+    }
+
+    this.firstPlayerScore = firstPlayerScore;
+    this.secondPlayerScore = secondPlayerScore;
   }
 
   @JsonIgnore

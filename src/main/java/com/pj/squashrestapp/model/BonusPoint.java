@@ -51,7 +51,9 @@ public class BonusPoint {
   @JoinColumn(name = "looser_id")
   private Player looser;
 
-  @Setter private int points;
+  @Setter
+  @Column(name = "points")
+  private int points;
 
   public BonusPoint(
       final Player winner, final Player looser, final int points, final LocalDate date) {

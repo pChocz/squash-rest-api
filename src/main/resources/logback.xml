@@ -13,7 +13,7 @@
     </appender>
 
     <appender name="OUT-LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>out.log</file>
+        <file>logs/out.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/out.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
