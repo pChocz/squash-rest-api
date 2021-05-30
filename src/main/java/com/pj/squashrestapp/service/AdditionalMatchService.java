@@ -4,7 +4,7 @@ import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
@@ -104,7 +104,7 @@ public class AdditionalMatchService {
     match.setSeasonNumber(seasonNumber);
 
     for (int setNumber = 1; setNumber <= 3; setNumber++) {
-      final AdditonalSetResult setResult = new AdditonalSetResult();
+      final AdditionalSetResult setResult = new AdditionalSetResult();
       setResult.setNumber(setNumber);
       setResult.setFirstPlayerScore(null);
       setResult.setSecondPlayerScore(null);
@@ -133,7 +133,7 @@ public class AdditionalMatchService {
 
     final String initialMatchResult = matchToModify.toString();
 
-    final AdditonalSetResult setToModify =
+    final AdditionalSetResult setToModify =
         matchToModify.getSetResults().stream()
             .filter(set -> set.getNumber() == setNumber)
             .findFirst()

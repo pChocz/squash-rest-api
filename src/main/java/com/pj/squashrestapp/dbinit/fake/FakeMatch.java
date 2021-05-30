@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.SetResult;
@@ -28,7 +28,7 @@ public class FakeMatch {
 
   private boolean isDrawAfterTwoSetsAdditional(final AdditionalMatch match) {
     int diff = 0;
-    for (final AdditonalSetResult setResult : match.getSetResults()) {
+    for (final AdditionalSetResult setResult : match.getSetResults()) {
       if (setResult.getFirstPlayerScore() > setResult.getSecondPlayerScore()) {
         diff++;
       } else {

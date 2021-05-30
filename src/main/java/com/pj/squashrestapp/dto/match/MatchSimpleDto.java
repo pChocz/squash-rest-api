@@ -2,7 +2,6 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.model.Match;
@@ -44,6 +43,22 @@ public class MatchSimpleDto implements MatchDto {
     }
 
     this.status = new MatchValidator(match).checkStatus();
+  }
+
+  public MatchSimpleDto(final String... setResults) {
+    this.firstPlayer = null;
+    this.secondPlayer = null;
+    this.date = LocalDate.now();
+
+    this.sets = new ArrayList<>();
+    int setNumber = 1;
+    for (final String setResultAsString : setResults) {
+      final SetDto setDto = new SetDto(setResultAsString);
+      setDto.setSetNumber(setNumber);
+      this.sets.add(setDto);
+      setNumber++;
+    }
+    this.status = null;
   }
 
   @Override

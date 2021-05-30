@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.SetResult;
 
@@ -30,7 +30,7 @@ public class MatchValidator {
         .filter(set -> set.getNumber() == number)
         .findFirst()
         .map(
-            (AdditonalSetResult setResult) ->
+            (AdditionalSetResult setResult) ->
                 new SetValidator(
                     setResult.getNumber(),
                     setResult.getFirstPlayerScore(),

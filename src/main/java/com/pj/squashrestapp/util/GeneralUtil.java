@@ -17,7 +17,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @UtilityClass
 public class GeneralUtil {
 
+  public static final UUID ADMIN_UUID = UUID.fromString("73992a9c-fea3-4a24-a95b-91e1e840c26a");
   public static final String DATE_FORMAT = "yyyy-MM-dd";
+  public static final String TIME_FORMAT = "HH:mm:ss.SSS";
   public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
   public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
   public static final ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();

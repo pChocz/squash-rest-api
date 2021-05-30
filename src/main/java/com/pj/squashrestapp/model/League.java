@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -67,6 +69,34 @@ public class League implements Identifiable {
   @Setter
   @Column(name = "time")
   private String time;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private MatchFormatType matchFormatType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType regularSetWinningType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType tiebreakWinningType;
+
+  @Setter
+  @Column(name = "regular_set_winning_points")
+  private int regularSetWinningPoints;
+
+  @Setter
+  @Column(name = "tie_break_winning_points")
+  private int tiebreakWinningPoints;
+
+  @Setter
+  @Column(name = "number_of_rounds_per_season")
+  private int numberOfRoundsPerSeason;
+
+  @Setter
+  @Column(name = "rounds_to_be_deducted")
+  private int roundsToBeDeducted;
 
   @Setter
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

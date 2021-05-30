@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -57,6 +58,9 @@ public class RoundService {
             .collect(Collectors.toList());
 
     final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+    final League league = season.getLeague();
+    final int numberOfSetsPerMatchToCreate = 3;
+    //    final int numberOfSetsPerMatchToCreate = league.getMatchFormatType().getMaxNumberOfSets();
 
     final List<List<Player>> playersPerGroup =
         playersUuids.stream()
@@ -70,7 +74,8 @@ public class RoundService {
             .collect(Collectors.toList());
 
     final Round round =
-        createRoundForSeasonWithGivenPlayers(roundNumber, roundDate, playersPerGroup);
+        createRoundForSeasonWithGivenPlayers(
+            roundNumber, roundDate, playersPerGroup, numberOfSetsPerMatchToCreate);
     season.addRound(round);
 
     // saving to DB
@@ -80,7 +85,10 @@ public class RoundService {
   }
 
   private Round createRoundForSeasonWithGivenPlayers(
-      final int roundNumber, final LocalDate roundDate, final List<List<Player>> playersPerGroup) {
+      final int roundNumber,
+      final LocalDate roundDate,
+      final List<List<Player>> playersPerGroup,
+      final int numberOfSetsPerMatchToCreate) {
 
     final Round round = new Round();
     round.setNumber(roundNumber);
@@ -91,41 +99,56 @@ public class RoundService {
 
     round.setSplit(GeneralUtil.integerListToString(countPerRound));
 
-    for (int i = 0; i < playersPerGroup.size(); i++) {
-      final RoundGroup roundGroup = createRoundGroup(playersPerGroup, i);
+    for (int i = 1; i <= playersPerGroup.size(); i++) {
+      final RoundGroup roundGroup =
+          createRoundGroup(playersPerGroup, i, numberOfSetsPerMatchToCreate);
       round.addRoundGroup(roundGroup);
     }
 
     return round;
   }
 
-  private RoundGroup createRoundGroup(final List<List<Player>> playersPerGroup, final int i) {
+  private RoundGroup createRoundGroup(
+      final List<List<Player>> playersPerGroup,
+      final int groupNumber,
+      final int numberOfSetsPerMatchToCreate) {
     final RoundGroup roundGroup = new RoundGroup();
-    final int groupNumber = i + 1;
     roundGroup.setNumber(groupNumber);
 
-    int matchNumber = 1;
-
-    final List<Player> groupPlayers = playersPerGroup.get(i);
+    final List<Player> groupPlayers = playersPerGroup.get(groupNumber - 1);
     for (int j = 0; j < groupPlayers.size(); j++) {
       for (int k = j + 1; k < groupPlayers.size(); k++) {
-        final Match match = new Match();
-        match.setFirstPlayer(groupPlayers.get(j));
-        match.setSecondPlayer(groupPlayers.get(k));
-        match.setNumber(matchNumber++);
-
-        for (int l = 0; l < 3; l++) {
-          final SetResult setResult = new SetResult();
-          setResult.setNumber(l + 1);
-          setResult.setFirstPlayerScore(null);
-          setResult.setSecondPlayerScore(null);
-
-          match.addSetResult(setResult);
-        }
+        final int number = j + k;
+        final Player firstPlayer = groupPlayers.get(j);
+        final Player secondPlayer = groupPlayers.get(k);
+        final Match match =
+            createMatch(number, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate);
         roundGroup.addMatch(match);
       }
     }
     return roundGroup;
+  }
+
+  private Match createMatch(
+      final int number,
+      final Player firstPlayer,
+      final Player secondPlayer,
+      final int numberOfSetsPerMatchToCreate) {
+
+    final Match match = new Match();
+    match.setFirstPlayer(firstPlayer);
+    match.setSecondPlayer(secondPlayer);
+    match.setNumber(number);
+
+    for (int i = 1; i <= numberOfSetsPerMatchToCreate; i++) {
+      final SetResult setResult = new SetResult();
+      setResult.setNumber(i);
+      setResult.setFirstPlayerScore(null);
+      setResult.setSecondPlayerScore(null);
+
+      match.addSetResult(setResult);
+    }
+    return match;
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {

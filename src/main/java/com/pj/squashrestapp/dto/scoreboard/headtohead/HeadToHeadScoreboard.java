@@ -2,7 +2,7 @@ package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.SetDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
 import java.util.ArrayList;

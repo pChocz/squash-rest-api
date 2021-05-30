@@ -1,16 +1,7 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dbinit.fake.FakeMatch;
-import com.pj.squashrestapp.dbinit.fake.FakeUtil;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
-import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
-import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.repository.AdditionalMatchRepository;
-import com.pj.squashrestapp.repository.LeagueRepository;
-import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.AdditionalMatchService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
@@ -18,7 +9,6 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,9 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdditionalMatchController {
 
   private final AdditionalMatchService additionalMatchService;
-  private final LeagueRepository leagueRepository;
-  private final PlayerRepository playerRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
 
   @PostMapping
   @PreAuthorize("""
@@ -100,34 +87,5 @@ public class AdditionalMatchController {
     final List<AdditionalMatchDetailedDto> additionalMatchesForMultiplePlayers = additionalMatchService.getAdditionalMatchesForMultiplePlayers(leagueUuid, playersUuids);
     return new ResponseEntity<>(additionalMatchesForMultiplePlayers, HttpStatus.OK);
   }
-
-  @PostMapping("create-dummy")
-  void createDummyAdditionalMatches() {
-    final List<League> allLeagues = leagueRepository.findAll();
-    for (final League league : allLeagues) {
-      final List<Player> leaguePlayers = playerRepository.fetchGeneralInfoSorted(league.getUuid(), Sort.by(Sort.Direction.ASC, "username"));
-
-      for (final Season season : league.getSeasons()) {
-        LocalDate date = season.getStartDate();
-        for (int i = 0; i < 20; i++) {
-          date = date.plusDays(1);
-          final List<Player> twoPlayers = FakeUtil.pickTwoRandomPlayers(leaguePlayers);
-          final AdditionalMatch match = FakeMatch.createAdditional(twoPlayers.get(0), twoPlayers.get(1));
-          match.setDate(date);
-          match.setType(AdditionalMatchType.BONUS);
-          match.setSeasonNumber(season.getNumber());
-          league.addAdditionalMatch(match);
-        }
-      }
-      leagueRepository.save(league);
-    }
-  }
-
-  @DeleteMapping("all")
-  void deleteAllAdditionalMatches() {
-    final List<AdditionalMatch> all = additionalMatchRepository.findAll();
-    additionalMatchRepository.deleteAll(all);
-  }
-
 
 }

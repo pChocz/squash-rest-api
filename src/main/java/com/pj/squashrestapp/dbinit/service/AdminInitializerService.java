@@ -19,7 +19,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonVerificationToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
@@ -243,7 +243,7 @@ public class AdminInitializerService {
       for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
         final int setNumber = i + 1;
         final JsonSetResult jsonSetResult = jsonAdditionalMatch.getSets().get(i);
-        final AdditonalSetResult setResult =
+        final AdditionalSetResult setResult =
             JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
         additionalMatch.addSetResult(setResult);
       }

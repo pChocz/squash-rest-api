@@ -2,12 +2,11 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.SetDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
-import com.pj.squashrestapp.model.AdditonalSetResult;
+import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
     this.seasonNumber = match.getSeasonNumber();
 
     this.sets = new ArrayList<>();
-    for (final AdditonalSetResult setResult : match.getSetResults()) {
+    for (final AdditionalSetResult setResult : match.getSetResults()) {
       this.sets.add(new SetDto(setResult));
     }
     this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
