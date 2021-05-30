@@ -48,7 +48,7 @@ import org.springframework.stereotype.Service;
 public class PlayersQueriesStatsService {
 
   private static final Pattern REST_REQUEST_PATTERN =
-      Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+REST-REQUEST.+?(\\d)(.+?)(\\d+)ms(.+)");
+      Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+REST-REQUEST.+?(\\d+)(.+?)(\\d+)ms(.+)");
 
   private static final Pattern QUERY_PATTERN =
       Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+QUERY.+?[|](.+?)[|](.+)");
@@ -147,7 +147,7 @@ public class PlayersQueriesStatsService {
       }
     }
     logFilenameDates.add(new LogFilenameDate(LocalDate.now(), "out.log"));
-    Collections.reverse(logFilenameDates);
+    logFilenameDates.sort(Comparator.comparing(LogFilenameDate::getDate).reversed());
     return logFilenameDates;
   }
 }
