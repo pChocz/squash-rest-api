@@ -42,6 +42,7 @@ public class RoundService {
       final LocalDate roundDate,
       final UUID seasonUuid,
       final List<UUID[]> playersUuids) {
+
     final UUID[] allPlayersUuids =
         playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
 
@@ -112,17 +113,18 @@ public class RoundService {
       final List<List<Player>> playersPerGroup,
       final int groupNumber,
       final int numberOfSetsPerMatchToCreate) {
+
     final RoundGroup roundGroup = new RoundGroup();
     roundGroup.setNumber(groupNumber);
 
+    int matchNumber = 1;
     final List<Player> groupPlayers = playersPerGroup.get(groupNumber - 1);
     for (int j = 0; j < groupPlayers.size(); j++) {
       for (int k = j + 1; k < groupPlayers.size(); k++) {
-        final int number = j + k;
         final Player firstPlayer = groupPlayers.get(j);
         final Player secondPlayer = groupPlayers.get(k);
         final Match match =
-            createMatch(number, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate);
+            createMatch(matchNumber++, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate);
         roundGroup.addMatch(match);
       }
     }
