@@ -33,6 +33,10 @@ public class SetStatusHelper {
       return SetStatus.ERROR;
     }
 
+    if (winnerScore < expectedWinnerScore) {
+      return SetStatus.IN_PROGRESS;
+    }
+
     if (winnerScore != expectedWinnerScore) {
       return SetStatus.ERROR;
     }

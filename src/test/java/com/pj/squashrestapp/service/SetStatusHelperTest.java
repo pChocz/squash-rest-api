@@ -18,7 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 /** Tests for {@link SetStatusHelper} class. */
-@Disabled
+//@Disabled
 @DisplayName("Set Status Test")
 class SetStatusHelperTest {
 
@@ -50,7 +50,6 @@ class SetStatusHelperTest {
   @Test
   @DisplayName("Assert - Set is EMPTY")
   void checkSetStatus_EMPTY() {
-
     assertAll(
         "Assert - Set is EMPTY",
         () -> assertEquals(EMPTY, SetStatusHelper.checkStatus(new SetDto("n:n"), 11, ADV_OF_2_OR_1_AT_THE_END)),
@@ -77,7 +76,7 @@ class SetStatusHelperTest {
 
     assertAll(
         "Assert - Set is IN PROGRESS - WINNING_POINTS_ABSOLUTE",
-        () -> assertEquals(IN_PROGRESS, SetStatusHelper.checkStatus(new SetDto("11:8"), 11, WINNING_POINTS_ABSOLUTE)),
+        () -> assertEquals(IN_PROGRESS, SetStatusHelper.checkStatus(new SetDto("9:8"), 11, WINNING_POINTS_ABSOLUTE)),
         () -> assertEquals(IN_PROGRESS, SetStatusHelper.checkStatus(new SetDto("10:10"), 11, WINNING_POINTS_ABSOLUTE)),
         () -> assertEquals(IN_PROGRESS, SetStatusHelper.checkStatus(new SetDto("3:9"), 11, WINNING_POINTS_ABSOLUTE)),
         () -> assertEquals(IN_PROGRESS, SetStatusHelper.checkStatus(new SetDto("0:9"), 11, WINNING_POINTS_ABSOLUTE)));
