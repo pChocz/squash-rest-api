@@ -37,6 +37,9 @@ spring:
       max-request-size: 75MB
   aop:
     auto: true
+  freemarker:
+    template-loader-path: classpath:/templates
+    suffix: .html
 
 
 # ###### ##### #####

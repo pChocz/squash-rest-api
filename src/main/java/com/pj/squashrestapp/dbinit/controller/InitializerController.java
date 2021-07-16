@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dbinit.controller;
 
 import com.google.gson.reflect.TypeToken;
 import com.pj.squashrestapp.aspects.SecretMethod;
+import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
@@ -11,6 +12,8 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 
 /** */
 @Slf4j
