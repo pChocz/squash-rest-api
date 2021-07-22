@@ -124,32 +124,32 @@ class MatchStatusStandardHelperTest {
   }
 
   private MatchStatus getStatusForStandardOneGameMatch(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
+    return new MatchSimpleDto(
         MatchFormatType.ONE_GAME,
         ADV_OF_2_OR_1_AT_THE_END,
         ADV_OF_2_OR_1_AT_THE_END,
         11,
-        11);
+        11,
+        setResults).getStatus();
   }
 
   private MatchStatus getStatusForStandardBestOf3Match(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
+    return new MatchSimpleDto(
         MatchFormatType.BEST_OF_3,
         ADV_OF_2_OR_1_AT_THE_END,
         WINNING_POINTS_ABSOLUTE,
         11,
-        9);
+        9,
+            setResults).getStatus();
   }
 
   private MatchStatus getStatusForStandardBestOf5Match(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
+    return new MatchSimpleDto(
         MatchFormatType.BEST_OF_5,
         ADV_OF_2_OR_1_AT_THE_END,
         WINNING_POINTS_ABSOLUTE,
         11,
-        9);
+        9,
+        setResults).getStatus();
   }
 }

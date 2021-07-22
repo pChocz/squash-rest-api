@@ -238,7 +238,7 @@ public class AdminInitializerService {
 
     for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
       final AdditionalMatch additionalMatch =
-          JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players);
+          JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players, league);
 
       for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
         final int setNumber = i + 1;
@@ -248,24 +248,18 @@ public class AdminInitializerService {
         additionalMatch.addSetResult(setResult);
       }
 
-      if (jsonAdditionalMatch.getSets().size() == 0) {
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(1));
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(2));
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
-
-      } else if (jsonAdditionalMatch.getSets().size() == 1) {
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(2));
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
-
-      } else if (jsonAdditionalMatch.getSets().size() == 2) {
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(3));
+      // todo: check if working!
+      final int numberOfSets = additionalMatch.getMatchFormatType().getMaxNumberOfSets();
+      while (additionalMatch.getSetResults().size() < numberOfSets) {
+        final int currentSetNumber = additionalMatch.getSetResults().size() + 1;
+        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
       }
 
       league.addAdditionalMatch(additionalMatch);
     }
 
     for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {
-      final Season season = JsonImportUtil.constructSeason(jsonSeason);
+      final Season season = JsonImportUtil.constructSeason(jsonSeason, league);
 
       for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
         final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
@@ -280,7 +274,7 @@ public class AdminInitializerService {
 
           int matchNumber = 1;
           for (final JsonMatch jsonMatch : jsonRoundGroup.getMatches()) {
-            final Match match = JsonImportUtil.constructMatch(jsonMatch, players);
+            final Match match = JsonImportUtil.constructMatch(jsonMatch, players, league);
             match.setNumber(matchNumber++);
 
             for (int i = 0; i < jsonMatch.getSets().size(); i++) {
@@ -291,9 +285,11 @@ public class AdminInitializerService {
               match.addSetResult(setResult);
             }
 
-            if (jsonMatch.getSets().size() == 2) {
-              final SetResult setResult = JsonImportUtil.constructEmptySetResult(3);
-              match.addSetResult(setResult);
+            // todo: check if working!
+            final int numberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
+            while (match.getSetResults().size() < numberOfSets) {
+              final int currentSetNumber = match.getSetResults().size() + 1;
+              match.addSetResult(JsonImportUtil.constructEmptySetResult(currentSetNumber));
             }
 
             roundGroup.addMatch(match);

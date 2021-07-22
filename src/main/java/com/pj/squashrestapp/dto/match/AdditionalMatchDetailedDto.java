@@ -1,12 +1,15 @@
 package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditionalSetResult;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -22,6 +25,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   private final UUID matchUuid;
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
+  private final PlayerDto winner;
   private final UUID leagueUuid;
   private final String leagueName;
   private final AdditionalMatchType type;
@@ -31,6 +35,17 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   private final LocalDate date;
 
   private final List<SetDto> sets;
+
+  @JsonIgnore
+  private final MatchFormatType matchFormatType;
+  @JsonIgnore
+  private final SetWinningType regularSetWinningType;
+  @JsonIgnore
+  private final int regularSetWinningPoints;
+  @JsonIgnore
+  private final SetWinningType tieBreakWinningType;
+  @JsonIgnore
+  private final int tieBreakWinningPoints;
 
   private final MatchStatus status;
 
@@ -43,14 +58,22 @@ public class AdditionalMatchDetailedDto implements MatchDto {
     this.date = match.getDate();
     this.type = match.getType();
     this.seasonNumber = match.getSeasonNumber();
+    this.matchFormatType = match.getMatchFormatType();
+    this.regularSetWinningType = match.getRegularSetWinningType();
+    this.regularSetWinningPoints = match.getRegularSetWinningPoints();
+    this.tieBreakWinningType = match.getTiebreakWinningType();
+    this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
 
     this.sets = new ArrayList<>();
     for (final AdditionalSetResult setResult : match.getSetResults()) {
-      this.sets.add(new SetDto(setResult));
+      this.sets.add(new SetDto(setResult, matchFormatType));
     }
     this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
 
-    this.status = new MatchValidator(match).checkStatus();
+    this.status = MatchStatusHelper.checkStatus(this);
+    this.winner = status == MatchStatus.FINISHED
+        ? MatchStatusHelper.getWinner(this)
+        : null;
   }
 
   @Override

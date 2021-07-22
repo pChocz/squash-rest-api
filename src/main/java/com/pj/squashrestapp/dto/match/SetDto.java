@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.AdditionalSetResult;
+import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,21 +15,25 @@ public class SetDto {
   private int setNumber;
   private final Integer firstPlayerScore;
   private final Integer secondPlayerScore;
+  private final MatchFormatType matchFormatType;
 
-  public SetDto(final SetResult setResult) {
+  public SetDto(final SetResult setResult, final MatchFormatType matchFormatType) {
     this.setNumber = setResult.getNumber();
     this.firstPlayerScore = setResult.getFirstPlayerScore();
     this.secondPlayerScore = setResult.getSecondPlayerScore();
+    this.matchFormatType = matchFormatType;
   }
 
-  public SetDto(final AdditionalSetResult setResult) {
+  public SetDto(final AdditionalSetResult setResult, final MatchFormatType matchFormatType) {
     this.setNumber = setResult.getNumber();
     this.firstPlayerScore = setResult.getFirstPlayerScore();
     this.secondPlayerScore = setResult.getSecondPlayerScore();
+    this.matchFormatType = matchFormatType;
   }
 
   public SetDto(final String setResultAsString) {
     this.setNumber = -1;
+    this.matchFormatType = null;
     final String[] scoreSplitted = setResultAsString.split(":");
     final String firstPlayerScoreAsString = scoreSplitted[0].trim();
     final String secondPlayerScoreAsString = scoreSplitted[1].trim();
@@ -63,14 +68,12 @@ public class SetDto {
 
   @JsonIgnore
   public boolean isTieBreak() {
-    final int greaterScore = getGreaterScore();
-    return greaterScore == 9;
-  }
-
-  private int getGreaterScore() {
-    return firstPlayerScore > secondPlayerScore
-        ? firstPlayerScore
-        : firstPlayerScore < secondPlayerScore ? secondPlayerScore : 0;
+    if (this.matchFormatType == MatchFormatType.ONE_GAME) {
+      return false;
+    } else {
+      final int tieBreakSetNumber = this.matchFormatType.getMaxNumberOfSets();
+      return setNumber == tieBreakSetNumber;
+    }
   }
 
   @Override

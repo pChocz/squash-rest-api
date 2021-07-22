@@ -121,7 +121,7 @@ public class LeagueTrophiesService {
         allTrophiesForLeague.stream()
             .map(TrophyForLeague::getSeasonNumber)
             .distinct()
-            .sorted()
+            .sorted(Comparator.reverseOrder())
             .collect(Collectors.toList());
 
     for (final int seasonNumber : listOfSeasonNumbers) {

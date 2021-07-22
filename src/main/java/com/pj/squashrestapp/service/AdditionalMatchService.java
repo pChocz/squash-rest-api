@@ -2,6 +2,7 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
+import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditionalSetResult;
@@ -96,14 +97,12 @@ public class AdditionalMatchService {
       throw new GeneralBadRequestException("League not valid!");
     }
 
-    final AdditionalMatch match = new AdditionalMatch();
-    match.setFirstPlayer(firstPlayer);
-    match.setSecondPlayer(secondPlayer);
+    final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer, league.get());
     match.setDate(date);
     match.setType(type);
     match.setSeasonNumber(seasonNumber);
 
-    for (int setNumber = 1; setNumber <= 3; setNumber++) {
+    for (int setNumber = 1; setNumber <= match.getMatchFormatType().getMaxNumberOfSets(); setNumber++) {
       final AdditionalSetResult setResult = new AdditionalSetResult();
       setResult.setNumber(setNumber);
       setResult.setFirstPlayerScore(null);
@@ -144,7 +143,21 @@ public class AdditionalMatchService {
       setToModify.setSecondPlayerScore(null);
 
     } else {
-      final Integer winnerScore = computeWinnerScore(looserScore, setNumber);
+
+      final Integer winnerScore;
+      if (setNumber < matchToModify.getMatchFormatType().getMaxNumberOfSets()) {
+        winnerScore = SetScoreHelper.computeWinnerScore(
+            looserScore,
+            matchToModify.getRegularSetWinningPoints(),
+            matchToModify.getRegularSetWinningType()
+        );
+      } else {
+        winnerScore = SetScoreHelper.computeWinnerScore(
+            looserScore,
+            matchToModify.getTiebreakWinningPoints(),
+            matchToModify.getTiebreakWinningType()
+        );
+      }
 
       if (player.equals("FIRST")) {
         setToModify.setFirstPlayerScore(looserScore);
@@ -162,22 +175,6 @@ public class AdditionalMatchService {
         "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
         initialMatchResult,
         matchToModify);
-  }
-
-  private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
-    if (setNumber < 3) {
-      return computeWinnerScoreForRegularSet(looserScore);
-    } else {
-      return 9;
-    }
-  }
-
-  private Integer computeWinnerScoreForRegularSet(final Integer looserScore) {
-    if (looserScore < 10) {
-      return 11;
-    } else {
-      return 12;
-    }
   }
 
   public AdditionalMatchDetailedDto getSingleMatch(final UUID matchUuid) {

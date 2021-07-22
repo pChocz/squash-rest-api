@@ -1,6 +1,9 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
 import java.util.List;
@@ -13,16 +16,10 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class MatchStatusHelper {
 
-  public static MatchStatus checkStatus(
-      final MatchDto match,
-      final MatchFormatType matchFormatType,
-      final SetWinningType regularSetWinningType,
-      final SetWinningType tiebreakWinningType,
-      final int regularSetWinningPoints,
-      final int tiebreakWinningPoints) {
+  public MatchStatus checkStatus(final MatchDto match) {
 
     final int numberOfSets = match.getSets().size();
-    final int maxNumberOfSets = matchFormatType.getMaxNumberOfSets();
+    final int maxNumberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
 
     if (numberOfSets != maxNumberOfSets) {
       log.error("Some inconsistency in number of sets within a match! {}", match);
@@ -36,11 +33,11 @@ public class MatchStatusHelper {
                   if (setDto.getSetNumber() < numberOfSets) {
                     // regular set
                     return SetStatusHelper.checkStatus(
-                        setDto, regularSetWinningPoints, regularSetWinningType);
+                        setDto, match.getRegularSetWinningPoints(), match.getRegularSetWinningType());
                   } else {
                     // tiebreak
                     return SetStatusHelper.checkStatus(
-                        setDto, tiebreakWinningPoints, tiebreakWinningType);
+                        setDto, match.getTieBreakWinningPoints(), match.getTieBreakWinningType());
                   }
                 })
             .collect(Collectors.toList());
@@ -62,7 +59,7 @@ public class MatchStatusHelper {
   }
 
   @SuppressWarnings({"MethodWithMultipleReturnPoints", "OverlyLongMethod", "OverlyComplexMethod"})
-  private static MatchStatus determineMatchStatus(final List<SetStatus> setStatuses) {
+  private MatchStatus determineMatchStatus(final List<SetStatus> setStatuses) {
     final int numberOfSets = setStatuses.size();
     final int numberOfSetsToWinMatch = numberOfSets / 2 + 1;
 
@@ -107,14 +104,33 @@ public class MatchStatusHelper {
     return MatchStatus.ERROR;
   }
 
-  private static boolean isFinalOrAreRemainingSetsEmpty(final int i, final List<SetStatus> setStatuses) {
+  private boolean isFinalOrAreRemainingSetsEmpty(final int i, final List<SetStatus> setStatuses) {
     return i == setStatuses.size() - 1
         || areRemainingSetsOfType(i, setStatuses, SetStatus.EMPTY);
   }
 
-  private static boolean areRemainingSetsOfType(final int i, final List<SetStatus> setStatuses, final SetStatus setStatus) {
+  private boolean areRemainingSetsOfType(final int i, final List<SetStatus> setStatuses, final SetStatus setStatus) {
     final List<SetStatus> remainingSets = setStatuses.subList(i + 1, setStatuses.size());
     return remainingSets.stream().allMatch(setStatusToCheck -> setStatusToCheck == setStatus);
+  }
+
+  public PlayerDto getWinner(final MatchDto match) {
+    int firstPlayerWonSets = 0;
+    int secondPlayerWonSets = 0;
+
+    for (final SetDto set : match.getSets()) {
+      if (set.getFirstPlayerScoreNullSafe() > set.getSecondPlayerScoreNullSafe()) {
+        firstPlayerWonSets++;
+      } else {
+        secondPlayerWonSets++;
+      }
+    }
+
+    if (firstPlayerWonSets > secondPlayerWonSets) {
+      return match.getFirstPlayer();
+    } else {
+      return match.getSecondPlayer();
+    }
   }
 
 }

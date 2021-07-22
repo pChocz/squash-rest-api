@@ -26,8 +26,7 @@ public class HeadToHeadScoreboard implements LoggableQuery {
   private final HeadToHeadScoreboardRow looser;
   private final Collection<MatchDto> matches;
   private final List<HeadToHeadChartRow> chartRows;
-  private int numberOfRegularMatches;
-  private int numberOfTiebreaks;
+
 
   public HeadToHeadScoreboard(final Collection<MatchDto> matches) {
     this.matches = matches;
@@ -79,34 +78,66 @@ public class HeadToHeadScoreboard implements LoggableQuery {
         }
       }
 
-      if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 0) {
-        winningMatchesPerPlayer.get(firstPlayer).merge(2, 1, Integer::sum);
+      // One set (ONE_GAME)
+      if (firstPlayerSetsWon == 1 && secondPlayerSetsWon == 0) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(1, 1, Integer::sum);
         matchWinnersMap.put(match, firstPlayer);
 
-      } else if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 1) {
-        winningMatchesPerPlayer.get(firstPlayer).merge(3, 1, Integer::sum);
+      } else if (firstPlayerSetsWon == 0 && secondPlayerSetsWon == 1) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(1, 1, Integer::sum);
+        matchWinnersMap.put(match, secondPlayer);
+      }
+
+      // Two sets (BEST_OF_3)
+      else if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 0) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(2, 1, Integer::sum);
         matchWinnersMap.put(match, firstPlayer);
 
       } else if (firstPlayerSetsWon == 0 && secondPlayerSetsWon == 2) {
         winningMatchesPerPlayer.get(secondPlayer).merge(2, 1, Integer::sum);
         matchWinnersMap.put(match, secondPlayer);
+      }
+
+      // Three sets (BEST_OF_3 or BEST_OF_5)
+      else if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 1) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(3, 1, Integer::sum);
+        matchWinnersMap.put(match, firstPlayer);
 
       } else if (firstPlayerSetsWon == 1 && secondPlayerSetsWon == 2) {
         winningMatchesPerPlayer.get(secondPlayer).merge(3, 1, Integer::sum);
         matchWinnersMap.put(match, secondPlayer);
+
+      } else if (firstPlayerSetsWon == 3 && secondPlayerSetsWon == 0) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(3, 1, Integer::sum);
+        matchWinnersMap.put(match, firstPlayer);
+
+      } else if (firstPlayerSetsWon == 0 && secondPlayerSetsWon == 3) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(3, 1, Integer::sum);
+        matchWinnersMap.put(match, secondPlayer);
       }
+
+      // Four sets (BEST_OF_5)
+      else if (firstPlayerSetsWon == 3 && secondPlayerSetsWon == 1) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(4, 1, Integer::sum);
+        matchWinnersMap.put(match, firstPlayer);
+
+      } else if (firstPlayerSetsWon == 1 && secondPlayerSetsWon == 3) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(4, 1, Integer::sum);
+        matchWinnersMap.put(match, secondPlayer);
+      }
+
+      // Five sets (BEST_OF_5)
+      else if (firstPlayerSetsWon == 3 && secondPlayerSetsWon == 2) {
+        winningMatchesPerPlayer.get(firstPlayer).merge(5, 1, Integer::sum);
+        matchWinnersMap.put(match, firstPlayer);
+
+      } else if (firstPlayerSetsWon == 2 && secondPlayerSetsWon == 3) {
+        winningMatchesPerPlayer.get(secondPlayer).merge(5, 1, Integer::sum);
+        matchWinnersMap.put(match, secondPlayer);
+      }
+
     }
     Collections.sort(scoreboardRows);
-
-    this.numberOfTiebreaks =
-        winningSetsPerPlayer
-                .get(matches.stream().findFirst().get().getFirstPlayer())
-                .getOrDefault(3, 0)
-            + winningSetsPerPlayer
-                .get(matches.stream().findFirst().get().getSecondPlayer())
-                .getOrDefault(3, 0);
-
-    this.numberOfRegularMatches = numberOfMatches - numberOfTiebreaks;
 
     winner =
         new HeadToHeadScoreboardRow(

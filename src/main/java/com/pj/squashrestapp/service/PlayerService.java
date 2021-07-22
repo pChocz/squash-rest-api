@@ -7,6 +7,7 @@ import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
 import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
+import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
@@ -24,12 +25,17 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -186,11 +192,11 @@ public class PlayerService {
       throw new GeneralBadRequestException("Already player of this league");
     }
 
-    final League league = leagueRepository.findByName(leagueName);
+    final League league = leagueRepository.findByNameRaw(leagueName);
     final boolean leagueExists = league != null;
 
     if (!leagueExists) {
-      throw new GeneralBadRequestException("Such league does not exist");
+      throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
     }
 
     assignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
@@ -225,14 +231,14 @@ public class PlayerService {
     final boolean isPlayerForLeague = userBasicInfo.isPlayerForLeague(leagueName);
 
     if (!isPlayerForLeague) {
-      throw new GeneralBadRequestException("Not a player of this league");
+      throw new GeneralBadRequestException(ErrorCode.NOT_A_PLAYER_OF_LEAGUE);
     }
 
-    final League league = leagueRepository.findByName(leagueName);
+    final League league = leagueRepository.findByNameRaw(leagueName);
     final boolean leagueExists = league != null;
 
     if (!leagueExists) {
-      throw new GeneralBadRequestException("Such league does not exist");
+      throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
     }
 
     unassignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
@@ -351,4 +357,34 @@ public class PlayerService {
     final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
     refreshTokenRepository.deleteAll(playerRefreshTokens);
   }
+
+  public boolean checkPlayerExists(final String usernameOrEmail) {
+    final List<Player> players = playerRepository.findAllRaw();
+    final boolean exists = players.stream().anyMatch(playerNameOrEmailPredicate(usernameOrEmail));
+    return exists;
+  }
+
+  private Predicate<Player> playerNameOrEmailPredicate(final String usernameOrEmail) {
+    return player ->
+        player.getUsername().equalsIgnoreCase(usernameOrEmail)
+            || player.getEmail().equalsIgnoreCase(usernameOrEmail);
+  }
+
+  public Set<LeagueDtoSimple> getMyLeagues() {
+    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    final Player player =
+        playerRepository
+            .fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase())
+            .orElseThrow();
+
+    final Set<LeagueDtoSimple> myLeagues = new TreeSet<>(Comparator.comparing(LeagueDtoSimple::getDateOfCreation));
+    for (final RoleForLeague role : player.getRoles()) {
+      if (role.getLeagueRole() == LeagueRole.PLAYER) {
+        myLeagues.add(new LeagueDtoSimple(role.getLeague()));
+      }
+    }
+
+    return myLeagues;
+  }
+
 }

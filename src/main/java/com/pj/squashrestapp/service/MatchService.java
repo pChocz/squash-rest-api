@@ -4,6 +4,7 @@ import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
+import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.SetResult;
@@ -48,7 +49,22 @@ public class MatchService {
       setToModify.setSecondPlayerScore(null);
 
     } else {
-      final Integer winnerScore = computeWinnerScore(looserScore, setNumber);
+
+      final Integer winnerScore;
+      if (setIsTiebreak(matchToModify, setNumber)) {
+        winnerScore = SetScoreHelper.computeWinnerScore(
+            looserScore,
+            matchToModify.getTiebreakWinningPoints(),
+            matchToModify.getTiebreakWinningType()
+        );
+      } else {
+        winnerScore = SetScoreHelper.computeWinnerScore(
+            looserScore,
+            matchToModify.getRegularSetWinningPoints(),
+            matchToModify.getRegularSetWinningType()
+        );
+      }
+
 
       if (player.equals("FIRST")) {
         setToModify.setFirstPlayerScore(looserScore);
@@ -66,6 +82,10 @@ public class MatchService {
         "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
         initialMatchResult,
         matchToModify);
+  }
+
+  private boolean setIsTiebreak(final Match match, final int setNumber) {
+    return setNumber == match.getMatchFormatType().getMaxNumberOfSets();
   }
 
   private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {

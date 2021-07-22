@@ -66,6 +66,26 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
   private Player secondPlayer;
 
   @Setter
+  @Enumerated(EnumType.STRING)
+  private MatchFormatType matchFormatType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType regularSetWinningType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType tiebreakWinningType;
+
+  @Setter
+  @Column(name = "regular_set_winning_points")
+  private int regularSetWinningPoints;
+
+  @Setter
+  @Column(name = "tie_break_winning_points")
+  private int tiebreakWinningPoints;
+
+  @Setter
   @OneToMany(
       mappedBy = "match",
       cascade = CascadeType.ALL,
@@ -79,9 +99,14 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
   @JoinColumn(name = "league_id")
   private League league;
 
-  public AdditionalMatch(final Player firstPlayer, final Player secondPlayer) {
+  public AdditionalMatch(final Player firstPlayer, final Player secondPlayer, final League league) {
     this.firstPlayer = firstPlayer;
     this.secondPlayer = secondPlayer;
+    this.matchFormatType = league.getMatchFormatType();
+    this.regularSetWinningType = league.getRegularSetWinningType();
+    this.regularSetWinningPoints = league.getRegularSetWinningPoints();
+    this.tiebreakWinningType = league.getTiebreakWinningType();
+    this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
   }
 
   public void addSetResult(final AdditionalSetResult setResult) {

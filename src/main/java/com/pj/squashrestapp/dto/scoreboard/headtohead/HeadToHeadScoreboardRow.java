@@ -28,13 +28,25 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int matchesLost;
   private BigDecimal matchesRatio;
 
-  private int regularMatchesWon;
-  private int regularMatchesLost;
-  private BigDecimal regularMatchesRatio;
+  private int oneSetMatchesWon;
+  private int oneSetMatchesLost;
+  private BigDecimal oneSetMatchesRatio;
 
-  private int tieBreakMatchesWon;
-  private int tieBreakMatchesLost;
-  private BigDecimal tieBreakMatchesRatio;
+  private int twoSetsMatchesWon;
+  private int twoSetsMatchesLost;
+  private BigDecimal twoSetsMatchesRatio;
+
+  private int threeSetsMatchesWon;
+  private int threeSetsMatchesLost;
+  private BigDecimal threeSetsMatchesRatio;
+
+  private int fourSetsMatchesWon;
+  private int fourSetsMatchesLost;
+  private BigDecimal fourSetsMatchesRatio;
+
+  private int fiveSetsMatchesWon;
+  private int fiveSetsMatchesLost;
+  private BigDecimal fiveSetsMatchesRatio;
 
   private int firstSetsWon;
   private int firstSetsLost;
@@ -44,9 +56,17 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
   private int secondSetsLost;
   private BigDecimal secondSetsRatio;
 
-  private int tieBreaksWon;
-  private int tieBreaksLost;
-  private BigDecimal tieBreaksRatio;
+  private int thirdSetsWon;
+  private int thirdSetsLost;
+  private BigDecimal thirdSetsRatio;
+
+  private int fourthSetsWon;
+  private int fourthSetsLost;
+  private BigDecimal fourthSetsRatio;
+
+  private int fifthSetsWon;
+  private int fifthSetsLost;
+  private BigDecimal fifthSetsRatio;
 
   public HeadToHeadScoreboardRow(
       final PlayersStatsScoreboardRow row,
@@ -74,6 +94,8 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
             .findFirst()
             .orElseThrow();
 
+    // Sets
+
     this.firstSetsWon = splitPerSet.get(player).getOrDefault(1, 0);
     this.firstSetsLost = splitPerSet.get(opponent).getOrDefault(1, 0);
     this.firstSetsRatio =
@@ -81,31 +103,74 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
     this.secondSetsWon = splitPerSet.get(player).getOrDefault(2, 0);
     this.secondSetsLost = splitPerSet.get(opponent).getOrDefault(2, 0);
-    this.secondSetsRatio =
-        RoundingUtil.round((float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
-
-    this.tieBreaksWon = splitPerSet.get(player).getOrDefault(3, 0);
-    this.tieBreaksLost = splitPerSet.get(opponent).getOrDefault(3, 0);
-    if (tieBreaksWon + tieBreaksLost > 0) {
-      this.tieBreaksRatio =
-          RoundingUtil.round((float) 100 * tieBreaksWon / (tieBreaksWon + tieBreaksLost), 1);
+    if (secondSetsWon + secondSetsLost > 0) {
+      this.secondSetsRatio =
+          RoundingUtil.round((float) 100 * secondSetsWon / (secondSetsWon + secondSetsLost), 1);
     }
 
-    this.regularMatchesWon = splitPerMatch.get(player).getOrDefault(2, 0);
-    this.regularMatchesLost = splitPerMatch.get(opponent).getOrDefault(2, 0);
-    if (regularMatchesWon + regularMatchesLost > 0) {
-      this.regularMatchesRatio =
+    this.thirdSetsWon = splitPerSet.get(player).getOrDefault(3, 0);
+    this.thirdSetsLost = splitPerSet.get(opponent).getOrDefault(3, 0);
+    if (thirdSetsWon + thirdSetsLost > 0) {
+      this.thirdSetsRatio =
+          RoundingUtil.round((float) 100 * thirdSetsWon / (thirdSetsWon + thirdSetsLost), 1);
+    }
+
+    this.fourthSetsWon = splitPerSet.get(player).getOrDefault(4, 0);
+    this.fourthSetsLost = splitPerSet.get(opponent).getOrDefault(4, 0);
+    if (fourthSetsWon + fourthSetsLost > 0) {
+      this.fourthSetsRatio =
+          RoundingUtil.round((float) 100 * fourthSetsWon / (fourthSetsWon + fourthSetsLost), 1);
+    }
+
+    this.fifthSetsWon = splitPerSet.get(player).getOrDefault(5, 0);
+    this.fifthSetsLost = splitPerSet.get(opponent).getOrDefault(5, 0);
+    if (fifthSetsWon + fifthSetsLost > 0) {
+      this.fifthSetsRatio =
+          RoundingUtil.round((float) 100 * fifthSetsWon / (fifthSetsWon + fifthSetsLost), 1);
+    }
+
+    // Matches
+
+    this.oneSetMatchesWon = splitPerMatch.get(player).getOrDefault(1, 0);
+    this.oneSetMatchesLost = splitPerMatch.get(opponent).getOrDefault(1, 0);
+    if (oneSetMatchesWon + oneSetMatchesLost > 0) {
+      this.oneSetMatchesRatio =
           RoundingUtil.round(
-              (float) 100 * regularMatchesWon / (regularMatchesWon + regularMatchesLost), 1);
+              (float) 100 * oneSetMatchesWon / (oneSetMatchesWon + oneSetMatchesLost), 1);
     }
 
-    this.tieBreakMatchesWon = splitPerMatch.get(player).getOrDefault(3, 0);
-    this.tieBreakMatchesLost = splitPerMatch.get(opponent).getOrDefault(3, 0);
-    if (tieBreakMatchesWon + tieBreakMatchesLost > 0) {
-      this.tieBreakMatchesRatio =
+    this.twoSetsMatchesWon = splitPerMatch.get(player).getOrDefault(2, 0);
+    this.twoSetsMatchesLost = splitPerMatch.get(opponent).getOrDefault(2, 0);
+    if (twoSetsMatchesWon + twoSetsMatchesLost > 0) {
+      this.twoSetsMatchesRatio =
           RoundingUtil.round(
-              (float) 100 * tieBreakMatchesWon / (tieBreakMatchesWon + tieBreakMatchesLost), 1);
+              (float) 100 * twoSetsMatchesWon / (twoSetsMatchesWon + twoSetsMatchesLost), 1);
     }
+
+    this.threeSetsMatchesWon = splitPerMatch.get(player).getOrDefault(3, 0);
+    this.threeSetsMatchesLost = splitPerMatch.get(opponent).getOrDefault(3, 0);
+    if (threeSetsMatchesWon + threeSetsMatchesLost > 0) {
+      this.threeSetsMatchesRatio =
+          RoundingUtil.round(
+              (float) 100 * threeSetsMatchesWon / (threeSetsMatchesWon + threeSetsMatchesLost), 1);
+    }
+
+    this.fourSetsMatchesWon = splitPerMatch.get(player).getOrDefault(4, 0);
+    this.fourSetsMatchesLost = splitPerMatch.get(opponent).getOrDefault(4, 0);
+    if (fourSetsMatchesWon + fourSetsMatchesLost > 0) {
+      this.fourSetsMatchesRatio =
+          RoundingUtil.round(
+              (float) 100 * fourSetsMatchesWon / (fourSetsMatchesWon + fourSetsMatchesLost), 1);
+    }
+
+    this.fiveSetsMatchesWon = splitPerMatch.get(player).getOrDefault(5, 0);
+    this.fiveSetsMatchesLost = splitPerMatch.get(opponent).getOrDefault(5, 0);
+    if (fiveSetsMatchesWon + fiveSetsMatchesLost > 0) {
+      this.fiveSetsMatchesRatio =
+          RoundingUtil.round(
+              (float) 100 * fiveSetsMatchesWon / (fiveSetsMatchesWon + fiveSetsMatchesLost), 1);
+    }
+
   }
 
   @Override

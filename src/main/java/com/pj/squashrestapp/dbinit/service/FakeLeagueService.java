@@ -15,9 +15,11 @@ import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
@@ -40,9 +42,6 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class FakeLeagueService {
-
-  private static final int WEEKS_BETWEEN_SEASONS_STARTS = 12;
-  private static final int NUMBER_OF_ROUNDS_COMPLETE = 10;
 
   private final XpPointsService xpPointsService;
   private final SeasonService seasonService;
@@ -73,12 +72,32 @@ public class FakeLeagueService {
     final int maxNumberOfAttendingPlayers = jsonFakeLeagueParams.getMaxNumberOfAttendingPlayers();
     final String xpPointsType = jsonFakeLeagueParams.getXpPointsType();
     final LocalDate startDate = jsonFakeLeagueParams.getStartDate();
+
+    final int numberOfRoundsPerSeason = jsonFakeLeagueParams.getNumberOfRoundsPerSeason();
+    final int numberOfRoundsToBeDeducted = jsonFakeLeagueParams.getNumberOfRoundsToBeDeducted();
+    final MatchFormatType matchFormatType = jsonFakeLeagueParams.getMatchFormatType();
+    final SetWinningType regularSetWinningType = jsonFakeLeagueParams.getRegularSetWinningType();
+    final int regularSetWinningPoints = jsonFakeLeagueParams.getRegularSetWinningPoints();
+    final SetWinningType tiebreakWinningType = jsonFakeLeagueParams.getTiebreakWinningType();
+    final int tiebreakWinningPoints = jsonFakeLeagueParams.getTiebreakWinningPoints();
+    final String when = jsonFakeLeagueParams.getWhen();
+    final String where = jsonFakeLeagueParams.getWhere();
+
     final String logoBase64 = jsonFakeLeagueParams.getLogoBase64();
     final byte[] logoBytes = Base64.getDecoder().decode(logoBase64);
 
     log.info("Creating new League and assigning roles and logo...");
 
     final League league = new League(leagueName);
+    league.setNumberOfRoundsPerSeason(numberOfRoundsPerSeason);
+    league.setRoundsToBeDeducted(numberOfRoundsToBeDeducted);
+    league.setMatchFormatType(matchFormatType);
+    league.setRegularSetWinningType(regularSetWinningType);
+    league.setRegularSetWinningPoints(regularSetWinningPoints);
+    league.setTiebreakWinningType(tiebreakWinningType);
+    league.setTiebreakWinningPoints(tiebreakWinningPoints);
+    league.setTime(when);
+    league.setLocation(where);
 
     final LeagueLogo leagueLogo = new LeagueLogo();
     leagueLogo.setPicture(logoBytes);
@@ -102,20 +121,23 @@ public class FakeLeagueService {
     for (int seasonNumber = 1; seasonNumber <= numberOfCompletedSeasons; seasonNumber++) {
       final Season season =
           FakeSeason.create(
+              league,
               seasonNumber,
               seasonStartDate,
-              NUMBER_OF_ROUNDS_COMPLETE,
+              numberOfRoundsPerSeason,
               players,
               minNumberOfAttendingPlayers,
               maxNumberOfAttendingPlayers,
               xpPointsType);
       league.addSeason(season);
 
-      seasonStartDate = seasonStartDate.plusWeeks(WEEKS_BETWEEN_SEASONS_STARTS);
+      seasonStartDate = seasonStartDate.plusWeeks(numberOfRoundsPerSeason + 2);
+
     }
     if (numberOfRoundsInLastSeason > 0) {
       final Season season =
           FakeSeason.create(
+              league,
               numberOfCompletedSeasons + 1,
               seasonStartDate,
               numberOfRoundsInLastSeason,

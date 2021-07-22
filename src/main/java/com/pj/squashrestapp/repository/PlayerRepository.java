@@ -24,6 +24,10 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   Player findByUuid(UUID uuid);
 
 
+  @Query("SELECT p FROM Player p")
+  List<Player> findAllRaw();
+
+
   @Override
   @EntityGraph(attributePaths = {
           "authorities",

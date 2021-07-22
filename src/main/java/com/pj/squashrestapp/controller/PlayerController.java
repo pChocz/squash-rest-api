@@ -1,11 +1,14 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +33,13 @@ public class PlayerController {
 
   private final PlayerService playerService;
 
+  @GetMapping(value = "/exists/{usernameOrEmail}")
+  @ResponseBody
+  boolean checkPlayerExists(@PathVariable final String usernameOrEmail) {
+    final boolean playerExists = playerService.checkPlayerExists(usernameOrEmail);
+    return playerExists;
+  }
+
   @GetMapping(value = "/all")
   @ResponseBody
   @PreAuthorize("isAdmin()")
@@ -43,6 +53,13 @@ public class PlayerController {
   PlayerDetailedDto aboutMe() {
     final PlayerDetailedDto aboutMeInfo = playerService.getAboutMeInfo();
     return aboutMeInfo;
+  }
+
+  @GetMapping(value = "/my-leagues")
+  @ResponseBody
+  Set<LeagueDtoSimple> myLeagues() {
+    final Set<LeagueDtoSimple> myLeagues = playerService.getMyLeagues();
+    return myLeagues;
   }
 
   @PutMapping(value = "/role-unassign/{playerUuid}")

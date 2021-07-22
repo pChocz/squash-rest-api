@@ -75,7 +75,7 @@ public class RoundService {
             .collect(Collectors.toList());
 
     final Round round =
-        createRoundForSeasonWithGivenPlayers(
+        createRoundForSeasonWithGivenPlayers(league,
             roundNumber, roundDate, playersPerGroup, numberOfSetsPerMatchToCreate);
     season.addRound(round);
 
@@ -86,6 +86,7 @@ public class RoundService {
   }
 
   private Round createRoundForSeasonWithGivenPlayers(
+      final League league,
       final int roundNumber,
       final LocalDate roundDate,
       final List<List<Player>> playersPerGroup,
@@ -102,7 +103,7 @@ public class RoundService {
 
     for (int i = 1; i <= playersPerGroup.size(); i++) {
       final RoundGroup roundGroup =
-          createRoundGroup(playersPerGroup, i, numberOfSetsPerMatchToCreate);
+          createRoundGroup(league, playersPerGroup, i, numberOfSetsPerMatchToCreate);
       round.addRoundGroup(roundGroup);
     }
 
@@ -110,6 +111,7 @@ public class RoundService {
   }
 
   private RoundGroup createRoundGroup(
+      final League league,
       final List<List<Player>> playersPerGroup,
       final int groupNumber,
       final int numberOfSetsPerMatchToCreate) {
@@ -124,7 +126,7 @@ public class RoundService {
         final Player firstPlayer = groupPlayers.get(j);
         final Player secondPlayer = groupPlayers.get(k);
         final Match match =
-            createMatch(matchNumber++, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate);
+            createMatch(matchNumber++, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate, league);
         roundGroup.addMatch(match);
       }
     }
@@ -135,11 +137,10 @@ public class RoundService {
       final int number,
       final Player firstPlayer,
       final Player secondPlayer,
-      final int numberOfSetsPerMatchToCreate) {
+      final int numberOfSetsPerMatchToCreate,
+      final League league) {
 
-    final Match match = new Match();
-    match.setFirstPlayer(firstPlayer);
-    match.setSecondPlayer(secondPlayer);
+    final Match match = new Match(firstPlayer, secondPlayer, league);
     match.setNumber(number);
 
     for (int i = 1; i <= numberOfSetsPerMatchToCreate; i++) {

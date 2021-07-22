@@ -1,13 +1,16 @@
 package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchValidator;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -21,12 +24,24 @@ public class MatchSimpleDto implements MatchDto {
 
   private final PlayerDto firstPlayer;
   private final PlayerDto secondPlayer;
+  private final PlayerDto winner;
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
 
   private final List<SetDto> sets;
   private final MatchStatus status;
+
+  @JsonIgnore
+  private final MatchFormatType matchFormatType;
+  @JsonIgnore
+  private final SetWinningType regularSetWinningType;
+  @JsonIgnore
+  private final int regularSetWinningPoints;
+  @JsonIgnore
+  private final SetWinningType tieBreakWinningType;
+  @JsonIgnore
+  private final int tieBreakWinningPoints;
 
   public MatchSimpleDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
@@ -36,19 +51,43 @@ public class MatchSimpleDto implements MatchDto {
     this.secondPlayer = new PlayerDto(match.getSecondPlayer());
     this.date = round.getDate();
 
+    this.matchFormatType = match.getMatchFormatType();
+    this.regularSetWinningType = match.getRegularSetWinningType();
+    this.regularSetWinningPoints = match.getRegularSetWinningPoints();
+    this.tieBreakWinningType = match.getTiebreakWinningType();
+    this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
+
     this.sets = new ArrayList<>();
     for (final SetResult setResult :
         match.getSetResults().stream().sorted().collect(Collectors.toList())) {
-      this.sets.add(new SetDto(setResult));
+      this.sets.add(new SetDto(setResult, matchFormatType));
     }
 
-    this.status = new MatchValidator(match).checkStatus();
+    this.status = MatchStatusHelper.checkStatus(this);
+    this.winner = status == MatchStatus.FINISHED
+        ? MatchStatusHelper.getWinner(this)
+        : null;
   }
 
-  public MatchSimpleDto(final String... setResults) {
+  /**
+   * This one is only for testing purposes.
+   */
+  public MatchSimpleDto(
+      final MatchFormatType matchFormatType,
+      final SetWinningType regularSetWinningType,
+      final SetWinningType tieBreakWinningType,
+      final int regularSetWinningPoints,
+      final int tieBreakWinningPoints,
+      final String... setResults) {
     this.firstPlayer = null;
     this.secondPlayer = null;
     this.date = LocalDate.now();
+
+    this.matchFormatType = matchFormatType;
+    this.regularSetWinningType = regularSetWinningType;
+    this.regularSetWinningPoints = regularSetWinningPoints;
+    this.tieBreakWinningType = tieBreakWinningType;
+    this.tieBreakWinningPoints = tieBreakWinningPoints;
 
     this.sets = new ArrayList<>();
     int setNumber = 1;
@@ -58,8 +97,12 @@ public class MatchSimpleDto implements MatchDto {
       this.sets.add(setDto);
       setNumber++;
     }
-    this.status = null;
+    this.status = MatchStatusHelper.checkStatus(this);
+    this.winner = status == MatchStatus.FINISHED
+        ? MatchStatusHelper.getWinner(this)
+        : null;
   }
+
 
   @Override
   public String toString() {

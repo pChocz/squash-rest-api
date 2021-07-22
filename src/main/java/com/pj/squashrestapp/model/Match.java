@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -78,6 +80,26 @@ public class Match implements Identifiable, Comparable<Match> {
   private Player secondPlayer;
 
   @Setter
+  @Enumerated(EnumType.STRING)
+  private MatchFormatType matchFormatType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType regularSetWinningType;
+
+  @Setter
+  @Enumerated(EnumType.STRING)
+  private SetWinningType tiebreakWinningType;
+
+  @Setter
+  @Column(name = "regular_set_winning_points")
+  private int regularSetWinningPoints;
+
+  @Setter
+  @Column(name = "tie_break_winning_points")
+  private int tiebreakWinningPoints;
+
+  @Setter
   @OneToMany(
       mappedBy = "match",
       cascade = CascadeType.ALL,
@@ -91,9 +113,14 @@ public class Match implements Identifiable, Comparable<Match> {
   @JoinColumn(name = "round_group_id")
   private RoundGroup roundGroup;
 
-  public Match(final Player firstPlayer, final Player secondPlayer) {
+  public Match(final Player firstPlayer, final Player secondPlayer, final League league) {
     this.firstPlayer = firstPlayer;
     this.secondPlayer = secondPlayer;
+    this.matchFormatType = league.getMatchFormatType();
+    this.regularSetWinningType = league.getRegularSetWinningType();
+    this.regularSetWinningPoints = league.getRegularSetWinningPoints();
+    this.tiebreakWinningType = league.getTiebreakWinningType();
+    this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
   }
 
   public void addSetResult(final SetResult setResult) {

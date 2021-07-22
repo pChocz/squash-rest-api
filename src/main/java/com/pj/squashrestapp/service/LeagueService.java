@@ -8,25 +8,32 @@ import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
-import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.dto.leaguestats.PerSeasonStats;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.LeagueRule;
+import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
+import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
+import com.pj.squashrestapp.repository.LeagueRulesRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
@@ -36,13 +43,16 @@ import com.pj.squashrestapp.util.RoundingUtil;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,20 +73,35 @@ public class LeagueService {
   private final SeasonService seasonService;
 
   private final LeagueRepository leagueRepository;
-  private final PlayerRepository playerRepository;
   private final LeagueLogoRepository leagueLogoRepository;
+  private final LeagueRulesRepository leagueRulesRepository;
+  private final SeasonRepository seasonRepository;
+  private final AdditionalMatchRepository additionalMatchRepository;
+  private final PlayerRepository playerRepository;
   private final RoleForLeagueRepository roleForLeagueRepository;
   private final SetResultRepository setResultRepository;
   private final TrophiesForLeagueRepository trophiesForLeagueRepository;
 
   /**
-   * This method creates the league itself as well as both roles (USER, MODERATOR) that can be
-   * assigned to the players later.
+   * This method creates the league itself as well as both roles (PLAYER, MODERATOR) that can be
+   * assigned to players later.
    *
-   * @param leagueName name of the league to create
-   * @return league DTO object
+   * Player that is requesting the league to be created will be automatically assigned as
+   * both PLAYER and MODERATOR.
    */
-  public LeagueDto createNewLeague(final String leagueName) {
+  public UUID createNewLeague(
+      final String leagueName,
+      final String logoBase64,
+      final int numberOfRounds,
+      final int numberOfRoundsToBeDeducted,
+      final MatchFormatType matchFormatType,
+      final SetWinningType regularSetWinningType,
+      final int regularSetWinningPoints,
+      final SetWinningType tiebreakWinningType,
+      final int tiebreakWinningPoints,
+      final String leagueWhen,
+      final String leagueWhere) {
+
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player =
         playerRepository
@@ -84,38 +109,91 @@ public class LeagueService {
             .orElseThrow();
 
     final League league = new League(leagueName);
+    league.setNumberOfRoundsPerSeason(numberOfRounds);
+    league.setRoundsToBeDeducted(numberOfRoundsToBeDeducted);
+    league.setMatchFormatType(matchFormatType);
+    league.setRegularSetWinningType(regularSetWinningType);
+    league.setRegularSetWinningPoints(regularSetWinningPoints);
+    league.setTiebreakWinningType(tiebreakWinningType);
+    league.setTiebreakWinningPoints(tiebreakWinningPoints);
+    if (leagueWhen != null) {
+      league.setTime(leagueWhen);
+    }
+    if (leagueWhere != null) {
+      league.setLocation(leagueWhere);
+    }
+
+    final byte[] logoBytes = Base64.getUrlDecoder().decode(logoBase64);
+
+    final LeagueLogo leagueLogo = new LeagueLogo();
+    leagueLogo.setPicture(logoBytes);
+    league.setLeagueLogo(leagueLogo);
 
     final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
     final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
     league.addRoleForLeague(playerRole);
     league.addRoleForLeague(moderatorRole);
 
+    player.addRole(playerRole);
     player.addRole(moderatorRole);
 
     playerRepository.save(player);
+    leagueRepository.save(league);
     roleForLeagueRepository.save(playerRole);
     roleForLeagueRepository.save(moderatorRole);
-    leagueRepository.save(league);
 
-    return new LeagueDto(league);
+    return league.getUuid();
   }
 
-  public void removeEmptyLeague(final UUID leagueUuid) {
+  /**
+   * TODO: This method needs to remove lot of things from the DB:
+   *  - [v] player roles
+   *  - [v] roles for league (MODERATOR and PLAYER)
+   *  - [v] league rules
+   *  - [v] additional matches
+   *  - [v] logo
+   *  - [v] seasons / rounds / matches / sets
+   *  - [v] league itself
+   *
+   * @param leagueUuid UUID of a league to remove
+   * */
+  public void removeLeague(final UUID leagueUuid) {
     final League leagueToRemove = leagueRepository.findByUuid(leagueUuid).orElseThrow();
 
+    // player roles
     final List<Player> leaguePlayers = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
     for (final Player player : leaguePlayers) {
       player.getRoles().removeIf(roleForLeague -> roleForLeague.getLeague().equals(leagueToRemove));
     }
     playerRepository.saveAll(leaguePlayers);
 
+    // roles for league
     final List<RoleForLeague> rolesForLeague = roleForLeagueRepository.findByLeague(leagueToRemove);
     roleForLeagueRepository.deleteAll(rolesForLeague);
 
+    // league rules
+    final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(leagueToRemove);
+    leagueRulesRepository.deleteAll(leagueRules);
+
+    // additional matches
+    final List<AdditionalMatch> additionalMatches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(leagueToRemove);
+    additionalMatchRepository.deleteAll(additionalMatches);
+
+    // logo
+    final Optional<LeagueLogo> logoOptional = leagueLogoRepository.findByLeague(leagueToRemove);
+    logoOptional.ifPresent(leagueLogoRepository::delete);
+
+    // seasons / rounds / matches / sets
+    final List<Season> seasons = seasonRepository.findAllByLeague(leagueToRemove);
+    seasonRepository.deleteAll(seasons);
+
+    // league itself
     leagueRepository.delete(leagueToRemove);
   }
 
-  public void saveLogoForLeague(final UUID leagueUuid, final byte[] logoBytes) {
+  public void changeLogoForLeague(final UUID leagueUuid, final String logoBase64) {
+    final byte[] logoBytes = Base64.getUrlDecoder().decode(logoBase64);
+
     final LeagueLogo leagueLogo = new LeagueLogo();
     leagueLogo.setPicture(logoBytes);
 
@@ -157,8 +235,10 @@ public class LeagueService {
 
   private List<PerSeasonStats> buildPerSeasonStatsList(final League league) {
     final List<PerSeasonStats> perSeasonStatsList = new ArrayList<>();
+    final List<Season> seasonsReversedOrder =
+        league.getSeasons().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
 
-    for (final Season season : league.getSeasons()) {
+    for (final Season season : seasonsReversedOrder) {
       final List<MatchDetailedDto> matchesForSeason = MatchExtractorUtil.extractAllMatches(season);
 
       int matches = 0;
@@ -204,7 +284,6 @@ public class LeagueService {
               .build());
     }
 
-    perSeasonStatsList.sort(Comparator.comparingInt(PerSeasonStats::getSeasonNumber));
     return perSeasonStatsList;
   }
 
@@ -356,5 +435,16 @@ public class LeagueService {
             .build();
 
     return overalStats;
+  }
+
+  public boolean checkLeagueNameTaken(final String leagueName) {
+    final String leagueNameTrimmed = leagueName.trim();
+    final List<League> leagues = leagueRepository.findAllRaw();
+    final boolean isTaken = leagues.stream().anyMatch(leagueNameEqualPredicate(leagueNameTrimmed));
+    return isTaken;
+  }
+
+  private Predicate<League> leagueNameEqualPredicate(final String leagueNameTrimmed) {
+    return league -> league.getName().trim().equalsIgnoreCase(leagueNameTrimmed);
   }
 }

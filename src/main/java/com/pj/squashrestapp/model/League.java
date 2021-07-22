@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model;
 
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -97,6 +98,10 @@ public class League implements Identifiable {
   @Setter
   @Column(name = "rounds_to_be_deducted")
   private int roundsToBeDeducted;
+
+  @Setter
+  @Column(name = "date_of_creation")
+  private LocalDateTime dateOfCreation;
 
   @Setter
   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

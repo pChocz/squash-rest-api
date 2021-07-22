@@ -27,20 +27,6 @@ public class LeagueLogoController {
 
   private final LeagueLogoService leagueLogoService;
 
-  @PutMapping(value = "/{leagueUuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void replaceLogoForLeague(
-      @PathVariable final UUID leagueUuid, @RequestParam final MultipartFile leagueLogoFile) {
-    leagueLogoService.replaceLogoForLeague(leagueUuid, leagueLogoFile);
-  }
-
-  @DeleteMapping(value = "/{leagueUuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void deleteLogoForLeague(@PathVariable final UUID leagueUuid) {
-    leagueLogoService.deleteLogoForLeague(leagueUuid);
-  }
 
   @GetMapping(value = "/season/{seasonUuid}")
   @ResponseBody

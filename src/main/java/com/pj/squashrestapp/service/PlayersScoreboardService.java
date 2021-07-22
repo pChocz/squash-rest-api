@@ -9,9 +9,11 @@ import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
+import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -37,6 +39,7 @@ public class PlayersScoreboardService {
   private final AdditionalMatchRepository additionalMatchRepository;
   private final PlayerRepository playerRepository;
   private final SeasonRepository seasonRepository;
+  private final LeagueRepository leagueRepository;
 
   public Scoreboard buildSingle(
       final UUID leagueUuid,
@@ -151,13 +154,26 @@ public class PlayersScoreboardService {
 
   public Scoreboard buildMultipleMeAgainstAll(final UUID leagueUuid) {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
+    final Player player = playerRepository.findByUuid(currentPlayerUuid);
+    final League league = leagueRepository.findByUuid(leagueUuid).get();
+
     final List<Match> matches =
         matchRepository.fetchByOnePlayerAgainstOthersAndLeagueId(leagueUuid, currentPlayerUuid);
 
-    final List<MatchDto> matchesDtos =
+    final List<AdditionalMatch> additionalMatches =
+        additionalMatchRepository.fetchForSinglePlayerForLeague(player, league);
+
+    final List<MatchDto> roundMatchesDtos =
         matches.stream().map(MatchSimpleDto::new).collect(Collectors.toList());
 
-    final Scoreboard scoreboard = new Scoreboard(matchesDtos);
+    final List<MatchDto> additionalMatchesDtos =
+        additionalMatches.stream().map(AdditionalMatchSimpleDto::new).collect(Collectors.toList());
+
+    final List<MatchDto> allMatchesDtos = new ArrayList<>();
+    allMatchesDtos.addAll(roundMatchesDtos);
+    allMatchesDtos.addAll(additionalMatchesDtos);
+
+    final Scoreboard scoreboard = new Scoreboard(allMatchesDtos);
     scoreboard.removeSinglePlayer(currentPlayerUuid);
     scoreboard.reverse();
 
