@@ -65,6 +65,10 @@ public class Season implements Identifiable, Comparable<Season> {
   private UUID uuid = UUID.randomUUID();
 
   @Setter
+  @Column(name = "description")
+  private String description;
+
+  @Setter
   @Column(name = "xp_points_type")
   private String xpPointsType;
 
@@ -91,6 +95,14 @@ public class Season implements Identifiable, Comparable<Season> {
       fetch = FetchType.LAZY,
       orphanRemoval = true)
   private Set<BonusPoint> bonusPoints = new HashSet<>();
+
+  @Setter
+  @Column(name = "number_of_rounds")
+  private int numberOfRounds;
+
+  @Setter
+  @Column(name = "rounds_to_be_deducted")
+  private int roundsToBeDeducted;
 
   @JsonIgnore
   @Setter

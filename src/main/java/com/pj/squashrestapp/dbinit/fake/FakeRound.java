@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.dbinit.fake;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -16,6 +17,7 @@ import lombok.experimental.UtilityClass;
 public class FakeRound {
 
   Round create(
+      final League league,
       final int roundNumber,
       final LocalDate roundDate,
       final ArrayListMultimap<Integer, Player> roundGroupNumberToPlayersMultimap) {
@@ -27,7 +29,7 @@ public class FakeRound {
     for (final int roundGroupNumber : roundGroupsNumbers) {
       final List<Player> roundGroupPlayers =
           roundGroupNumberToPlayersMultimap.get(roundGroupNumber);
-      final RoundGroup roundGroup = FakeRoundGroup.create(roundGroupNumber, roundGroupPlayers);
+      final RoundGroup roundGroup = FakeRoundGroup.create(league, roundGroupNumber, roundGroupPlayers);
       round.addRoundGroup(roundGroup);
     }
 

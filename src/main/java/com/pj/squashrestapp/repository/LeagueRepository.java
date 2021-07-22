@@ -33,6 +33,10 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   List<League> findAllRaw();
 
 
+  @Query("SELECT l FROM League l WHERE l.name = :name")
+  League findByNameRaw(String name);
+
+
   @EntityGraph(attributePaths = {
           "seasons",
           "trophiesForLeague",

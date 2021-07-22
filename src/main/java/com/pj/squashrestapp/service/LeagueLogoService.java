@@ -47,38 +47,38 @@ public class LeagueLogoService {
     return leagueLogoBytes;
   }
 
-  public void replaceLogoForLeague(final UUID leagueUuid, final MultipartFile leagueLogoFile) {
-    final byte[] logoBytes;
-    try {
-      logoBytes = leagueLogoFile.getBytes();
-    } catch (final IOException e) {
-      throw new GeneralBadRequestException("Bad picture!");
-    }
+//  public void replaceLogoForLeague(final UUID leagueUuid, final MultipartFile leagueLogoFile) {
+//    final byte[] logoBytes;
+//    try {
+//      logoBytes = leagueLogoFile.getBytes();
+//    } catch (final IOException e) {
+//      throw new GeneralBadRequestException("Bad picture!");
+//    }
+//
+//    final LeagueLogo leagueLogo = new LeagueLogo();
+//    leagueLogo.setPicture(logoBytes);
+//
+//    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+//    league.setLeagueLogo(leagueLogo);
+//    leagueLogo.setLeague(league);
+//
+//    leagueLogoRepository.save(leagueLogo);
+//  }
 
-    final LeagueLogo leagueLogo = new LeagueLogo();
-    leagueLogo.setPicture(logoBytes);
-
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    league.setLeagueLogo(leagueLogo);
-    leagueLogo.setLeague(league);
-
-    leagueLogoRepository.save(leagueLogo);
-  }
-
-  public void deleteLogoForLeague(final UUID leagueUuid) {
-    final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
-    if (league.isEmpty()) {
-      throw new GeneralBadRequestException("League with UUID [" + leagueUuid + "] not found!");
-    }
-
-    final Optional<LeagueLogo> leagueLogo = leagueLogoRepository.findByLeague(league.get());
-    if (leagueLogo.isEmpty()) {
-      throw new GeneralBadRequestException(
-          "No logo exists for the league [" + league.get().getName());
-    }
-
-    league.get().setLeagueLogo(null);
-    leagueLogoRepository.delete(leagueLogo.get());
-    leagueRepository.save(league.get());
-  }
+//  public void deleteLogoForLeague(final UUID leagueUuid) {
+//    final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
+//    if (league.isEmpty()) {
+//      throw new GeneralBadRequestException("League with UUID [" + leagueUuid + "] not found!");
+//    }
+//
+//    final Optional<LeagueLogo> leagueLogo = leagueLogoRepository.findByLeague(league.get());
+//    if (leagueLogo.isEmpty()) {
+//      throw new GeneralBadRequestException(
+//          "No logo exists for the league [" + league.get().getName());
+//    }
+//
+//    league.get().setLeagueLogo(null);
+//    leagueLogoRepository.delete(leagueLogo.get());
+//    leagueRepository.save(league.get());
+//  }
 }

@@ -33,12 +33,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class JsonImportUtil {
 
-  public Season constructSeason(final JsonSeason jsonSeason) {
+  public Season constructSeason(final JsonSeason jsonSeason, final League league) {
     final Season season = new Season();
     season.setNumber(jsonSeason.getNumber());
     season.setStartDate(jsonSeason.getStartDate());
     season.setUuid(jsonSeason.getUuid());
     season.setXpPointsType(jsonSeason.getXpPointsType());
+    season.setNumberOfRounds(league.getNumberOfRoundsPerSeason());
+    season.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
     return season;
   }
 
@@ -57,10 +59,11 @@ public class JsonImportUtil {
     return roundGroup;
   }
 
-  public Match constructMatch(final JsonMatch jsonMatch, final List<Player> players) {
+  public Match constructMatch(final JsonMatch jsonMatch, final List<Player> players,
+      final League league) {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
-    final Match match = new Match(firstPlayer, secondPlayer);
+    final Match match = new Match(firstPlayer, secondPlayer, league);
     return match;
   }
 
@@ -72,10 +75,10 @@ public class JsonImportUtil {
   }
 
   public AdditionalMatch constructAdditionalMatch(
-      final JsonAdditionalMatch jsonMatch, final List<Player> players) {
+      final JsonAdditionalMatch jsonMatch, final List<Player> players, final League league) {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
-    final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer);
+    final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer, league);
     match.setDate(jsonMatch.getDate());
     match.setType(jsonMatch.getType());
     match.setSeasonNumber(jsonMatch.getSeasonNumber());
@@ -163,6 +166,7 @@ public class JsonImportUtil {
     final League league = new League();
     league.setName(jsonLeague.getName());
     league.setTime(jsonLeague.getTime());
+    league.setDateOfCreation(jsonLeague.getDateOfCreation());
     league.setLocation(jsonLeague.getLocation());
     league.setMatchFormatType(jsonLeague.getMatchFormatType());
     league.setRegularSetWinningPoints(jsonLeague.getRegularSetWinningPoints());

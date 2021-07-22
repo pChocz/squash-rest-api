@@ -123,32 +123,32 @@ class MatchStatusAdvantageOf2AbsoluteHelperTest {
   }
 
   private MatchStatus getStatusForAbsDiffOf2OneGameMatch(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
+    return new MatchSimpleDto(
         MatchFormatType.ONE_GAME,
         ADV_OF_2_ABSOLUTE,
         ADV_OF_2_ABSOLUTE,
         11,
-        11);
+        11,
+            setResults).getStatus();
   }
 
   private MatchStatus getStatusForAbsDiffOf2BestOf3Match(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
-        MatchFormatType.BEST_OF_3,
+    return new MatchSimpleDto(
+            MatchFormatType.BEST_OF_3,
         ADV_OF_2_ABSOLUTE,
         ADV_OF_2_ABSOLUTE,
         11,
-        9);
+        9,
+            setResults).getStatus();
   }
 
   private MatchStatus getStatusForAbsDiffOf2BestOf5Match(final String... setResults) {
-    return MatchStatusHelper.checkStatus(
-        new MatchSimpleDto(setResults),
+    return new MatchSimpleDto(
         MatchFormatType.BEST_OF_5,
-        ADV_OF_2_ABSOLUTE,
-        ADV_OF_2_ABSOLUTE,
+            ADV_OF_2_ABSOLUTE,
+            ADV_OF_2_ABSOLUTE,
         11,
-        9);
+        9,
+            setResults).getStatus();
   }
 }

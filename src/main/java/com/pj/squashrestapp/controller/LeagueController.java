@@ -5,6 +5,8 @@ import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.service.LeagueService;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -34,16 +37,49 @@ public class LeagueController {
 
   @PostMapping
   @ResponseBody
-  LeagueDto createNewLeague(@RequestParam final String leagueName) {
-    final LeagueDto leagueDto = leagueService.createNewLeague(leagueName);
-    return leagueDto;
+  UUID createNewLeague(
+      @RequestParam final String leagueName,
+      @RequestParam final String logoBase64,
+      @RequestParam final int numberOfRounds,
+      @RequestParam final int numberOfRoundsToBeDeducted,
+      @RequestParam final MatchFormatType matchFormatType,
+      @RequestParam final SetWinningType regularSetWinningType,
+      @RequestParam final int regularSetWinningPoints,
+      @RequestParam final SetWinningType tiebreakWinningType,
+      @RequestParam final int tiebreakWinningPoints,
+      @RequestParam(required = false) final String leagueWhen,
+      @RequestParam(required = false) final String leagueWhere) {
+
+    final UUID newLeagueUuid =
+        leagueService.createNewLeague(
+            leagueName,
+            logoBase64,
+            numberOfRounds,
+            numberOfRoundsToBeDeducted,
+            matchFormatType,
+            regularSetWinningType,
+            regularSetWinningPoints,
+            tiebreakWinningType,
+            tiebreakWinningPoints,
+            leagueWhen,
+            leagueWhere);
+
+    return newLeagueUuid;
   }
 
-  @DeleteMapping
+  @DeleteMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void removeLeague(@RequestParam final UUID leagueUuid) {
-    leagueService.removeEmptyLeague(leagueUuid);
+  void removeLeague(@PathVariable final UUID leagueUuid) {
+    leagueService.removeLeague(leagueUuid);
+  }
+
+  @PutMapping(value = "/{leagueUuid}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  void changeLeagueLogo(
+      @PathVariable final UUID leagueUuid, @RequestParam final String logoBase64) {
+    leagueService.changeLogoForLeague(leagueUuid, logoBase64);
   }
 
   @GetMapping(value = "/general-info/{leagueUuid}")
@@ -90,5 +126,12 @@ public class LeagueController {
   OveralStats extractLeagueOveralStats(@PathVariable final UUID leagueUuid) {
     final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
     return leagueOveralStats;
+  }
+
+  @GetMapping(value = "/name-taken/{leagueName}")
+  @ResponseBody
+  boolean checkLeagueNameTaken(@PathVariable final String leagueName) {
+    final boolean isLeagueNameAvailable = leagueService.checkLeagueNameTaken(leagueName);
+    return isLeagueNameAvailable;
   }
 }

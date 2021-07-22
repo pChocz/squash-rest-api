@@ -41,6 +41,7 @@ public class JsonExportUtil {
     jsonLeague.setUuid(league.getUuid());
     jsonLeague.setName(league.getName());
     jsonLeague.setTime(league.getTime());
+    jsonLeague.setDateOfCreation(league.getDateOfCreation());
     jsonLeague.setLocation(league.getLocation());
     jsonLeague.setMatchFormatType(league.getMatchFormatType());
     jsonLeague.setRegularSetWinningPoints(league.getRegularSetWinningPoints());

@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import lombok.Data;
@@ -19,6 +21,16 @@ public class JsonFakeLeagueParams {
   private int numberOfAllPlayers;
   private int minNumberOfAttendingPlayers;
   private int maxNumberOfAttendingPlayers;
+
+  private int numberOfRoundsPerSeason;
+  private int numberOfRoundsToBeDeducted;
+  private MatchFormatType matchFormatType;
+  private SetWinningType regularSetWinningType;
+  private int regularSetWinningPoints;
+  private SetWinningType tiebreakWinningType;
+  private int tiebreakWinningPoints;
+  private String when;
+  private String where;
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;

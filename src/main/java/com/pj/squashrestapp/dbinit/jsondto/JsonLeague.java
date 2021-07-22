@@ -1,15 +1,14 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @NoArgsConstructor
@@ -20,6 +19,9 @@ public class JsonLeague {
   private String time;
 
   private String location;
+
+  @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+  private LocalDateTime dateOfCreation;
 
   private String logoBase64;
 
