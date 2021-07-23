@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -128,5 +129,14 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
           """)
   List<Object> findRoundsPerSplitGroupedForLeagueByUuid(UUID uuid);
 
+  @Modifying
+  @Query("""
+            DELETE FROM League l
+              WHERE l.uuid = :leagueUuid
+            """)
+  void deleteByLeagueUuid(UUID leagueUuid);
+
+  @Query("SELECT l FROM League l WHERE l.uuid = :uuid")
+  League findByUuidRaw(UUID uuid);
 
 }

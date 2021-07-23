@@ -41,6 +41,7 @@ import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -71,6 +72,7 @@ public class LeagueService {
   private final XpPointsService xpPointsService;
   private final BonusPointService bonusPointService;
   private final SeasonService seasonService;
+  private final DeepRemovalService deepRemovalService;
 
   private final LeagueRepository leagueRepository;
   private final LeagueLogoRepository leagueLogoRepository;
@@ -109,6 +111,7 @@ public class LeagueService {
             .orElseThrow();
 
     final League league = new League(leagueName);
+    league.setDateOfCreation(LocalDateTime.now());
     league.setNumberOfRoundsPerSeason(numberOfRounds);
     league.setRoundsToBeDeducted(numberOfRoundsToBeDeducted);
     league.setMatchFormatType(matchFormatType);
@@ -146,14 +149,8 @@ public class LeagueService {
   }
 
   /**
-   * TODO: This method needs to remove lot of things from the DB:
-   *  - [v] player roles
-   *  - [v] roles for league (MODERATOR and PLAYER)
-   *  - [v] league rules
-   *  - [v] additional matches
-   *  - [v] logo
-   *  - [v] seasons / rounds / matches / sets
-   *  - [v] league itself
+   * Performs complete removal of a league from the DB,
+   * including all matches and unassigns all players roles.
    *
    * @param leagueUuid UUID of a league to remove
    * */
@@ -175,20 +172,16 @@ public class LeagueService {
     final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(leagueToRemove);
     leagueRulesRepository.deleteAll(leagueRules);
 
-    // additional matches
-    final List<AdditionalMatch> additionalMatches = additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(leagueToRemove);
-    additionalMatchRepository.deleteAll(additionalMatches);
-
     // logo
     final Optional<LeagueLogo> logoOptional = leagueLogoRepository.findByLeague(leagueToRemove);
     logoOptional.ifPresent(leagueLogoRepository::delete);
 
-    // seasons / rounds / matches / sets
-    final List<Season> seasons = seasonRepository.findAllByLeague(leagueToRemove);
-    seasonRepository.deleteAll(seasons);
-
-    // league itself
-    leagueRepository.delete(leagueToRemove);
+    // deep removal of:
+    // - additional matches
+    // - round matches / roundgroups / rounds / seasons
+    // - bonus points
+    // - trophies
+    deepRemovalService.deepRemoveLeague(leagueUuid);
   }
 
   public void changeLogoForLeague(final UUID leagueUuid, final String logoBase64) {

@@ -9,13 +9,14 @@ import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 
 /**
  *
  */
-public interface SeasonRepository extends JpaRepository<Season, Long> {
+public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDeletableByLeagueUuid {
 
 
   Optional<Season> findByUuid(UUID uuid);
@@ -80,4 +81,15 @@ public interface SeasonRepository extends JpaRepository<Season, Long> {
            ORDER BY s.startDate DESC
           """)
   List<Season> findCurrentSeasonForLeague(UUID leagueUuid, Pageable pageable);
+
+  @Modifying
+  @Query("DELETE FROM Season s WHERE s.id IN ?1")
+  void deleteAllByIdIn(List<Long> ids);
+
+  @Query("""
+          SELECT s.id FROM Season s
+            INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+              """)
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 }
