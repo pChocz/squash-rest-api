@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.data.jpa.repository.Query;
  * As a result we can extract entire league with a single query and
  * reconstruct it later with {@link EntityGraphBuildUtil} utility class.
  */
-public interface SetResultRepository extends JpaRepository<SetResult, Long> {
+public interface SetResultRepository extends JpaRepository<SetResult, Long>, BulkDeletableByLeagueUuid {
 
 
   @Query("""
@@ -95,5 +96,20 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long> {
           "match.roundGroup.round.season.league"
   })
   List<SetResult> fetchByRoundGroupsIds(List<Long> ids);
+
+  @Modifying
+  @Query("DELETE FROM SetResult sr WHERE sr.id IN ?1")
+  void deleteAllByIdIn(List<Long> ids);
+
+  @Query("""
+          SELECT sr.id FROM SetResult sr
+            INNER JOIN sr.match m
+            INNER JOIN m.roundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+            INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+              """)
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 
 }

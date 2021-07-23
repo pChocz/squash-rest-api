@@ -7,9 +7,10 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-public interface RoundRepository extends JpaRepository<Round, Long> {
+public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletableByLeagueUuid {
 
 
   Optional<Round> findByUuid(UUID uuid);
@@ -68,5 +69,17 @@ public interface RoundRepository extends JpaRepository<Round, Long> {
            ORDER BY r.date DESC
           """)
   List<Round> findMostRecentRoundOfLeague(UUID leagueUuid, Pageable pageable);
+
+  @Modifying
+  @Query("DELETE FROM Round r WHERE r.id IN ?1")
+  void deleteAllByIdIn(List<Long> ids);
+
+  @Query("""
+          SELECT r.id FROM Round r
+            INNER JOIN r.season s
+            INNER JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+              """)
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 
 }

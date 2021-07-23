@@ -10,13 +10,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 /**
  *
  */
-public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch, Long> {
+public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch, Long>, BulkDeletableByLeagueUuid {
 
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -181,5 +182,17 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "league"
   })
   List<AdditionalMatch> findAllByLeagueOrderByDateDescIdDesc(League league);
+
+  @Modifying
+  @Query("DELETE FROM AdditionalMatch m WHERE m.id IN ?1")
+  void deleteAllByIdIn(List<Long> ids);
+
+  @Query("""
+            SELECT m.id FROM AdditionalMatch m
+              INNER JOIN m.league l
+              WHERE l.uuid = :leagueUuid
+            """)
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+
 
 }

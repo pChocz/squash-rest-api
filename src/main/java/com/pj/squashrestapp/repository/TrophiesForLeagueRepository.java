@@ -9,12 +9,13 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
  *
  */
-public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeague, Long> {
+public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeague, Long>, BulkDeletableByLeagueUuid {
 
   @EntityGraph(attributePaths = {"player"})
   List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
@@ -28,5 +29,16 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
             WHERE tfl.player.uuid = :playerUuid
             """)
   List<TrophyForLeague> findAllByPlayerUuid(UUID playerUuid);
+
+  @Modifying
+  @Query("DELETE FROM TrophyForLeague tfl WHERE tfl.id IN ?1")
+  void deleteAllByIdIn(List<Long> ids);
+
+  @Query("""
+          SELECT tfl.id FROM TrophyForLeague tfl
+            INNER JOIN tfl.league l
+              WHERE l.uuid = :leagueUuid
+              """)
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 
 }

@@ -56,6 +56,7 @@ public class LogControllerAspect {
    * @throws Throwable rethrows exception after logging it so it can be passed to the client
    */
   //  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
+  //  @Around("repositoryMethodsPointcut()")
   public Object logAllServiceAndRepositoryMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
