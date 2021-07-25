@@ -19,6 +19,12 @@ public class EntireLeagueScoreboard {
   private final int numberOfMatches;
   private final List<EntireLeagueScoreboardRow> rows;
 
+  public EntireLeagueScoreboard(final League league) {
+    this.leagueName = league.getName();
+    this.numberOfMatches = 0;
+    this.rows = new ArrayList<>();
+  }
+
   public EntireLeagueScoreboard(
       final League league, final List<PlayerLeagueXpOveral> playerLeagueXpOveralList) {
     final List<MatchDetailedDto> matches = MatchExtractorUtil.extractAllMatches(league);

@@ -16,7 +16,6 @@ import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.EntireLeagueScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
-import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
@@ -88,8 +87,8 @@ public class LeagueService {
    * This method creates the league itself as well as both roles (PLAYER, MODERATOR) that can be
    * assigned to players later.
    *
-   * Player that is requesting the league to be created will be automatically assigned as
-   * both PLAYER and MODERATOR.
+   * <p>Player that is requesting the league to be created will be automatically assigned as both
+   * PLAYER and MODERATOR.
    */
   public UUID createNewLeague(
       final String leagueName,
@@ -149,11 +148,11 @@ public class LeagueService {
   }
 
   /**
-   * Performs complete removal of a league from the DB,
-   * including all matches and unassigns all players roles.
+   * Performs complete removal of a league from the DB, including all matches and unassigns all
+   * players roles.
    *
    * @param leagueUuid UUID of a league to remove
-   * */
+   */
   public void removeLeague(final UUID leagueUuid) {
     final League leagueToRemove = leagueRepository.findByUuid(leagueUuid).orElseThrow();
 
@@ -169,7 +168,8 @@ public class LeagueService {
     roleForLeagueRepository.deleteAll(rolesForLeague);
 
     // league rules
-    final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(leagueToRemove);
+    final List<LeagueRule> leagueRules =
+        leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(leagueToRemove);
     leagueRulesRepository.deleteAll(leagueRules);
 
     // logo
@@ -198,36 +198,48 @@ public class LeagueService {
   }
 
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
-    final League league = fetchEntireLeague(leagueUuid);
+    final List<SetResult> setResultListForLeague =
+        setResultRepository.fetchByLeagueUuid(leagueUuid);
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+    final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
+
+    if (setResultListForLeague.isEmpty()) {
+      return new LeagueStatsWrapper(
+          league.getName(),
+          league.getUuid(),
+          new ArrayList<>(),
+          new EntireLeagueScoreboard(league)
+      );
+    }
+
     final ArrayListMultimap<String, Integer> xpPointsPerSplit =
         xpPointsService.buildAllAsIntegerMultimap();
 
     // per season stats
-    final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(league);
+    final List<PerSeasonStats> perSeasonStatsList = buildPerSeasonStatsList(leagueReconstructed);
 
     // per player scoreboards
     final List<PlayerLeagueXpOveral> playerLeagueXpOveralList =
-        overalXpPoints(league, xpPointsPerSplit);
+        overalXpPoints(leagueReconstructed, xpPointsPerSplit);
     final EntireLeagueScoreboard scoreboard =
-        new EntireLeagueScoreboard(league, playerLeagueXpOveralList);
+        new EntireLeagueScoreboard(leagueReconstructed, playerLeagueXpOveralList);
 
     return LeagueStatsWrapper.builder()
-        .leagueName(league.getName())
-        .leagueUuid(league.getUuid())
+        .leagueName(leagueReconstructed.getName())
+        .leagueUuid(leagueReconstructed.getUuid())
         .perSeasonStats(perSeasonStatsList)
         .scoreboard(scoreboard)
         .build();
   }
 
-  public League fetchEntireLeague(final UUID leagueUuid) {
-    final List<SetResult> setResultListForLeague =
-        setResultRepository.fetchByLeagueUuid(leagueUuid);
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    return EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
-  }
 
   private List<PerSeasonStats> buildPerSeasonStatsList(final League league) {
+    if (league.getSeasons().isEmpty()) {
+      return new ArrayList<>();
+    }
+
     final List<PerSeasonStats> perSeasonStatsList = new ArrayList<>();
+
     final List<Season> seasonsReversedOrder =
         league.getSeasons().stream().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
 
@@ -386,12 +398,13 @@ public class LeagueService {
     final Long numberOfRounds = (Long) counts[1];
     final Long numberOfMatches = (Long) counts[2];
     final Long numberOfSets = (Long) counts[3];
-    final Long numberOfRallies = (Long) counts[4];
+    final Long numberOfRallies = counts[4] == null ? 0 : (Long) counts[4];
 
     final List<Object> groupedPlayersForLeagueByUuid =
         leagueRepository.findRoundsPerSplitGroupedForLeagueByUuid(leagueUuid);
     int countOfAttendices = 0;
     int countOfGroups = 0;
+
     for (final Object object : groupedPlayersForLeagueByUuid) {
       final Object[] group = (Object[]) object;
       final String split = (String) group[0];
@@ -403,12 +416,24 @@ public class LeagueService {
       countOfGroups += groupsPerRound * count;
       countOfAttendices += playersPerRound * count;
     }
-    final float averagePlayersPerRound = (float) countOfAttendices / numberOfRounds;
-    final BigDecimal averagePlayersPerRoundRounded = RoundingUtil.round(averagePlayersPerRound, 1);
-    final float averagePlayersPerGroup = (float) countOfAttendices / countOfGroups;
-    final BigDecimal averagePlayersPerGroupRounded = RoundingUtil.round(averagePlayersPerGroup, 1);
-    final float averageGroupsPerRound = (float) countOfGroups / numberOfRounds;
-    final BigDecimal averageGroupsPerRoundRounded = RoundingUtil.round(averageGroupsPerRound, 1);
+
+    final BigDecimal averagePlayersPerRoundRounded;
+    final BigDecimal averagePlayersPerGroupRounded;
+    final BigDecimal averageGroupsPerRoundRounded;
+
+    if (numberOfRounds == 0) {
+      averagePlayersPerRoundRounded = BigDecimal.valueOf(0);
+      averagePlayersPerGroupRounded = BigDecimal.valueOf(0);
+      averageGroupsPerRoundRounded = BigDecimal.valueOf(0);
+
+    } else {
+      final float averagePlayersPerRound = (float) countOfAttendices / numberOfRounds;
+      averagePlayersPerRoundRounded = RoundingUtil.round(averagePlayersPerRound, 1);
+      final float averagePlayersPerGroup = (float) countOfAttendices / countOfGroups;
+      averagePlayersPerGroupRounded = RoundingUtil.round(averagePlayersPerGroup, 1);
+      final float averageGroupsPerRound = (float) countOfGroups / numberOfRounds;
+      averageGroupsPerRoundRounded = RoundingUtil.round(averageGroupsPerRound, 1);
+    }
 
     final OveralStats overalStats =
         OveralStats.builder()
