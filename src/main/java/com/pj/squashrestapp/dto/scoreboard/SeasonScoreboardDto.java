@@ -6,7 +6,6 @@ import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -18,30 +17,27 @@ import lombok.Getter;
 public class SeasonScoreboardDto implements LoggableQuery {
 
   private final SeasonDto season;
-  private final int allRounds = 10;
+  private final int allRounds;
   private final int finishedRounds;
   private final int countedRounds;
+  private final int countedRoundsOnSeasonFinished;
   private final List<SeasonScoreboardRowDto> seasonScoreboardRows;
   private final List<RoundDto> rounds;
-
   private final String xpPointsType;
-
   private final UUID previousSeasonUuid;
   private final UUID nextSeasonUuid;
 
   public SeasonScoreboardDto(final Season season) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
-
     this.previousSeasonUuid = null;
     this.nextSeasonUuid = null;
-
     this.xpPointsType = season.getXpPointsType();
-
     this.finishedRounds = (int) season.getRounds().stream().filter(Round::isFinished).count();
-
+    this.allRounds = season.getNumberOfRounds();
+    this.countedRoundsOnSeasonFinished =
+        season.getNumberOfRounds() - season.getRoundsToBeDeducted();
     this.countedRounds = getNumberOfRoundsThatCount();
-
     this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
   }
 
@@ -49,27 +45,35 @@ public class SeasonScoreboardDto implements LoggableQuery {
       final Season season, final UUID previousSeasonUuid, final UUID nextSeasonUuid) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
-
     this.previousSeasonUuid = previousSeasonUuid;
     this.nextSeasonUuid = nextSeasonUuid;
-
     this.xpPointsType = season.getXpPointsType();
-
     this.finishedRounds = (int) season.getRounds().stream().filter(Round::isFinished).count();
-
+    this.allRounds = season.getNumberOfRounds();
+    this.countedRoundsOnSeasonFinished =
+        season.getNumberOfRounds() - season.getRoundsToBeDeducted();
     this.countedRounds = getNumberOfRoundsThatCount();
-
     this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
   }
 
   private int getNumberOfRoundsThatCount() {
-    return (finishedRounds <= 4)
-        ? finishedRounds
-        : (finishedRounds <= 8) ? finishedRounds - 1 : finishedRounds - 2;
+    return (int) Math.ceil(finishedRounds * countedRoundsOnSeasonFinished / allRounds);
   }
 
   public void sortByCountedPoints() {
-    Collections.sort(seasonScoreboardRows);
+    if (finishedRounds == allRounds) {
+      seasonScoreboardRows.sort(
+          Comparator.comparingInt(SeasonScoreboardRowDto::getCountedPoints)
+              .thenComparingInt(SeasonScoreboardRowDto::getTotalPoints)
+              .thenComparingDouble(SeasonScoreboardRowDto::getAverageAsDouble)
+              .reversed());
+    } else {
+      seasonScoreboardRows.sort(
+          Comparator.comparingInt(SeasonScoreboardRowDto::getTotalPoints)
+              .thenComparingInt(SeasonScoreboardRowDto::getCountedPoints)
+              .thenComparingDouble(SeasonScoreboardRowDto::getAverageAsDouble)
+              .reversed());
+    }
   }
 
   public void sortByTotalPoints() {
@@ -97,6 +101,9 @@ public class SeasonScoreboardDto implements LoggableQuery {
 
   @Override
   public String toString() {
-    return "Season Scoreboard - S: " + this.getSeason().getSeasonNumber() + " | " + this.getSeason().getLeagueName();
+    return "Season Scoreboard - S: "
+        + this.getSeason().getSeasonNumber()
+        + " | "
+        + this.getSeason().getLeagueName();
   }
 }

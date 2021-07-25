@@ -49,7 +49,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerUuid);
   }
 
-  private static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {
+  public static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {
     return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
   }
 
