@@ -11,7 +11,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeBonusPoints {
 
-  List<BonusPoint> create(
+  public List<BonusPoint> create(
       final List<Player> players,
       final LocalDate date,
       final int minOccurs,

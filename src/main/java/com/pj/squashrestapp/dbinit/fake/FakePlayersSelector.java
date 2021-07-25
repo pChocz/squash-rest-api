@@ -12,7 +12,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakePlayersSelector {
 
-  ArrayListMultimap<Integer, Player> select(final List<Player> allPlayers) {
+  public ArrayListMultimap<Integer, Player> select(final List<Player> allPlayers) {
 
     final List<Player> group1stPlayers;
     final List<Player> group2ndPlayers;

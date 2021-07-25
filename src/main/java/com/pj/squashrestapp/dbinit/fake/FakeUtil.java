@@ -12,7 +12,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeUtil {
 
-  int randomBetweenTwoIntegers(final int min, final int max) {
+  public int randomBetweenTwoIntegers(final int min, final int max) {
     return ThreadLocalRandom.current().nextInt(min, max + 1);
   }
 
@@ -22,7 +22,7 @@ public class FakeUtil {
     return copy.subList(0, 2);
   }
 
-  List<PlayerDto> pickThreeRandomPlayersFromTopFive(final List<PlayerDto> players) {
+  public List<PlayerDto> pickThreeRandomPlayersFromTopFive(final List<PlayerDto> players) {
     final List<PlayerDto> copy = new LinkedList<>(players.subList(0, 5));
     Collections.shuffle(copy);
     return copy.subList(0, 3);

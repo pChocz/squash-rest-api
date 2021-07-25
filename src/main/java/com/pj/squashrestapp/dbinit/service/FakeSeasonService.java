@@ -1,6 +1,12 @@
-package com.pj.squashrestapp.dbinit.fake;
+package com.pj.squashrestapp.dbinit.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.dbinit.fake.FakeAdditionalMatches;
+import com.pj.squashrestapp.dbinit.fake.FakeBonusPoints;
+import com.pj.squashrestapp.dbinit.fake.FakePlayersSelector;
+import com.pj.squashrestapp.dbinit.fake.FakeRound;
+import com.pj.squashrestapp.dbinit.fake.FakeUtil;
+import com.pj.squashrestapp.dbinit.fake.FakePlayersSelectorRoundGroupAware;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
@@ -8,13 +14,20 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import lombok.experimental.UtilityClass;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 /** */
-@UtilityClass
-public class FakeSeason {
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class FakeSeasonService {
+
+  private final FakePlayersSelectorRoundGroupAware fakePlayersSelectorRoundGroupAware;
 
   public Season create(
       final League league,
@@ -32,13 +45,20 @@ public class FakeSeason {
 
     LocalDate roundDate = seasonStartDate;
     for (int roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
-      Collections.shuffle(allPlayers);
+
       final int numberOfRoundPlayers =
           FakeUtil.randomBetweenTwoIntegers(
               minNumberOfAttendingPlayers, maxNumberOfAttendingPlayers);
+
+      // easy way - just randomize
+      Collections.shuffle(allPlayers);
       final List<Player> roundPlayers = allPlayers.subList(0, numberOfRoundPlayers);
-      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped =
-          FakePlayersSelector.select(roundPlayers);
+      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = FakePlayersSelector.select(roundPlayers);
+
+      // hard way - roundGroup aware assigner
+//      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = fakePlayersSelectorRoundGroupAware.select(allPlayers, numberOfRoundPlayers, roundNumber, seasonNumber, league);
+//      final List<Player> roundPlayers = new ArrayList<>(attendingPlayersGrouped.values());
+
       final Round round = FakeRound.create(league, roundNumber, roundDate, attendingPlayersGrouped);
       season.addRound(round);
 
