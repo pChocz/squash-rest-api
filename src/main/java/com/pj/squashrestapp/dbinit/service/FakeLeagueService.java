@@ -4,7 +4,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.dbinit.fake.FakeLeagueHallOfFame;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersCreator;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersRoleAssigner;
-import com.pj.squashrestapp.dbinit.fake.FakeSeason;
 import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
@@ -45,6 +44,7 @@ public class FakeLeagueService {
 
   private final XpPointsService xpPointsService;
   private final SeasonService seasonService;
+  private final FakeSeasonService fakeSeasonService;
 
   private final AuthorityRepository authorityRepository;
   private final PlayerRepository playerRepository;
@@ -120,7 +120,7 @@ public class FakeLeagueService {
     LocalDate seasonStartDate = startDate;
     for (int seasonNumber = 1; seasonNumber <= numberOfCompletedSeasons; seasonNumber++) {
       final Season season =
-          FakeSeason.create(
+          fakeSeasonService.create(
               league,
               seasonNumber,
               seasonStartDate,
@@ -136,7 +136,7 @@ public class FakeLeagueService {
     }
     if (numberOfRoundsInLastSeason > 0) {
       final Season season =
-          FakeSeason.create(
+          fakeSeasonService.create(
               league,
               numberOfCompletedSeasons + 1,
               seasonStartDate,

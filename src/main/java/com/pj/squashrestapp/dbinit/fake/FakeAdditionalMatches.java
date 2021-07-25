@@ -14,7 +14,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeAdditionalMatches {
 
-  List<AdditionalMatch> create(
+  public List<AdditionalMatch> create(
       final League league,
       final List<Player> players,
       final LocalDate date,

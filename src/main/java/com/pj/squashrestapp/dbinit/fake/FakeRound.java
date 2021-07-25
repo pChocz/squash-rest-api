@@ -16,7 +16,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeRound {
 
-  Round create(
+  public Round create(
       final League league,
       final int roundNumber,
       final LocalDate roundDate,
