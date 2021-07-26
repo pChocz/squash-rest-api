@@ -217,7 +217,7 @@ public class SeasonService {
     final List<Season> currentSeason =
         seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
     if (currentSeason.isEmpty()) {
-      throw new GeneralBadRequestException("No seasons");
+      return null;
     }
     final SeasonScoreboardDto seasonScoreboardDto =
         buildSeasonScoreboardDto(currentSeason.get(0).getUuid());
