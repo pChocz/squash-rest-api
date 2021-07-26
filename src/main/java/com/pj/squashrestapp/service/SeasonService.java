@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
@@ -217,7 +216,7 @@ public class SeasonService {
     final List<Season> currentSeason =
         seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
     if (currentSeason.isEmpty()) {
-      throw new GeneralBadRequestException("No seasons");
+      return null;
     }
     final SeasonScoreboardDto seasonScoreboardDto =
         buildSeasonScoreboardDto(currentSeason.get(0).getUuid());

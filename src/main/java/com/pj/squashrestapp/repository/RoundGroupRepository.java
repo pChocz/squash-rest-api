@@ -23,10 +23,12 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, B
           """)
   List<Long> retrieveRoundGroupsIdsForPlayer(UUID leagueUuid, UUID playerUuid);
 
+  @Override
   @Modifying
   @Query("DELETE FROM RoundGroup rg WHERE rg.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT rg.id FROM RoundGroup rg
             INNER JOIN rg.round r

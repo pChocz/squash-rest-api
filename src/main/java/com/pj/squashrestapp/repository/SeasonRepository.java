@@ -82,10 +82,12 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
           """)
   List<Season> findCurrentSeasonForLeague(UUID leagueUuid, Pageable pageable);
 
+  @Override
   @Modifying
   @Query("DELETE FROM Season s WHERE s.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT s.id FROM Season s
             INNER JOIN s.league l

@@ -52,19 +52,18 @@ public class MatchService {
 
       final Integer winnerScore;
       if (setIsTiebreak(matchToModify, setNumber)) {
-        winnerScore = SetScoreHelper.computeWinnerScore(
-            looserScore,
-            matchToModify.getTiebreakWinningPoints(),
-            matchToModify.getTiebreakWinningType()
-        );
+        winnerScore =
+            SetScoreHelper.computeWinnerScore(
+                looserScore,
+                matchToModify.getTiebreakWinningPoints(),
+                matchToModify.getTiebreakWinningType());
       } else {
-        winnerScore = SetScoreHelper.computeWinnerScore(
-            looserScore,
-            matchToModify.getRegularSetWinningPoints(),
-            matchToModify.getRegularSetWinningType()
-        );
+        winnerScore =
+            SetScoreHelper.computeWinnerScore(
+                looserScore,
+                matchToModify.getRegularSetWinningPoints(),
+                matchToModify.getRegularSetWinningType());
       }
-
 
       if (player.equals("FIRST")) {
         setToModify.setFirstPlayerScore(looserScore);

@@ -46,16 +46,11 @@ public class MatchDetailedDto implements MatchDto {
 
   private final MatchStatus status;
 
-  @JsonIgnore
-  private final MatchFormatType matchFormatType;
-  @JsonIgnore
-  private final SetWinningType regularSetWinningType;
-  @JsonIgnore
-  private final int regularSetWinningPoints;
-  @JsonIgnore
-  private final SetWinningType tieBreakWinningType;
-  @JsonIgnore
-  private final int tieBreakWinningPoints;
+  @JsonIgnore private final MatchFormatType matchFormatType;
+  @JsonIgnore private final SetWinningType regularSetWinningType;
+  @JsonIgnore private final int regularSetWinningPoints;
+  @JsonIgnore private final SetWinningType tieBreakWinningType;
+  @JsonIgnore private final int tieBreakWinningPoints;
 
   public MatchDetailedDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
@@ -86,9 +81,7 @@ public class MatchDetailedDto implements MatchDto {
     this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
 
     this.status = MatchStatusHelper.checkStatus(this);
-    this.winner = status == MatchStatus.FINISHED
-        ? MatchStatusHelper.getWinner(this)
-        : null;
+    this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
   }
 
   @Override

@@ -3,7 +3,6 @@ package com.pj.squashrestapp.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;

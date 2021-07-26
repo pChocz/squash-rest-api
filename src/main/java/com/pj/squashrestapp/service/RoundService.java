@@ -75,8 +75,8 @@ public class RoundService {
             .collect(Collectors.toList());
 
     final Round round =
-        createRoundForSeasonWithGivenPlayers(league,
-            roundNumber, roundDate, playersPerGroup, numberOfSetsPerMatchToCreate);
+        createRoundForSeasonWithGivenPlayers(
+            league, roundNumber, roundDate, playersPerGroup, numberOfSetsPerMatchToCreate);
     season.addRound(round);
 
     // saving to DB
@@ -126,7 +126,8 @@ public class RoundService {
         final Player firstPlayer = groupPlayers.get(j);
         final Player secondPlayer = groupPlayers.get(k);
         final Match match =
-            createMatch(matchNumber++, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate, league);
+            createMatch(
+                matchNumber++, firstPlayer, secondPlayer, numberOfSetsPerMatchToCreate, league);
         roundGroup.addMatch(match);
       }
     }

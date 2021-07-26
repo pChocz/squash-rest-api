@@ -31,5 +31,4 @@ public interface MatchDto {
   int getTieBreakWinningPoints();
 
   MatchStatus getStatus();
-
 }

@@ -97,10 +97,12 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
   })
   List<SetResult> fetchByRoundGroupsIds(List<Long> ids);
 
+  @Override
   @Modifying
   @Query("DELETE FROM SetResult sr WHERE sr.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT sr.id FROM SetResult sr
             INNER JOIN sr.match m

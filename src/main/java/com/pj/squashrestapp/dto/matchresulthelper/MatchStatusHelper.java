@@ -1,11 +1,8 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.SetDto;
-import com.pj.squashrestapp.model.MatchFormatType;
-import com.pj.squashrestapp.model.SetWinningType;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;

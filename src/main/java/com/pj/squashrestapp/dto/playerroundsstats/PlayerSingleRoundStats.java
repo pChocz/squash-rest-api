@@ -2,8 +2,8 @@ package com.pj.squashrestapp.dto.playerroundsstats;
 
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
-import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.Player;

@@ -201,15 +201,15 @@ public class LeagueService {
     final List<SetResult> setResultListForLeague =
         setResultRepository.fetchByLeagueUuid(leagueUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
+    final League leagueReconstructed =
+        EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());
 
     if (setResultListForLeague.isEmpty()) {
       return new LeagueStatsWrapper(
           league.getName(),
           league.getUuid(),
           new ArrayList<>(),
-          new EntireLeagueScoreboard(league)
-      );
+          new EntireLeagueScoreboard(league));
     }
 
     final ArrayListMultimap<String, Integer> xpPointsPerSplit =
@@ -231,7 +231,6 @@ public class LeagueService {
         .scoreboard(scoreboard)
         .build();
   }
-
 
   private List<PerSeasonStats> buildPerSeasonStatsList(final League league) {
     if (league.getSeasons().isEmpty()) {

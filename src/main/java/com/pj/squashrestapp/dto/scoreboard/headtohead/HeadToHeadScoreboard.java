@@ -2,8 +2,8 @@ package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
+import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +26,6 @@ public class HeadToHeadScoreboard implements LoggableQuery {
   private final HeadToHeadScoreboardRow looser;
   private final Collection<MatchDto> matches;
   private final List<HeadToHeadChartRow> chartRows;
-
 
   public HeadToHeadScoreboard(final Collection<MatchDto> matches) {
     this.matches = matches;
@@ -135,7 +134,6 @@ public class HeadToHeadScoreboard implements LoggableQuery {
         winningMatchesPerPlayer.get(secondPlayer).merge(5, 1, Integer::sum);
         matchWinnersMap.put(match, secondPlayer);
       }
-
     }
     Collections.sort(scoreboardRows);
 

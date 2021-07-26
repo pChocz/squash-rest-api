@@ -11,11 +11,10 @@ import lombok.Setter;
 @Getter
 public class SetDto {
 
-  @Setter
-  private int setNumber;
   private final Integer firstPlayerScore;
   private final Integer secondPlayerScore;
   private final MatchFormatType matchFormatType;
+  @Setter private int setNumber;
 
   public SetDto(final SetResult setResult, final MatchFormatType matchFormatType) {
     this.setNumber = setResult.getNumber();

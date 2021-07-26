@@ -132,7 +132,6 @@ public class FakeLeagueService {
       league.addSeason(season);
 
       seasonStartDate = seasonStartDate.plusWeeks(numberOfRoundsPerSeason + 2);
-
     }
     if (numberOfRoundsInLastSeason > 0) {
       final Season season =

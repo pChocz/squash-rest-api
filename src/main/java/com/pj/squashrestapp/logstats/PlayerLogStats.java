@@ -21,9 +21,7 @@ public class PlayerLogStats implements Comparable<PlayerLogStats> {
     logEntries.sort(Comparator.comparing(LogEntry::getTime).reversed());
     this.logEntries = logEntries;
     this.logEntriesMessages =
-        logEntries.stream()
-            .map(LogEntry::buildMessage)
-            .collect(Collectors.toList());
+        logEntries.stream().map(LogEntry::buildMessage).collect(Collectors.toList());
 
     final List<RestRequestLogEntry> restRequestLogEntries = getRestRequestLogEntries();
     final List<QueryLogEntry> queryLogEntries = getQueryLogEntries();

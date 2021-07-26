@@ -201,10 +201,12 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
   })
   List<Match> findByIdIn(List<Long> matchIds);
 
+  @Override
   @Modifying
   @Query("DELETE FROM Match m WHERE m.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT m.id FROM Match m
             INNER JOIN m.roundGroup rg

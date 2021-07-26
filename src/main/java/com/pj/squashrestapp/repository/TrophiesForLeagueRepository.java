@@ -30,10 +30,12 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
             """)
   List<TrophyForLeague> findAllByPlayerUuid(UUID playerUuid);
 
+  @Override
   @Modifying
   @Query("DELETE FROM TrophyForLeague tfl WHERE tfl.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT tfl.id FROM TrophyForLeague tfl
             INNER JOIN tfl.league l

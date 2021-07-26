@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.dto.matchresulthelper;
 
-import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.model.SetWinningType;
 import lombok.experimental.UtilityClass;
 
