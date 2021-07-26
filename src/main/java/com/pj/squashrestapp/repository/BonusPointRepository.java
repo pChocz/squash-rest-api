@@ -54,6 +54,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
               """)
   UUID retrieveLeagueUuidOfBonusPoint(UUID uuid);
 
+  @Override
   @Query("""
           SELECT bp.id FROM BonusPoint bp
             INNER JOIN bp.season s
@@ -62,6 +63,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
               """)
   List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 
+  @Override
   @Modifying
   @Query("DELETE FROM BonusPoint bp WHERE bp.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);

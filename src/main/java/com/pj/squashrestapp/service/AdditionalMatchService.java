@@ -102,7 +102,9 @@ public class AdditionalMatchService {
     match.setType(type);
     match.setSeasonNumber(seasonNumber);
 
-    for (int setNumber = 1; setNumber <= match.getMatchFormatType().getMaxNumberOfSets(); setNumber++) {
+    for (int setNumber = 1;
+        setNumber <= match.getMatchFormatType().getMaxNumberOfSets();
+        setNumber++) {
       final AdditionalSetResult setResult = new AdditionalSetResult();
       setResult.setNumber(setNumber);
       setResult.setFirstPlayerScore(null);
@@ -146,17 +148,17 @@ public class AdditionalMatchService {
 
       final Integer winnerScore;
       if (setNumber < matchToModify.getMatchFormatType().getMaxNumberOfSets()) {
-        winnerScore = SetScoreHelper.computeWinnerScore(
-            looserScore,
-            matchToModify.getRegularSetWinningPoints(),
-            matchToModify.getRegularSetWinningType()
-        );
+        winnerScore =
+            SetScoreHelper.computeWinnerScore(
+                looserScore,
+                matchToModify.getRegularSetWinningPoints(),
+                matchToModify.getRegularSetWinningType());
       } else {
-        winnerScore = SetScoreHelper.computeWinnerScore(
-            looserScore,
-            matchToModify.getTiebreakWinningPoints(),
-            matchToModify.getTiebreakWinningType()
-        );
+        winnerScore =
+            SetScoreHelper.computeWinnerScore(
+                looserScore,
+                matchToModify.getTiebreakWinningPoints(),
+                matchToModify.getTiebreakWinningType());
       }
 
       if (player.equals("FIRST")) {

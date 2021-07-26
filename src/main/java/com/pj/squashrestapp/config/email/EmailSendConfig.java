@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.config.email;
 
-import freemarker.template.Template;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -13,20 +12,16 @@ import javax.mail.Multipart;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
-import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 /** */
 @Slf4j
@@ -51,14 +46,14 @@ public class EmailSendConfig {
   @Value(value = "${smtp_port:}")
   private String smtpPort;
 
-
   public void sendEmailWithAttachment(
       final String receiver, final String subject, final Object content, final File... files) {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
 
     try {
-      final Message message = prepareMessageWithAttachments(session, receiver, subject, content, files);
+      final Message message =
+          prepareMessageWithAttachments(session, receiver, subject, content, files);
       Transport.send(message);
       log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
 
@@ -83,7 +78,8 @@ public class EmailSendConfig {
     }
   }
 
-  public void sendEmailTest(final String receiver, final String subject, final String htmlMessageContent)
+  public void sendEmailTest(
+      final String receiver, final String subject, final String htmlMessageContent)
       throws UnsupportedEncodingException, MessagingException {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
@@ -137,7 +133,11 @@ public class EmailSendConfig {
   }
 
   private Message prepareMessageWithAttachments(
-      final Session session, final String receiver, final String subject, final Object content, final File... files)
+      final Session session,
+      final String receiver,
+      final String subject,
+      final Object content,
+      final File... files)
       throws MessagingException, UnsupportedEncodingException {
     final Message message = new MimeMessage(session);
     message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));

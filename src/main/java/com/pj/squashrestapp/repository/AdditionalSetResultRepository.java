@@ -11,10 +11,12 @@ import org.springframework.data.jpa.repository.Query;
 public interface AdditionalSetResultRepository extends JpaRepository<AdditionalSetResult, Long>,
     BulkDeletableByLeagueUuid {
 
+  @Override
   @Modifying
   @Query("DELETE FROM AdditionalSetResult sr WHERE sr.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
             SELECT asr.id FROM AdditionalSetResult asr
               INNER JOIN asr.match m

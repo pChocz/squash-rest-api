@@ -12,5 +12,4 @@ public class ErrorCode {
   public static final String WRONG_DATA_FORMAT = "WRONG_DATA_FORMAT";
 
   public static final String NOT_A_PLAYER_OF_LEAGUE = "NOT_A_PLAYER_OF_LEAGUE";
-
 }

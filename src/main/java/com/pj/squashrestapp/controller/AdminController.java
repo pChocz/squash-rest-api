@@ -47,7 +47,6 @@ public class AdminController {
       @RequestParam final String... contentLines)
       throws IOException, MessagingException, TemplateException {
 
-    emailSendService.sendPlainEmail(
-        email, name, lang, subject, preheader, contentLines);
+    emailSendService.sendPlainEmail(email, name, lang, subject, preheader, contentLines);
   }
 }

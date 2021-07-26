@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;

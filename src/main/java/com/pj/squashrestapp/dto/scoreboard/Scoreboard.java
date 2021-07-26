@@ -105,9 +105,10 @@ public class Scoreboard implements LoggableQuery {
 
   @Override
   public String message() {
-    return "League matches: " + scoreboardRows.stream()
-        .map(PlayersStatsScoreboardRow::toString)
-        .collect(Collectors.joining(", ", "[", "]"));
+    return "League matches: "
+        + scoreboardRows.stream()
+            .map(PlayersStatsScoreboardRow::toString)
+            .collect(Collectors.joining(", ", "[", "]"));
   }
 
   @Override

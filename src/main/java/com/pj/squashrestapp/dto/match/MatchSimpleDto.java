@@ -32,16 +32,11 @@ public class MatchSimpleDto implements MatchDto {
   private final List<SetDto> sets;
   private final MatchStatus status;
 
-  @JsonIgnore
-  private final MatchFormatType matchFormatType;
-  @JsonIgnore
-  private final SetWinningType regularSetWinningType;
-  @JsonIgnore
-  private final int regularSetWinningPoints;
-  @JsonIgnore
-  private final SetWinningType tieBreakWinningType;
-  @JsonIgnore
-  private final int tieBreakWinningPoints;
+  @JsonIgnore private final MatchFormatType matchFormatType;
+  @JsonIgnore private final SetWinningType regularSetWinningType;
+  @JsonIgnore private final int regularSetWinningPoints;
+  @JsonIgnore private final SetWinningType tieBreakWinningType;
+  @JsonIgnore private final int tieBreakWinningPoints;
 
   public MatchSimpleDto(final Match match) {
     final RoundGroup roundGroup = match.getRoundGroup();
@@ -64,14 +59,10 @@ public class MatchSimpleDto implements MatchDto {
     }
 
     this.status = MatchStatusHelper.checkStatus(this);
-    this.winner = status == MatchStatus.FINISHED
-        ? MatchStatusHelper.getWinner(this)
-        : null;
+    this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
   }
 
-  /**
-   * This one is only for testing purposes.
-   */
+  /** This one is only for testing purposes. */
   public MatchSimpleDto(
       final MatchFormatType matchFormatType,
       final SetWinningType regularSetWinningType,
@@ -98,11 +89,8 @@ public class MatchSimpleDto implements MatchDto {
       setNumber++;
     }
     this.status = MatchStatusHelper.checkStatus(this);
-    this.winner = status == MatchStatus.FINISHED
-        ? MatchStatusHelper.getWinner(this)
-        : null;
+    this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
   }
-
 
   @Override
   public String toString() {

@@ -28,7 +28,8 @@ public class SetStatusHelper {
 
     final int expectedWinnerScore;
     try {
-      expectedWinnerScore = SetScoreHelper.computeWinnerScore(looserScore, winningPoints, winningType);
+      expectedWinnerScore =
+          SetScoreHelper.computeWinnerScore(looserScore, winningPoints, winningType);
     } catch (final WrongResultException e) {
       return SetStatus.ERROR;
     }

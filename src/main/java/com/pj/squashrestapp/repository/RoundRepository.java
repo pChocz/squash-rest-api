@@ -70,10 +70,12 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
           """)
   List<Round> findMostRecentRoundOfLeague(UUID leagueUuid, Pageable pageable);
 
+  @Override
   @Modifying
   @Query("DELETE FROM Round r WHERE r.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
           SELECT r.id FROM Round r
             INNER JOIN r.season s

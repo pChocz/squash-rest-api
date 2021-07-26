@@ -29,7 +29,8 @@ public class FakeRound {
     for (final int roundGroupNumber : roundGroupsNumbers) {
       final List<Player> roundGroupPlayers =
           roundGroupNumberToPlayersMultimap.get(roundGroupNumber);
-      final RoundGroup roundGroup = FakeRoundGroup.create(league, roundGroupNumber, roundGroupPlayers);
+      final RoundGroup roundGroup =
+          FakeRoundGroup.create(league, roundGroupNumber, roundGroupPlayers);
       round.addRoundGroup(roundGroup);
     }
 

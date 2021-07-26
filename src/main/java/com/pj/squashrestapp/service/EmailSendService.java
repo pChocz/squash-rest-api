@@ -66,11 +66,11 @@ public class EmailSendService {
             "message.util.doNotReply", new Object[] {ADMIN_EMAIL_HREF}, locale));
     model.put(
         "intendedFor",
-        messageSource.getMessage(
-            "message.util.intendedFor", new Object[] {name, email}, locale));
+        messageSource.getMessage("message.util.intendedFor", new Object[] {name, email}, locale));
     model.put(
         "devMessage",
-        messageSource.getMessage("message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
+        messageSource.getMessage(
+            "message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
 
     sendEmailWithModel(email, subject, model, TEMPLATE_PLAIN);
   }
@@ -113,11 +113,11 @@ public class EmailSendService {
             "message.util.doNotReply", new Object[] {ADMIN_EMAIL_HREF}, locale));
     model.put(
         "intendedFor",
-        messageSource.getMessage(
-            "message.util.intendedFor", new Object[] {name, email}, locale));
+        messageSource.getMessage("message.util.intendedFor", new Object[] {name, email}, locale));
     model.put(
         "devMessage",
-        messageSource.getMessage("message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
+        messageSource.getMessage(
+            "message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
 
     sendEmailWithModel(email, subject, model, TEMPLATE_WITH_BUTTON);
   }

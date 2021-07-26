@@ -252,7 +252,8 @@ public class AdminInitializerService {
       final int numberOfSets = additionalMatch.getMatchFormatType().getMaxNumberOfSets();
       while (additionalMatch.getSetResults().size() < numberOfSets) {
         final int currentSetNumber = additionalMatch.getSetResults().size() + 1;
-        additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
+        additionalMatch.addSetResult(
+            JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
       }
 
       league.addAdditionalMatch(additionalMatch);

@@ -170,7 +170,6 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
           RoundingUtil.round(
               (float) 100 * fiveSetsMatchesWon / (fiveSetsMatchesWon + fiveSetsMatchesLost), 1);
     }
-
   }
 
   @Override

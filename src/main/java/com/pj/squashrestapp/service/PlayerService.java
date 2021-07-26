@@ -29,7 +29,6 @@ import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -377,7 +376,8 @@ public class PlayerService {
             .fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase())
             .orElseThrow();
 
-    final Set<LeagueDtoSimple> myLeagues = new TreeSet<>(Comparator.comparing(LeagueDtoSimple::getDateOfCreation));
+    final Set<LeagueDtoSimple> myLeagues =
+        new TreeSet<>(Comparator.comparing(LeagueDtoSimple::getDateOfCreation));
     for (final RoleForLeague role : player.getRoles()) {
       if (role.getLeagueRole() == LeagueRole.PLAYER) {
         myLeagues.add(new LeagueDtoSimple(role.getLeague()));
@@ -386,5 +386,4 @@ public class PlayerService {
 
     return myLeagues;
   }
-
 }

@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.LeagueRole;

@@ -183,10 +183,12 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
   })
   List<AdditionalMatch> findAllByLeagueOrderByDateDescIdDesc(League league);
 
+  @Override
   @Modifying
   @Query("DELETE FROM AdditionalMatch m WHERE m.id IN ?1")
   void deleteAllByIdIn(List<Long> ids);
 
+  @Override
   @Query("""
             SELECT m.id FROM AdditionalMatch m
               INNER JOIN m.league l

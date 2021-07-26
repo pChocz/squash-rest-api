@@ -6,6 +6,6 @@ import java.util.UUID;
 public interface BulkDeletableByLeagueUuid {
 
   void deleteAllByIdIn(List<Long> ids);
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 
+  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 }

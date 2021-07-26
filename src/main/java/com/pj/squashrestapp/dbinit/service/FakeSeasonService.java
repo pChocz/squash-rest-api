@@ -4,9 +4,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.dbinit.fake.FakeAdditionalMatches;
 import com.pj.squashrestapp.dbinit.fake.FakeBonusPoints;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersSelector;
+import com.pj.squashrestapp.dbinit.fake.FakePlayersSelectorRoundGroupAware;
 import com.pj.squashrestapp.dbinit.fake.FakeRound;
 import com.pj.squashrestapp.dbinit.fake.FakeUtil;
-import com.pj.squashrestapp.dbinit.fake.FakePlayersSelectorRoundGroupAware;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
@@ -14,7 +14,6 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -53,11 +52,14 @@ public class FakeSeasonService {
       // easy way - just randomize
       Collections.shuffle(allPlayers);
       final List<Player> roundPlayers = allPlayers.subList(0, numberOfRoundPlayers);
-      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = FakePlayersSelector.select(roundPlayers);
+      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped =
+          FakePlayersSelector.select(roundPlayers);
 
       // hard way - roundGroup aware assigner
-//      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped = fakePlayersSelectorRoundGroupAware.select(allPlayers, numberOfRoundPlayers, roundNumber, seasonNumber, league);
-//      final List<Player> roundPlayers = new ArrayList<>(attendingPlayersGrouped.values());
+      //      final ArrayListMultimap<Integer, Player> attendingPlayersGrouped =
+      // fakePlayersSelectorRoundGroupAware.select(allPlayers, numberOfRoundPlayers, roundNumber,
+      // seasonNumber, league);
+      //      final List<Player> roundPlayers = new ArrayList<>(attendingPlayersGrouped.values());
 
       final Round round = FakeRound.create(league, roundNumber, roundDate, attendingPlayersGrouped);
       season.addRound(round);

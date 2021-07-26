@@ -59,8 +59,8 @@ public class JsonImportUtil {
     return roundGroup;
   }
 
-  public Match constructMatch(final JsonMatch jsonMatch, final List<Player> players,
-      final League league) {
+  public Match constructMatch(
+      final JsonMatch jsonMatch, final List<Player> players, final League league) {
     final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayer());
     final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayer());
     final Match match = new Match(firstPlayer, secondPlayer, league);

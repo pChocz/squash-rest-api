@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.League;
@@ -10,7 +11,6 @@ import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,29 +118,24 @@ public class MatchModifyService {
         match);
   }
 
-
   private Integer computeWinnerScoreForLeague(
-      final Integer looserScore,
-      final boolean isTiebreak,
-      final League league) {
+      final Integer looserScore, final boolean isTiebreak, final League league) {
 
-//    final int setWinningPoints =
-//        isTiebreak ? league.getTiebreakWinningPoints() : league.getRegularSetWinningPoints();
-//    final SetWinningType setWinningType =
-//        isTiebreak ? league.getTiebreakWinningType() : league.getRegularSetWinningType();
+    //    final int setWinningPoints =
+    //        isTiebreak ? league.getTiebreakWinningPoints() : league.getRegularSetWinningPoints();
+    //    final SetWinningType setWinningType =
+    //        isTiebreak ? league.getTiebreakWinningType() : league.getRegularSetWinningType();
 
-    final int setWinningPoints =
-        isTiebreak ? 9 : 11;
+    final int setWinningPoints = isTiebreak ? 9 : 11;
 
     final SetWinningType setWinningType =
-        isTiebreak ? SetWinningType.WINNING_POINTS_ABSOLUTE : SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
+        isTiebreak
+            ? SetWinningType.WINNING_POINTS_ABSOLUTE
+            : SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
 
-    final Integer winnerScore = SetScoreHelper.computeWinnerScore(looserScore, setWinningPoints, setWinningType);
+    final Integer winnerScore =
+        SetScoreHelper.computeWinnerScore(looserScore, setWinningPoints, setWinningType);
 
     return winnerScore;
   }
-
-
-
-
 }
