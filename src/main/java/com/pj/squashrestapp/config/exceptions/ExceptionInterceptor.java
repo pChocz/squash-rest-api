@@ -17,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /**
@@ -131,6 +132,25 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
       final Exception ex, final HttpServletRequest request) {
 
     final HttpStatus httpStatus = HttpStatus.NOT_ACCEPTABLE;
+
+    return new ResponseEntity<>(
+        ErrorResponse.builder()
+            .timestamp(LocalDateTime.now())
+            .message(ex.getMessage())
+            .status(httpStatus.value())
+            .path(request.getRequestURI())
+            .build(),
+        httpStatus);
+  }
+
+  /**
+   * This method catches response status exceptions
+   */
+  @ExceptionHandler(ResponseStatusException.class)
+  ResponseEntity<ErrorResponse> handleResponseStatusException(
+      final Exception ex, final HttpServletRequest request) {
+
+    final HttpStatus httpStatus = ((ResponseStatusException) ex).getStatus();
 
     return new ResponseEntity<>(
         ErrorResponse.builder()

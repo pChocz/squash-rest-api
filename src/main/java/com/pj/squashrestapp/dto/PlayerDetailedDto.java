@@ -6,8 +6,12 @@ import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
@@ -32,8 +36,14 @@ public class PlayerDetailedDto {
       this.authorities.add(authority.getType());
     }
 
+    final List<RoleForLeague> rolesSorted = player
+        .getRoles()
+        .stream()
+        .sorted(Comparator.comparing(o -> o.getLeague().getDateOfCreation()))
+        .collect(Collectors.toList());
+
     this.leagueRoles = new ArrayList<>();
-    for (final RoleForLeague role : player.getRoles()) {
+    for (final RoleForLeague role : rolesSorted) {
       final LeagueRoleDto leagueRole = new LeagueRoleDto(role);
       this.leagueRoles.add(leagueRole);
     }
