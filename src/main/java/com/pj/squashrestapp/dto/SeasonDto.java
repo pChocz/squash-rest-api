@@ -19,6 +19,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
   private final String leagueName;
   private final UUID seasonUuid;
   private final int seasonNumber;
+  private final String description;
   private final String seasonNumberRoman;
   private final String xpPointsType;
 
@@ -30,6 +31,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
     this.leagueName = season.getLeague().getName();
     this.seasonUuid = season.getUuid();
     this.seasonNumber = season.getNumber();
+    this.description = season.getDescription();
     this.seasonNumberRoman = RomanUtil.toRoman(season.getNumber());
     this.xpPointsType = season.getXpPointsType();
     this.seasonStartDate = season.getStartDate();

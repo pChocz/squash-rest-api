@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.MatchFormatType;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -16,12 +17,14 @@ public class LeagueDto {
 
   private final UUID leagueUuid;
   private final String leagueName;
+  private final MatchFormatType matchFormatType;
   private final Set<SeasonDto> seasons;
   @Setter private byte[] leagueLogo;
 
   public LeagueDto(final League league) {
     this.leagueUuid = league.getUuid();
     this.leagueName = league.getName();
+    this.matchFormatType = league.getMatchFormatType();
 
     this.seasons =
         league.getSeasons().stream()

@@ -72,7 +72,7 @@ public class FakeSeasonService {
       }
 
       final List<AdditionalMatch> additionalMatches =
-          FakeAdditionalMatches.create(league, roundPlayers, round.getDate(), 0, 2);
+          FakeAdditionalMatches.create(league, seasonNumber, roundPlayers, round.getDate(), 0, 2);
 
       for (final AdditionalMatch additionalMatch : additionalMatches) {
         league.addAdditionalMatch(additionalMatch);

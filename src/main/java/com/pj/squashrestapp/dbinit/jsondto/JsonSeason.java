@@ -18,6 +18,8 @@ public class JsonSeason {
 
   private String xpPointsType;
 
+  private String description;
+
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate startDate;
 

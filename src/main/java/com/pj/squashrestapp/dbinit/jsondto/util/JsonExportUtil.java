@@ -139,6 +139,7 @@ public class JsonExportUtil {
       final Season season, final List<BonusPoint> bonusPointsForSeason) {
     final JsonSeason jsonSeason = new JsonSeason();
     jsonSeason.setUuid(season.getUuid());
+    jsonSeason.setDescription(season.getDescription());
     jsonSeason.setNumber(season.getNumber());
     jsonSeason.setXpPointsType(season.getXpPointsType());
     jsonSeason.setStartDate(season.getStartDate());

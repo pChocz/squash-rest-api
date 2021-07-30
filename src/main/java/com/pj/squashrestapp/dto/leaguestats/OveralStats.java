@@ -1,6 +1,9 @@
 package com.pj.squashrestapp.dto.leaguestats;
 
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,4 +28,12 @@ public class OveralStats {
   private final int matches;
   private final int sets;
   private final int points;
+  private final MatchFormatType matchFormatType;
+  private final SetWinningType regularSetWinningType;
+  private final SetWinningType tiebreakWinningType;
+  private final int regularSetWinningPoints;
+  private final int tiebreakWinningPoints;
+  private final int numberOfRoundsPerSeason;
+  private final int roundsToBeDeducted;
+  private final LocalDate dateOfCreation;
 }

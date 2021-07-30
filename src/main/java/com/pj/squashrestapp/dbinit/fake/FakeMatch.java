@@ -14,12 +14,14 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public class FakeMatch {
 
-  public AdditionalMatch createAdditional(final League league, final Player firstPlayer, final Player secondPlayer, final LocalDate date,
+  public AdditionalMatch createAdditional(final League league, final int seasonNumber, final Player firstPlayer,
+      final Player secondPlayer, final LocalDate date,
       final AdditionalMatchType type) {
 
     final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer, league);
     match.setDate(date);
     match.setType(type);
+    match.setSeasonNumber(seasonNumber);
 
     switch (league.getMatchFormatType()) {
       case ONE_GAME -> {
