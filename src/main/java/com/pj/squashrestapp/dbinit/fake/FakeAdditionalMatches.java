@@ -15,6 +15,7 @@ public class FakeAdditionalMatches {
 
   public List<AdditionalMatch> create(
       final League league,
+      final int seasonNumber,
       final List<Player> players,
       final LocalDate date,
       final int minOccurs,
@@ -28,6 +29,7 @@ public class FakeAdditionalMatches {
       additionalMatches.add(
           FakeMatch.createAdditional(
               league,
+              seasonNumber,
               twoRandomPlayers.get(0),
               twoRandomPlayers.get(1),
               date.plusDays((i + 1) * 2L),

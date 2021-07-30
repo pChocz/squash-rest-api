@@ -38,6 +38,7 @@ public class JsonImportUtil {
     season.setNumber(jsonSeason.getNumber());
     season.setStartDate(jsonSeason.getStartDate());
     season.setUuid(jsonSeason.getUuid());
+    season.setDescription(jsonSeason.getDescription());
     season.setXpPointsType(jsonSeason.getXpPointsType());
     season.setNumberOfRounds(league.getNumberOfRoundsPerSeason());
     season.setRoundsToBeDeducted(league.getRoundsToBeDeducted());

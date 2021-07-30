@@ -32,8 +32,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
-  private static final int DEFAULT_NUMBER_OF_SETS = 3;
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;

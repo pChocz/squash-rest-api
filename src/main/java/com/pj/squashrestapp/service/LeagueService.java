@@ -38,8 +38,10 @@ import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
+import com.pj.squashrestapp.util.RomanUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -275,6 +277,7 @@ public class LeagueService {
       perSeasonStatsList.add(
           PerSeasonStats.builder()
               .seasonNumber(season.getNumber())
+              .seasonNumberRoman(RomanUtil.toRoman(season.getNumber()))
               .seasonStartDate(season.getStartDate())
               .seasonUuid(season.getUuid())
               .rounds(season.getRounds().size())
@@ -449,6 +452,14 @@ public class LeagueService {
             .averagePlayersPerRound(averagePlayersPerRoundRounded)
             .averagePlayersPerGroup(averagePlayersPerGroupRounded)
             .averageGroupsPerRound(averageGroupsPerRoundRounded)
+            .matchFormatType(league.getMatchFormatType())
+            .regularSetWinningType(league.getRegularSetWinningType())
+            .tiebreakWinningType(league.getTiebreakWinningType())
+            .regularSetWinningPoints(league.getRegularSetWinningPoints())
+            .tiebreakWinningPoints(league.getTiebreakWinningPoints())
+            .numberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason())
+            .roundsToBeDeducted(league.getRoundsToBeDeducted())
+            .dateOfCreation(LocalDate.from(league.getDateOfCreation()))
             .build();
 
     return overalStats;

@@ -96,6 +96,7 @@ public class FakeLeagueService {
     league.setRegularSetWinningPoints(regularSetWinningPoints);
     league.setTiebreakWinningType(tiebreakWinningType);
     league.setTiebreakWinningPoints(tiebreakWinningPoints);
+    league.setDateOfCreation(startDate.atTime(7, 0));
     league.setTime(when);
     league.setLocation(where);
 
@@ -161,7 +162,7 @@ public class FakeLeagueService {
     final ArrayListMultimap<String, Integer> xpPointsPerSplit =
         xpPointsService.buildAllAsIntegerMultimap();
     for (final Season season : league.getSeasons()) {
-      if (season.getRounds().size() == 10) {
+      if (season.getRounds().size() == league.getNumberOfRoundsPerSeason()) {
         final List<BonusPoint> bonusPoints = new ArrayList<>(season.getBonusPoints());
         final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
             new BonusPointsAggregatedForSeason(season.getUuid(), bonusPoints);

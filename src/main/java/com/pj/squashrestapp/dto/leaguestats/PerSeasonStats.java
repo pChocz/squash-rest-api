@@ -16,6 +16,7 @@ import lombok.Getter;
 public class PerSeasonStats {
 
   private final int seasonNumber;
+  private final String seasonNumberRoman;
 
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate seasonStartDate;

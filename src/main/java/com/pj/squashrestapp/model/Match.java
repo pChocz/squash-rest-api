@@ -34,8 +34,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Match implements Identifiable, Comparable<Match> {
 
-  private static final int DEFAULT_NUMBER_OF_SETS = 3;
-
   public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL =
       new EntityVisitor<>(Match.class) {};
 
