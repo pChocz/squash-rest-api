@@ -6,6 +6,7 @@ import com.pj.squashrestapp.config.security.accessexceptionhandler.Authenticatio
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
 import com.pj.squashrestapp.config.security.token.JwtAuthorizationFilter;
 import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
+import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final TokenCreateService tokenCreateService;
   private final SecretKeyHolder secretKeyHolder;
   private final EmailSendConfig emailSendConfig;
+  private final SendEmailFacade sendEmailFacade;
+
 
   @Override
   protected void configure(final HttpSecurity httpSecurity) throws Exception {
@@ -80,6 +83,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, "/access/confirm-registration")
         .permitAll()
         .antMatchers(HttpMethod.POST, "/login")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/players/name-taken/*")
         .permitAll()
         .anyRequest()
         .authenticated();
@@ -144,6 +149,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Bean
   public ApplicationListener applicationListener() {
-    return new AuthSuccessApplicationListener(emailSendConfig, playerRepository);
+    return new AuthSuccessApplicationListener(sendEmailFacade);
   }
 }

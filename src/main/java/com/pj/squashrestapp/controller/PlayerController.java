@@ -32,10 +32,10 @@ public class PlayerController {
 
   private final PlayerService playerService;
 
-  @GetMapping(value = "/exists/{usernameOrEmail}")
+  @GetMapping(value = "/name-taken/{usernameOrEmail}")
   @ResponseBody
-  boolean checkPlayerExists(@PathVariable final String usernameOrEmail) {
-    final boolean playerExists = playerService.checkPlayerExists(usernameOrEmail);
+  boolean checkUsernameOrEmailTaken(@PathVariable final String usernameOrEmail) {
+    final boolean playerExists = playerService.checkUsernameOrEmailTaken(usernameOrEmail);
     return playerExists;
   }
 

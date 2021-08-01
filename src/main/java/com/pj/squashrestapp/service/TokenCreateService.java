@@ -28,7 +28,7 @@ public class TokenCreateService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final SecretKeyHolder secretKeyHolder;
 
-  public TokenPair attemptToCreateNewTokensPair(final UUID oldRefreshTokenUuid) {
+  public TokenPair attemptToCreateNewTokensPairUsingRefreshToken(final UUID oldRefreshTokenUuid) {
     final RefreshToken oldRefreshToken = refreshTokenRepository.findByToken(oldRefreshTokenUuid);
 
     if (oldRefreshToken == null) {

@@ -1,22 +1,21 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.aspects.SecretMethod;
-import com.pj.squashrestapp.config.security.playerpasswordreset.OnPasswordResetEvent;
-import com.pj.squashrestapp.config.security.playerregistration.OnRegistrationCompleteEvent;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenCreateService;
 import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,10 +35,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserAccessController {
 
-  private final ApplicationEventPublisher eventPublisher;
   private final PlayerService playerService;
   private final TokenRemovalService tokenRemovalService;
   private final TokenCreateService tokenCreateService;
+  private final SendEmailFacade sendEmailFacade;
 
   @GetMapping(value = "/reset-password-player/{passwordResetToken}")
   @ResponseBody
@@ -51,9 +50,11 @@ public class UserAccessController {
 
   @SecretMethod
   @PutMapping(value = "/change-my-password")
-  void changeMyPassword(
+  TokenPair changeMyPassword(
       @RequestParam final String oldPassword, @RequestParam final String newPassword) {
-    playerService.changeCurrentSessionPlayerPassword(oldPassword, newPassword);
+    final TokenPair tokenPair =
+        playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(oldPassword, newPassword);
+    return tokenPair;
   }
 
   @PutMapping(value = "/change-my-email")
@@ -85,7 +86,7 @@ public class UserAccessController {
       @RequestParam final String email,
       @RequestParam final String password,
       @RequestParam final String frontendUrl,
-      final HttpServletRequest request) {
+      @RequestParam(defaultValue = "en") final String lang) {
 
     final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
     final String lowerCaseEmailAdress = email.toLowerCase();
@@ -94,11 +95,18 @@ public class UserAccessController {
         playerService.isValidSignupData(
             correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
     if (isValid) {
+
       final Player newPlayer =
           playerService.registerNewUser(
               correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
-      eventPublisher.publishEvent(
-          new OnRegistrationCompleteEvent(newPlayer, request.getLocale(), frontendUrl));
+
+      final UUID token = UUID.randomUUID();
+      playerService.createAndPersistVerificationToken(token, newPlayer);
+
+      final String confirmationUrl = frontendUrl + "confirm-registration/" + token;
+
+      sendEmailFacade.sendAccountActivationEmail(
+          newPlayer.getEmail(), newPlayer.getUsername(), new Locale(lang), confirmationUrl);
       return new PlayerDetailedDto(newPlayer);
     }
     return null;
@@ -109,13 +117,16 @@ public class UserAccessController {
   void requestResetPassword(
       @RequestParam final String usernameOrEmail,
       @RequestParam final String frontendUrl,
-      final HttpServletRequest request) {
+      @RequestParam(defaultValue = "en") final String lang) {
 
     final Player player = playerService.getPlayer(usernameOrEmail);
 
     if (player != null) {
-      eventPublisher.publishEvent(
-          new OnPasswordResetEvent(player, request.getLocale(), frontendUrl));
+      final UUID token = UUID.randomUUID();
+      playerService.createAndPersistPasswordResetToken(token, player);
+      final String passwordResetUrl = frontendUrl + "reset-password/" + token;
+      sendEmailFacade.sendPasswordResetEmail(
+          player.getEmail(), player.getUsername(), new Locale(lang), passwordResetUrl);
 
     } else {
 
@@ -156,16 +167,19 @@ public class UserAccessController {
   @ResponseBody
   TokenPair refreshToken(@PathVariable final UUID oldRefreshTokenUuid) {
     final TokenPair tokenPair =
-        tokenCreateService.attemptToCreateNewTokensPair(oldRefreshTokenUuid);
+        tokenCreateService.attemptToCreateNewTokensPairUsingRefreshToken(oldRefreshTokenUuid);
     return tokenPair;
   }
 
   @SecretMethod
   @PostMapping(value = "/confirm-password-reset")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmResetPassword(
-      @RequestParam final UUID token, @RequestParam final String newPassword) {
-    playerService.changeCurrentSessionPlayerPassword(token, newPassword);
+  TokenPair confirmResetPassword(
+      @RequestParam final UUID passwordChangeToken, @RequestParam final String newPassword) {
+    final TokenPair tokenPair =
+        playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(
+            passwordChangeToken, newPassword);
+    return tokenPair;
   }
 
   @PostMapping("/confirm-registration")
