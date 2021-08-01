@@ -54,9 +54,10 @@ public class SeasonController {
       @RequestParam final int seasonNumber,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
       @RequestParam final UUID leagueUuid,
-      @RequestParam final String xpPointsType) {
+      @RequestParam final String xpPointsType,
+      @RequestParam(required = false) final String description) {
     final Season season =
-        seasonService.createNewSeason(seasonNumber, startDate, leagueUuid, xpPointsType);
+        seasonService.createNewSeason(seasonNumber, startDate, leagueUuid, xpPointsType, description);
     return new SeasonDto(season);
   }
 

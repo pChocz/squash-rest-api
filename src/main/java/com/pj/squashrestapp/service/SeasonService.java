@@ -255,11 +255,15 @@ public class SeasonService {
       final int seasonNumber,
       final LocalDate startDate,
       final UUID leagueUuid,
-      final String xpPointsType) {
+      final String xpPointsType,
+      final String description) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Season season = new Season(seasonNumber, startDate, xpPointsType);
     season.setNumberOfRounds(league.getNumberOfRoundsPerSeason());
     season.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
+    if (description != null) {
+      season.setDescription(description);
+    }
     league.addSeason(season);
     leagueRepository.save(league);
     return season;

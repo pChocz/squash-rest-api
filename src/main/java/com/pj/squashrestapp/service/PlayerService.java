@@ -9,6 +9,7 @@ import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
 import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.League;
@@ -58,6 +59,7 @@ public class PlayerService {
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final TokenCreateService tokenCreateService;
   private final PasswordEncoder passwordEncoder;
 
   @SuppressWarnings("OverlyComplexMethod")
@@ -258,7 +260,7 @@ public class PlayerService {
     return playerDetailedDto;
   }
 
-  public void changeCurrentSessionPlayerPassword(
+  public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(
       final String oldPassword, final String newPassword) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.findByUsername(auth.getName());
@@ -272,13 +274,19 @@ public class PlayerService {
       playerRepository.save(player);
       log.info("Password for user {} has been succesfully changed.", player.getUsername());
 
+      final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
+      refreshTokenRepository.deleteAll(playerRefreshTokens);
+
+      final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
+      return tokenPair;
+
     } else {
       log.warn("Attempt to change password but old password does not match");
       throw new PasswordDoesNotMatchException("Old password does not match!");
     }
   }
 
-  public void changeCurrentSessionPlayerPassword(final UUID token, final String newPassword) {
+  public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(final UUID token, final String newPassword) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
     if (passwordResetToken == null) {
@@ -303,6 +311,8 @@ public class PlayerService {
       passwordResetTokenRepository.delete(passwordResetToken);
 
       log.info("Password for user {} has been succesfully changed.", player.getUsername());
+      final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
+      return tokenPair;
     }
   }
 
@@ -357,7 +367,7 @@ public class PlayerService {
     refreshTokenRepository.deleteAll(playerRefreshTokens);
   }
 
-  public boolean checkPlayerExists(final String usernameOrEmail) {
+  public boolean checkUsernameOrEmailTaken(final String usernameOrEmail) {
     final List<Player> players = playerRepository.findAllRaw();
     final boolean exists = players.stream().anyMatch(playerNameOrEmailPredicate(usernameOrEmail));
     return exists;
@@ -365,8 +375,8 @@ public class PlayerService {
 
   private Predicate<Player> playerNameOrEmailPredicate(final String usernameOrEmail) {
     return player ->
-        player.getUsername().equalsIgnoreCase(usernameOrEmail)
-            || player.getEmail().equalsIgnoreCase(usernameOrEmail);
+        player.getUsername().equalsIgnoreCase(usernameOrEmail.trim())
+            || player.getEmail().equalsIgnoreCase(usernameOrEmail.trim());
   }
 
   public Set<LeagueDtoSimple> getMyLeagues() {
