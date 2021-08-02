@@ -1,9 +1,9 @@
 package com.pj.squashrestapp.hexagonal.email;
 
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.ADMIN_EMAIL_HREF;
+import static com.pj.squashrestapp.hexagonal.email.EmailConstants.EMAIL_TEMPLATE;
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.MY_WEBSITE_HREF;
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.SQUASH_APP_HREF;
-import static com.pj.squashrestapp.hexagonal.email.EmailConstants.TEMPLATE_WITH_BUTTON;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -22,10 +22,7 @@ class AccountActivationEmailService {
   private final AbstractResourceBasedMessageSource messageSource;
 
   void sendEmail(
-      final String email,
-      final String name,
-      final Locale locale,
-      final String activationLink) {
+      final String email, final String name, final Locale locale, final String activationLink) {
 
     final String preheader = messageSource.getMessage("message.activation.preheader", null, locale);
     final String subject = messageSource.getMessage("message.activation.subject", null, locale);
@@ -41,27 +38,33 @@ class AccountActivationEmailService {
     // static
     model.put(
         "hiMessage", messageSource.getMessage("message.util.hi", new Object[] {name}, locale));
+
     model.put(
-        "youHaveRequestedSomething",
+        "primaryContent",
         messageSource.getMessage("message.activation.youHaveCreatedAnAccount", null, locale));
+
     model.put(
-        "clickMessage",
-        messageSource.getMessage("message.activation.buttonText", null, locale));
+        "clickMessage", messageSource.getMessage("message.activation.buttonText", null, locale));
+
+    model.put("copyLinkMessage", messageSource.getMessage("message.util.copyLink", null, locale));
+
     model.put(
-        "copyLinkMessage", messageSource.getMessage("message.util.copyLink", null, locale));
-    model.put("additionalNote", messageSource.getMessage("message.activation.ignore", null, locale));
-    model.put(
-        "doNotReplyMessage",
-        messageSource.getMessage(
-            "message.util.doNotReply", new Object[] {ADMIN_EMAIL_HREF}, locale));
+        "secondaryContent",
+        new String[] {
+          messageSource.getMessage("message.activation.ignore", null, locale),
+          messageSource.getMessage(
+              "message.util.doNotReply", new Object[] {ADMIN_EMAIL_HREF}, locale),
+        });
+
     model.put(
         "intendedFor",
         messageSource.getMessage("message.util.intendedFor", new Object[] {name, email}, locale));
+
     model.put(
         "devMessage",
         messageSource.getMessage(
             "message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
 
-    sendEmailService.sendEmailWithModel(email, subject, model, TEMPLATE_WITH_BUTTON);
+    sendEmailService.sendEmailWithModel(email, subject, model, EMAIL_TEMPLATE);
   }
 }

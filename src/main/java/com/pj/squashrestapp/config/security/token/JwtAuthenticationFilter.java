@@ -6,10 +6,13 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_S
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,6 +37,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   private final AuthenticationManager authenticationManager;
   private final TokenCreateService tokenCreateService;
   private final PlayerRepository playerRepository;
+  private final SendEmailFacade sendEmailFacade;
 
   @Override
   public Authentication attemptAuthentication(
@@ -60,6 +65,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         log.info("User [{}] has logged in from IP [{}]", username, userIpAddress);
       }
       log.info("Authentication took {} s", GeneralUtil.getDurationSecondsRounded(startTime));
+
+      if (username.equalsIgnoreCase("RECRUITER")) {
+        sendEmailFacade.sendRecruiterLoggedInEmail();
+      }
 
       return auth;
 

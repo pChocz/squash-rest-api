@@ -16,5 +16,6 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
 
   VerificationToken findByToken(UUID token);
 
+  @EntityGraph(attributePaths = {"player"})
   List<VerificationToken> findAllByExpirationDateTimeBefore(LocalDateTime time);
 }

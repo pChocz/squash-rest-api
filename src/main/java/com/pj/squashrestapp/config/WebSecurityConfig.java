@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.config;
 
-import com.pj.squashrestapp.config.email.EmailSendConfig;
 import com.pj.squashrestapp.config.security.accessexceptionhandler.AccessDeniedExceptionHandler;
 import com.pj.squashrestapp.config.security.accessexceptionhandler.AuthenticationExceptionHandler;
 import com.pj.squashrestapp.config.security.token.JwtAuthenticationFilter;
@@ -42,7 +41,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
   private final PlayerRepository playerRepository;
   private final TokenCreateService tokenCreateService;
   private final SecretKeyHolder secretKeyHolder;
-  private final EmailSendConfig emailSendConfig;
   private final SendEmailFacade sendEmailFacade;
 
 
@@ -93,7 +91,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     httpSecurity
         .addFilter(
             new JwtAuthenticationFilter(
-                authenticationManager(), tokenCreateService, playerRepository))
+                authenticationManager(), tokenCreateService, playerRepository, sendEmailFacade))
         .addFilter(
             new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
 

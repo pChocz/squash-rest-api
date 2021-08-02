@@ -1,13 +1,16 @@
 package com.pj.squashrestapp.hexagonal.email;
 
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.ADMIN_EMAIL_HREF;
+import static com.pj.squashrestapp.hexagonal.email.EmailConstants.EMAIL_TEMPLATE;
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.MY_WEBSITE_HREF;
 import static com.pj.squashrestapp.hexagonal.email.EmailConstants.SQUASH_APP_HREF;
-import static com.pj.squashrestapp.hexagonal.email.EmailConstants.TEMPLATE_PLAIN;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.AbstractResourceBasedMessageSource;
@@ -37,25 +40,29 @@ class PlainEmailService {
     model.put("email", email);
     model.put("preheader", preheader);
 
-    // todo: verify how to implement such array
-    model.put("contentLines", linesOfText);
+    model.put("primaryContent", null);
+    model.put("clickMessage", null);
 
     // static
     model.put(
         "hiMessage", messageSource.getMessage("message.util.hi", new Object[] {name}, locale));
 
-    model.put(
-        "doNotReplyMessage",
+    final List<String> secondaryContent = Arrays.stream(linesOfText).collect(Collectors.toList());
+    secondaryContent.add(
         messageSource.getMessage(
             "message.util.doNotReply", new Object[] {ADMIN_EMAIL_HREF}, locale));
+
+    model.put("secondaryContent", secondaryContent);
+
     model.put(
         "intendedFor",
         messageSource.getMessage("message.util.intendedFor", new Object[] {name, email}, locale));
+
     model.put(
         "devMessage",
         messageSource.getMessage(
             "message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
 
-    sendEmailService.sendEmailWithModel(email, subject, model, TEMPLATE_PLAIN);
+    sendEmailService.sendEmailWithModel(email, subject, model, EMAIL_TEMPLATE);
   }
 }

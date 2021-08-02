@@ -7,13 +7,11 @@ import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.service.TokenRemovalService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +34,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserAccessController {
 
   private final PlayerService playerService;
-  private final TokenRemovalService tokenRemovalService;
   private final TokenCreateService tokenCreateService;
   private final SendEmailFacade sendEmailFacade;
 
@@ -44,7 +41,7 @@ public class UserAccessController {
   @ResponseBody
   PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {
     final PlayerDetailedDto player =
-        tokenRemovalService.extractPlayerByPasswordResetToken(passwordResetToken);
+        playerService.extractPlayerByPasswordResetToken(passwordResetToken);
     return player;
   }
 
@@ -173,7 +170,7 @@ public class UserAccessController {
 
   @SecretMethod
   @PostMapping(value = "/confirm-password-reset")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @ResponseBody
   TokenPair confirmResetPassword(
       @RequestParam final UUID passwordChangeToken, @RequestParam final String newPassword) {
     final TokenPair tokenPair =
