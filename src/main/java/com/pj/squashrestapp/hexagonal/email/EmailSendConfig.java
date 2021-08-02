@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.config.email;
+package com.pj.squashrestapp.hexagonal.email;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("email")
-public class EmailSendConfig {
+class EmailSendConfig {
 
   @Value(value = "${sender_email_adress:}")
   private String senderEmailAdress;
@@ -46,7 +46,7 @@ public class EmailSendConfig {
   @Value(value = "${smtp_port:}")
   private String smtpPort;
 
-  public void sendEmailWithAttachment(
+  void sendEmailWithAttachment(
       final String receiver, final String subject, final Object content, final File... files) {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
@@ -63,38 +63,21 @@ public class EmailSendConfig {
     }
   }
 
-  public void sendEmail(final String receiver, final String subject, final Object content) {
+  void sendEmailWithHtmlContent(
+      final String receiver, final String subject, final String htmlMessageContent) {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
 
     try {
-      final Message message = prepareMessage(session, receiver, subject, content);
+      final Message message = new MimeMessage(session);
+      message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
+      message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
+      message.setSubject(subject);
+      message.setContent(htmlMessageContent, "text/html; charset=UTF-8");
       Transport.send(message);
       log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
 
     } catch (final MessagingException | UnsupportedEncodingException e) {
-      log.error("[{}] email to [{}] has not been sent!", subject, receiver);
-      log.error("Exception", e);
-    }
-  }
-
-  public void sendEmailTest(
-      final String receiver, final String subject, final String htmlMessageContent)
-      throws UnsupportedEncodingException, MessagingException {
-    final Properties properties = buildProperties();
-    final Session session = buildSession(properties);
-
-    final Message message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
-    message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
-    message.setSubject(subject);
-    message.setContent(htmlMessageContent, "text/html; charset=UTF-8");
-
-    try {
-      Transport.send(message);
-      log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
-
-    } catch (final MessagingException e) {
       log.error("[{}] email to [{}] has not been sent!", subject, receiver);
       log.error("Exception", e);
     }
@@ -118,18 +101,6 @@ public class EmailSendConfig {
             return new PasswordAuthentication(senderEmailAdress, password);
           }
         });
-  }
-
-  private Message prepareMessage(
-      final Session session, final String receiver, final String subject, final Object content)
-      throws MessagingException, UnsupportedEncodingException {
-    final Message message = new MimeMessage(session);
-    message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
-    message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
-    message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAdress));
-    message.setSubject(subject);
-    message.setContent(content, "text/html; charset=UTF-8");
-    return message;
   }
 
   private Message prepareMessageWithAttachments(

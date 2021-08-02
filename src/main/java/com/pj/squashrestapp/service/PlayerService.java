@@ -190,7 +190,7 @@ public class PlayerService {
     final boolean isPlayerForLeagueAlready = userBasicInfo.isPlayerForLeague(leagueName);
 
     if (isPlayerForLeagueAlready) {
-      throw new GeneralBadRequestException("Already player of this league");
+      throw new GeneralBadRequestException(ErrorCode.ALREADY_A_PLAYER_OF_LEAGUE);
     }
 
     final League league = leagueRepository.findByNameRaw(leagueName);
@@ -286,54 +286,50 @@ public class PlayerService {
     }
   }
 
-  public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(final UUID token, final String newPassword) {
+  public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(
+      final UUID token, final String newPassword) {
     final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
 
     if (passwordResetToken == null) {
       log.warn("It seems that we do not have matching token!");
-      throw new GeneralBadRequestException("It seems that we do not have matching token!");
+      throw new GeneralBadRequestException(ErrorCode.INVALID_PASSWORD_RESET_TOKEN);
 
     } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
-      throw new GeneralBadRequestException(
-          "Password reset token has already expired. You must request new one!");
+      throw new GeneralBadRequestException(ErrorCode.EXPIRED_PASSWORD_RESET_TOKEN);
 
     } else if (!PasswordStrengthValidator.isValid(newPassword)) {
       throw new GeneralBadRequestException(
           "Password is too weak (or too long). It must contain at least 5 characters (and not more than 100).");
-
-    } else {
-      final Player player = passwordResetToken.getPlayer();
-      final String hashedPassword = passwordEncoder.encode(newPassword);
-      player.setPassword(hashedPassword);
-      player.setPasswordSessionUuid(UUID.randomUUID());
-
-      playerRepository.save(player);
-      passwordResetTokenRepository.delete(passwordResetToken);
-
-      log.info("Password for user {} has been succesfully changed.", player.getUsername());
-      final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
-      return tokenPair;
     }
+
+    final Player player = passwordResetToken.getPlayer();
+    final String hashedPassword = passwordEncoder.encode(newPassword);
+    player.setPassword(hashedPassword);
+    player.setPasswordSessionUuid(UUID.randomUUID());
+
+    playerRepository.save(player);
+    passwordResetTokenRepository.delete(passwordResetToken);
+
+    log.info("Password for user {} has been succesfully changed.", player.getUsername());
+    final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
+    return tokenPair;
   }
 
   public void activateUserWithToken(final UUID token) {
     final VerificationToken verificationToken = verificationTokenRepository.findByToken(token);
 
     if (verificationToken == null) {
-      log.warn("It seems that we do not have matching token!");
-      throw new RuntimeException("No matching token!");
+      throw new GeneralBadRequestException(ErrorCode.INVALID_ACCOUNT_ACTIVATION_TOKEN);
 
     } else if (LocalDateTime.now(UTC_ZONE_ID).isAfter(verificationToken.getExpirationDateTime())) {
-      log.warn("Activation token has already expired. You must request sending new one!");
-      throw new RuntimeException("Token has expired!");
-
-    } else {
-      final Player player = verificationToken.getPlayer();
-      player.setEnabled(true);
-      playerRepository.save(player);
-      verificationTokenRepository.delete(verificationToken);
-      log.info("User {} has been succesfully activated.", player.getUsername());
+      throw new GeneralBadRequestException(ErrorCode.EXPIRED_ACCOUNT_ACTIVATION_TOKEN);
     }
+
+    final Player player = verificationToken.getPlayer();
+    player.setEnabled(true);
+    playerRepository.save(player);
+    verificationTokenRepository.delete(verificationToken);
+    log.info("User {} has been succesfully activated.", player.getUsername());
   }
 
   public void invalidateAllTokens() {
@@ -395,5 +391,20 @@ public class PlayerService {
     }
 
     return myLeagues;
+  }
+
+  public PlayerDetailedDto extractPlayerByPasswordResetToken(final UUID token) {
+    final PasswordResetToken passwordResetToken = passwordResetTokenRepository.findByToken(token);
+    if (passwordResetToken == null) {
+      throw new GeneralBadRequestException(ErrorCode.INVALID_PASSWORD_RESET_TOKEN);
+
+    } else if (LocalDateTime.now().isAfter(passwordResetToken.getExpirationDateTime())) {
+      throw new GeneralBadRequestException(ErrorCode.EXPIRED_PASSWORD_RESET_TOKEN);
+    }
+
+    final UUID playerUuid = passwordResetToken.getPlayer().getUuid();
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).get();
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
   }
 }

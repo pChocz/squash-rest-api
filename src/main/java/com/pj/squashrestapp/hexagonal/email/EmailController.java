@@ -25,31 +25,31 @@ class EmailController {
   @GetMapping(value = "/send-password-reset-email")
   @PreAuthorize("isAdmin()")
   void sendPasswordResetEmail(
-      final HttpServletRequest request,
+      @RequestParam(defaultValue = "en") final String lang,
       @RequestParam final String email,
       @RequestParam final String name,
       @RequestParam final String passwordResetLink)
       throws IOException, MessagingException, TemplateException {
 
-    facade.sendPasswordResetEmail(email, name, request.getLocale(), passwordResetLink);
+    facade.sendPasswordResetEmail(email, name, new Locale(lang), passwordResetLink);
   }
 
   @GetMapping(value = "/send-activation-link-email")
   @PreAuthorize("isAdmin()")
   void sendAccountActivationEmail(
-      final HttpServletRequest request,
+      @RequestParam(defaultValue = "en") final String lang,
       @RequestParam final String email,
       @RequestParam final String name,
       @RequestParam final String activationLink)
       throws IOException, MessagingException, TemplateException {
 
-    facade.sendAccountActivationEmail(email, name, request.getLocale(), activationLink);
+    facade.sendAccountActivationEmail(email, name, new Locale(lang), activationLink);
   }
 
   @GetMapping(value = "/send-plain-email")
   @PreAuthorize("isAdmin()")
   void sendPlainEmail(
-      final HttpServletRequest request,
+      @RequestParam(defaultValue = "en") final String lang,
       @RequestParam final String email,
       @RequestParam final String name,
       @RequestParam final String subject,
@@ -57,7 +57,7 @@ class EmailController {
       @RequestParam final String... contentLines)
       throws IOException, MessagingException, TemplateException {
 
-    facade.sendPlainEmail(email, name, request.getLocale(), subject, preheader, contentLines);
+    facade.sendPlainEmail(email, name, new Locale(lang), subject, preheader, contentLines);
   }
 
   @GetMapping(value = "/send-recruiter-login-info")

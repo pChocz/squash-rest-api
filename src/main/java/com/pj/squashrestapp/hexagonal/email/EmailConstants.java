@@ -6,9 +6,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 class EmailConstants {
 
-  static final String TEMPLATE_WITH_BUTTON = "email_template_button.html";
-
-  static final String TEMPLATE_PLAIN = "email_template_plain.html";
+  static final String EMAIL_TEMPLATE = "email_template.html";
 
   static final String ADMIN_EMAIL_HREF =
       "<a href =\"mailto: admin@squash-app.win\" style=\"color: #0000EE;\">admin@squash-app.win</a>";
