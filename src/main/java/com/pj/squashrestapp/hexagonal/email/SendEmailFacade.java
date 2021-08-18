@@ -1,6 +1,15 @@
 package com.pj.squashrestapp.hexagonal.email;
 
+import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.repository.LeagueRepository;
+import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.service.PlayerService;
+import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,6 +24,9 @@ public class SendEmailFacade {
   private final PasswordResetEmailService passwordResetEmailService;
   private final PlainEmailService plainEmailService;
   private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
+
+  private final PlayerRepository playerRepository;
+
 
   public void sendAccountActivationEmail(
       final String receiverEmail,
@@ -50,5 +62,10 @@ public class SendEmailFacade {
 
   public void sendRecruiterLoggedInEmail() {
     recruiterLoggedInEmailService.sendEmail();
+  }
+
+  private boolean isModeratorOfLeague(final Player player) {
+    return player.getRoles().stream()
+        .anyMatch(role -> role.getLeagueRole() == LeagueRole.MODERATOR);
   }
 }

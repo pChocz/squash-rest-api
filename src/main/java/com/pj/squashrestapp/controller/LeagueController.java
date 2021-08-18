@@ -2,6 +2,7 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
@@ -109,6 +110,14 @@ public class LeagueController {
     final List<PlayerDto> playersGeneralInfo =
         leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
+  }
+
+  @GetMapping(value = "/players-detailed/{leagueUuid}")
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  List<PlayerDetailedDto> playersDetailedByLeagueId(@PathVariable final UUID leagueUuid) {
+    final List<PlayerDetailedDto> players = leagueService.extractLeaguePlayersDetailed(leagueUuid);
+    return players;
   }
 
   @GetMapping(value = "/stats/{leagueUuid}")

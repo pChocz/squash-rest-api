@@ -8,8 +8,6 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
@@ -36,11 +34,10 @@ public class PlayerDetailedDto {
       this.authorities.add(authority.getType());
     }
 
-    final List<RoleForLeague> rolesSorted = player
-        .getRoles()
-        .stream()
-        .sorted(Comparator.comparing(o -> o.getLeague().getDateOfCreation()))
-        .collect(Collectors.toList());
+    final List<RoleForLeague> rolesSorted =
+        player.getRoles().stream()
+            .sorted(Comparator.comparing(o -> o.getLeague().getDateOfCreation()))
+            .collect(Collectors.toList());
 
     this.leagueRoles = new ArrayList<>();
     for (final RoleForLeague role : rolesSorted) {
@@ -55,8 +52,27 @@ public class PlayerDetailedDto {
         .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueName().equals(leagueName));
   }
 
+  public boolean isPlayerForLeague(final UUID leagueUuid) {
+    return this.leagueRoles.stream()
+        .filter(leagueRoleDto -> leagueRoleDto.getLeagueRole().equals(LeagueRole.PLAYER))
+        .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueUuid().equals(leagueUuid));
+  }
+
+  public boolean hasAnyRoleForLeague(final UUID leagueUuid) {
+    return this.leagueRoles.stream()
+        .anyMatch(leagueRoleDto -> leagueRoleDto.getLeagueUuid().equals(leagueUuid));
+  }
+
   @Override
   public String toString() {
     return username + " | uuid: " + uuid;
   }
+
+  public List<LeagueRole> getLeagueRolesForLeague(final UUID leagueUuid) {
+    return this.leagueRoles.stream()
+        .filter(leagueRoleDto -> leagueRoleDto.getLeagueUuid().equals(leagueUuid))
+        .map(LeagueRoleDto::getLeagueRole)
+        .collect(Collectors.toList());
+  }
+
 }

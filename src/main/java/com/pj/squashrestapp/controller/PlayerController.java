@@ -2,6 +2,7 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
@@ -47,6 +48,13 @@ public class PlayerController {
     return allPlayers;
   }
 
+  @GetMapping(value = "/all-general")
+  @ResponseBody
+  List<PlayerDto> extractAllPlayersGeneralInfo() {
+    final List<PlayerDto> allPlayers = playerService.getAllPlayersGeneral();
+    return allPlayers;
+  }
+
   @GetMapping(value = "/me")
   @ResponseBody
   PlayerDetailedDto aboutMe() {
@@ -59,32 +67,6 @@ public class PlayerController {
   Set<LeagueDtoSimple> myLeagues() {
     final Set<LeagueDtoSimple> myLeagues = playerService.getMyLeagues();
     return myLeagues;
-  }
-
-  @PutMapping(value = "/role-unassign/{playerUuid}")
-  @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  PlayerDetailedDto unassignLeagueRole(
-      @PathVariable final UUID playerUuid,
-      @RequestParam final UUID leagueUuid,
-      @RequestParam final LeagueRole leagueRole) {
-
-    final PlayerDetailedDto playerDetailedDto =
-        playerService.unassignLeagueRole(playerUuid, leagueUuid, leagueRole);
-    return playerDetailedDto;
-  }
-
-  @PutMapping(value = "/role-assign/{playerUuid}")
-  @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  PlayerDetailedDto assignLeagueRole(
-      @PathVariable final UUID playerUuid,
-      @RequestParam final UUID leagueUuid,
-      @RequestParam final LeagueRole leagueRole) {
-
-    final PlayerDetailedDto playerDetailedDto =
-        playerService.assignLeagueRole(playerUuid, leagueUuid, leagueRole);
-    return playerDetailedDto;
   }
 
   @PostMapping(value = "/newEnabled")
