@@ -34,4 +34,5 @@ class SendEmailService {
       log.error("Template problem - {}", templateString, e);
     }
   }
+
 }

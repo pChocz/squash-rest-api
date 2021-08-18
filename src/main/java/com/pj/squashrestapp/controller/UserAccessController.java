@@ -59,16 +59,6 @@ public class UserAccessController {
     playerService.changeCurrentSessionPlayerEmail(newEmail);
   }
 
-  @PutMapping(value = "/join-league")
-  void joinNewLeague(@RequestParam final String leagueName) {
-    playerService.joinNewLeague(leagueName);
-  }
-
-  @PutMapping(value = "/leave-league")
-  void leaveLeague(@RequestParam final String leagueName) {
-    playerService.leaveLeague(leagueName);
-  }
-
   @PostMapping(value = "/logout")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   void logout() {

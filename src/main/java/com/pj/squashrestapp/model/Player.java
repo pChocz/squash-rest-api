@@ -55,6 +55,14 @@ public class Player {
   private boolean enabled;
 
   @Setter
+  @Column(name = "wants_emails")
+  private boolean wantsEmails;
+
+  @Setter
+  @Column(name = "locale")
+  private String locale;
+
+  @Setter
   @Column(name = "email", unique = true)
   private String email;
 

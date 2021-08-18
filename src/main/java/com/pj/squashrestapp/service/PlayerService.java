@@ -9,10 +9,10 @@ import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
 import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
-import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
@@ -24,7 +24,6 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
-import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
@@ -44,7 +43,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /** */
 @Slf4j
@@ -52,10 +50,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlayerService {
 
+  private final LeagueRolesService leagueRolesService;
+
   private final PlayerRepository playerRepository;
   private final LeagueRepository leagueRepository;
   private final AuthorityRepository authorityRepository;
-  private final RoleForLeagueRepository roleForLeagueRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
@@ -149,6 +148,13 @@ public class PlayerService {
     return allPlayersDetailedInfo;
   }
 
+  public List<PlayerDto> getAllPlayersGeneral() {
+    final List<Player> allPlayers = playerRepository.findAllRaw();
+    final List<PlayerDto> allPlayersDetailedInfo =
+        allPlayers.stream().map(PlayerDto::new).collect(Collectors.toList());
+    return allPlayersDetailedInfo;
+  }
+
   public PlayerDetailedDto getAboutMeInfo() {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player =
@@ -182,82 +188,10 @@ public class PlayerService {
     }
   }
 
-  @Transactional
-  public void joinNewLeague(final String leagueName) {
-    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = getPlayer(auth.getName());
-    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
-    final boolean isPlayerForLeagueAlready = userBasicInfo.isPlayerForLeague(leagueName);
-
-    if (isPlayerForLeagueAlready) {
-      throw new GeneralBadRequestException(ErrorCode.ALREADY_A_PLAYER_OF_LEAGUE);
-    }
-
-    final League league = leagueRepository.findByNameRaw(leagueName);
-    final boolean leagueExists = league != null;
-
-    if (!leagueExists) {
-      throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
-    }
-
-    assignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
-  }
-
   public Player getPlayer(final String usernameOrEmail) {
     return playerRepository
         .fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase())
         .orElse(null);
-  }
-
-  @Transactional
-  public PlayerDetailedDto assignLeagueRole(
-      final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
-    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final RoleForLeague roleForLeague =
-        roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-    player.addRole(roleForLeague);
-
-    playerRepository.save(player);
-
-    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-    return playerDetailedDto;
-  }
-
-  @Transactional
-  public void leaveLeague(final String leagueName) {
-    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = getPlayer(auth.getName());
-    final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
-    final boolean isPlayerForLeague = userBasicInfo.isPlayerForLeague(leagueName);
-
-    if (!isPlayerForLeague) {
-      throw new GeneralBadRequestException(ErrorCode.NOT_A_PLAYER_OF_LEAGUE);
-    }
-
-    final League league = leagueRepository.findByNameRaw(leagueName);
-    final boolean leagueExists = league != null;
-
-    if (!leagueExists) {
-      throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
-    }
-
-    unassignLeagueRole(player.getUuid(), league.getUuid(), LeagueRole.PLAYER);
-  }
-
-  @Transactional
-  public PlayerDetailedDto unassignLeagueRole(
-      final UUID playerUuid, final UUID leagueUuid, final LeagueRole leagueRole) {
-    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    final RoleForLeague roleForLeague =
-        roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-    player.removeRole(roleForLeague);
-
-    playerRepository.save(player);
-
-    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-    return playerDetailedDto;
   }
 
   public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(
@@ -407,4 +341,6 @@ public class PlayerService {
     final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
     return playerDetailedDto;
   }
+
+
 }
