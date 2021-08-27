@@ -56,7 +56,7 @@ public class Player {
 
   @Setter
   @Column(name = "wants_emails")
-  private boolean wantsEmails;
+  private Boolean wantsEmails;
 
   @Setter
   @Column(name = "locale")
@@ -96,6 +96,11 @@ public class Player {
   public void addAuthority(final Authority authority) {
     this.authorities.add(authority);
     authority.getPlayers().add(this);
+  }
+
+  public void removeAuthority(final Authority authority) {
+    this.authorities.remove(authority);
+    authority.getPlayers().remove(this);
   }
 
   @Override
