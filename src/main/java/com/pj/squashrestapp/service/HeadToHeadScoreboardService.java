@@ -26,24 +26,25 @@ public class HeadToHeadScoreboardService {
   private final MatchRepository matchRepository;
   private final AdditionalMatchRepository additionalMatchRepository;
 
-  public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid) {
+  public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
     final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
 
     final List<Match> roundMatches = matchRepository.fetchHeadToHead(playersUuids);
-    final List<AdditionalMatch> additionalMatches =
-        additionalMatchRepository.fetchHeadToHead(playersUuids);
+    final List<MatchDto> allMatches = roundMatches
+        .stream()
+        .map(MatchDetailedDto::new)
+        .collect(Collectors.toList());
 
-    final List<MatchDto> roundMatchesDtos =
-        roundMatches.stream().map(MatchDetailedDto::new).collect(Collectors.toList());
+    if (includeAdditional) {
+      final List<AdditionalMatch> additionalMatches =
+          additionalMatchRepository.fetchHeadToHead(playersUuids);
+      final List<MatchDto> additionalMatchesDtos =
+          additionalMatches.stream()
+              .map(AdditionalMatchDetailedDto::new)
+              .collect(Collectors.toList());
+      allMatches.addAll(additionalMatchesDtos);
+    }
 
-    final List<MatchDto> additionalMatchesDtos =
-        additionalMatches.stream()
-            .map(AdditionalMatchDetailedDto::new)
-            .collect(Collectors.toList());
-
-    final List<MatchDto> allMatches = new ArrayList<>();
-    allMatches.addAll(roundMatchesDtos);
-    allMatches.addAll(additionalMatchesDtos);
     allMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
 
     final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allMatches);
