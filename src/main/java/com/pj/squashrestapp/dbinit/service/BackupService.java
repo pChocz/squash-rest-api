@@ -143,6 +143,9 @@ public class BackupService {
     jsonPlayerCredentials.setEmail(player.getEmail());
     jsonPlayerCredentials.setUuid(player.getUuid());
     jsonPlayerCredentials.setPasswordSessionUuid(player.getPasswordSessionUuid());
+    jsonPlayerCredentials.setEnabled(player.isEnabled());
+    jsonPlayerCredentials.setLocale(player.getLocale());
+    jsonPlayerCredentials.setWantsEmails(player.getWantsEmails());
     jsonPlayerCredentials.setAuthorities(buildPlayerAuthoritiesJson(player));
     jsonPlayerCredentials.setLeagueRoles(buildPlayerLeagueRolesJson(player));
     return jsonPlayerCredentials;

@@ -12,6 +12,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -41,6 +42,16 @@ public class RoundController {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersUuids);
     log.info("created round {}", round.getUuid());
     return round.getUuid();
+  }
+
+  @PutMapping(value = "{roundUuid}")
+  @ResponseBody
+  @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
+  void recreateRound(
+      @PathVariable final UUID roundUuid,
+      @RequestParam final List<UUID[]> playersUuids) {
+    final Round round = roundService.recreateRound(roundUuid, playersUuids);
+    log.info("re-created round {}", round.getUuid());
   }
 
   @PutMapping(value = "{roundUuid}/{finishedState}")

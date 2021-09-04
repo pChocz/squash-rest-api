@@ -8,11 +8,14 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,6 +33,7 @@ public class RoundService {
   private final SeasonRepository seasonRepository;
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
+  private final RoundGroupRepository roundGroupRepository;
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findByUuid(roundUuid).orElseThrow();
@@ -43,8 +47,25 @@ public class RoundService {
       final UUID seasonUuid,
       final List<UUID[]> playersUuids) {
 
-    final UUID[] allPlayersUuids =
-        playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
+    final List<List<Player>> playersPerGroup = getPlayersPerGroups(playersUuids);
+
+    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+    final League league = season.getLeague();
+    final int setsPerMatch = league.getMatchFormatType().getMaxNumberOfSets();
+
+    final Round round =
+        createRoundForSeasonWithGivenPlayers(
+            league, roundNumber, roundDate, playersPerGroup, setsPerMatch);
+    season.addRound(round);
+
+    // saving to DB
+    roundRepository.save(round);
+
+    return round;
+  }
+
+  private List<List<Player>> getPlayersPerGroups(final List<UUID[]> playersUuids) {
+    final UUID[] allPlayersUuids = playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
 
     final List<Player> allPlayers = playerRepository.findByUuids(allPlayersUuids);
 
@@ -58,10 +79,6 @@ public class RoundService {
                         .orElse(null))
             .collect(Collectors.toList());
 
-    final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
-    final League league = season.getLeague();
-    final int setsPerMatch = league.getMatchFormatType().getMaxNumberOfSets();
-
     final List<List<Player>> playersPerGroup =
         playersUuids.stream()
             .filter(uuids -> uuids.length > 0)
@@ -72,16 +89,7 @@ public class RoundService {
                         .filter(player -> uuidsForCurrentGroup.contains(player.getUuid()))
                         .collect(Collectors.toList()))
             .collect(Collectors.toList());
-
-    final Round round =
-        createRoundForSeasonWithGivenPlayers(
-            league, roundNumber, roundDate, playersPerGroup, setsPerMatch);
-    season.addRound(round);
-
-    // saving to DB
-    roundRepository.save(round);
-
-    return round;
+    return playersPerGroup;
   }
 
   private Round createRoundForSeasonWithGivenPlayers(
@@ -161,4 +169,36 @@ public class RoundService {
   public UUID extractLeagueUuid(final UUID roundUuid) {
     return roundRepository.retrieveLeagueUuidOfRound(roundUuid);
   }
+
+  @Transactional
+  public Round recreateRound(final UUID roundUuid, final List<UUID[]> playersUuids) {
+    final Round round = roundRepository.findByUuidWithSeasonLeague(roundUuid);
+    final League league = round.getSeason().getLeague();
+    final int setsPerMatch = league.getMatchFormatType().getMaxNumberOfSets();
+
+    final List<List<Player>> playersPerGroups = getPlayersPerGroups(playersUuids);
+
+    // deleting old round groups
+    final Iterator<RoundGroup> iterator = round.getRoundGroups().iterator();
+    while (iterator.hasNext()) {
+      final RoundGroup roundGroup = iterator.next();
+      iterator.remove();
+      roundGroupRepository.delete(roundGroup);
+    }
+
+    roundGroupRepository.flush();
+
+    // creating new round groups
+    for (int i = 1; i <= playersPerGroups.size(); i++) {
+      final RoundGroup roundGroup = createRoundGroup(league, playersPerGroups, i, setsPerMatch);
+      round.addRoundGroup(roundGroup);
+      roundGroupRepository.save(roundGroup);
+    }
+
+    // saving to DB
+//    roundRepository.save(round);
+
+    return round;
+  }
+
 }
