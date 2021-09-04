@@ -19,6 +19,9 @@ public class JsonPlayerCredentials {
   private String email;
   private UUID uuid;
   private UUID passwordSessionUuid;
+  private boolean enabled;
+  private Boolean wantsEmails;
+  private String locale;
   private List<JsonLeagueRoles> leagueRoles;
   private List<JsonAuthorities> authorities;
 }

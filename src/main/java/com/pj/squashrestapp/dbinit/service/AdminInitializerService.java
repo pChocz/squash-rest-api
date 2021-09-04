@@ -136,6 +136,9 @@ public class AdminInitializerService {
       player.setPassword(credentials.getPasswordHashed());
       player.setUuid(credentials.getUuid());
       player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
+      player.setEnabled(credentials.isEnabled());
+      player.setLocale(credentials.getLocale());
+      player.setWantsEmails(credentials.getWantsEmails());
 
       playerRepository.save(player);
       persistLeagueRoles(credentials, player);
