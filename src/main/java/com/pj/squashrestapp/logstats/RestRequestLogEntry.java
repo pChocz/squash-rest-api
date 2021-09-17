@@ -5,7 +5,7 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Getter
 @AllArgsConstructor

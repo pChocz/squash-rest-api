@@ -45,6 +45,10 @@ public class Player {
   @Column(name = "username", unique = true)
   private String username;
 
+  @Setter
+  @Column(name = "emoji")
+  private String emoji;
+
   @JsonIgnore
   @Setter
   @Column(name = "password")

@@ -11,6 +11,8 @@ import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.dto.scoreboard.SeasonStar;
+import com.pj.squashrestapp.dto.scoreboard.Type;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -25,6 +27,7 @@ import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.GsonUtil;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -70,6 +73,9 @@ public class SeasonService {
       final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
     for (final Round round : season.getFinishedRoundsOrdered()) {
+      // remove uber-star immediately (as it's valid for 1 round only)
+      seasonScoreboardDto.getSeasonStars().values().removeIf(star -> star.getType() == Type.UBER);
+
       final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
       for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
         roundScoreboard.addRoundGroupNew(roundGroup);
@@ -82,7 +88,6 @@ public class SeasonService {
 
       for (final RoundGroupScoreboard scoreboard : roundScoreboard.getRoundGroupScoreboards()) {
         for (final RoundGroupScoreboardRow scoreboardRow : scoreboard.getScoreboardRows()) {
-
           final PlayerDto player = scoreboardRow.getPlayer();
           final SeasonScoreboardRowDto seasonScoreboardRowDto =
               seasonScoreboardDto.getSeasonScoreboardRows().stream()
@@ -98,6 +103,35 @@ public class SeasonService {
                 round.getNumber(), scoreboardRow.getXpEarned());
           }
 
+          // removing stars for each player that has played in that group
+          seasonScoreboardDto.getSeasonStars().remove(player.getUuid());
+
+          final int roundNumber = round.getNumber();
+          final int groupNumber = scoreboard.getRoundGroupNumber();
+          final int placeInGroup = scoreboardRow.getPlaceInGroup();
+          final boolean isFirstPlace = placeInGroup == 1;
+          final boolean isLastPlace =
+              scoreboard.getScoreboardRows().indexOf(scoreboardRow)
+                  == scoreboard.getScoreboardRows().size() - 1;
+
+          // add stars for first and last places
+          if (isFirstPlace && groupNumber == 1) {
+            final SeasonStar seasonStar =
+                new SeasonStar(
+                    roundNumber, String.valueOf((char) (groupNumber + 'A' - 1)), Type.UBER);
+            seasonScoreboardDto.getSeasonStars().put(player.getUuid(), seasonStar);
+          } else if (isFirstPlace) {
+            final SeasonStar seasonStar =
+                new SeasonStar(
+                    roundNumber, String.valueOf((char) (groupNumber + 'A' - 2)), Type.PROMOTION);
+            seasonScoreboardDto.getSeasonStars().put(player.getUuid(), seasonStar);
+          } else if (isLastPlace) {
+            final SeasonStar seasonStar =
+                new SeasonStar(
+                    roundNumber, String.valueOf((char) (groupNumber + 'A')), Type.RELEGATION);
+            seasonScoreboardDto.getSeasonStars().put(player.getUuid(), seasonStar);
+          }
+
           seasonScoreboardRowDto.addXpForRound(round.getNumber(), scoreboardRow.getXpEarned());
           final boolean containsPlayer =
               seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
@@ -106,19 +140,23 @@ public class SeasonService {
           }
         }
       }
+      // remove all stars if it's the last round of the season
+      final boolean isSeasonFinished = round.getNumber() == seasonScoreboardDto.getAllRounds();
+      if (isSeasonFinished) {
+        seasonScoreboardDto.getSeasonStars().clear();
+      }
     }
 
     for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
         seasonScoreboardDto.getSeasonScoreboardRows()) {
-      seasonScoreboardRowDto.calculateFinishedRow(
-          seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
+      seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getCountedRounds());
     }
 
     seasonScoreboardDto.sortByCountedPoints();
     return seasonScoreboardDto;
   }
 
-  public List<PlayerDto> extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
+  public SeasonScoreboardDto extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
     // first - get all the players that have already played in the season (need to extract entire
     // season scoreboard)
     final SeasonScoreboardDto currentSeasonScoreboardDto = overalScoreboard(seasonUuid);
@@ -150,10 +188,15 @@ public class SeasonService {
     for (final PlayerDto player : leaguePlayersDtos) {
       if (!seasonPlayersSorted.contains(player)) {
         seasonPlayersSorted.add(player);
+        seasonScoreboardDto
+            .getSeasonScoreboardRows()
+            .add(
+                new SeasonScoreboardRowDto(
+                    player, new BonusPointsAggregatedForSeason(seasonUuid, new ArrayList<>())));
       }
     }
 
-    return seasonPlayersSorted;
+    return seasonScoreboardDto;
   }
 
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {

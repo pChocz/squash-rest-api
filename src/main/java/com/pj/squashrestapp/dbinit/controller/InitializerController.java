@@ -5,12 +5,19 @@ import com.pj.squashrestapp.aspects.SecretMethod;
 import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.util.EmojiUtil;
 import com.pj.squashrestapp.util.GsonUtil;
+import com.vdurmont.emoji.Emoji;
+import com.vdurmont.emoji.EmojiManager;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
@@ -23,6 +30,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,6 +43,7 @@ public class InitializerController {
 
   private final FakeLeagueService fakeLeagueService;
   private final AdminInitializerService adminInitializerService;
+  private final PlayerRepository playerRepository;
 
   @PostMapping(value = "/leagues")
   @PreAuthorize("isAdmin()")

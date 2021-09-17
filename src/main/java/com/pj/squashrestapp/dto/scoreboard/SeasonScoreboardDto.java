@@ -1,13 +1,16 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
@@ -26,6 +29,7 @@ public class SeasonScoreboardDto implements LoggableQuery {
   private final String xpPointsType;
   private final UUID previousSeasonUuid;
   private final UUID nextSeasonUuid;
+  private final Map<UUID, SeasonStar> seasonStars;
 
   public SeasonScoreboardDto(final Season season) {
     this.season = new SeasonDto(season);
@@ -39,6 +43,7 @@ public class SeasonScoreboardDto implements LoggableQuery {
         season.getNumberOfRounds() - season.getRoundsToBeDeducted();
     this.countedRounds = getNumberOfRoundsThatCount();
     this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
+    this.seasonStars = new HashMap<>();
   }
 
   public SeasonScoreboardDto(
@@ -54,6 +59,7 @@ public class SeasonScoreboardDto implements LoggableQuery {
         season.getNumberOfRounds() - season.getRoundsToBeDeducted();
     this.countedRounds = getNumberOfRoundsThatCount();
     this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
+    this.seasonStars = new HashMap<>();
   }
 
   private int getNumberOfRoundsThatCount() {

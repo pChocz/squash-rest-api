@@ -14,10 +14,12 @@ public class PlayerDto {
 
   @EqualsAndHashCode.Include private final UUID uuid;
   private final String username;
+  private final String emoji;
 
   public PlayerDto(final Player player) {
     this.uuid = player.getUuid();
     this.username = player.getUsername();
+    this.emoji = player.getEmoji();
   }
 
   @Override
