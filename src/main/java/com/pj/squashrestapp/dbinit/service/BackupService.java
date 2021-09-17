@@ -139,6 +139,7 @@ public class BackupService {
   private JsonPlayerCredentials buildPlayerCredentialsJson(final Player player) {
     final JsonPlayerCredentials jsonPlayerCredentials = new JsonPlayerCredentials();
     jsonPlayerCredentials.setUsername(player.getUsername());
+    jsonPlayerCredentials.setEmoji(player.getEmoji());
     jsonPlayerCredentials.setPasswordHashed(player.getPassword());
     jsonPlayerCredentials.setEmail(player.getEmail());
     jsonPlayerCredentials.setUuid(player.getUuid());

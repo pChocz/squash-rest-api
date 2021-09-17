@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class JsonPlayerCredentials {
 
   private String username;
+  private String emoji;
   private String password;
   private String passwordHashed;
   private String email;

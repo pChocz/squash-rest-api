@@ -132,6 +132,7 @@ public class AdminInitializerService {
       final Player player = new Player();
       player.setEnabled(true);
       player.setUsername(credentials.getUsername());
+      player.setEmoji(credentials.getEmoji());
       player.setEmail(credentials.getEmail());
       player.setPassword(credentials.getPasswordHashed());
       player.setUuid(credentials.getUuid());

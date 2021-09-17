@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -39,6 +40,20 @@ public class PlayerController {
     final boolean playerExists = playerService.checkUsernameOrEmailTaken(usernameOrEmail);
     return playerExists;
   }
+
+  @GetMapping(value = "/emoji")
+  @ResponseBody
+  List<String> extractAllEmojis() {
+    final List<String> allEmojis = playerService.getAllEmojis();
+    return allEmojis;
+  }
+
+  @PostMapping(value = "/emoji")
+  @ResponseStatus(HttpStatus.OK)
+  void changeEmoji(@RequestParam final String newEmoji) {
+    playerService.changeEmojiForCurrentPlayer(newEmoji);
+  }
+
 
   @GetMapping(value = "/all")
   @ResponseBody

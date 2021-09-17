@@ -172,8 +172,7 @@ public class FakeLeagueService {
 
         for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
             seasonScoreboardDto.getSeasonScoreboardRows()) {
-          seasonScoreboardRowDto.calculateFinishedRow(
-              seasonScoreboardDto.getFinishedRounds(), seasonScoreboardDto.getCountedRounds());
+          seasonScoreboardRowDto.calculateFinishedRow(seasonScoreboardDto.getCountedRounds());
         }
         seasonScoreboardDto.sortByCountedPoints();
 

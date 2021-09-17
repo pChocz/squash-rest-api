@@ -57,16 +57,9 @@ public class SeasonController {
       @RequestParam final String xpPointsType,
       @RequestParam(required = false) final String description) {
     final Season season =
-        seasonService.createNewSeason(seasonNumber, startDate, leagueUuid, xpPointsType, description);
+        seasonService.createNewSeason(
+            seasonNumber, startDate, leagueUuid, xpPointsType, description);
     return new SeasonDto(season);
-  }
-
-  @GetMapping(value = "/players-sorted/{seasonUuid}")
-  @ResponseBody
-  List<PlayerDto> leaguePlayersSeasonSorted(@PathVariable final UUID seasonUuid) {
-    final List<PlayerDto> players =
-        seasonService.extractLeaguePlayersSortedByPointsInSeason(seasonUuid);
-    return players;
   }
 
   @GetMapping(value = "/players/{seasonUuid}")

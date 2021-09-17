@@ -20,6 +20,7 @@ public class PlayerDetailedDto {
 
   @EqualsAndHashCode.Include final UUID uuid;
   final String username;
+  final String emoji;
   final String email;
   final List<AuthorityType> authorities;
   final List<LeagueRoleDto> leagueRoles;
@@ -27,6 +28,7 @@ public class PlayerDetailedDto {
   public PlayerDetailedDto(final Player player) {
     this.uuid = player.getUuid();
     this.username = player.getUsername();
+    this.emoji = player.getEmoji();
     this.email = player.getEmail();
 
     this.authorities = new ArrayList<>();
