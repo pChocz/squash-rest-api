@@ -6,8 +6,8 @@ This project is a backend part of an application to manage a squash league.
 
 It is built with:
 
-* Java 15
-* Spring Boot 2.4.2
+* Java 17
+* Spring Boot 2
 * Hibernate 5
 * PostgreSQL 12
 
