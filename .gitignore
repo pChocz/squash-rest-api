@@ -28,9 +28,3 @@ build/
 gradle-app.setting
 .gradletasknamecache
 **/build/
-
-
-#################
-## maven things - to remove later after migrating to gradle
-target/
-!.mvn/wrapper/maven-wrapper.jar
