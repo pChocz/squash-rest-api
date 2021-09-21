@@ -1,0 +1,110 @@
+plugins {
+    id 'org.springframework.boot' version '2.5.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.pj'
+version = '1.0.0-SNAPSHOT'
+description = 'squash-rest-app'
+sourceCompatibility = JavaVersion.VERSION_17
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+//configurations {
+//    compileOnly {
+//        extendsFrom annotationProcessor
+//    }
+//}
+
+repositories {
+    mavenCentral()
+}
+
+//repositories {
+//    mavenLocal()
+//    maven {
+//        url = uri('https://repo.spring.io/milestone')
+//    }
+//    maven {
+//        url = uri('http://oss.jfrog.org/artifactory/oss-snapshot-local/')
+//    }
+//    maven {
+//        url = uri('https://repo.maven.apache.org/maven2/')
+//    }
+//}
+
+dependencies {
+
+    /* Spring Boot */
+    implementation 'org.springframework.boot:spring-boot-starter-freemarker'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor'
+//    implementation 'com.auth0:auth0-spring-security-api:1.4.1'
+    runtimeOnly 'org.springframework.boot:spring-boot-devtools'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+
+    /* Lombok */
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    /* JWT */
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.1'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.1'
+    runtimeOnly 'io.jsonwebtoken:jjwt-gson:0.11.1'
+
+    /* Other dependencies */
+
+    // Argon2
+    implementation 'org.bouncycastle:bcprov-jdk15on:1.68'
+
+    // Commons util
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'commons-io:commons-io:2.11.0'
+    implementation 'commons-validator:commons-validator:1.7'
+
+    // Jackson / GSON / Guava / XML
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.11.0'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.guava:guava:30.0-jre'
+    implementation 'org.simpleframework:simple-xml:2.7.1'
+
+    // Swagger
+    implementation 'io.springfox:springfox-swagger2:3.0.0'
+    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+    implementation 'io.springfox:springfox-data-rest:3.0.0'
+
+
+    implementation 'org.postgresql:postgresql:42.2.23'
+    implementation 'com.thedeanda:lorem:2.1'
+    implementation 'com.sun.mail:javax.mail:1.6.0'
+    implementation 'org.freemarker:freemarker:2.3.31'
+    implementation 'com.yannbriancon:spring-hibernate-query-utils:2.0.0'
+    implementation 'com.vdurmont:emoji-java:5.1.1'
+//    runtimeOnly 'mysql:mysql-connector-java:8.0.26'
+    testImplementation 'org.awaitility:awaitility:4.0.3'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+//publishing {
+//    publications {
+//        maven(MavenPublication) {
+//            from(components.java)
+//        }
+//    }
+//}
