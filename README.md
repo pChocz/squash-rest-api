@@ -10,12 +10,13 @@ It is built with:
 * Spring Boot 2
 * Hibernate 5
 * PostgreSQL 12
+* Gradle 7
 
 
 ## Working demo
 
 Application is up and running, and it is accessible at 
-[www.squash-app.win](https://squash-app.win "https://squash-app.win").
+[https://squash-app.win](https://squash-app.win "https://squash-app.win").
 
 
 ## Launching locally
@@ -23,7 +24,7 @@ Application is up and running, and it is accessible at
 In order to launch it locally:
 
 * pull the repository
-* run `mvn clean install`
+* run `gradle build`
 * create local PostgreSQL database
 * apply below CLI arguments (replacing all `__REPLACE__` values according to your configuration) as most of them are needed to properly launch and use the app
 ```
