@@ -1,7 +1,7 @@
 pipeline {
   agent {
-    node {
-      label 'master'
+    docker {
+      image 'openjdk:17-alpine'
     }
 
   }
