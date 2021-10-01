@@ -11,8 +11,7 @@ on:
         required: true
         default: 'warning'
       tags:
-        description: 'Tags'
-        required: false
+        description: 'Dispatch'
 
 jobs:
   build:
