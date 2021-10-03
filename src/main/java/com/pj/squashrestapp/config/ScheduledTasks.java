@@ -30,11 +30,17 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ScheduledTasks {
 
+  private static final String CRON_EVERY_10_SECONDS = "*/10 * * * * *";
   private static final String CRON_EVERY_FULL_MINUTE = "0 * * * * *";
   private static final String CRON_EVERY_FULL_HOUR = "0 0 * * * *";
   private static final String CRON_EVERYDAY_AT_MIDNIGHT = "0 0 0 * * *";
 
   private final TokenRemovalService tokenRemovalService;
+
+//  @Scheduled(cron = CRON_EVERY_10_SECONDS, zone = "UTC")
+//  public void cronScheduledEvery10Seconds() {
+//    log.info("every 10 seconds");
+//  }
 
   /**
    * Permanently removes all expired temporary tokens from database. It is performed at midnight
