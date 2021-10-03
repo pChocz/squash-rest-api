@@ -21,6 +21,7 @@
 # Logs
 logs/
 out.log
+out/
 
 # Gradle
 .gradle
