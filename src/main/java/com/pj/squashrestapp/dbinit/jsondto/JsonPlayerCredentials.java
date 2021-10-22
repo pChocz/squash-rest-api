@@ -2,7 +2,10 @@ package com.pj.squashrestapp.dbinit.jsondto;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
@@ -25,4 +28,12 @@ public class JsonPlayerCredentials {
   private String locale;
   private List<JsonLeagueRoles> leagueRoles;
   private List<JsonAuthorities> authorities;
+  private boolean nonLocked;
+  private Long successfulLoginAttempts;
+
+  @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+  private LocalDateTime registrationDateTime;
+
+  @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+  private LocalDateTime lastLoggedInDateTime;
 }

@@ -135,6 +135,10 @@ public class AdminInitializerService {
       player.setEmoji(credentials.getEmoji());
       player.setEmail(credentials.getEmail());
       player.setPassword(credentials.getPasswordHashed());
+      player.setNonLocked(credentials.isNonLocked());
+      player.setSuccessfulLoginAttempts(credentials.getSuccessfulLoginAttempts());
+      player.setRegistrationDateTime(credentials.getRegistrationDateTime());
+      player.setLastLoggedInDateTime(credentials.getLastLoggedInDateTime());
       player.setUuid(credentials.getUuid());
       player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
       player.setEnabled(credentials.isEnabled());
