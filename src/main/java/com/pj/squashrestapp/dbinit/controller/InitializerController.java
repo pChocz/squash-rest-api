@@ -112,8 +112,7 @@ public class InitializerController {
   @PreAuthorize("isAdmin()")
   List<JsonXpPointsForRound> createXpPoints(
       @RequestParam final int firstPlacePoints,
-      @RequestParam final int percentToSubstract,
-      @RequestParam final int digitsToRound) {
+      @RequestParam final int percentToSubstract) {
 
     final List<JsonXpPointsForRound> list = new ArrayList<>();
 
@@ -163,7 +162,7 @@ public class InitializerController {
           points.add(Math.round(firstPlacePoints * Math.pow(multiplier, place-i)));
           place++;
         }
-        final String pointsPerGroup = longListToString(points).replaceAll(" //| ", ",");
+        final String pointsPerGroup = longListToString(points).replaceAll(" \\| ", ",");
         pointsPerGroupCsv.add(pointsPerGroup);
       }
 
