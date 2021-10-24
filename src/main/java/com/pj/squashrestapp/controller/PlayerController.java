@@ -3,11 +3,11 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
-import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -83,13 +83,17 @@ public class PlayerController {
     return myLeagues;
   }
 
-  @PostMapping(value = "/{playerUuid}/{locked}")
+  @PutMapping(value = "/{playerUuid}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void setLockedStatus(
+  void setBooleanParameter(
       @PathVariable final UUID playerUuid,
-      @PathVariable final boolean locked) {
-    playerService.setLockedStatus(playerUuid, locked);
+      @RequestParam final Optional<Boolean> nonLocked,
+      @RequestParam final Optional<Boolean> wantsEmails,
+      @RequestParam final Optional<Boolean> enabled) {
+    nonLocked.ifPresent(val -> playerService.setNonLockedStatus(playerUuid, val));
+    wantsEmails.ifPresent(val -> playerService.setWantsEmailsStatus(playerUuid, val));
+    enabled.ifPresent(val -> playerService.setEnabledStatus(playerUuid, val));
   }
 
   @PostMapping(value = "/newEnabled")
