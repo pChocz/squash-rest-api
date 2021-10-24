@@ -54,7 +54,6 @@ public class PlayerController {
     playerService.changeEmojiForCurrentPlayer(newEmoji);
   }
 
-
   @GetMapping(value = "/all")
   @ResponseBody
   @PreAuthorize("isAdmin()")
@@ -82,6 +81,15 @@ public class PlayerController {
   Set<LeagueDtoSimple> myLeagues() {
     final Set<LeagueDtoSimple> myLeagues = playerService.getMyLeagues();
     return myLeagues;
+  }
+
+  @PostMapping(value = "/{playerUuid}/{locked}")
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("isAdmin()")
+  void setLockedStatus(
+      @PathVariable final UUID playerUuid,
+      @PathVariable final boolean locked) {
+    playerService.setLockedStatus(playerUuid, locked);
   }
 
   @PostMapping(value = "/newEnabled")

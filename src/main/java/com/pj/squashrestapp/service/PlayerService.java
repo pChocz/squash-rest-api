@@ -130,6 +130,13 @@ public class PlayerService {
     final Player player = new Player(username, email);
     player.setPassword(hashedPassword);
     player.addAuthority(userAuthority);
+    player.setEmoji(EmojiUtil.getRandom());
+    player.setLocale("en");
+    player.setRegistrationDateTime(LocalDateTime.now());
+    player.setLastLoggedInDateTime(LocalDateTime.now());
+    player.setNonLocked(true);
+    player.setSuccessfulLoginAttempts(0L);
+    player.setWantsEmails(false);
     playerRepository.save(player);
     authorityRepository.save(userAuthority);
 
@@ -360,4 +367,11 @@ public class PlayerService {
       log.info("Emoji {} changed for player {}", newEmoji, player.getUsername());
     }
   }
+
+  public void setLockedStatus(final UUID playerUuid, final boolean locked) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    player.setNonLocked(!locked);
+    playerRepository.save(player);
+  }
+
 }
