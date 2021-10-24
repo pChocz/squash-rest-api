@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -57,6 +58,22 @@ public class Player {
   @Setter
   @Column(name = "enabled")
   private boolean enabled;
+
+  @Setter
+  @Column(name = "non_locked")
+  private boolean nonLocked;
+
+  @Setter
+  @Column(name = "registration_date_time")
+  private LocalDateTime registrationDateTime;
+
+  @Setter
+  @Column(name = "last_logged_in_date_time")
+  private LocalDateTime lastLoggedInDateTime;
+
+  @Setter
+  @Column(name = "successful_login_attempts")
+  private Long successfulLoginAttempts;
 
   @Setter
   @Column(name = "wants_emails")

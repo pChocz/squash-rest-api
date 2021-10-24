@@ -26,10 +26,10 @@ public class UserDetailsImpl implements UserDetails {
   private final boolean enabled;
   private final UUID uuid;
   private final UUID passwordSessionUuid;
+  private final boolean accountNonLocked;
 
   // not used
   private final boolean accountNonExpired = true;
-  private final boolean accountNonLocked = true;
   private final boolean credentialsNonExpired = true;
 
   public UserDetailsImpl(final Player player) {
@@ -40,6 +40,7 @@ public class UserDetailsImpl implements UserDetails {
     this.enabled = player.isEnabled();
     this.uuid = player.getUuid();
     this.passwordSessionUuid = player.getPasswordSessionUuid();
+    this.accountNonLocked = player.isNonLocked();
   }
 
   private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {

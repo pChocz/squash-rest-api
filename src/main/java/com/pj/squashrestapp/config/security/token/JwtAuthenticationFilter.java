@@ -6,15 +6,14 @@ import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_S
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
-import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -23,7 +22,6 @@ import javax.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -94,7 +92,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
       final Authentication auth)
       throws IOException, ServletException {
     final UserDetailsImpl principal = getPrincipal(auth);
+
     final Player player = playerRepository.findByUuid(principal.getUuid());
+    player.setLastLoggedInDateTime(LocalDateTime.now());
+    final Long successfulLoginAttemptsSoFar = player.getSuccessfulLoginAttempts();
+    if (successfulLoginAttemptsSoFar == null) {
+      player.setSuccessfulLoginAttempts(1L);
+    } else {
+      player.setSuccessfulLoginAttempts(successfulLoginAttemptsSoFar + 1);
+    }
+    playerRepository.save(player);
+
     final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player);
 
     res.addHeader(HEADER_STRING, TOKEN_PREFIX + tokensPair.getJwtAccessToken());

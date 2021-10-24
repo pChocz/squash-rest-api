@@ -149,6 +149,10 @@ public class BackupService {
     jsonPlayerCredentials.setWantsEmails(player.getWantsEmails());
     jsonPlayerCredentials.setAuthorities(buildPlayerAuthoritiesJson(player));
     jsonPlayerCredentials.setLeagueRoles(buildPlayerLeagueRolesJson(player));
+    jsonPlayerCredentials.setNonLocked(player.isNonLocked());
+    jsonPlayerCredentials.setSuccessfulLoginAttempts(player.getSuccessfulLoginAttempts());
+    jsonPlayerCredentials.setRegistrationDateTime(player.getRegistrationDateTime());
+    jsonPlayerCredentials.setLastLoggedInDateTime(player.getLastLoggedInDateTime());
     return jsonPlayerCredentials;
   }
 

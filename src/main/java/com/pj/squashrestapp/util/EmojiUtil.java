@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.util;
 
+import com.pj.squashrestapp.dbinit.fake.FakeUtil;
 import com.vdurmont.emoji.Emoji;
 import com.vdurmont.emoji.EmojiManager;
 import java.util.List;
@@ -59,6 +60,11 @@ public class EmojiUtil {
           .filter(EmojiUtil::isAllowed)
           .map(Emoji::getUnicode)
           .collect(Collectors.toList());
+
+  public static String getRandom() {
+    final int random = FakeUtil.randomBetweenTwoIntegers(0, EMOJIS.size() - 1);
+    return EMOJIS.get(random);
+  }
 
   private static boolean isAllowed(final Emoji emoji) {
     final Set<String> set = new TreeSet<>();

@@ -29,10 +29,7 @@ import com.pj.squashrestapp.util.EmojiUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
-import com.vdurmont.emoji.Emoji;
-import com.vdurmont.emoji.EmojiManager;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -130,6 +127,13 @@ public class PlayerService {
     final Player player = new Player(username, email);
     player.setPassword(hashedPassword);
     player.addAuthority(userAuthority);
+    player.setEmoji(EmojiUtil.getRandom());
+    player.setLocale("en");
+    player.setRegistrationDateTime(LocalDateTime.now());
+    player.setLastLoggedInDateTime(LocalDateTime.now());
+    player.setNonLocked(true);
+    player.setSuccessfulLoginAttempts(0L);
+    player.setWantsEmails(false);
     playerRepository.save(player);
     authorityRepository.save(userAuthority);
 
@@ -359,5 +363,23 @@ public class PlayerService {
       playerRepository.save(player);
       log.info("Emoji {} changed for player {}", newEmoji, player.getUsername());
     }
+  }
+
+  public void setNonLockedStatus(final UUID playerUuid, final boolean nonLocked) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    player.setNonLocked(nonLocked);
+    playerRepository.save(player);
+  }
+
+  public void setWantsEmailsStatus(final UUID playerUuid, final boolean wantsEmails) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    player.setWantsEmails(wantsEmails);
+    playerRepository.save(player);
+  }
+
+  public void setEnabledStatus(final UUID playerUuid, final boolean enabled) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    player.setEnabled(enabled);
+    playerRepository.save(player);
   }
 }
