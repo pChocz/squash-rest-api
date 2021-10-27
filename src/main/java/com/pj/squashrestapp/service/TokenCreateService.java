@@ -7,6 +7,7 @@ import com.pj.squashrestapp.config.security.token.SecretKeyHolder;
 import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
+import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import io.jsonwebtoken.Jwts;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class TokenCreateService {
 
   private final RefreshTokenRepository refreshTokenRepository;
+  private final PlayerRepository playerRepository;
   private final SecretKeyHolder secretKeyHolder;
 
   public TokenPair attemptToCreateNewTokensPairUsingRefreshToken(final UUID oldRefreshTokenUuid) {
@@ -41,6 +43,8 @@ public class TokenCreateService {
 
     // if token is fine, we can delete it from db and create new one
     final Player player = oldRefreshToken.getPlayer();
+    player.incrementSuccessfulLoginAttempts();
+    playerRepository.save(player);
     refreshTokenRepository.delete(oldRefreshToken);
     return createTokensPairForPlayer(player);
   }

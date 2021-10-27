@@ -95,12 +95,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     final Player player = playerRepository.findByUuid(principal.getUuid());
     player.setLastLoggedInDateTime(LocalDateTime.now());
-    final Long successfulLoginAttemptsSoFar = player.getSuccessfulLoginAttempts();
-    if (successfulLoginAttemptsSoFar == null) {
-      player.setSuccessfulLoginAttempts(1L);
-    } else {
-      player.setSuccessfulLoginAttempts(successfulLoginAttemptsSoFar + 1);
-    }
+    player.incrementSuccessfulLoginAttempts();
     playerRepository.save(player);
 
     final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player);

@@ -128,4 +128,13 @@ public class Player {
   public String toString() {
     return username;
   }
+
+  public void incrementSuccessfulLoginAttempts() {
+    final Long successfulLoginAttemptsSoFar = this.getSuccessfulLoginAttempts();
+    if (successfulLoginAttemptsSoFar == null) {
+      this.setSuccessfulLoginAttempts(1L);
+    } else {
+      this.setSuccessfulLoginAttempts(successfulLoginAttemptsSoFar + 1);
+    }
+  }
 }
