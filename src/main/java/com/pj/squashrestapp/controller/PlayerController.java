@@ -54,6 +54,13 @@ public class PlayerController {
     playerService.changeEmojiForCurrentPlayer(newEmoji);
   }
 
+  @PostMapping(value = "/emoji/{playerUuid}")
+  @ResponseStatus(HttpStatus.OK)
+  @PreAuthorize("isAdmin()")
+  void changeEmoji(@PathVariable final UUID playerUuid, @RequestParam final String newEmoji) {
+    playerService.changeEmojiForPlayer(playerUuid, newEmoji);
+  }
+
   @GetMapping(value = "/all")
   @ResponseBody
   @PreAuthorize("isAdmin()")
@@ -76,6 +83,14 @@ public class PlayerController {
     return aboutMeInfo;
   }
 
+  @GetMapping(value = "/{playerUuid}")
+  @ResponseBody
+  @PreAuthorize("isAdmin()")
+  PlayerDetailedDto getPlayerDetailedInfo(@PathVariable final UUID playerUuid) {
+    final PlayerDetailedDto playerDetailedDto = playerService.getPlayerDetailedInfo(playerUuid);
+    return playerDetailedDto;
+  }
+
   @GetMapping(value = "/my-leagues")
   @ResponseBody
   Set<LeagueDtoSimple> myLeagues() {
@@ -86,14 +101,20 @@ public class PlayerController {
   @PutMapping(value = "/{playerUuid}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void setBooleanParameter(
+  void modifyParameters(
       @PathVariable final UUID playerUuid,
       @RequestParam final Optional<Boolean> nonLocked,
       @RequestParam final Optional<Boolean> wantsEmails,
-      @RequestParam final Optional<Boolean> enabled) {
-    nonLocked.ifPresent(val -> playerService.setNonLockedStatus(playerUuid, val));
-    wantsEmails.ifPresent(val -> playerService.setWantsEmailsStatus(playerUuid, val));
-    enabled.ifPresent(val -> playerService.setEnabledStatus(playerUuid, val));
+      @RequestParam final Optional<Boolean> enabled,
+      @RequestParam final Optional<String> username,
+      @RequestParam final Optional<String> email) {
+    playerService.changeEachIfPresent(
+        playerUuid,
+        nonLocked,
+        wantsEmails,
+        enabled,
+        username,
+        email);
   }
 
   @PostMapping(value = "/newEnabled")

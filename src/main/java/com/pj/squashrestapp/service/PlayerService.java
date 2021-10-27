@@ -32,6 +32,7 @@ import com.pj.squashrestapp.util.UsernameValidator;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -358,6 +359,15 @@ public class PlayerService {
   public void changeEmojiForCurrentPlayer(final String newEmoji) {
     final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     final Player player = playerRepository.findByUsername(auth.getName());
+    PlayerService.this.changeEmojiForPlayer(newEmoji, player);
+  }
+
+  public void changeEmojiForPlayer(final UUID playerUuid, final String newEmoji) {
+    final Player player = playerRepository.findByUuid(playerUuid);
+    changeEmojiForPlayer(newEmoji, player);
+  }
+
+  private void changeEmojiForPlayer(final String newEmoji, final Player player) {
     if (EmojiUtil.EMOJIS.contains(newEmoji)) {
       player.setEmoji(newEmoji);
       playerRepository.save(player);
@@ -365,21 +375,27 @@ public class PlayerService {
     }
   }
 
-  public void setNonLockedStatus(final UUID playerUuid, final boolean nonLocked) {
-    final Player player = playerRepository.findByUuid(playerUuid);
-    player.setNonLocked(nonLocked);
-    playerRepository.save(player);
+  public PlayerDetailedDto getPlayerDetailedInfo(final UUID playerUuid) {
+    final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).get();
+    final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
+    return playerDetailedDto;
   }
 
-  public void setWantsEmailsStatus(final UUID playerUuid, final boolean wantsEmails) {
+  public void changeEachIfPresent(
+      final UUID playerUuid,
+      final Optional<Boolean> nonLockedOptional,
+      final Optional<Boolean> wantsEmailsOptional,
+      final Optional<Boolean> enabledOptional,
+      final Optional<String> usernameOptional,
+      final Optional<String> emailOptional) {
     final Player player = playerRepository.findByUuid(playerUuid);
-    player.setWantsEmails(wantsEmails);
-    playerRepository.save(player);
-  }
 
-  public void setEnabledStatus(final UUID playerUuid, final boolean enabled) {
-    final Player player = playerRepository.findByUuid(playerUuid);
-    player.setEnabled(enabled);
+    nonLockedOptional.ifPresent(player::setNonLocked);
+    wantsEmailsOptional.ifPresent(player::setWantsEmails);
+    enabledOptional.ifPresent(player::setEnabled);
+    usernameOptional.ifPresent(player::setUsername);
+    emailOptional.ifPresent(player::setEmail);
+
     playerRepository.save(player);
   }
 }
