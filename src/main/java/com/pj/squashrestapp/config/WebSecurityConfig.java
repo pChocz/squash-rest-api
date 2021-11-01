@@ -86,6 +86,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.POST, "/contact-form/send")
         .permitAll()
+        .antMatchers(HttpMethod.POST, "/frontend-logs")
+        .permitAll()
         .anyRequest()
         .authenticated();
 
