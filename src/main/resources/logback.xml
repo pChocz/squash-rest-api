@@ -5,6 +5,8 @@
 
   <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
     <encoder>
+      <charset>UTF-8</charset>
+      <outputPatternAsHeader>true</outputPatternAsHeader>
       <pattern>${PATTERN}</pattern>
     </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -15,6 +17,8 @@
   <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG">
     <append>true</append>
     <encoder>
+      <charset>UTF-8</charset>
+      <outputPatternAsHeader>true</outputPatternAsHeader>
       <pattern>${PATTERN}</pattern>
     </encoder>
     <file>logs/out.log</file>
