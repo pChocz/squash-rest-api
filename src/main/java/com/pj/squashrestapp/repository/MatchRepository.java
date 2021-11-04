@@ -197,7 +197,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
           "firstPlayer",
           "secondPlayer",
           "setResults",
-          "roundGroup.round.season"
+          "roundGroup.round.season.league"
   })
   List<Match> findByIdIn(List<Long> matchIds);
 

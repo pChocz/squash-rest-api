@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
@@ -120,7 +121,7 @@ public class MatchService {
     final List<Match> roundMatches = matchRepository.findByIdIn(roundMatchesIds.getContent());
 
     final List<MatchDto> roundMatchesDtos =
-        roundMatches.stream().map(MatchSimpleDto::new).collect(Collectors.toList());
+        roundMatches.stream().map(MatchDetailedDto::new).collect(Collectors.toList());
 
     final MatchesSimplePaginated matchesDtoPage =
         new MatchesSimplePaginated(roundMatchesIds, roundMatchesDtos);
