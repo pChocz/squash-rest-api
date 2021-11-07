@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.logstats.FrontendLogEntry;
 import com.pj.squashrestapp.logstats.LogEntry;
 import com.pj.squashrestapp.logstats.LogFilenameDate;
 import com.pj.squashrestapp.logstats.PlayerLogStats;
@@ -34,6 +35,10 @@ import org.springframework.stereotype.Service;
  * 14:56:24.172 |  INFO | c.p.s.aspects.LogQueryAspect   | QUERY         |  Maniak  |  Round Scoreboard - R: 7 | S: 9 | Dziadoliga
  * (1)             (2)    (3)                                               (4)        (5)
  *
+ * - Example line of FRONTEND-LOG log entry:
+ * 19:27:30.071 |  INFO | c.p.s.c.LogFrontendController  | FRONTEND-LOG  |  Maniak  |  Paneł Główny
+ * (1)             (2)    (3)                                               (4)        (5)
+ *
  * - Example line of REST-REQUEST log entry:
  * 14:14:01.708 |  INFO | c.p.s.a.LogControllerAspect    | REST-REQUEST  4  Maniak  105ms  ScoreboardController.scoreboardForMostRecentRoundOfPlayer[73992a9c-fea3-4a24-a95b-91e1e840c26a]
  * (1)             (2)    (3)                                           (4) (5)     (6)    (7)
@@ -46,6 +51,9 @@ public class PlayersQueriesStatsService {
 
   private static final Pattern REST_REQUEST_PATTERN =
       Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+REST-REQUEST.+?(\\d+)(.+?)(\\d+)ms(.+)");
+
+  private static final Pattern FRONTEND_LOG_PATTERN =
+      Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+FRONTEND-LOG.+?[|](.+?)[|](.+)");
 
   private static final Pattern QUERY_PATTERN =
       Pattern.compile("(.+?)[|](.+?)[|](.+?)[|].+QUERY.+?[|](.+?)[|](.+)");
@@ -60,6 +68,7 @@ public class PlayersQueriesStatsService {
   private static final String LOGS_FOLDER = "logs";
   private static final String DAILY_STATS_LOG = "daily-stats.log";
   private static final String REST_REQUEST_PREFIX = "REST-REQUEST";
+  private static final String FRONTEND_LOG_PREFIX = "FRONTEND-LOG";
   private static final String QUERY_PREFIX = "QUERY";
 
   public Set<PlayerLogStats> prepareStatsFromFile(final String file) {
@@ -86,6 +95,11 @@ public class PlayersQueriesStatsService {
         }
       } else if (logLine.contains(QUERY_PREFIX)) {
         final QueryLogEntry entry = parseQueryEntry(logLine);
+        if (entry != null) {
+          logEntries.add(entry);
+        }
+      } else if (logLine.contains(FRONTEND_LOG_PREFIX)) {
+        final FrontendLogEntry entry = parseFrontendLogEntry(logLine);
         if (entry != null) {
           logEntries.add(entry);
         }
@@ -121,6 +135,17 @@ public class PlayersQueriesStatsService {
     final Matcher matcher = QUERY_PATTERN.matcher(logLine);
     if (matcher.matches()) {
       return new QueryLogEntry(
+          LocalTime.parse(matcher.group(1).trim(), TIME_FORMATTER),
+          matcher.group(4).trim(),
+          matcher.group(5).trim());
+    }
+    return null;
+  }
+
+  private FrontendLogEntry parseFrontendLogEntry(final String logLine) {
+    final Matcher matcher = FRONTEND_LOG_PATTERN.matcher(logLine);
+    if (matcher.matches()) {
+      return new FrontendLogEntry(
           LocalTime.parse(matcher.group(1).trim(), TIME_FORMATTER),
           matcher.group(4).trim(),
           matcher.group(5).trim());
