@@ -12,6 +12,7 @@ public class PlayerLogStats implements Comparable<PlayerLogStats> {
   private final String player;
   private final int numberOfQueries;
   private final int numberOfRequests;
+  private final int numberOfFrontendRefreshes;
   private final int numberOfDatabaseQueries;
   private final long totalTimeMillis;
   private final List<String> logEntriesMessages;
@@ -25,10 +26,12 @@ public class PlayerLogStats implements Comparable<PlayerLogStats> {
 
     final List<RestRequestLogEntry> restRequestLogEntries = getRestRequestLogEntries();
     final List<QueryLogEntry> queryLogEntries = getQueryLogEntries();
+    final List<FrontendLogEntry> frontendLogEntries = getFrontendLogEntries();
 
     this.player = logEntries.get(0).getPlayer();
     this.numberOfQueries = queryLogEntries.size();
     this.numberOfRequests = restRequestLogEntries.size();
+    this.numberOfFrontendRefreshes = frontendLogEntries.size();
 
     this.numberOfDatabaseQueries =
         restRequestLogEntries.stream().mapToInt(RestRequestLogEntry::getDatabaseQueries).sum();
@@ -48,6 +51,13 @@ public class PlayerLogStats implements Comparable<PlayerLogStats> {
     return logEntries.stream()
         .filter(QueryLogEntry.class::isInstance)
         .map(QueryLogEntry.class::cast)
+        .collect(Collectors.toList());
+  }
+
+  private List<FrontendLogEntry> getFrontendLogEntries() {
+    return logEntries.stream()
+        .filter(FrontendLogEntry.class::isInstance)
+        .map(FrontendLogEntry.class::cast)
         .collect(Collectors.toList());
   }
 
