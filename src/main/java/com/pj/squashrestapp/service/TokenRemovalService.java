@@ -3,11 +3,12 @@ package com.pj.squashrestapp.service;
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
 import com.pj.squashrestapp.model.Authority;
+import com.pj.squashrestapp.model.MagicLoginLinkToken;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.VerificationToken;
-import com.pj.squashrestapp.repository.AuthorityRepository;
+import com.pj.squashrestapp.repository.MagicLinkLoginTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
@@ -28,6 +29,7 @@ public class TokenRemovalService {
   private final VerificationTokenRepository verificationTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
   private final PlayerRepository playerRepository;
 
   /** Finds all expired temporary tokens in the database and removes them permanently. */
@@ -44,16 +46,21 @@ public class TokenRemovalService {
     final List<PasswordResetToken> expiredPasswordResetTokens =
         passwordResetTokenRepository.findAllByExpirationDateTimeBefore(now);
 
+    final List<MagicLoginLinkToken> expiredMagicLoginLinkTokens =
+        magicLinkLoginTokenRepository.findAllByExpirationDateTimeBefore(now);
+
     final int tokensCount =
         expiredVerificationTokens.size()
             + expiredRefreshTokens.size()
+            + expiredMagicLoginLinkTokens.size()
             + expiredPasswordResetTokens.size();
 
     if (tokensCount > 0) {
       removeNotActivatedPlayers(expiredVerificationTokens);
       refreshTokenRepository.deleteAll(expiredRefreshTokens);
       passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
-      log.info("Succesfully removed {} expired tokens.", tokensCount);
+      magicLinkLoginTokenRepository.deleteAll(expiredMagicLoginLinkTokens);
+      log.info("Successfully removed {} expired tokens.", tokensCount);
 
     } else {
       log.info("No expired tokens to remove this time");

@@ -22,6 +22,7 @@ public class SendEmailFacade {
 
   private final AccountActivationEmailService accountActivationEmailService;
   private final PasswordResetEmailService passwordResetEmailService;
+  private final MagicLoginLinkEmailService magicLoginLinkEmailService;
   private final PlainEmailService plainEmailService;
   private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
 
@@ -45,6 +46,16 @@ public class SendEmailFacade {
       final String passwordResetLink) {
 
     passwordResetEmailService.sendEmail(
+        receiverEmail, receiverName, locale, passwordResetLink);
+  }
+
+  public void sendMagicLoginLinkEmail(
+      final String receiverEmail,
+      final String receiverName,
+      final Locale locale,
+      final String passwordResetLink) {
+
+    magicLoginLinkEmailService.sendEmail(
         receiverEmail, receiverName, locale, passwordResetLink);
   }
 

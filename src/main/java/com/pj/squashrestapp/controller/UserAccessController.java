@@ -132,6 +132,39 @@ public class UserAccessController {
     }
   }
 
+  @PostMapping(value = "/request-magic-login-link")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void requestMagicLoginLink(
+      @RequestParam final String email,
+      @RequestParam final String frontendUrl,
+      @RequestParam(defaultValue = "en") final String lang) {
+
+    final Player player = playerService.getPlayer(email);
+
+    if (player != null) {
+      final UUID token = UUID.randomUUID();
+      playerService.createAndPersistMagicLoginLinkToken(token, player);
+      final String magicLoginLinkUrl = frontendUrl + "login-with-magic-link/" + token;
+      sendEmailFacade.sendMagicLoginLinkEmail(
+          player.getEmail(), player.getUsername(), new Locale(lang), magicLoginLinkUrl);
+
+    } else {
+
+      // we are delaying execution to give indication
+      // to the user that some process is running.
+      try {
+        TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3 * 1000, 5 * 1000));
+      } catch (final InterruptedException ie) {
+        Thread.currentThread().interrupt();
+      }
+
+      // we are only logging it internally. Information
+      // that the account does not exist does not need
+      // to be passed to the frontend.
+      log.error("Account does not exist. This information is not passed to the frontend");
+    }
+  }
+
   /** Invalidates all tokens (JWT and Refresh tokens) for all players without ADMIN authority. */
   @PostMapping(value = "/invalidate-all-tokens")
   @PreAuthorize("isAdmin()")
@@ -166,6 +199,14 @@ public class UserAccessController {
     final TokenPair tokenPair =
         playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(
             passwordChangeToken, newPassword);
+    return tokenPair;
+  }
+
+  @SecretMethod
+  @PostMapping(value = "/login-with-magic-link")
+  @ResponseBody
+  TokenPair loginWithMagicLink(@RequestParam final UUID token) {
+    final TokenPair tokenPair = playerService.loginWithMagicLink(token);
     return tokenPair;
   }
 
