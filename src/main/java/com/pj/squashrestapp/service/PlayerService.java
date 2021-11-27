@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS;
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
+import antlr.Token;
 import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
@@ -14,6 +15,7 @@ import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.MagicLoginLinkToken;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
@@ -21,6 +23,7 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
+import com.pj.squashrestapp.repository.MagicLinkLoginTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
@@ -60,6 +63,7 @@ public class PlayerService {
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
   private final TokenCreateService tokenCreateService;
   private final PasswordEncoder passwordEncoder;
 
@@ -119,6 +123,11 @@ public class PlayerService {
   public void createAndPersistPasswordResetToken(final UUID token, final Player user) {
     final PasswordResetToken passwordResetToken = new PasswordResetToken(token, user);
     passwordResetTokenRepository.save(passwordResetToken);
+  }
+
+  public void createAndPersistMagicLoginLinkToken(final UUID token, final Player user) {
+    final MagicLoginLinkToken magicLoginLinkToken = new MagicLoginLinkToken(token, user);
+    magicLinkLoginTokenRepository.save(magicLoginLinkToken);
   }
 
   public Player registerNewUser(final String username, final String email, final String password) {
@@ -227,6 +236,26 @@ public class PlayerService {
       log.warn("Attempt to change password but old password does not match");
       throw new PasswordDoesNotMatchException("Old password does not match!");
     }
+  }
+
+  public TokenPair loginWithMagicLink(final UUID token) {
+    final MagicLoginLinkToken magicLoginLinkToken = magicLinkLoginTokenRepository.findByToken(token);
+
+
+    if (magicLoginLinkToken == null) {
+      log.warn("It seems that we do not have matching token!");
+      throw new GeneralBadRequestException(ErrorCode.INVALID_MAGIC_LINK_TOKEN);
+
+    } else if (LocalDateTime.now().isAfter(magicLoginLinkToken.getExpirationDateTime())) {
+      throw new GeneralBadRequestException(ErrorCode.EXPIRED_MAGIC_LINK_TOKEN);
+    }
+
+    final Player player = magicLoginLinkToken.getPlayer();
+    magicLinkLoginTokenRepository.delete(magicLoginLinkToken);
+
+    log.info("User {} has been successfully logged in using magic link.", player.getUsername());
+    final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
+    return tokenPair;
   }
 
   public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(
