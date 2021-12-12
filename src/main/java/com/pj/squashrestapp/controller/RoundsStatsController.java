@@ -1,8 +1,7 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
+import com.pj.squashrestapp.dto.playerroundsstats.PlayerAllRoundsStats;
 import com.pj.squashrestapp.service.PlayersRoundsStatsService;
-import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,9 +22,9 @@ public class RoundsStatsController {
 
   @GetMapping(value = "/{leagueUuid}/{playerUuid}")
   @ResponseBody
-  List<PlayerSingleRoundStats> extractRoundsStats(
+  PlayerAllRoundsStats extractRoundsStats(
       @PathVariable final UUID leagueUuid, @PathVariable final UUID playerUuid) {
-    final List<PlayerSingleRoundStats> roundsStatsForPlayer =
+    final PlayerAllRoundsStats roundsStatsForPlayer =
         playersRoundsStatsService.buildRoundsStatsForPlayer(leagueUuid, playerUuid);
     return roundsStatsForPlayer;
   }

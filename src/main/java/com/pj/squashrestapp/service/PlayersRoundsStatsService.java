@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.playerroundsstats.PlayerAllRoundsStats;
 import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
@@ -33,7 +35,7 @@ public class PlayersRoundsStatsService {
   private final PlayerRepository playerRepository;
   private final RoundGroupRepository roundGroupRepository;
 
-  public List<PlayerSingleRoundStats> buildRoundsStatsForPlayer(
+  public PlayerAllRoundsStats buildRoundsStatsForPlayer(
       final UUID leagueUuid, final UUID playerUuid) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Player player = playerRepository.findByUuid(playerUuid);
@@ -48,17 +50,20 @@ public class PlayersRoundsStatsService {
     final League leagueReconstructed =
         EntityGraphBuildUtil.reconstructLeague(setResults, league.getId());
 
+    final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(new PlayerDto(player));
+
     final List<PlayerSingleRoundStats> playerRoundsStats = new ArrayList<>();
     if (leagueReconstructed != null) {
       for (final Season season : leagueReconstructed.getSeasons()) {
         for (final Round round : season.getRounds()) {
           final List<Integer> xpPoints =
               xpPointsPerSplit.get(round.getSplit() + "|" + season.getXpPointsType());
-          playerRoundsStats.add(new PlayerSingleRoundStats(player, round, xpPoints));
+          playerAllRoundsStats.addSingleRoundStats(new PlayerSingleRoundStats(player, round, xpPoints));
         }
       }
     }
     Collections.reverse(playerRoundsStats);
-    return playerRoundsStats;
+    playerAllRoundsStats.calculateScoreboard();
+    return playerAllRoundsStats;
   }
 }
