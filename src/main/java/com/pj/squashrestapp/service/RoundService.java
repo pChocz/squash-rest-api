@@ -176,7 +176,12 @@ public class RoundService {
     final League league = round.getSeason().getLeague();
     final int setsPerMatch = league.getMatchFormatType().getMaxNumberOfSets();
 
-    final List<List<Player>> playersPerGroups = getPlayersPerGroups(playersUuids);
+    final List<List<Player>> playersPerGroup = getPlayersPerGroups(playersUuids);
+
+    final List<Integer> countPerRound =
+        playersPerGroup.stream().map(List::size).collect(Collectors.toList());
+
+    round.setSplit(GeneralUtil.integerListToString(countPerRound));
 
     // deleting old round groups
     final Iterator<RoundGroup> iterator = round.getRoundGroups().iterator();
@@ -189,14 +194,11 @@ public class RoundService {
     roundGroupRepository.flush();
 
     // creating new round groups
-    for (int i = 1; i <= playersPerGroups.size(); i++) {
-      final RoundGroup roundGroup = createRoundGroup(league, playersPerGroups, i, setsPerMatch);
+    for (int i = 1; i <= playersPerGroup.size(); i++) {
+      final RoundGroup roundGroup = createRoundGroup(league, playersPerGroup, i, setsPerMatch);
       round.addRoundGroup(roundGroup);
       roundGroupRepository.save(roundGroup);
     }
-
-    // saving to DB
-//    roundRepository.save(round);
 
     return round;
   }
