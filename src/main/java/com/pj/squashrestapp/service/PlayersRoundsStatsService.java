@@ -14,7 +14,6 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -52,7 +51,6 @@ public class PlayersRoundsStatsService {
 
     final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(new PlayerDto(player));
 
-    final List<PlayerSingleRoundStats> playerRoundsStats = new ArrayList<>();
     if (leagueReconstructed != null) {
       for (final Season season : leagueReconstructed.getSeasons()) {
         for (final Round round : season.getRounds()) {
@@ -62,7 +60,7 @@ public class PlayersRoundsStatsService {
         }
       }
     }
-    Collections.reverse(playerRoundsStats);
+    Collections.reverse(playerAllRoundsStats.getPlayerSingleRoundStats());
     playerAllRoundsStats.calculateScoreboard();
     return playerAllRoundsStats;
   }
