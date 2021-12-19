@@ -48,6 +48,7 @@ public class BackupController {
             .credentials(backupService.allPlayersCredentials())
             .refreshTokens(backupService.allRefreshTokens())
             .verificationTokens(backupService.allVerificationTokens())
+            .emailChangeTokens(backupService.allEmailChangeTokens())
             .build();
     return new ResponseEntity<>(jsonAll, HttpStatus.OK);
   }
