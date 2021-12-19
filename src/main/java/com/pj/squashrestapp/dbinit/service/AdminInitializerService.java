@@ -4,6 +4,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAll;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
+import com.pj.squashrestapp.dbinit.jsondto.JsonEmailChangeToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
@@ -23,6 +24,7 @@ import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
+import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.LeagueRule;
@@ -38,6 +40,7 @@ import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.repository.AuthorityRepository;
+import com.pj.squashrestapp.repository.EmailChangeTokenRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
@@ -71,6 +74,7 @@ public class AdminInitializerService {
   private final RoleForLeagueRepository roleForLeagueRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
+  private final EmailChangeTokenRepository emailChangeTokenRepository;
 
   public boolean initialize(final String initAllJsonContent) {
     final Player adminPlayer = playerRepository.findByUsername("Admin");
@@ -92,6 +96,7 @@ public class AdminInitializerService {
       persistAllLeaguesContent(jsonAll.getLeagues());
       persistRefreshTokens(jsonAll.getRefreshTokens());
       persistVerificationTokens(jsonAll.getVerificationTokens());
+      persistEmailChangeTokens(jsonAll.getEmailChangeTokens());
 
       log.info("Initializing - FINISHED");
       return true;
@@ -186,6 +191,21 @@ public class AdminInitializerService {
     }
 
     verificationTokenRepository.saveAll(verificationTokens);
+  }
+
+  private void persistEmailChangeTokens(final List<JsonEmailChangeToken> emailChangeTokens) {
+    final List<EmailChangeToken> verificationTokens = new ArrayList<>();
+    for (final JsonEmailChangeToken jsonEmailChangeToken : emailChangeTokens) {
+      final Player player = playerRepository.findByUuid(jsonEmailChangeToken.getPlayerUuid());
+      final EmailChangeToken emailChangeToken = new EmailChangeToken();
+      emailChangeToken.setToken(jsonEmailChangeToken.getToken());
+      emailChangeToken.setPlayer(player);
+      emailChangeToken.setNewEmail(jsonEmailChangeToken.getNewEmail());
+      emailChangeToken.setExpirationDateTime(jsonEmailChangeToken.getExpirationDateTime());
+      verificationTokens.add(emailChangeToken);
+    }
+
+    emailChangeTokenRepository.saveAll(verificationTokens);
   }
 
   private void createLeagueRoles(final League league) {
