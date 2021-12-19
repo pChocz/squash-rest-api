@@ -219,10 +219,10 @@ public class UserAccessController {
     return tokenPair;
   }
 
-  @PostMapping(value = "/confirm-email-change/{emailChangeToken}")
+  @PostMapping(value = "/confirm-email-change")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void confirmEmailChange(@PathVariable final UUID emailChangeToken) {
-    playerService.changeEmailForEmailChangeToken(emailChangeToken);
+  void confirmEmailChange(@RequestParam final UUID token) {
+    playerService.changeEmailForEmailChangeToken(token);
   }
 
   @SecretMethod

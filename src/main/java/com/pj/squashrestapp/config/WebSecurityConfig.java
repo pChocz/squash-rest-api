@@ -82,7 +82,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.POST, "/access/confirm-password-reset")
         .permitAll()
-        .antMatchers(HttpMethod.POST, "/access/confirm-email-change/**")
+        .antMatchers(HttpMethod.POST, "/access/confirm-email-change")
         .permitAll()
         .antMatchers(HttpMethod.POST, "/access/confirm-registration")
         .permitAll()
