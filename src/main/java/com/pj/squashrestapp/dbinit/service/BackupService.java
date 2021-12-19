@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.dbinit.service;
 
 import com.pj.squashrestapp.dbinit.jsondto.JsonAuthorities;
+import com.pj.squashrestapp.dbinit.jsondto.JsonEmailChangeToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
@@ -12,6 +13,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.jsondto.util.JsonExportUtil;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.BonusPoint;
+import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
@@ -22,6 +24,7 @@ import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.repository.BonusPointRepository;
+import com.pj.squashrestapp.repository.EmailChangeTokenRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
@@ -55,6 +58,7 @@ public class BackupService {
   private final BonusPointRepository bonusPointRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
+  private final EmailChangeTokenRepository emailChangeTokenRepository;
   private final XpPointsService xpPointsService;
 
   public JsonSeason seasonToJson(final UUID seasonUuid) {
@@ -201,5 +205,19 @@ public class BackupService {
       jsonVerificationTokens.add(jsonVerificationToken);
     }
     return jsonVerificationTokens;
+  }
+
+  public List<JsonEmailChangeToken> allEmailChangeTokens() {
+    final List<JsonEmailChangeToken> jsonEmailChangeTokens = new ArrayList<>();
+    final List<EmailChangeToken> allEmailChangeTokens = emailChangeTokenRepository.findAll();
+    for (final EmailChangeToken emailChangeToken : allEmailChangeTokens) {
+      final JsonEmailChangeToken jsonEmailChangeToken = new JsonEmailChangeToken();
+      jsonEmailChangeToken.setToken(emailChangeToken.getToken());
+      jsonEmailChangeToken.setNewEmail(emailChangeToken.getNewEmail());
+      jsonEmailChangeToken.setPlayerUuid(emailChangeToken.getPlayer().getUuid());
+      jsonEmailChangeToken.setExpirationDateTime(emailChangeToken.getExpirationDateTime());
+      jsonEmailChangeTokens.add(jsonEmailChangeToken);
+    }
+    return jsonEmailChangeTokens;
   }
 }

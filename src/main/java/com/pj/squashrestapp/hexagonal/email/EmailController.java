@@ -34,6 +34,18 @@ class EmailController {
     facade.sendPasswordResetEmail(email, name, new Locale(lang), passwordResetLink);
   }
 
+  @GetMapping(value = "/send-email-change-email")
+  @PreAuthorize("isAdmin()")
+  void sendEmailChangeEmail(
+      @RequestParam(defaultValue = "en") final String lang,
+      @RequestParam final String email,
+      @RequestParam final String name,
+      @RequestParam final String emailChangeLink)
+      throws IOException, MessagingException, TemplateException {
+
+    facade.sendEmailChangeEmail(email, name, new Locale(lang), emailChangeLink);
+  }
+
   @GetMapping(value = "/send-activation-link-email")
   @PreAuthorize("isAdmin()")
   void sendAccountActivationEmail(

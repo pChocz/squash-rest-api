@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,11 +54,6 @@ public class UserAccessController {
     final TokenPair tokenPair =
         playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(oldPassword, newPassword);
     return tokenPair;
-  }
-
-  @PutMapping(value = "/change-my-email")
-  void changeMyEmail(@RequestParam final String newEmail) {
-    playerService.changeCurrentSessionPlayerEmail(newEmail);
   }
 
   @PostMapping(value = "/logout")
@@ -97,6 +94,26 @@ public class UserAccessController {
       return new PlayerDetailedDto(newPlayer);
     }
     return null;
+  }
+
+  @PostMapping(value = "/request-email-change")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void requestEmailChange(
+      @RequestParam final String newEmail,
+      @RequestParam final String frontendUrl,
+      @RequestParam(defaultValue = "en") final String lang) {
+
+    final boolean isNewEmailValid = playerService.validateEmail(newEmail);
+
+    if (isNewEmailValid) {
+      final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+      final Player player = playerService.getPlayer(auth.getName());
+      final UUID token = UUID.randomUUID();
+      playerService.createAndPersistEmailChangeToken(token, player, newEmail);
+      final String emailChangeUrl = frontendUrl + "confirm-email-change/" + token;
+      sendEmailFacade.sendPasswordResetEmail(
+          newEmail, player.getUsername(), new Locale(lang), emailChangeUrl);
+    }
   }
 
   @PostMapping(value = "/request-password-reset")
@@ -200,6 +217,12 @@ public class UserAccessController {
         playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(
             passwordChangeToken, newPassword);
     return tokenPair;
+  }
+
+  @PostMapping(value = "/confirm-email-change")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  void confirmEmailChange(@RequestParam final UUID token) {
+    playerService.changeEmailForEmailChangeToken(token);
   }
 
   @SecretMethod
