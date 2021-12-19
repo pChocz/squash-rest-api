@@ -7,6 +7,7 @@ import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
 import com.pj.squashrestapp.config.exceptions.EmailNotValidException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
+import com.pj.squashrestapp.config.exceptions.TokenNotValidException;
 import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
@@ -213,14 +214,20 @@ public class PlayerService {
 
   public void changeEmailForEmailChangeToken(final UUID token) {
     EmailChangeToken emailChangeToken = emailChangeTokenRepository.findByToken(token);
-    String newEmail = emailChangeToken.getNewEmail();
-    Player player = emailChangeToken.getPlayer();
-    player.setEmail(newEmail);
-    playerRepository.save(player);
-    log.info(
-        "Email for user {} has been successfully changed to {}.",
-        player.getUsername(),
-        player.getEmail());
+    if (emailChangeToken == null) {
+      throw new TokenNotValidException("Token not valid");
+
+    } else {
+      String newEmail = emailChangeToken.getNewEmail();
+      Player player = emailChangeToken.getPlayer();
+      player.setEmail(newEmail);
+      playerRepository.save(player);
+      emailChangeTokenRepository.delete(emailChangeToken);
+      log.info(
+          "Email for user {} has been successfully changed to {}.",
+          player.getUsername(),
+          player.getEmail());
+    }
   }
 
   public Player getPlayer(final String usernameOrEmail) {
