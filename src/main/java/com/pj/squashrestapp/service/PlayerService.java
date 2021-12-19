@@ -3,8 +3,8 @@ package com.pj.squashrestapp.service;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS;
 import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 
-import antlr.Token;
 import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
+import com.pj.squashrestapp.config.exceptions.EmailNotValidException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.config.exceptions.PasswordDoesNotMatchException;
 import com.pj.squashrestapp.config.exceptions.WrongSignupDataException;
@@ -14,6 +14,7 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.TokenPair;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.MagicLoginLinkToken;
 import com.pj.squashrestapp.model.PasswordResetToken;
@@ -22,6 +23,7 @@ import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.repository.AuthorityRepository;
+import com.pj.squashrestapp.repository.EmailChangeTokenRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MagicLinkLoginTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
@@ -62,6 +64,7 @@ public class PlayerService {
   private final AuthorityRepository authorityRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final PasswordResetTokenRepository passwordResetTokenRepository;
+  private final EmailChangeTokenRepository emailChangeTokenRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
   private final TokenCreateService tokenCreateService;
@@ -125,6 +128,11 @@ public class PlayerService {
     passwordResetTokenRepository.save(passwordResetToken);
   }
 
+  public void createAndPersistEmailChangeToken(final UUID token, final Player user, final String email) {
+    final EmailChangeToken emailChangeToken = new EmailChangeToken(token, user, email);
+    emailChangeTokenRepository.save(emailChangeToken);
+  }
+
   public void createAndPersistMagicLoginLinkToken(final UUID token, final Player user) {
     final MagicLoginLinkToken magicLoginLinkToken = new MagicLoginLinkToken(token, user);
     magicLinkLoginTokenRepository.save(magicLoginLinkToken);
@@ -183,27 +191,36 @@ public class PlayerService {
     return userBasicInfo;
   }
 
-  public void changeCurrentSessionPlayerEmail(final String newEmail) {
-    final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    final Player player = playerRepository.findByUsername(auth.getName());
-
+  public boolean validateEmail(final String newEmail) {
     final List<Player> allPlayers = playerRepository.findAll();
     final Set<String> allEmails =
         allPlayers.stream().map(Player::getEmail).collect(Collectors.toSet());
-    final boolean emailValid = !allEmails.contains(newEmail);
+    final boolean isEmailFree = !allEmails.contains(newEmail);
+    final boolean isEmailValid = EmailValidator.getInstance().isValid(newEmail);
 
-    if (emailValid) {
-      player.setEmail(newEmail);
-      playerRepository.save(player);
-      log.info(
-          "Email for user {} has been succesfully changed to {}.",
-          player.getUsername(),
-          player.getEmail());
+    if (isEmailFree && isEmailValid) {
+      return true;
+
+    } else if (!isEmailFree) {
+      log.warn("Requested email [{}] is already taken", newEmail);
+      throw new EmailAlreadyTakenException("Email already taken!");
 
     } else {
-      log.warn("Attempt to change email but it's already taken");
-      throw new EmailAlreadyTakenException("Email already taken!");
+      log.warn("Requested email [{}] is not valid", newEmail);
+      throw new EmailNotValidException("Email not valid!");
     }
+  }
+
+  public void changeEmailForEmailChangeToken(final UUID token) {
+    EmailChangeToken emailChangeToken = emailChangeTokenRepository.findByToken(token);
+    String newEmail = emailChangeToken.getNewEmail();
+    Player player = emailChangeToken.getPlayer();
+    player.setEmail(newEmail);
+    playerRepository.save(player);
+    log.info(
+        "Email for user {} has been successfully changed to {}.",
+        player.getUsername(),
+        player.getEmail());
   }
 
   public Player getPlayer(final String usernameOrEmail) {
