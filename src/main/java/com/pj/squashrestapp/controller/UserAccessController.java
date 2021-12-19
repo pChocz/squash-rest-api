@@ -111,7 +111,7 @@ public class UserAccessController {
       final UUID token = UUID.randomUUID();
       playerService.createAndPersistEmailChangeToken(token, player, newEmail);
       final String emailChangeUrl = frontendUrl + "confirm-email-change/" + token;
-      sendEmailFacade.sendPasswordResetEmail(
+      sendEmailFacade.sendEmailChangeEmail(
           newEmail, player.getUsername(), new Locale(lang), emailChangeUrl);
     }
   }
