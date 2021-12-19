@@ -112,7 +112,7 @@ public class UserAccessController {
       playerService.createAndPersistEmailChangeToken(token, player, newEmail);
       final String emailChangeUrl = frontendUrl + "confirm-email-change/" + token;
       sendEmailFacade.sendPasswordResetEmail(
-          player.getEmail(), player.getUsername(), new Locale(lang), emailChangeUrl);
+          newEmail, player.getUsername(), new Locale(lang), emailChangeUrl);
     }
   }
 
