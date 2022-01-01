@@ -6,13 +6,7 @@ import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
-import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
-import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
-import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
-import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
-import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
-import com.pj.squashrestapp.dto.scoreboard.SeasonStar;
-import com.pj.squashrestapp.dto.scoreboard.Type;
+import com.pj.squashrestapp.dto.scoreboard.*;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -109,6 +103,7 @@ public class SeasonService {
           final int roundNumber = round.getNumber();
           final int groupNumber = scoreboard.getRoundGroupNumber();
           final int placeInGroup = scoreboardRow.getPlaceInGroup();
+          final int placeInRound = scoreboardRow.getPlaceInRound();
           final boolean isFirstPlace = placeInGroup == 1;
           final boolean isLastPlace =
               scoreboard.getScoreboardRows().indexOf(scoreboardRow)
@@ -132,7 +127,11 @@ public class SeasonService {
             seasonScoreboardDto.getSeasonStars().put(player.getUuid(), seasonStar);
           }
 
-          seasonScoreboardRowDto.addXpForRound(round.getNumber(), scoreboardRow.getXpEarned());
+          seasonScoreboardRowDto.addXpForRound(round.getNumber(), new RoundAndGroupPosition(
+                  String.valueOf((char) (groupNumber + 'A' - 1)),
+                  placeInGroup,
+                  placeInRound,
+                  scoreboardRow.getXpEarned()));
           final boolean containsPlayer =
               seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
           if (!containsPlayer) {

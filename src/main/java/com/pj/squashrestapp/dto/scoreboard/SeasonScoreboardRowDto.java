@@ -17,7 +17,7 @@ import lombok.Getter;
 public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto> {
 
   @EqualsAndHashCode.Include private final PlayerDto player;
-  private final Map<Integer, Integer> roundNumberToXpMapAll;
+  private final Map<Integer, RoundAndGroupPosition> roundNumberToXpMapAll;
   private final Map<Integer, Integer> roundNumberToXpMapPretenders;
   private final int bonusPoints;
   private BigDecimal average;
@@ -53,8 +53,8 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     return (double) seasonScoreboardRowDto.totalPoints / seasonScoreboardRowDto.attendices;
   }
 
-  public void addXpForRound(final int roundNumber, final Integer xpEarned) {
-    this.roundNumberToXpMapAll.put(roundNumber, xpEarned);
+  public void addXpForRound(final int roundNumber, final RoundAndGroupPosition roundAndGroupPosition) {
+    this.roundNumberToXpMapAll.put(roundNumber, roundAndGroupPosition);
   }
 
   public void addXpForRoundPretendents(final int roundNumber, final Integer xpEarned) {
@@ -65,13 +65,12 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     final int totalPointsForRounds = getTotalPointsForRounds(roundNumberToXpMapAll);
     this.totalPoints = totalPointsForRounds + bonusPoints;
 
-    final int numberOfRoundsThatCount = countedRounds;
     final int countedPointsForRounds =
-        getPointsForNumberOfRounds(roundNumberToXpMapAll, numberOfRoundsThatCount);
+        getPointsForNumberOfRoundsComplex(roundNumberToXpMapAll, countedRounds);
     this.countedPointsPretenders =
-        getPointsForNumberOfRounds(roundNumberToXpMapPretenders, numberOfRoundsThatCount);
+        getPointsForNumberOfRoundsSimple(roundNumberToXpMapPretenders, countedRounds);
 
-    final int eightBestPointsForRounds = getPointsForNumberOfRounds(roundNumberToXpMapAll, 8);
+    final int eightBestPointsForRounds = getPointsForNumberOfRoundsComplex(roundNumberToXpMapAll, 8);
     this.countedPoints = countedPointsForRounds + bonusPoints;
     this.eightBestPoints = eightBestPointsForRounds + bonusPoints;
 
@@ -79,17 +78,26 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.average = RoundingUtil.round((float) totalPoints / attendices, 1);
   }
 
-  private int getTotalPointsForRounds(final Map<Integer, Integer> roundNumberToXpMap) {
-    return roundNumberToXpMap.values().stream().mapToInt(points -> points).sum();
+  private int getTotalPointsForRounds(final Map<Integer, RoundAndGroupPosition> roundNumberToXpMap) {
+    return roundNumberToXpMap.values().stream().mapToInt(RoundAndGroupPosition::getXpPoints).sum();
   }
 
-  private int getPointsForNumberOfRounds(
+  private int getPointsForNumberOfRoundsSimple(
       final Map<Integer, Integer> roundNumberToXpMap, final int numberOfRounds) {
     return roundNumberToXpMap.values().stream()
         .sorted(Comparator.reverseOrder())
         .limit(numberOfRounds)
         .mapToInt(points -> points)
         .sum();
+  }
+
+  private int getPointsForNumberOfRoundsComplex(
+          final Map<Integer, RoundAndGroupPosition> roundNumberToXpMap, final int numberOfRounds) {
+    return roundNumberToXpMap.values().stream()
+            .sorted(Comparator.reverseOrder())
+            .limit(numberOfRounds)
+            .mapToInt(RoundAndGroupPosition::getXpPoints)
+            .sum();
   }
 
   @Override
