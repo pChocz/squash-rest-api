@@ -128,10 +128,12 @@ public class SeasonService {
           }
 
           seasonScoreboardRowDto.addXpForRound(round.getNumber(), new RoundAndGroupPosition(
-                  String.valueOf((char) (groupNumber + 'A' - 1)),
-                  placeInGroup,
-                  placeInRound,
-                  scoreboardRow.getXpEarned()));
+              String.valueOf((char) (groupNumber + 'A' - 1)),
+              placeInGroup,
+              placeInRound,
+              scoreboardRow.getXpEarned(),
+              isLastPlace)
+          );
           final boolean containsPlayer =
               seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
           if (!containsPlayer) {

@@ -9,6 +9,7 @@ public class RoundAndGroupPosition implements Comparable<RoundAndGroupPosition> 
     int positionInGroup;
     int positionInRound;
     int xpPoints;
+    boolean isLastPlaceInGroup;
 
     @Override
     public int compareTo(RoundAndGroupPosition that) {
