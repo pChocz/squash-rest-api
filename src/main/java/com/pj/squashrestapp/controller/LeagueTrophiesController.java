@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -41,6 +42,22 @@ public class LeagueTrophiesController {
     return trophyForLeague;
   }
 
+  @PutMapping
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  TrophyForLeague replaceTrophy(
+      @RequestParam(required = false) final UUID previousPlayerUuid,
+      @RequestParam final UUID newPlayerUuid,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final int seasonNumber,
+      @RequestParam final Trophy trophy) {
+    if (previousPlayerUuid != null) {
+      leagueTrophiesService.removeTrophy(previousPlayerUuid, leagueUuid, seasonNumber, trophy);
+    }
+    final TrophyForLeague trophyForLeague = leagueTrophiesService.addNewTrophy(newPlayerUuid, leagueUuid, seasonNumber, trophy);
+    return trophyForLeague;
+  }
+
   @DeleteMapping
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   void removeTrophy(
@@ -64,6 +81,16 @@ public class LeagueTrophiesController {
   List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(@PathVariable final UUID leagueUuid) {
     final List<SeasonTrophies> trophiesForSeasons =
         leagueTrophiesService.extractTrophiesForAllSeasonsForLeague(leagueUuid);
+    return trophiesForSeasons;
+  }
+
+  @GetMapping(value = "/league/{leagueUuid}/{seasonNumber}")
+  @ResponseBody
+  SeasonTrophies extractTrophiesForSingleSeasonForLeague(
+      @PathVariable final UUID leagueUuid,
+      @PathVariable final int seasonNumber) {
+    final SeasonTrophies trophiesForSeasons =
+        leagueTrophiesService.extractTrophiesForSingleSeasonForLeague(leagueUuid, seasonNumber);
     return trophiesForSeasons;
   }
 }

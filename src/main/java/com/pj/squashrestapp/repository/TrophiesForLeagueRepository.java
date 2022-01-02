@@ -21,6 +21,9 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
   @EntityGraph(attributePaths = {"player"})
   List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
 
+  @EntityGraph(attributePaths = {"player"})
+  List<TrophyForLeague> findByLeagueUuidAndSeasonNumber(UUID leagueUuid, int seasonNumber);
+
   Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophy(League league, int seasonNumber, Trophy trophy);
 
   Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophyAndPlayer(League league, int seasonNumber, Trophy trophy, Player player);

@@ -135,4 +135,11 @@ public class LeagueTrophiesService {
 
     return leagueTrophiesPerSeason;
   }
+
+  public SeasonTrophies extractTrophiesForSingleSeasonForLeague(final UUID leagueUuid, final int seasonNumber) {
+    final List<TrophyForLeague> trophiesForLeagueForSeason =
+        trophiesForLeagueRepository.findByLeagueUuidAndSeasonNumber(leagueUuid, seasonNumber);
+    return new SeasonTrophies(seasonNumber, trophiesForLeagueForSeason);
+    }
+
 }
