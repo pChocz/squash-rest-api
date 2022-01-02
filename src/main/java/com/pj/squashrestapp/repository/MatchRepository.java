@@ -25,7 +25,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
            JOIN s.league l
               WHERE m.uuid = :matchUuid
           """)
-  UUID retrieveLeagueUuidOfMatch(UUID matchUuid);
+  UUID retrieveLeagueUuidOfMatch(@Param("matchUuid") UUID matchUuid);
 
 
   @EntityGraph(attributePaths = {
@@ -101,7 +101,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
           "setResults",
           "roundGroup.round.season"
   })
-  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(UUID leagueUuid, UUID playerUuid);
+  List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(@Param("leagueUuid") UUID leagueUuid, @Param("playerUuid") UUID playerUuid);
 
 
   @Query("""
@@ -120,7 +120,7 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
           "setResults",
           "roundGroup.round.season.league"
   })
-  List<Match> fetchByOnePlayerAgainstAllForAllLeagues(UUID playerUuid);
+  List<Match> fetchByOnePlayerAgainstAllForAllLeagues(@Param("playerUuid") UUID playerUuid);
 
 
   @Query("""
@@ -203,8 +203,8 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
 
   @Override
   @Modifying
-  @Query("DELETE FROM Match m WHERE m.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM Match m WHERE m.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -215,5 +215,5 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 }

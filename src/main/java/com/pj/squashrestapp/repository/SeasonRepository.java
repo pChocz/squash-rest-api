@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 
 /**
@@ -20,9 +21,6 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
 
 
   Optional<Season> findByUuid(UUID uuid);
-
-
-  List<Season> findAllByLeague(League league);
 
 
   Optional<Season> findByLeagueAndNumber(League league, int number);
@@ -40,14 +38,14 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
             JOIN League l ON s.league = l
               WHERE s.uuid = :seasonUuid
               """)
-  UUID retrieveLeagueUuidOfSeason(UUID seasonUuid);
+  UUID retrieveLeagueUuidOfSeason(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT s.id FROM Season s 
             WHERE s.uuid = :seasonUuid
             """)
-  Long findIdByUuid(UUID seasonUuid);
+  Long findIdByUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -59,7 +57,7 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
           INNER JOIN m.firstPlayer p1
             WHERE s.uuid = :seasonUuid
             """)
-  List<Player> extractSeasonPlayersFirst(UUID seasonUuid);
+  List<Player> extractSeasonPlayersFirst(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -71,7 +69,7 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
           INNER JOIN m.secondPlayer p2
             WHERE s.uuid = :seasonUuid
             """)
-  List<Player> extractSeasonPlayersSecond(UUID seasonUuid);
+  List<Player> extractSeasonPlayersSecond(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -80,12 +78,12 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
               WHERE l.uuid = :leagueUuid
            ORDER BY s.startDate DESC
           """)
-  List<Season> findCurrentSeasonForLeague(UUID leagueUuid, Pageable pageable);
+  List<Season> findCurrentSeasonForLeague(@Param("leagueUuid") UUID leagueUuid, Pageable pageable);
 
   @Override
   @Modifying
-  @Query("DELETE FROM Season s WHERE s.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM Season s WHERE s.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -93,5 +91,5 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 }

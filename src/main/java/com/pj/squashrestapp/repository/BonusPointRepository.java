@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -29,7 +30,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
           "looser",
           "season.league",
   })
-  List<BonusPoint> findBySeasonUuid(UUID seasonUuid);
+  List<BonusPoint> findBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -43,7 +44,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
           "looser",
           "season.id",
   })
-  List<BonusPoint> findByLeagueUuid(UUID leagueUuid);
+  List<BonusPoint> findByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("""
@@ -52,7 +53,7 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
            JOIN League l ON s.league = l
               WHERE bp.uuid = :uuid
               """)
-  UUID retrieveLeagueUuidOfBonusPoint(UUID uuid);
+  UUID retrieveLeagueUuidOfBonusPoint(@Param("uuid") UUID uuid);
 
   @Override
   @Query("""
@@ -61,11 +62,11 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
   @Override
   @Modifying
-  @Query("DELETE FROM BonusPoint bp WHERE bp.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM BonusPoint bp WHERE bp.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
 }

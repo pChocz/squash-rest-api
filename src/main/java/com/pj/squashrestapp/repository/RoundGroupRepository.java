@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, BulkDeletableByLeagueUuid {
 
@@ -21,12 +22,12 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, B
                 OR m.secondPlayer.uuid = :playerUuid)
               AND r.finished = true
           """)
-  List<Long> retrieveRoundGroupsIdsForPlayer(UUID leagueUuid, UUID playerUuid);
+  List<Long> retrieveRoundGroupsIdsForPlayer(@Param("leagueUuid") UUID leagueUuid, @Param("playerUuid") UUID playerUuid);
 
   @Override
   @Modifying
-  @Query("DELETE FROM RoundGroup rg WHERE rg.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM RoundGroup rg WHERE rg.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -36,6 +37,6 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, B
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
 }

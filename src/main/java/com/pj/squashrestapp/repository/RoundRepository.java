@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletableByLeagueUuid {
 
@@ -22,7 +23,7 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
       "season.league",
       "roundGroups"
   })
-  Round findByUuidWithSeasonLeague(UUID uuid);
+  Round findByUuidWithSeasonLeague(@Param("uuid") UUID uuid);
 
 
   Optional<Round> findBySeasonAndNumber(Season season, int number);
@@ -34,7 +35,7 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
            JOIN League l ON s.league = l
               WHERE r.uuid = :roundUuid
           """)
-  UUID retrieveLeagueUuidOfRound(UUID roundUuid);
+  UUID retrieveLeagueUuidOfRound(@Param("roundUuid") UUID roundUuid);
 
 
   @Query("""
@@ -43,14 +44,14 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
            JOIN Round r ON rg.round = r
               WHERE m.uuid = :matchUuid
           """)
-  Round findByMatchUuid(UUID matchUuid);
+  Round findByMatchUuid(@Param("matchUuid") UUID matchUuid);
 
 
   @Query("""
           SELECT r.id FROM Round r
               WHERE r.uuid = :roundUuid
           """)
-  Long findIdByUuid(UUID roundUuid);
+  Long findIdByUuid(@Param("roundUuid") UUID roundUuid);
 
 
   @Query("""
@@ -63,7 +64,7 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
                   OR p2.uuid = :playerUuid)
            ORDER BY r.date DESC
           """)
-  List<Round> findMostRecentRoundOfPlayer(UUID playerUuid, Pageable pageable);
+  List<Round> findMostRecentRoundOfPlayer(@Param("playerUuid") UUID playerUuid, Pageable pageable);
 
 
   @Query("""
@@ -77,12 +78,12 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
               WHERE l.uuid = :leagueUuid
            ORDER BY r.date DESC
           """)
-  List<Round> findMostRecentRoundOfLeague(UUID leagueUuid, Pageable pageable);
+  List<Round> findMostRecentRoundOfLeague(@Param("leagueUuid") UUID leagueUuid, Pageable pageable);
 
   @Override
   @Modifying
-  @Query("DELETE FROM Round r WHERE r.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM Round r WHERE r.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -91,6 +92,6 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
 }

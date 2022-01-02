@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -16,9 +17,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
 
 
   Player findByUsername(String username);
-
-
-  List<Player> findByUsernameIn(List<String> username);
 
 
   Player findByUuid(UUID uuid);
@@ -41,7 +39,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           SELECT p FROM Player p 
             WHERE p.uuid IN :uuids
             """)
-  List<Player> findByUuids(UUID[] uuids);
+  List<Player> findByUuids(@Param("uuids") UUID[] uuids);
 
 
   @Query("""
@@ -54,7 +52,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles",
           "roles.league",
   })
-  Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(String usernameOrEmail);
+  Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(@Param("usernameOrEmail") String usernameOrEmail);
 
 
   @Query("""
@@ -66,7 +64,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles",
           "roles.league",
   })
-  Optional<Player> fetchForAuthorizationByUuid(UUID uuid);
+  Optional<Player> fetchForAuthorizationByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
@@ -79,7 +77,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           "roles",
           "roles.league",
   })
-  List<Player> fetchForAuthorizationForLeague(UUID leagueUuid);
+  List<Player> fetchForAuthorizationForLeague(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("""
@@ -87,6 +85,6 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
               """)
-  List<Player> fetchGeneralInfoSorted(UUID leagueUuid, Sort sort);
+  List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
 
 }

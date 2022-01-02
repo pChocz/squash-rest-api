@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -28,12 +29,12 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
           SELECT tfl FROM TrophyForLeague tfl
             WHERE tfl.player.uuid = :playerUuid
             """)
-  List<TrophyForLeague> findAllByPlayerUuid(UUID playerUuid);
+  List<TrophyForLeague> findAllByPlayerUuid(@Param("playerUuid") UUID playerUuid);
 
   @Override
   @Modifying
-  @Query("DELETE FROM TrophyForLeague tfl WHERE tfl.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM TrophyForLeague tfl WHERE tfl.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -41,6 +42,6 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
             INNER JOIN tfl.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * Methods in this class implement 2 quite cool performance solutions:
@@ -48,7 +49,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
           "match.firstPlayer",
           "match.secondPlayer",
   })
-  List<SetResult> fetchByLeagueUuid(UUID leagueUuid);
+  List<SetResult> fetchByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("""
@@ -64,7 +65,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
           "match.secondPlayer",
           "match.roundGroup.round.season.league"
   })
-  List<SetResult> fetchBySeasonUuid(UUID seasonUuid);
+  List<SetResult> fetchBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -80,7 +81,7 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
           "match.roundGroup.round.season",
           "match.roundGroup.round.season.league"
   })
-  List<SetResult> fetchByRoundUuid(UUID roundUuid);
+  List<SetResult> fetchByRoundUuid(@Param("roundUuid") UUID roundUuid);
 
 
   @Query("""
@@ -95,12 +96,12 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
           "match.roundGroup.round.season",
           "match.roundGroup.round.season.league"
   })
-  List<SetResult> fetchByRoundGroupsIds(List<Long> ids);
+  List<SetResult> fetchByRoundGroupsIds(@Param("ids") List<Long> ids);
 
   @Override
   @Modifying
-  @Query("DELETE FROM SetResult sr WHERE sr.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM SetResult sr WHERE sr.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -112,6 +113,6 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
             INNER JOIN s.league l
               WHERE l.uuid = :leagueUuid
               """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
 }

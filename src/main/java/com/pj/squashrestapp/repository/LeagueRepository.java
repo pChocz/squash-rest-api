@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -34,10 +35,6 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
   List<League> findAllRaw();
 
 
-  @Query("SELECT l FROM League l WHERE l.name = :name")
-  League findByNameRaw(String name);
-
-
   @EntityGraph(attributePaths = {
           "seasons",
           "trophiesForLeague",
@@ -56,7 +53,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
           "seasons.rounds.roundGroups.matches.firstPlayer",
           "seasons.rounds.roundGroups.matches.secondPlayer"
   })
-  Optional<League> findByUuidForBackup(UUID leagueUuid);
+  Optional<League> findByUuidForBackup(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("SELECT l.uuid FROM League l")
@@ -75,7 +72,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
                AND sr.firstPlayerScore IS NOT NULL
                AND sr.secondPlayerScore IS NOT NULL
           """)
-  Object findAllCountsForLeagueByUuid(UUID uuid);
+  Object findAllCountsForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
@@ -92,7 +89,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
                AND sr.firstPlayerScore IS NOT NULL
                AND sr.secondPlayerScore IS NOT NULL
           """)
-  List<Long> findPlayersIdsFirstPlayerForLeagueByUuid(UUID uuid);
+  List<Long> findPlayersIdsFirstPlayerForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
@@ -109,7 +106,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
                AND sr.firstPlayerScore IS NOT NULL
                AND sr.secondPlayerScore IS NOT NULL
           """)
-  List<Long> findPlayersIdsSecondPlayerForLeagueByUuid(UUID uuid);
+  List<Long> findPlayersIdsSecondPlayerForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
@@ -127,16 +124,10 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
                AND sr.secondPlayerScore IS NOT NULL
              GROUP BY r.split
           """)
-  List<Object> findRoundsPerSplitGroupedForLeagueByUuid(UUID uuid);
+  List<Object> findRoundsPerSplitGroupedForLeagueByUuid(@Param("uuid") UUID uuid);
 
-  @Modifying
-  @Query("""
-            DELETE FROM League l
-              WHERE l.uuid = :leagueUuid
-            """)
-  void deleteByLeagueUuid(UUID leagueUuid);
 
   @Query("SELECT l FROM League l WHERE l.uuid = :uuid")
-  League findByUuidRaw(UUID uuid);
+  League findByUuidRaw(@Param("uuid") UUID uuid);
 
 }

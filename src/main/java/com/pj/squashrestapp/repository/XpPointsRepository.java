@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -26,7 +27,7 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
                 and xpr.type = :type
                   ORDER BY xpp.placeInRound
                 """)
-  List<Integer> retrievePointsBySplitAndType(String split, String type);
+  List<Integer> retrievePointsBySplitAndType(@Param("split") String split, @Param("type") String type);
 
 
   @Query("""
@@ -47,6 +48,6 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
             INNER JOIN FETCH xprg.xpPointsForRound xpr
               WHERE xpr.type = :type
             """)
-  List<XpPointsForPlace> fetchAllByType(String type);
+  List<XpPointsForPlace> fetchAllByType(@Param("type") String type);
 
 }

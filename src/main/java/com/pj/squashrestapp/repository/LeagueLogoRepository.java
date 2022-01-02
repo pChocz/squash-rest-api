@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  *
@@ -30,7 +31,7 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN League l ON l.leagueLogo = ll
               WHERE l.uuid = :leagueUuid
               """)
-  Optional<byte[]> extractLogoBlobByLeagueUuid(UUID leagueUuid);
+  Optional<byte[]> extractLogoBlobByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("""
@@ -39,7 +40,7 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN Season s ON s.league = l
               WHERE s.uuid = :seasonUuid
               """)
-  Optional<byte[]> extractLogoBlobBySeasonUuid(UUID seasonUuid);
+  Optional<byte[]> extractLogoBlobBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
@@ -49,6 +50,6 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             JOIN Round r ON r.season = s
               WHERE r.uuid = :roundUuid
               """)
-  Optional<byte[]> extractLogoBlobByRoundUuid(UUID roundUuid);
+  Optional<byte[]> extractLogoBlobByRoundUuid(@Param("roundUuid") UUID roundUuid);
 
 }

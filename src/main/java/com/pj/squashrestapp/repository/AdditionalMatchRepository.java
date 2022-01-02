@@ -42,7 +42,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "setResults",
           "league"
   })
-  List<AdditionalMatch> fetchForSinglePlayerForLeague(Player player, League league);
+  List<AdditionalMatch> fetchForSinglePlayerForLeague(@Param("player") Player player, @Param("league") League league);
 
 
   @Query("""
@@ -57,7 +57,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "secondPlayer",
           "setResults",
   })
-  List<AdditionalMatch> fetchAllForSinglePlayer(Player player);
+  List<AdditionalMatch> fetchAllForSinglePlayer(@Param("player") Player player);
 
 
   @Query("""
@@ -73,7 +73,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "setResults",
           "league"
   })
-  List<AdditionalMatch> fetchHeadToHead(UUID[] playersUuids);
+  List<AdditionalMatch> fetchHeadToHead(@Param("playersUuids") UUID[] playersUuids);
 
 
   @Query("""
@@ -90,7 +90,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
           "setResults",
           "league"
   })
-  List<AdditionalMatch> fetchForMultiplePlayersForLeague(UUID[] playersUuids, League league);
+  List<AdditionalMatch> fetchForMultiplePlayersForLeague(@Param("playersUuids") UUID[] playersUuids, @Param("league") League league);
 
   @Query("""
           SELECT m FROM AdditionalMatch m
@@ -185,8 +185,8 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Override
   @Modifying
-  @Query("DELETE FROM AdditionalMatch m WHERE m.id IN ?1")
-  void deleteAllByIdIn(List<Long> ids);
+  @Query("DELETE FROM AdditionalMatch m WHERE m.id IN :ids")
+  void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
   @Override
   @Query("""
@@ -194,7 +194,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
               INNER JOIN m.league l
               WHERE l.uuid = :leagueUuid
             """)
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
 
 }
