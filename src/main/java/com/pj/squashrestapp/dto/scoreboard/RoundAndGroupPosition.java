@@ -13,6 +13,6 @@ public class RoundAndGroupPosition implements Comparable<RoundAndGroupPosition> 
 
     @Override
     public int compareTo(RoundAndGroupPosition that) {
-        return that.getXpPoints() - this.getXpPoints();
+        return this.getXpPoints() - that.getXpPoints();
     }
 }
