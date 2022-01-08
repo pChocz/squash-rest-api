@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.config.CacheConfiguration;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -200,12 +203,13 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
+  @Cacheable(value = CacheConfiguration.SEASON_SCOREBOARD_CACHE, key = "#seasonUuid")
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
     final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(seasonUuid);
     return seasonScoreboardDto;
   }
 
-  private SeasonScoreboardDto buildSeasonScoreboardDto(final UUID seasonUuid) {
+  public SeasonScoreboardDto buildSeasonScoreboardDto(final UUID seasonUuid) {
     final List<SetResult> setResultListForSeason =
         setResultRepository.fetchBySeasonUuid(seasonUuid);
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);

@@ -1,13 +1,16 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import com.pj.squashrestapp.dto.PlayerDto;
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Value
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class SeasonStar {
 
-  int roundNumber;
-  String groupCharacter;
-  Type type;
+  private int roundNumber;
+  private String groupCharacter;
+  private Type type;
 
 }

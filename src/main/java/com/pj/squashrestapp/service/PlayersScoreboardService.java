@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.CacheConfiguration;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
@@ -27,6 +28,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -114,12 +116,12 @@ public class PlayersScoreboardService {
     return scoreboard;
   }
 
-  public PlayerSummary buildMeAgainstAllForAllLeagues() {
-    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-    final Player player = playerRepository.findByUuid(currentPlayerUuid);
+  @Cacheable(value = CacheConfiguration.PLAYER_SCOREBOARD_CACHE, key = "#playerUuid")
+  public PlayerSummary buildPlayerAgainstAllForAllLeagues(final UUID playerUuid) {
+    final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
     final List<Match> roundMatches =
-        matchRepository.fetchByOnePlayerAgainstAllForAllLeagues(currentPlayerUuid);
+        matchRepository.fetchByOnePlayerAgainstAllForAllLeagues(playerUuid);
     final List<AdditionalMatch> additionalMatches =
         additionalMatchRepository.fetchAllForSinglePlayer(player);
 

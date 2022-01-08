@@ -5,15 +5,17 @@ import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class SetDto {
 
-  private final Integer firstPlayerScore;
-  private final Integer secondPlayerScore;
-  private final MatchFormatType matchFormatType;
+  private Integer firstPlayerScore;
+  private Integer secondPlayerScore;
+  private MatchFormatType matchFormatType;
   @Setter private int setNumber;
 
   public SetDto(final SetResult setResult, final MatchFormatType matchFormatType) {

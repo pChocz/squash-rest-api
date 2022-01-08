@@ -23,6 +23,7 @@ public class LeagueLogoController {
   @GetMapping(value = "/season/{seasonUuid}")
   @ResponseBody
   String extractLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
+
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogoBySeasonUuid(seasonUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }

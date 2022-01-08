@@ -2,10 +2,8 @@ package com.pj.squashrestapp.util;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializer;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import lombok.experimental.UtilityClass;
 
 /** */
@@ -23,24 +21,9 @@ public class GsonUtil {
    */
   public Gson gsonWithDateAndDateTime() {
     return new GsonBuilder()
-        .registerTypeAdapter(LocalDate.class, getLocalDateJsonDeserializer())
-        .registerTypeAdapter(LocalDateTime.class, getLocalDateTimeJsonDeserializer())
+        .registerTypeAdapter(LocalDate.class, new GsonLocalDate())
+        .registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTime())
         .setPrettyPrinting()
         .create();
-  }
-
-  private JsonDeserializer<LocalDate> getLocalDateJsonDeserializer() {
-    return (JsonDeserializer<LocalDate>)
-        (jsonElement, type, context) ->
-            LocalDate.parse(
-                jsonElement.getAsString(), DateTimeFormatter.ofPattern(GeneralUtil.DATE_FORMAT));
-  }
-
-  private JsonDeserializer<LocalDateTime> getLocalDateTimeJsonDeserializer() {
-    return (JsonDeserializer<LocalDateTime>)
-        (jsonElement, type, context) ->
-            LocalDateTime.parse(
-                jsonElement.getAsString(),
-                DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT));
   }
 }

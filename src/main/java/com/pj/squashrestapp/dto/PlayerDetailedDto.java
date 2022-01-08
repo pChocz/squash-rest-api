@@ -1,6 +1,10 @@
 package com.pj.squashrestapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.LeagueRole;
@@ -15,31 +19,36 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerDetailedDto {
 
-  @EqualsAndHashCode.Include final UUID uuid;
-  final Long id;
-  final String username;
-  final String emoji;
-  final String email;
-  final String locale;
-  final List<AuthorityType> authorities;
-  final List<LeagueRoleDto> leagueRoles;
-  final boolean nonLocked;
-  final boolean enabled;
-  final boolean wantsEmails;
-  final Long successfulLoginAttempts;
+  @EqualsAndHashCode.Include UUID uuid;
+  Long id;
+  String username;
+  String emoji;
+  String email;
+  String locale;
+  List<AuthorityType> authorities;
+  List<LeagueRoleDto> leagueRoles;
+  boolean nonLocked;
+  boolean enabled;
+  boolean wantsEmails;
+  Long successfulLoginAttempts;
 
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
-  final LocalDateTime registrationDateTime;
+  LocalDateTime registrationDateTime;
 
+  @JsonSerialize(using = LocalDateTimeSerializer.class)
+  @JsonDeserialize(using = LocalDateTimeDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
-  final LocalDateTime lastLoggedInDateTime;
+  LocalDateTime lastLoggedInDateTime;
 
   public PlayerDetailedDto(final Player player) {
     this.id = player.getId();

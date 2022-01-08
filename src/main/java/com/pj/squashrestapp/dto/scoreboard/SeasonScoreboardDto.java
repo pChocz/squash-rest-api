@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
@@ -14,22 +16,24 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class SeasonScoreboardDto implements LoggableQuery {
 
-  private final SeasonDto season;
-  private final int allRounds;
-  private final int finishedRounds;
-  private final int countedRounds;
-  private final int countedRoundsOnSeasonFinished;
-  private final List<SeasonScoreboardRowDto> seasonScoreboardRows;
-  private final List<RoundDto> rounds;
-  private final String xpPointsType;
-  private final UUID previousSeasonUuid;
-  private final UUID nextSeasonUuid;
-  private final Map<UUID, SeasonStar> seasonStars;
+  private SeasonDto season;
+  private int allRounds;
+  private int finishedRounds;
+  private int countedRounds;
+  private int countedRoundsOnSeasonFinished;
+  private List<SeasonScoreboardRowDto> seasonScoreboardRows;
+  private List<RoundDto> rounds;
+  private String xpPointsType;
+  private UUID previousSeasonUuid;
+  private UUID nextSeasonUuid;
+  private Map<UUID, SeasonStar> seasonStars;
 
   public SeasonScoreboardDto(final Season season) {
     this.season = new SeasonDto(season);

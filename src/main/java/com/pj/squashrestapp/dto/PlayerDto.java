@@ -5,16 +5,18 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class PlayerDto {
 
-  @EqualsAndHashCode.Include private final UUID uuid;
-  private final String username;
-  private final String emoji;
+  @EqualsAndHashCode.Include private UUID uuid;
+  private String username;
+  private String emoji;
 
   public PlayerDto(final Player player) {
     this.uuid = player.getUuid();

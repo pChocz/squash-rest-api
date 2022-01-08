@@ -1,6 +1,12 @@
 package com.pj.squashrestapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.RomanUtil;
@@ -8,23 +14,27 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class SeasonDto implements Comparable<SeasonDto> {
 
-  private final UUID leagueUuid;
-  private final String leagueName;
-  private final UUID seasonUuid;
-  private final int seasonNumber;
-  private final String description;
-  private final String seasonNumberRoman;
-  private final String xpPointsType;
+  private UUID leagueUuid;
+  private String leagueName;
+  private UUID seasonUuid;
+  private int seasonNumber;
+  private String description;
+  private String seasonNumberRoman;
+  private String xpPointsType;
 
+  @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private final LocalDate seasonStartDate;
+  private LocalDate seasonStartDate;
 
   public SeasonDto(final Season season) {
     this.leagueUuid = season.getLeague().getUuid();

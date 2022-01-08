@@ -1,15 +1,19 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import lombok.Value;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-@Value
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class RoundAndGroupPosition implements Comparable<RoundAndGroupPosition> {
 
-    String groupCharacter;
-    int positionInGroup;
-    int positionInRound;
-    int xpPoints;
-    boolean isLastPlaceInGroup;
+    private String groupCharacter;
+    private int positionInGroup;
+    private int positionInRound;
+    private int xpPoints;
+    private boolean lastPlaceInGroup;
 
     @Override
     public int compareTo(RoundAndGroupPosition that) {

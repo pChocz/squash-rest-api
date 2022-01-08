@@ -3,23 +3,28 @@ package com.pj.squashrestapp.dto.scoreboard;
 import com.pj.squashrestapp.dto.PlayerDto;
 import java.util.Comparator;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /** */
 @Getter
 @Setter
+@NoArgsConstructor
 public class RoundGroupScoreboardRow implements Comparable<RoundGroupScoreboardRow>, ScoreboardRow {
 
-  private final PlayerDto player;
+  private PlayerDto player;
 
   private int pointsWon;
   private int pointsLost;
+  private int pointsBalance;
 
   private int setsWon;
   private int setsLost;
+  private int setsBalance;
 
   private int matchesWon;
   private int matchesLost;
+  private int matchesBalance;
 
   private Integer xpEarned;
   private Integer placeInRound;
@@ -27,6 +32,18 @@ public class RoundGroupScoreboardRow implements Comparable<RoundGroupScoreboardR
 
   public RoundGroupScoreboardRow(final PlayerDto player) {
     this.player = player;
+  }
+
+  public int getPointsBalance() {
+    return getPointsWon() - getPointsLost();
+  }
+
+  public int getSetsBalance() {
+    return getSetsWon() - getSetsLost();
+  }
+
+  public int getMatchesBalance() {
+    return getMatchesWon() - getMatchesLost();
   }
 
   @Override

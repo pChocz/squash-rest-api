@@ -2,6 +2,10 @@ package com.pj.squashrestapp.dto.scoreboard;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.Round;
@@ -14,25 +18,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class RoundScoreboard implements LoggableQuery {
 
-  private final String leagueName;
+  private String leagueName;
 
-  private final UUID seasonUuid;
-  private final int seasonNumber;
-  private final String seasonNumberRoman;
+  private UUID seasonUuid;
+  private int seasonNumber;
+  private String seasonNumberRoman;
 
-  private final UUID roundUuid;
-  private final int roundNumber;
+  private UUID roundUuid;
+  private int roundNumber;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT, timezone = "UTC")
-  private final LocalDate roundDate;
+  @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+  private LocalDate roundDate;
 
-  @JsonIgnore private final List<Integer> playersPerGroup;
-  private final List<RoundGroupScoreboard> roundGroupScoreboards;
+  @JsonIgnore private List<Integer> playersPerGroup;
+  private List<RoundGroupScoreboard> roundGroupScoreboards;
   private boolean finishedState;
   private UUID previousRoundUuid;
   private UUID nextRoundUuid;

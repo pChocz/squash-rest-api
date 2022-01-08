@@ -4,6 +4,7 @@ import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +55,8 @@ public class PlayersScoreboardController {
   @ResponseBody
   @QueryLog
   PlayerSummary extractMeAgainstAllForAllLeagues() {
-    final PlayerSummary playerSummary = playersScoreboardService.buildMeAgainstAllForAllLeagues();
+    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
+    final PlayerSummary playerSummary = playersScoreboardService.buildPlayerAgainstAllForAllLeagues(currentPlayerUuid);
     return playerSummary;
   }
 }

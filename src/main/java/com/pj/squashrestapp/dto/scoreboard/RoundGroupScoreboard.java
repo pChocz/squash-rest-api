@@ -8,16 +8,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class RoundGroupScoreboard {
 
-  private final int roundGroupNumber;
-  private final List<RoundGroupScoreboardRow> scoreboardRows;
-  private final Collection<MatchDetailedDto> matches;
+  private int roundGroupNumber;
+  private List<RoundGroupScoreboardRow> scoreboardRows;
+  private Collection<MatchDetailedDto> matches;
 
   public RoundGroupScoreboard(final Collection<MatchDetailedDto> matches) {
     this.matches = matches;

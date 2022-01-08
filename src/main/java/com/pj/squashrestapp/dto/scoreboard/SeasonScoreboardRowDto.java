@@ -1,5 +1,8 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.util.RoundingUtil;
@@ -10,16 +13,18 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto> {
 
-  @EqualsAndHashCode.Include private final PlayerDto player;
-  private final Map<Integer, RoundAndGroupPosition> roundNumberToXpMapAll;
-  private final Map<Integer, Integer> roundNumberToXpMapPretenders;
-  private final int bonusPoints;
+  @EqualsAndHashCode.Include private PlayerDto player;
+  private Map<Integer, RoundAndGroupPosition> roundNumberToXpMapAll;
+  private Map<Integer, Integer> roundNumberToXpMapPretenders;
+  private int bonusPoints;
   private BigDecimal average;
   private int attendices;
   private int totalPoints;

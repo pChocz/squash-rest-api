@@ -1,15 +1,20 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.aspects.LoggableQuery;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Value;
 
-@Value
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class PlayerSummary implements LoggableQuery {
 
-  ScoreboardRow scoreboardRow;
-  int leagues;
-  int seasons;
-  int rounds;
+  private ScoreboardRow scoreboardRow;
+  private int leagues;
+  private int seasons;
+  private int rounds;
 
   @Override
   public String toString() {

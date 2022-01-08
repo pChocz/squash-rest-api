@@ -25,6 +25,7 @@ public class BonusPointService {
   private final PlayerRepository playerRepository;
   private final SeasonRepository seasonRepository;
   private final BonusPointRepository bonusPointRepository;
+  private final RedisCacheService redisCacheService;
 
   public List<BonusPoint> extractBonusPoints(final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
@@ -66,8 +67,9 @@ public class BonusPointService {
 
     season.addBonusPoint(bonusPoint);
     bonusPointRepository.save(bonusPoint);
-    log.info("Adding: {}", bonusPoint);
 
+    redisCacheService.evictCacheForBonusPoint(bonusPoint);
+    log.info("Adding: {}", bonusPoint);
     return bonusPoint;
   }
 
