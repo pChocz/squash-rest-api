@@ -153,7 +153,7 @@ public class PlayersScoreboardService {
     return playerSummary;
   }
 
-  @Cacheable(value = CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
+  @Cacheable(value = CacheConfiguration.PLAYER_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
   public Scoreboard buildMultiplePlayerAgainstAll(final UUID leagueUuid, final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).get();

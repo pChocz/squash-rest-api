@@ -64,6 +64,10 @@ public class SeasonService {
         seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
+  public UUID extractLeagueUuid(final UUID seasonUuid) {
+    return seasonRepository.retrieveLeagueUuidOfSeason(seasonUuid);
+  }
+
   public SeasonScoreboardDto buildSeasonScoreboardDto(
       final SeasonScoreboardDto seasonScoreboardDto,
       final Season season,

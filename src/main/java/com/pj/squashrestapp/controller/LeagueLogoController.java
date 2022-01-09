@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.service.LeagueLogoService;
+import com.pj.squashrestapp.service.RoundService;
+import com.pj.squashrestapp.service.SeasonService;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,19 +21,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class LeagueLogoController {
 
   private final LeagueLogoService leagueLogoService;
+  private final RoundService roundService;
+  private final SeasonService seasonService;
 
   @GetMapping(value = "/season/{seasonUuid}")
   @ResponseBody
   String extractLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
-
-    final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogoBySeasonUuid(seasonUuid);
+    final UUID leagueUuid = seasonService.extractLeagueUuid(seasonUuid);
+    final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 
   @GetMapping(value = "/round/{roundUuid}")
   @ResponseBody
   String extractLeagueLogoByRoundUuid(@PathVariable final UUID roundUuid) {
-    final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogoByRoundUuid(roundUuid);
+    final UUID leagueUuid = roundService.extractLeagueUuid(roundUuid);
+    final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 

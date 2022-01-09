@@ -77,6 +77,7 @@ public class LeagueService {
   private final BonusPointService bonusPointService;
   private final SeasonService seasonService;
   private final DeepRemovalService deepRemovalService;
+  private final RedisCacheService redisCacheService;
 
   private final LeagueRepository leagueRepository;
   private final LeagueLogoRepository leagueLogoRepository;
@@ -181,6 +182,7 @@ public class LeagueService {
     final Optional<LeagueLogo> logoOptional = leagueLogoRepository.findByLeague(leagueToRemove);
     logoOptional.ifPresent(leagueLogoRepository::delete);
 
+    redisCacheService.evictCacheForLeagueLogo(leagueToRemove);
     // deep removal of:
     // - additional matches
     // - round matches / roundgroups / rounds / seasons
@@ -198,6 +200,8 @@ public class LeagueService {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
+
+    redisCacheService.evictCacheForLeagueLogo(league);
 
     leagueLogoRepository.save(leagueLogo);
   }
@@ -394,7 +398,7 @@ public class LeagueService {
     return leagueLogosMap;
   }
 
-  @Cacheable(value = CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, key = "#leagueUuid")
+  @Cacheable(value = CacheConfiguration.LEAGUE_OVERALL_STATS_CACHE, key = "#leagueUuid")
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
     final League league =
         leagueRepository
