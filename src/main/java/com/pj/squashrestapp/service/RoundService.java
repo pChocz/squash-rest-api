@@ -37,7 +37,7 @@ public class RoundService {
   private final RedisCacheService redisCacheService;
 
   public void deleteRound(final UUID roundUuid) {
-    final Round roundToDelete = roundRepository.findByUuid(roundUuid).orElseThrow();
+    final Round roundToDelete = roundRepository.findByUuidWithSeason(roundUuid);
     roundRepository.delete(roundToDelete);
     redisCacheService.evictCacheForRound(roundToDelete);
   }
@@ -165,7 +165,7 @@ public class RoundService {
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
-    final Round round = roundRepository.findByUuid(roundUuid).orElseThrow();
+    final Round round = roundRepository.findByUuidWithSeason(roundUuid);
     round.setFinished(finishedState);
     redisCacheService.evictCacheForRound(round);
     roundRepository.save(round);

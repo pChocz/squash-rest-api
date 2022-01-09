@@ -2,6 +2,7 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,13 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDelet
 
 
   Optional<Season> findByUuid(UUID uuid);
+
+
+  @Query("SELECT s FROM Season s WHERE s.uuid = :uuid")
+  @EntityGraph(attributePaths = {
+      "league"
+  })
+  Season findByUuidWithLeague(@Param("uuid") UUID uuid);
 
 
   Optional<Season> findByLeagueAndNumber(League league, int number);

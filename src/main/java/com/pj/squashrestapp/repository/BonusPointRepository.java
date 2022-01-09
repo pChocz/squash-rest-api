@@ -15,7 +15,9 @@ import org.springframework.data.repository.query.Param;
  */
 public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, BulkDeletableByLeagueUuid {
 
-
+  @EntityGraph(attributePaths = {
+      "season.league"
+  })
   Optional<BonusPoint> findByUuid(UUID uuid);
 
 

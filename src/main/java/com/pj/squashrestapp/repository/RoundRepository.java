@@ -20,6 +20,13 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
 
   @Query("SELECT r FROM Round r WHERE r.uuid = :uuid")
   @EntityGraph(attributePaths = {
+      "season.league"
+  })
+  Round findByUuidWithSeason(@Param("uuid") UUID uuid);
+
+
+  @Query("SELECT r FROM Round r WHERE r.uuid = :uuid")
+  @EntityGraph(attributePaths = {
       "season.league",
       "roundGroups"
   })

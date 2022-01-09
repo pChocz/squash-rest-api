@@ -324,7 +324,7 @@ public class SeasonService {
   }
 
   public void deleteSeason(final UUID seasonUuid) {
-    final Season seasonToDelete = seasonRepository.findByUuid(seasonUuid).orElseThrow();
+    final Season seasonToDelete = seasonRepository.findByUuidWithLeague(seasonUuid);
 
     final JsonSeason jsonSeason = backupService.seasonToJson(seasonUuid);
     final String seasonJsonContent = GsonUtil.gsonWithDateAndDateTime().toJson(jsonSeason);

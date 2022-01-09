@@ -77,6 +77,7 @@ public class BonusPointService {
   public void deleteBonusPoint(final UUID uuid) {
     final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
     log.info("Removing: {}", bonusPoint);
+    redisCacheService.evictCacheForBonusPoint(bonusPoint);
     bonusPointRepository.delete(bonusPoint);
   }
 }

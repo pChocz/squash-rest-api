@@ -28,6 +28,7 @@ public class CacheConfiguration {
   public static final String LEAGUE_ADDITIONAL_MATCHES_CACHE = "league_additional_matches";
 
   private static final Duration DEFAULT_TTL = Duration.ofHours(24);
+  private static final Duration EXTENDED_TTL = Duration.ofDays(7);
 
   @Bean
   public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -52,7 +53,7 @@ public class CacheConfiguration {
             .withCacheConfiguration(
                 LEAGUE_LOGOS_CACHE,
                 RedisCacheConfiguration.defaultCacheConfig()
-                    .entryTtl(DEFAULT_TTL)
+                    .entryTtl(EXTENDED_TTL)
                     .serializeValuesWith(
                         SerializationPair.fromSerializer(new JdkSerializationRedisSerializer())));
   }
