@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.CacheConfiguration;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
@@ -15,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -26,6 +28,8 @@ public class HeadToHeadScoreboardService {
   private final MatchRepository matchRepository;
   private final AdditionalMatchRepository additionalMatchRepository;
 
+
+  @Cacheable(value = CacheConfiguration.H2H_SCOREBOARD_CACHE, key = "{#firstPlayerUuid, #secondPlayerUuid, #includeAdditional}")
   public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
     final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
 

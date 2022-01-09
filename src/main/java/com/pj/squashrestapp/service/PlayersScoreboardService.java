@@ -18,7 +18,6 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
-import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -116,7 +115,7 @@ public class PlayersScoreboardService {
     return scoreboard;
   }
 
-  @Cacheable(value = CacheConfiguration.PLAYER_SCOREBOARD_CACHE, key = "#playerUuid")
+  @Cacheable(value = CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, key = "#playerUuid")
   public PlayerSummary buildPlayerAgainstAllForAllLeagues(final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
@@ -154,13 +153,13 @@ public class PlayersScoreboardService {
     return playerSummary;
   }
 
-  public Scoreboard buildMultipleMeAgainstAll(final UUID leagueUuid) {
-    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
-    final Player player = playerRepository.findByUuid(currentPlayerUuid);
+  @Cacheable(value = CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
+  public Scoreboard buildMultiplePlayerAgainstAll(final UUID leagueUuid, final UUID playerUuid) {
+    final Player player = playerRepository.findByUuid(playerUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).get();
 
     final List<Match> matches =
-        matchRepository.fetchByOnePlayerAgainstOthersAndLeagueId(leagueUuid, currentPlayerUuid);
+        matchRepository.fetchByOnePlayerAgainstOthersAndLeagueId(leagueUuid, playerUuid);
 
     final List<AdditionalMatch> additionalMatches =
         additionalMatchRepository.fetchForSinglePlayerForLeague(player, league);
@@ -176,7 +175,7 @@ public class PlayersScoreboardService {
     allMatchesDtos.addAll(additionalMatchesDtos);
 
     final Scoreboard scoreboard = new Scoreboard(allMatchesDtos);
-    scoreboard.removeSinglePlayer(currentPlayerUuid);
+    scoreboard.removeSinglePlayer(playerUuid);
     scoreboard.reverse();
 
     return scoreboard;

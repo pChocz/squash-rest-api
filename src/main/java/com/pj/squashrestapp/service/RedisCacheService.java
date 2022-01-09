@@ -1,11 +1,13 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.Season;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -50,24 +52,71 @@ public class RedisCacheService {
     return new LinkedHashSet<>(cacheManager.getCacheNames());
   }
 
-  public void evictCacheForMatch(final Match matchToModify) {
-    final UUID roundUuid = matchToModify.getRoundGroup().getRound().getUuid();
-    final UUID seasonUuid = matchToModify.getRoundGroup().getRound().getSeason().getUuid();
-    final UUID leagueUuid = matchToModify.getRoundGroup().getRound().getSeason().getLeague().getUuid();
+  public void evictCacheForAdditionalMatch(final AdditionalMatch match) {
+    final String leagueUuid = match.getLeague().getUuid().toString();
 
-    final UUID firstPlayerUuid = matchToModify.getFirstPlayer().getUuid();
-    final UUID secondPlayerUuid = matchToModify.getSecondPlayer().getUuid();
+    final String p1Uuid = match.getFirstPlayer().getUuid().toString();
+    final String p2Uuid = match.getSecondPlayer().getUuid().toString();
 
-    clearSingle(CacheConfiguration.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, p1Uuid);
+    clearSingle(CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, p2Uuid);
+    clearSingle(CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, String.join(",", leagueUuid, p1Uuid));
+    clearSingle(CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, String.join(",", leagueUuid, p2Uuid));
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p1Uuid, p2Uuid, "true"));
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p2Uuid, p1Uuid, "true"));
+    clearSingle(CacheConfiguration.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, leagueUuid);
+  }
+
+  public void evictCacheForRoundMatch(final Match match) {
+    final String roundUuid = match.getRoundGroup().getRound().getUuid().toString();
+    final String seasonUuid = match.getRoundGroup().getRound().getSeason().getUuid().toString();
+    final String leagueUuid = match.getRoundGroup().getRound().getSeason().getLeague().getUuid().toString();
+
+    final String p1Uuid = match.getFirstPlayer().getUuid().toString();
+    final String p2Uuid = match.getSecondPlayer().getUuid().toString();
+
+    clearSingle(CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, p1Uuid);
+    clearSingle(CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, p2Uuid);
+    clearSingle(CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, String.join(",", leagueUuid, p1Uuid));
+    clearSingle(CacheConfiguration.PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE, String.join(",", leagueUuid, p2Uuid));
+    clearSingle(CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, leagueUuid);
     clearSingle(CacheConfiguration.ROUND_SCOREBOARD_CACHE, roundUuid);
-    clearSingle(CacheConfiguration.PLAYER_SCOREBOARD_CACHE, firstPlayerUuid);
-    clearSingle(CacheConfiguration.PLAYER_SCOREBOARD_CACHE, secondPlayerUuid);
+    clearSingle(CacheConfiguration.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p1Uuid, p2Uuid, "true"));
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p2Uuid, p1Uuid, "true"));
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p1Uuid, p2Uuid, "false"));
+    clearSingle(CacheConfiguration.H2H_SCOREBOARD_CACHE, String.join(",", p2Uuid, p1Uuid, "false"));
   }
 
   public void evictCacheForBonusPoint(final BonusPoint bonusPoint) {
-    final UUID seasonUuid = bonusPoint.getSeason().getUuid();
-    final UUID leagueUuid = bonusPoint.getSeason().getLeague().getUuid();
+    final String seasonUuid = bonusPoint.getSeason().getUuid().toString();
+    final String leagueUuid = bonusPoint.getSeason().getLeague().getUuid().toString();
 
     clearSingle(CacheConfiguration.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, leagueUuid);
+  }
+
+  public void evictCacheForRound(final Round round) {
+    final String roundUuid = round.getUuid().toString();
+    final String seasonUuid = round.getSeason().getUuid().toString();
+    final String leagueUuid = round.getSeason().getLeague().getUuid().toString();
+
+    clearSingle(CacheConfiguration.ROUND_SCOREBOARD_CACHE, roundUuid);
+    clearSingle(CacheConfiguration.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, leagueUuid);
+  }
+
+  public void evictCacheForSeason(final Season season) {
+    final String seasonUuid = season.getUuid().toString();
+    final String leagueUuid = season.getLeague().getUuid().toString();
+
+    clearSingle(CacheConfiguration.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
+    clearSingle(CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, leagueUuid);
   }
 }

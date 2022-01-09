@@ -43,9 +43,12 @@ public class ScoreboardController {
   @GetMapping(value = "/most-recent-round-for-player/{playerUuid}")
   @ResponseBody
   RoundScoreboard scoreboardForMostRecentRoundOfPlayer(@PathVariable final UUID playerUuid) {
-    final RoundScoreboard roundScoreboard =
-        scoreboardService.buildMostRecentRoundOfPlayer(playerUuid);
-    return roundScoreboard;
+    final UUID mostRecentRoundUuid = scoreboardService.getMostRecentRoundUuid(playerUuid);
+    if (mostRecentRoundUuid == null) {
+      return null;
+    } else {
+      return scoreboardService.buildScoreboardForRound(mostRecentRoundUuid);
+    }
   }
 
   @GetMapping(value = "/most-recent-round-for-league/{leagueUuid}")

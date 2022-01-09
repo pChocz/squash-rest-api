@@ -48,6 +48,7 @@ public class SeasonService {
   private final BonusPointService bonusPointService;
   private final XpPointsService xpPointsService;
   private final BackupService backupService;
+  private final RedisCacheService redisCacheService;
 
   private final SetResultRepository setResultRepository;
   private final PlayerRepository playerRepository;
@@ -313,6 +314,7 @@ public class SeasonService {
       season.setDescription(description);
     }
     league.addSeason(season);
+    redisCacheService.evictCacheForSeason(season);
     leagueRepository.save(league);
     return season;
   }
@@ -324,6 +326,7 @@ public class SeasonService {
     final String seasonJsonContent = GsonUtil.gsonWithDateAndDateTime().toJson(jsonSeason);
     log.info("Removing season: \n{}", seasonJsonContent);
 
+    redisCacheService.evictCacheForSeason(seasonToDelete);
     seasonRepository.delete(seasonToDelete);
   }
 }

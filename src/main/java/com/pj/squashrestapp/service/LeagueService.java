@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.pj.squashrestapp.config.CacheConfiguration;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
@@ -59,6 +60,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -200,6 +202,7 @@ public class LeagueService {
     leagueLogoRepository.save(leagueLogo);
   }
 
+  @Cacheable(value = CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague =
         setResultRepository.fetchByLeagueUuid(leagueUuid);
@@ -391,6 +394,7 @@ public class LeagueService {
     return leagueLogosMap;
   }
 
+  @Cacheable(value = CacheConfiguration.LEAGUE_OVERAL_STATS_CACHE, key = "#leagueUuid")
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
     final League league =
         leagueRepository

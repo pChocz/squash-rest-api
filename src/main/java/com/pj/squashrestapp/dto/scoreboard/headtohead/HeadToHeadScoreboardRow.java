@@ -7,25 +7,30 @@ import com.pj.squashrestapp.util.RoundingUtil;
 import java.math.BigDecimal;
 import java.util.Map;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /** */
 @Getter
 @Setter
+@NoArgsConstructor
 public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
-  private final PlayerDto player;
+  private PlayerDto player;
 
   private int pointsWon;
   private int pointsLost;
+  private int pointsBalance;
   private BigDecimal pointsRatio;
 
   private int setsWon;
   private int setsLost;
+  private int setsBalance;
   private BigDecimal setsRatio;
 
   private int matchesWon;
   private int matchesLost;
+  private int matchesBalance;
   private BigDecimal matchesRatio;
 
   private int oneSetMatchesWon;
@@ -85,8 +90,7 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
 
     this.matchesWon = row.getMatchesWon();
     this.matchesLost = row.getMatchesLost();
-    this.matchesRatio =
-        RoundingUtil.round((float) 100 * matchesWon / (matchesWon + matchesLost), 1);
+    this.matchesRatio = RoundingUtil.round((float) 100 * matchesWon / (matchesWon + matchesLost), 1);
 
     final PlayerDto opponent =
         splitPerSet.keySet().stream()
@@ -170,6 +174,18 @@ public class HeadToHeadScoreboardRow implements ScoreboardRow {
           RoundingUtil.round(
               (float) 100 * fiveSetsMatchesWon / (fiveSetsMatchesWon + fiveSetsMatchesLost), 1);
     }
+  }
+
+  public int getPointsBalance() {
+    return getPointsWon() - getPointsLost();
+  }
+
+  public int getSetsBalance() {
+    return getSetsWon() - getSetsLost();
+  }
+
+  public int getMatchesBalance() {
+    return getMatchesWon() - getMatchesLost();
   }
 
   @Override

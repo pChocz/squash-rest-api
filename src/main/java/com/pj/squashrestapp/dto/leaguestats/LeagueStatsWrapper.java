@@ -7,17 +7,19 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class LeagueStatsWrapper implements LoggableQuery {
 
-  private final String leagueName;
-  private final UUID leagueUuid;
-  private final List<PerSeasonStats> perSeasonStats;
-  private final EntireLeagueScoreboard scoreboard;
+  private String leagueName;
+  private UUID leagueUuid;
+  private List<PerSeasonStats> perSeasonStats;
+  private EntireLeagueScoreboard scoreboard;
 
   @Override
   public String message() {

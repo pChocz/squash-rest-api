@@ -8,16 +8,18 @@ import com.pj.squashrestapp.util.MatchExtractorUtil;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class EntireLeagueScoreboard {
 
-  private final String leagueName;
-  private final int numberOfMatches;
-  private final List<EntireLeagueScoreboardRow> rows;
+  private String leagueName;
+  private int numberOfMatches;
+  private List<EntireLeagueScoreboardRow> rows;
 
   public EntireLeagueScoreboard(final League league) {
     this.leagueName = league.getName();

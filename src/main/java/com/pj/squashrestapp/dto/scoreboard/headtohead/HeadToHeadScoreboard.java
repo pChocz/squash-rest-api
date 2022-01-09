@@ -16,16 +16,18 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class HeadToHeadScoreboard implements LoggableQuery {
 
-  private final int numberOfMatches;
-  private final HeadToHeadScoreboardRow winner;
-  private final HeadToHeadScoreboardRow looser;
-  private final Collection<MatchDto> matches;
-  private final List<HeadToHeadChartRow> chartRows;
+  private int numberOfMatches;
+  private HeadToHeadScoreboardRow winner;
+  private HeadToHeadScoreboardRow looser;
+  private Collection<MatchDto> matches;
+  private List<HeadToHeadChartRow> chartRows;
 
   public HeadToHeadScoreboard(final Collection<MatchDto> matches) {
     this.matches = matches;

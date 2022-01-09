@@ -1,39 +1,51 @@
 package com.pj.squashrestapp.dto.leaguestats;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.util.GeneralUtil;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Builder
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class OveralStats {
 
-  private final String leagueName;
-  private final UUID leagueUuid;
-  private final String time;
-  private final String location;
-  private final int seasons;
-  private final int players;
-  private final BigDecimal averagePlayersPerRound;
-  private final BigDecimal averagePlayersPerGroup;
-  private final BigDecimal averageGroupsPerRound;
-  private final int rounds;
-  private final int matches;
-  private final int sets;
-  private final int points;
-  private final MatchFormatType matchFormatType;
-  private final SetWinningType regularSetWinningType;
-  private final SetWinningType tiebreakWinningType;
-  private final int regularSetWinningPoints;
-  private final int tiebreakWinningPoints;
-  private final int numberOfRoundsPerSeason;
-  private final int roundsToBeDeducted;
-  private final LocalDate dateOfCreation;
+  private String leagueName;
+  private UUID leagueUuid;
+  private String time;
+  private String location;
+  private int seasons;
+  private int players;
+  private BigDecimal averagePlayersPerRound;
+  private BigDecimal averagePlayersPerGroup;
+  private BigDecimal averageGroupsPerRound;
+  private int rounds;
+  private int matches;
+  private int sets;
+  private int points;
+  private MatchFormatType matchFormatType;
+  private SetWinningType regularSetWinningType;
+  private SetWinningType tiebreakWinningType;
+  private int regularSetWinningPoints;
+  private int tiebreakWinningPoints;
+  private int numberOfRoundsPerSeason;
+  private int roundsToBeDeducted;
+
+  @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonDeserialize(using = LocalDateDeserializer.class)
+  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+  private LocalDate dateOfCreation;
 }

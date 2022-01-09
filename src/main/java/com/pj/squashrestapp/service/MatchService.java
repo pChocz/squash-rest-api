@@ -3,7 +3,6 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
-import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
@@ -79,7 +78,7 @@ public class MatchService {
 
     setResultRepository.save(setToModify);
 
-    redisCacheService.evictCacheForMatch(matchToModify);
+    redisCacheService.evictCacheForRoundMatch(matchToModify);
 
     log.info(
         "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",

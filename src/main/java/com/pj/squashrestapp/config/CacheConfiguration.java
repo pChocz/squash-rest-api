@@ -17,10 +17,14 @@ import org.springframework.data.redis.serializer.RedisSerializationContext.Seria
 @EnableCaching
 public class CacheConfiguration {
 
+  public static final String LEAGUE_DETAILED_STATS_CACHE = "league_detailed_stats";
+  public static final String LEAGUE_OVERAL_STATS_CACHE = "league_overal_stats";
   public static final String SEASON_SCOREBOARD_CACHE = "season_scoreboard";
   public static final String ROUND_SCOREBOARD_CACHE = "round_scoreboard";
-  public static final String PLAYER_SCOREBOARD_CACHE = "player_scoreboard";
+  public static final String PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE = "player_all_leagues_scoreboard";
   public static final String H2H_SCOREBOARD_CACHE = "h2h_scoreboard";
+  public static final String PLAYER_SINGLE_LEAGUE_SCOREBOARD_CACHE = "player_single_league_scoreboard";
+  public static final String LEAGUE_ADDITIONAL_MATCHES_CACHE = "league_additional_matches";
 
   @Bean
   public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -32,7 +36,7 @@ public class CacheConfiguration {
   @Bean
   RedisCacheConfiguration redisCacheConfiguration() {
     return RedisCacheConfiguration.defaultCacheConfig()
-        .entryTtl(Duration.ofMinutes(60))
+        .entryTtl(Duration.ofHours(24))
         .serializeValuesWith(
             SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
   }

@@ -42,7 +42,7 @@ public class SeasonController {
   @DeleteMapping(value = "/{seasonUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
-  void deleteRound(@PathVariable final UUID seasonUuid) {
+  void deleteSeason(@PathVariable final UUID seasonUuid) {
     seasonService.deleteSeason(seasonUuid);
     log.info("Season {} has been deleted", seasonUuid);
   }

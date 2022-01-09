@@ -2,6 +2,10 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
@@ -17,32 +21,36 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class AdditionalMatchDetailedDto implements MatchDto {
 
-  private final UUID matchUuid;
-  private final PlayerDto firstPlayer;
-  private final PlayerDto secondPlayer;
-  private final PlayerDto winner;
-  private final UUID leagueUuid;
-  private final String leagueName;
-  private final AdditionalMatchType type;
-  private final int seasonNumber;
+  private UUID matchUuid;
+  private PlayerDto firstPlayer;
+  private PlayerDto secondPlayer;
+  private PlayerDto winner;
+  private UUID leagueUuid;
+  private String leagueName;
+  private AdditionalMatchType type;
+  private int seasonNumber;
 
+  @JsonSerialize(using = LocalDateSerializer.class)
+  @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private final LocalDate date;
+  private LocalDate date;
 
-  private final List<SetDto> sets;
+  private List<SetDto> sets;
 
-  @JsonIgnore private final MatchFormatType matchFormatType;
-  @JsonIgnore private final SetWinningType regularSetWinningType;
-  @JsonIgnore private final int regularSetWinningPoints;
-  @JsonIgnore private final SetWinningType tieBreakWinningType;
-  @JsonIgnore private final int tieBreakWinningPoints;
+  @JsonIgnore private MatchFormatType matchFormatType;
+  @JsonIgnore private SetWinningType regularSetWinningType;
+  @JsonIgnore private int regularSetWinningPoints;
+  @JsonIgnore private SetWinningType tieBreakWinningType;
+  @JsonIgnore private int tieBreakWinningPoints;
 
-  private final MatchStatus status;
+  private MatchStatus status;
 
   public AdditionalMatchDetailedDto(final AdditionalMatch match) {
     this.matchUuid = match.getUuid();

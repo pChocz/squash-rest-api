@@ -12,13 +12,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class Scoreboard implements LoggableQuery {
 
-  private final int numberOfMatches;
-  private final List<PlayersStatsScoreboardRow> scoreboardRows;
+  private int numberOfMatches;
+  private List<PlayersStatsScoreboardRow> scoreboardRows;
 
   public Scoreboard(final Collection<MatchDto> matches) {
     this.numberOfMatches = matches.size();

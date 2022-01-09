@@ -47,7 +47,8 @@ public class PlayersScoreboardController {
   @GetMapping(value = "/me-against-all/{leagueUuid}")
   @ResponseBody
   Scoreboard extractMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
-    final Scoreboard scoreboard = playersScoreboardService.buildMultipleMeAgainstAll(leagueUuid);
+    final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
+    final Scoreboard scoreboard = playersScoreboardService.buildMultiplePlayerAgainstAll(leagueUuid, currentPlayerUuid);
     return scoreboard;
   }
 

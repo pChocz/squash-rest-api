@@ -3,31 +3,33 @@ package com.pj.squashrestapp.dto.scoreboard;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class EntireLeagueScoreboardRow {
 
-  private final PlayerDto player;
+  private PlayerDto player;
 
-  private final int xpTotal;
-  private final int xpCounted;
-  private final int average;
-  private final int attendices;
+  private int xpTotal;
+  private int xpCounted;
+  private int average;
+  private int attendices;
 
-  private final int pointsWon;
-  private final int pointsLost;
-  private final int pointsBalance;
+  private int pointsWon;
+  private int pointsLost;
+  private int pointsBalance;
 
-  private final int setsWon;
-  private final int setsLost;
-  private final int setsBalance;
+  private int setsWon;
+  private int setsLost;
+  private int setsBalance;
 
-  private final int matchesWon;
-  private final int matchesLost;
-  private final int matchesBalance;
+  private int matchesWon;
+  private int matchesLost;
+  private int matchesBalance;
 
   public EntireLeagueScoreboardRow(
       final PlayerLeagueXpOveral playerLeagueXpOveral,
