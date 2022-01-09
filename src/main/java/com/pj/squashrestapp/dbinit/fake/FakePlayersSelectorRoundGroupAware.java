@@ -13,6 +13,7 @@ import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.service.XpPointsService;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,7 +39,8 @@ public class FakePlayersSelectorRoundGroupAware {
     final RoundScoreboard previousRoundScoreboard = scoreboardService.buildMostRecentRoundOfLeague(league.getUuid());
     final int numberOfGroupsInPreviousRound = previousRoundScoreboard.getRoundGroupScoreboards().size();
 
-    final SeasonScoreboardDto seasonScoreboard = seasonService.buildCurrentSeasonScoreboardOfLeague(league.getUuid());
+    final UUID seasonUuid = seasonService.getCurrentSeasonUuidForLeague(league.getUuid());
+    final SeasonScoreboardDto seasonScoreboard = seasonService.buildSeasonScoreboardDto(seasonUuid);
     final List<PlayerDto> playersSortedBasedOnSeasonScoreboard = seasonScoreboard
         .getSeasonScoreboardRows()
         .stream()

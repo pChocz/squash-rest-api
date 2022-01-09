@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
@@ -123,7 +122,6 @@ public class LeagueController {
   @GetMapping(value = "/stats/{leagueUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
-  @QueryLog
   LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
     final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueUuid(leagueUuid);
     return leagueStatsWrapper;

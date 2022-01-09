@@ -56,9 +56,11 @@ public class LogControllerAspect {
   /**
    * Logging aspect that matches all non-void repository and service methods.
    *
+   * ONLY FOR DEBUG PURPOSES!!
+   *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
-   * @throws Throwable rethrows exception after logging it so it can be passed to the client
+   * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
   //  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
   //  @Around("repositoryMethodsPointcut()")
@@ -93,18 +95,12 @@ public class LogControllerAspect {
     }
   }
 
-
-
-
-
-
-
   /**
-   * Logging aspect that matches all non-void controller methods.
+   * Logging aspect that matches all redis-evict related methods.
    *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
-   * @throws Throwable rethrows exception after logging it so it can be passed to the client
+   * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
   @Around("redisServiceMethodsPointcut()")
   public Object logRedisServiceMethods(final ProceedingJoinPoint proceedingJoinPoint)
@@ -140,25 +136,12 @@ public class LogControllerAspect {
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   /**
-   * Logging aspect that matches all non-void controller methods.
+   * Logging aspect that matches all controller methods.
    *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
-   * @throws Throwable rethrows exception after logging it so it can be passed to the client
+   * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
   @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
   public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint)

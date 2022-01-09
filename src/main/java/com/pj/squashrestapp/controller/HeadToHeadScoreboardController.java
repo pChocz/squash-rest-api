@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
 import com.pj.squashrestapp.service.HeadToHeadScoreboardService;
 import java.util.UUID;
@@ -24,7 +23,6 @@ public class HeadToHeadScoreboardController {
 
   @GetMapping(value = "/{firstPlayerUuid}/{secondPlayerUuid}")
   @ResponseBody
-  @QueryLog
   HeadToHeadScoreboard headToHead(
       @PathVariable final UUID firstPlayerUuid,
       @PathVariable final UUID secondPlayerUuid,

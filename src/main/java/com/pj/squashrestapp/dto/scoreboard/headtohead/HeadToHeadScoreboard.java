@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.dto.scoreboard.headtohead;
 
-import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.SetDto;
@@ -21,7 +20,7 @@ import lombok.NoArgsConstructor;
 /** */
 @Getter
 @NoArgsConstructor
-public class HeadToHeadScoreboard implements LoggableQuery {
+public class HeadToHeadScoreboard {
 
   private int numberOfMatches;
   private HeadToHeadScoreboardRow winner;
@@ -184,11 +183,6 @@ public class HeadToHeadScoreboard implements LoggableQuery {
 
   private int extractNumberOfNonNullSets(final MatchDto match) {
     return (int) match.getSets().stream().filter(SetDto::isNonEmpty).count();
-  }
-
-  @Override
-  public String message() {
-    return toString();
   }
 
   @Override

@@ -1,15 +1,13 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import com.pj.squashrestapp.aspects.LoggableQuery;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Value;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlayerSummary implements LoggableQuery {
+public class PlayerSummary {
 
   private ScoreboardRow scoreboardRow;
   private int leagues;
@@ -27,8 +25,4 @@ public class PlayerSummary implements LoggableQuery {
         + rounds;
   }
 
-  @Override
-  public String message() {
-    return "Dashboard";
-  }
 }

@@ -3,7 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
@@ -25,6 +25,7 @@ import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
+import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.SetWinningType;
@@ -61,6 +62,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -206,7 +208,7 @@ public class LeagueService {
     leagueLogoRepository.save(leagueLogo);
   }
 
-  @Cacheable(value = CacheConfiguration.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
+  @Cacheable(value = RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague =
         setResultRepository.fetchByLeagueUuid(leagueUuid);
@@ -398,7 +400,7 @@ public class LeagueService {
     return leagueLogosMap;
   }
 
-  @Cacheable(value = CacheConfiguration.LEAGUE_OVERALL_STATS_CACHE, key = "#leagueUuid")
+  @Cacheable(value = RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, key = "#leagueUuid")
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
     final League league =
         leagueRepository
@@ -494,4 +496,5 @@ public class LeagueService {
   private Predicate<League> leagueNameEqualPredicate(final String leagueNameTrimmed) {
     return league -> league.getName().trim().equalsIgnoreCase(leagueNameTrimmed);
   }
+
 }

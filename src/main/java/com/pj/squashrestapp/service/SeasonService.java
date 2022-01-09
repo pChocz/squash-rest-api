@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -208,7 +207,7 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
-  @Cacheable(value = CacheConfiguration.SEASON_SCOREBOARD_CACHE, key = "#seasonUuid")
+  @Cacheable(value = RedisCacheConfig.SEASON_SCOREBOARD_CACHE, key = "#seasonUuid")
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
     final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(seasonUuid);
     return seasonScoreboardDto;
@@ -265,15 +264,13 @@ public class SeasonService {
         seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
-  public SeasonScoreboardDto buildCurrentSeasonScoreboardOfLeague(final UUID leagueUuid) {
-    final List<Season> currentSeason =
-        seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
-    if (currentSeason.isEmpty()) {
+  public UUID getCurrentSeasonUuidForLeague(final UUID leagueUuid) {
+    final List<Season> currentSeasonAsList = seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
+    if (currentSeasonAsList.isEmpty()) {
       return null;
+    } else {
+      return currentSeasonAsList.get(0).getUuid();
     }
-    final SeasonScoreboardDto seasonScoreboardDto =
-        buildSeasonScoreboardDto(currentSeason.get(0).getUuid());
-    return seasonScoreboardDto;
   }
 
   @Transactional

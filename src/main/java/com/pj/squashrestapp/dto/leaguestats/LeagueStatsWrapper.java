@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.dto.leaguestats;
 
-import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.scoreboard.EntireLeagueScoreboard;
 import java.util.List;
 import java.util.UUID;
@@ -14,17 +13,12 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LeagueStatsWrapper implements LoggableQuery {
+public class LeagueStatsWrapper {
 
   private String leagueName;
   private UUID leagueUuid;
   private List<PerSeasonStats> perSeasonStats;
   private EntireLeagueScoreboard scoreboard;
-
-  @Override
-  public String message() {
-    return toString();
-  }
 
   @Override
   public String toString() {

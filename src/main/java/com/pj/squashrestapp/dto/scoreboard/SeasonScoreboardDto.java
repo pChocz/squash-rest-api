@@ -1,9 +1,5 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
-import com.pj.squashrestapp.aspects.LoggableQuery;
-import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Round;
@@ -21,7 +17,7 @@ import lombok.NoArgsConstructor;
 /** */
 @Getter
 @NoArgsConstructor
-public class SeasonScoreboardDto implements LoggableQuery {
+public class SeasonScoreboardDto {
 
   private SeasonDto season;
   private int allRounds;
@@ -102,11 +98,6 @@ public class SeasonScoreboardDto implements LoggableQuery {
 
   public boolean nextSeasonExists() {
     return this.nextSeasonUuid != null;
-  }
-
-  @Override
-  public String message() {
-    return toString();
   }
 
   @Override

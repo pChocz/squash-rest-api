@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -30,7 +30,7 @@ public class ScoreboardService {
   private final SetResultRepository setResultRepository;
   private final XpPointsRepository xpPointsRepository;
 
-  @Cacheable(value = CacheConfiguration.ROUND_SCOREBOARD_CACHE, key = "#roundUuid")
+  @Cacheable(value = RedisCacheConfig.ROUND_SCOREBOARD_CACHE, key = "#roundUuid")
   public RoundScoreboard buildScoreboardForRound(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundUuid(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);
@@ -73,8 +73,17 @@ public class ScoreboardService {
     return roundScoreboard;
   }
 
-  public UUID getMostRecentRoundUuid(final UUID playerUuid) {
+  public UUID getMostRecentRoundUuidForPlayer(final UUID playerUuid) {
     final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfPlayer(playerUuid, PageRequest.of(0, 1));
+    if (mostRecentRoundAsList.isEmpty()) {
+      return null;
+    } else {
+      return mostRecentRoundAsList.get(0).getUuid();
+    }
+  }
+
+  public UUID getMostRecentRoundUuidForLeague(final UUID leagueUuid) {
+    final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfLeague(leagueUuid, PageRequest.of(0, 1));
     if (mostRecentRoundAsList.isEmpty()) {
       return null;
     } else {
@@ -114,8 +123,7 @@ public class ScoreboardService {
   }
 
   public RoundScoreboard buildMostRecentRoundOfLeague(final UUID leagueUuid) {
-    final List<Round> mostRecentRoundAsList =
-        roundRepository.findMostRecentRoundOfLeague(leagueUuid, PageRequest.of(0, 1));
+    final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfLeague(leagueUuid, PageRequest.of(0, 1));
     return buildRoundScoreboard(mostRecentRoundAsList);
   }
 }

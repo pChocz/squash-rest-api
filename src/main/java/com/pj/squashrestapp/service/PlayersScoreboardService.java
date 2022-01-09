@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
@@ -115,7 +115,7 @@ public class PlayersScoreboardService {
     return scoreboard;
   }
 
-  @Cacheable(value = CacheConfiguration.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, key = "#playerUuid")
+  @Cacheable(value = RedisCacheConfig.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, key = "#playerUuid")
   public PlayerSummary buildPlayerAgainstAllForAllLeagues(final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
@@ -153,7 +153,7 @@ public class PlayersScoreboardService {
     return playerSummary;
   }
 
-  @Cacheable(value = CacheConfiguration.PLAYER_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
+  @Cacheable(value = RedisCacheConfig.PLAYER_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
   public Scoreboard buildMultiplePlayerAgainstAll(final UUID leagueUuid, final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).get();

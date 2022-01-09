@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
-import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -23,7 +22,7 @@ import lombok.NoArgsConstructor;
 /** */
 @Getter
 @NoArgsConstructor
-public class RoundScoreboard implements LoggableQuery {
+public class RoundScoreboard {
 
   private String leagueName;
 
@@ -97,11 +96,6 @@ public class RoundScoreboard implements LoggableQuery {
         scoreboardRow.setXpEarned(xpPoints.get(i++));
       }
     }
-  }
-
-  @Override
-  public String message() {
-    return toString();
   }
 
   @Override

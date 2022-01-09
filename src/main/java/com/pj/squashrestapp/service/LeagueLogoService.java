@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import java.util.NoSuchElementException;
@@ -35,7 +35,7 @@ public class LeagueLogoService {
     return leagueLogoBytes;
   }
 
-  @Cacheable(value = CacheConfiguration.LEAGUE_LOGOS_CACHE, key = "#leagueUuid")
+  @Cacheable(value = RedisCacheConfig.LEAGUE_LOGOS_CACHE, key = "#leagueUuid")
   public byte[] extractLeagueLogo(final UUID leagueUuid) {
     final byte[] leagueLogoBytes =
         leagueLogoRepository

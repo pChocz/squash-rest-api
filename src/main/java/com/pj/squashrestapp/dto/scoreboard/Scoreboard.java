@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import com.pj.squashrestapp.aspects.LoggableQuery;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ import lombok.NoArgsConstructor;
 /** */
 @Getter
 @NoArgsConstructor
-public class Scoreboard implements LoggableQuery {
+public class Scoreboard {
 
   private int numberOfMatches;
   private List<PlayersStatsScoreboardRow> scoreboardRows;
@@ -103,14 +102,6 @@ public class Scoreboard implements LoggableQuery {
     }
     Collections.sort(this.scoreboardRows);
     Collections.reverse(this.scoreboardRows);
-  }
-
-  @Override
-  public String message() {
-    return "League matches: "
-        + scoreboardRows.stream()
-            .map(PlayersStatsScoreboardRow::toString)
-            .collect(Collectors.joining(", ", "[", "]"));
   }
 
   @Override

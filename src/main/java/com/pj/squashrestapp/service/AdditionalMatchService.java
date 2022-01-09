@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
@@ -41,7 +41,7 @@ public class AdditionalMatchService {
     return matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
   }
 
-  @Cacheable(value = CacheConfiguration.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
+  @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
   public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {

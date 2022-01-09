@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.aspects.QueryLog;
 import com.pj.squashrestapp.dto.scoreboard.PlayerSummary;
 import com.pj.squashrestapp.dto.scoreboard.Scoreboard;
 import com.pj.squashrestapp.service.PlayersScoreboardService;
@@ -26,7 +25,6 @@ public class PlayersScoreboardController {
 
   @GetMapping(value = "/{leagueUuid}/{playersUuids}")
   @ResponseBody
-  @QueryLog
   Scoreboard extractAllAgainstAll(
       @PathVariable final UUID leagueUuid,
       @PathVariable final UUID[] playersUuids,
@@ -54,7 +52,6 @@ public class PlayersScoreboardController {
 
   @GetMapping(value = "/me-against-all")
   @ResponseBody
-  @QueryLog
   PlayerSummary extractMeAgainstAllForAllLeagues() {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
     final PlayerSummary playerSummary = playersScoreboardService.buildPlayerAgainstAllForAllLeagues(currentPlayerUuid);

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.CacheConfiguration;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
@@ -9,7 +9,6 @@ import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +28,7 @@ public class HeadToHeadScoreboardService {
   private final AdditionalMatchRepository additionalMatchRepository;
 
 
-  @Cacheable(value = CacheConfiguration.H2H_SCOREBOARD_CACHE, key = "{#firstPlayerUuid, #secondPlayerUuid, #includeAdditional}")
+  @Cacheable(value = RedisCacheConfig.H2H_SCOREBOARD_CACHE, key = "{#firstPlayerUuid, #secondPlayerUuid, #includeAdditional}")
   public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
     final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
 
