@@ -10,7 +10,9 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext.SerializationPair;
 
-/** */
+/**
+ * Configuration for Redis cache.
+ */
 @Configuration
 @EnableCaching
 public class RedisCacheConfig {
@@ -28,6 +30,11 @@ public class RedisCacheConfig {
   private static final Duration DEFAULT_TTL = Duration.ofHours(24);
   private static final Duration EXTENDED_TTL = Duration.ofDays(7);
 
+
+  /**
+   * Creates default cache configuration. It will be used for all caches except
+   * ones that will be specified in the builder customizer bean below.
+   */
   @Bean
   RedisCacheConfiguration redisCacheConfiguration() {
     return RedisCacheConfiguration.defaultCacheConfig()
@@ -36,6 +43,10 @@ public class RedisCacheConfig {
             SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
   }
 
+  /**
+   * Configuration customizations. It is used to overwrite default configuration
+   * defined in the bean above for specific cache type.
+   */
   @Bean
   public RedisCacheManagerBuilderCustomizer redisCacheManagerBuilderCustomizer() {
     return (builder) ->

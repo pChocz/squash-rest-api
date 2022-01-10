@@ -33,7 +33,7 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
   Round findByUuidWithSeasonLeague(@Param("uuid") UUID uuid);
 
 
-  Optional<Round> findBySeasonAndNumber(Season season, int number);
+  Optional<Round> findBySeasonLeagueUuidAndSeasonNumberAndNumber(UUID leagueUuid, int seasonNumber, int number);
 
 
   @Query("""

@@ -43,20 +43,23 @@ public class ScoreboardService {
               .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
     }
 
-    final int currentRoundNumber = round.getNumber();
-    final Season currentSeason = round.getSeason();
+    final int roundNumber = round.getNumber();
+    final Season season = round.getSeason();
+    final UUID leagueUuid = season.getLeague().getUuid();
+    final int seasonNumber = season.getNumber();
+    final int lastRoundNumber = season.getNumberOfRounds();
+    final boolean isFirstRound = (roundNumber == 1);
+    final boolean isLastRound = (roundNumber == lastRoundNumber);
 
     final UUID previousRoundUuid =
-        roundRepository
-            .findBySeasonAndNumber(currentSeason, currentRoundNumber - 1)
-            .map(Round::getUuid)
-            .orElse(null);
+            isFirstRound
+                    ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
+                    : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
 
     final UUID nextRoundUuid =
-        roundRepository
-            .findBySeasonAndNumber(currentSeason, currentRoundNumber + 1)
-            .map(Round::getUuid)
-            .orElse(null);
+            isLastRound
+                    ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
+                    : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
 
     final RoundScoreboard roundScoreboard =
         new RoundScoreboard(round, previousRoundUuid, nextRoundUuid);
@@ -66,11 +69,18 @@ public class ScoreboardService {
 
     final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
     final String split = GeneralUtil.integerListToString(playersPerGroup);
-    final String type = currentSeason.getXpPointsType();
+    final String type = season.getXpPointsType();
     final List<Integer> xpPoints = xpPointsRepository.retrievePointsBySplitAndType(split, type);
 
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
+  }
+
+  private UUID getRoundUuidOrNull(UUID leagueUuid, int seasonNumber, int roundNumber) {
+    return roundRepository
+            .findBySeasonLeagueUuidAndSeasonNumberAndNumber(leagueUuid, seasonNumber, roundNumber)
+            .map(Round::getUuid)
+            .orElse(null);
   }
 
   public UUID getMostRecentRoundUuidForPlayer(final UUID playerUuid) {
