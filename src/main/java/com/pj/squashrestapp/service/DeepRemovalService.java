@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 public class DeepRemovalService {
 
   private static final int PARTITION_SIZE = 10_000;
-  private final RedisCacheService redisCacheService;
 
   // additional match
   private final AdditionalSetResultRepository additionalSetResultRepository;
@@ -54,7 +53,6 @@ public class DeepRemovalService {
   public void deepRemoveLeague(final UUID leagueUuid) {
     getAllRequiredRepos().forEach(repository -> deleteAllByLeagueUuid(repository, leagueUuid));
     final League league = leagueRepository.findByUuidRaw(leagueUuid);
-    redisCacheService.clearAll();
     leagueRepository.delete(league);
   }
 

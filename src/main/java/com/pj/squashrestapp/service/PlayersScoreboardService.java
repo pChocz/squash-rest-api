@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
@@ -27,7 +26,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -115,7 +113,6 @@ public class PlayersScoreboardService {
     return scoreboard;
   }
 
-  @Cacheable(value = RedisCacheConfig.PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE, key = "#playerUuid")
   public PlayerSummary buildPlayerAgainstAllForAllLeagues(final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
@@ -153,7 +150,6 @@ public class PlayersScoreboardService {
     return playerSummary;
   }
 
-  @Cacheable(value = RedisCacheConfig.PLAYER_LEAGUE_SCOREBOARD_CACHE, key = "{#leagueUuid, #playerUuid}")
   public Scoreboard buildMultiplePlayerAgainstAll(final UUID leagueUuid, final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).get();

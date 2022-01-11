@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -16,7 +15,6 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +28,6 @@ public class ScoreboardService {
   private final SetResultRepository setResultRepository;
   private final XpPointsRepository xpPointsRepository;
 
-  @Cacheable(value = RedisCacheConfig.ROUND_SCOREBOARD_CACHE, key = "#roundUuid")
   public RoundScoreboard buildScoreboardForRound(final UUID roundUuid) {
     final List<SetResult> setResults = setResultRepository.fetchByRoundUuid(roundUuid);
     final Long roundId = roundRepository.findIdByUuid(roundUuid);

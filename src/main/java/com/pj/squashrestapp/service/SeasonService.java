@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
@@ -32,7 +31,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -47,7 +45,6 @@ public class SeasonService {
   private final BonusPointService bonusPointService;
   private final XpPointsService xpPointsService;
   private final BackupService backupService;
-  private final RedisCacheService redisCacheService;
 
   private final SetResultRepository setResultRepository;
   private final PlayerRepository playerRepository;
@@ -207,7 +204,6 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
-  @Cacheable(value = RedisCacheConfig.SEASON_SCOREBOARD_CACHE, key = "#seasonUuid")
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
     final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(seasonUuid);
     return seasonScoreboardDto;
@@ -315,7 +311,6 @@ public class SeasonService {
       season.setDescription(description);
     }
     league.addSeason(season);
-    redisCacheService.evictCacheForSeason(season);
     leagueRepository.save(league);
     return season;
   }
@@ -327,7 +322,6 @@ public class SeasonService {
     final String seasonJsonContent = GsonUtil.gsonWithDateAndDateTime().toJson(jsonSeason);
     log.info("Removing season: \n{}", seasonJsonContent);
 
-    redisCacheService.evictCacheForSeason(seasonToDelete);
     seasonRepository.delete(seasonToDelete);
   }
 }

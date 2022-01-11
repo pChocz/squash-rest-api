@@ -25,7 +25,6 @@ public class BonusPointService {
   private final PlayerRepository playerRepository;
   private final SeasonRepository seasonRepository;
   private final BonusPointRepository bonusPointRepository;
-  private final RedisCacheService redisCacheService;
 
   public List<BonusPoint> extractBonusPoints(final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
@@ -68,7 +67,6 @@ public class BonusPointService {
     season.addBonusPoint(bonusPoint);
     bonusPointRepository.save(bonusPoint);
 
-    redisCacheService.evictCacheForBonusPoint(bonusPoint);
     log.info("Adding: {}", bonusPoint);
     return bonusPoint;
   }
@@ -77,7 +75,6 @@ public class BonusPointService {
   public void deleteBonusPoint(final UUID uuid) {
     final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
     log.info("Removing: {}", bonusPoint);
-    redisCacheService.evictCacheForBonusPoint(bonusPoint);
     bonusPointRepository.delete(bonusPoint);
   }
 }

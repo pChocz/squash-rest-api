@@ -31,9 +31,6 @@ spring:
     url: _REPLACE_
     username: _REPLACE_
     password: _REPLACE_
-  redis:
-    host: localhost
-    port: 6379
   servlet:
     multipart:
       max-file-size: 200MB

@@ -3,7 +3,6 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
@@ -25,7 +24,6 @@ import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.SetWinningType;
@@ -61,8 +59,6 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,7 +75,6 @@ public class LeagueService {
   private final BonusPointService bonusPointService;
   private final SeasonService seasonService;
   private final DeepRemovalService deepRemovalService;
-  private final RedisCacheService redisCacheService;
 
   private final LeagueRepository leagueRepository;
   private final LeagueLogoRepository leagueLogoRepository;
@@ -184,7 +179,6 @@ public class LeagueService {
     final Optional<LeagueLogo> logoOptional = leagueLogoRepository.findByLeague(leagueToRemove);
     logoOptional.ifPresent(leagueLogoRepository::delete);
 
-    redisCacheService.evictCacheForLeagueLogo(leagueToRemove);
     // deep removal of:
     // - additional matches
     // - round matches / roundgroups / rounds / seasons
@@ -203,12 +197,9 @@ public class LeagueService {
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
 
-    redisCacheService.evictCacheForLeagueLogo(league);
-
     leagueLogoRepository.save(leagueLogo);
   }
 
-  @Cacheable(value = RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague =
         setResultRepository.fetchByLeagueUuid(leagueUuid);
@@ -400,7 +391,6 @@ public class LeagueService {
     return leagueLogosMap;
   }
 
-  @Cacheable(value = RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, key = "#leagueUuid")
   public OveralStats buildOveralStatsForLeagueUuid(final UUID leagueUuid) {
     final League league =
         leagueRepository

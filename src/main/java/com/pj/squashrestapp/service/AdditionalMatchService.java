@@ -1,6 +1,5 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
@@ -20,7 +19,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AdditionalMatchService {
 
-  private final RedisCacheService redisCacheService;
   private final AdditionalMatchRepository additionalMatchRepository;
   private final AdditionalSetResultRepository additonalSetResultRepository;
   private final PlayerRepository playerRepository;
@@ -41,7 +38,6 @@ public class AdditionalMatchService {
     return matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
   }
 
-  @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
   public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
     final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
     if (league.isEmpty()) {
@@ -127,7 +123,6 @@ public class AdditionalMatchService {
       throw new GeneralBadRequestException("Additional match not found!");
     }
     final AdditionalMatch match = matchOptional.get();
-    redisCacheService.evictCacheForAdditionalMatch(match);
     additionalMatchRepository.delete(match);
     log.info("Deleting additional match!\n\t-> {}", match.detailedInfo());
   }
@@ -175,8 +170,6 @@ public class AdditionalMatchService {
         setToModify.setSecondPlayerScore(looserScore);
       }
     }
-
-    redisCacheService.evictCacheForAdditionalMatch(matchToModify);
 
     additonalSetResultRepository.save(setToModify);
 

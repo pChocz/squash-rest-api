@@ -34,12 +34,10 @@ public class RoundService {
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
   private final RoundGroupRepository roundGroupRepository;
-  private final RedisCacheService redisCacheService;
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findByUuidWithSeason(roundUuid);
     roundRepository.delete(roundToDelete);
-    redisCacheService.evictCacheForRound(roundToDelete);
   }
 
   @Transactional
@@ -62,8 +60,6 @@ public class RoundService {
 
     // saving to DB
     roundRepository.save(round);
-
-    redisCacheService.evictCacheForRound(round);
 
     return round;
   }
@@ -167,7 +163,6 @@ public class RoundService {
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
     final Round round = roundRepository.findByUuidWithSeason(roundUuid);
     round.setFinished(finishedState);
-    redisCacheService.evictCacheForRound(round);
     roundRepository.save(round);
   }
 
@@ -204,8 +199,6 @@ public class RoundService {
       round.addRoundGroup(roundGroup);
       roundGroupRepository.save(roundGroup);
     }
-
-    redisCacheService.evictCacheForRound(round);
 
     return round;
   }
