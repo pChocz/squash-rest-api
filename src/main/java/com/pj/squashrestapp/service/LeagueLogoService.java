@@ -1,11 +1,13 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 public class LeagueLogoService {
 
   private final LeagueLogoRepository leagueLogoRepository;
+  private final LeagueRepository leagueRepository;
 
   public byte[] extractLeagueLogoBySeasonUuid(final UUID seasonUuid) {
     final byte[] leagueLogoBytes =
@@ -32,6 +35,7 @@ public class LeagueLogoService {
     return leagueLogoBytes;
   }
 
+  @Cacheable(value = RedisCacheConfig.LEAGUE_LOGOS_CACHE, key = "#leagueUuid")
   public byte[] extractLeagueLogo(final UUID leagueUuid) {
     final byte[] leagueLogoBytes =
         leagueLogoRepository

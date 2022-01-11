@@ -38,6 +38,11 @@ public class LogControllerAspect {
     // empty
   }
 
+  @Pointcut("execution(* com.pj.squashrestapp.service.RedisCacheService.*(..)))")
+  public void redisServiceMethodsPointcut() {
+    // empty
+  }
+
   @Pointcut("execution(* com.pj.squashrestapp.controller.*.*(..)))")
   public void controllerMethodsPointcut() {
     // empty
@@ -87,6 +92,47 @@ public class LogControllerAspect {
           stopWatch.getTotalTimeMillis(),
           className,
           methodName);
+    }
+  }
+
+  /**
+   * Logging aspect that matches all redis-evict related methods.
+   *
+   * @param proceedingJoinPoint Spring method execution join point
+   * @return unmodified return object from the controller method
+   * @throws Throwable rethrows exception after logging it, so it can be passed to the client
+   */
+  @Around("redisServiceMethodsPointcut()")
+  public Object logRedisServiceMethods(final ProceedingJoinPoint proceedingJoinPoint)
+      throws Throwable {
+    final String username = GeneralUtil.extractSessionUsername();
+    final Object[] args = proceedingJoinPoint.getArgs();
+
+    final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
+    final String className = methodSignature.getDeclaringType().getSimpleName();
+    final String methodName = methodSignature.getName();
+
+    final StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+
+    Object result;
+    try {
+      result = proceedingJoinPoint.proceed();
+      stopWatch.stop();
+      return result;
+
+    } catch (final Throwable throwable) {
+      log.error(throwable.getMessage(), throwable);
+      throw throwable;
+
+    } finally {
+      log.info(
+          "REDIS-EVICT   {}  {}ms  {}.{}{}",
+          username,
+          stopWatch.getTotalTimeMillis(),
+          className,
+          methodName,
+          Arrays.deepToString(args));
     }
   }
 

@@ -31,6 +31,7 @@ public class MatchService {
   private final AdditionalMatchRepository additionalMatchRepository;
   private final SetResultRepository setResultRepository;
   private final SeasonRepository seasonRepository;
+  private final RedisCacheService redisCacheService;
 
   public void modifySingleScore(
       final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
@@ -76,6 +77,8 @@ public class MatchService {
     }
 
     setResultRepository.save(setToModify);
+
+    redisCacheService.evictCacheForRoundMatch(matchToModify);
 
     log.info(
         "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
