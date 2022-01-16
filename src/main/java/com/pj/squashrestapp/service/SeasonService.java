@@ -2,12 +2,18 @@ package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.config.RedisCacheConfig;
-import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
 import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
-import com.pj.squashrestapp.dto.scoreboard.*;
+import com.pj.squashrestapp.dto.scoreboard.RoundAndGroupPosition;
+import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
+import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
+import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
+import com.pj.squashrestapp.dto.scoreboard.SeasonStar;
+import com.pj.squashrestapp.dto.scoreboard.Type;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -20,7 +26,6 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
-import com.pj.squashrestapp.util.GsonUtil;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -134,13 +139,14 @@ public class SeasonService {
             seasonScoreboardDto.getSeasonStars().put(player.getUuid(), seasonStar);
           }
 
-          seasonScoreboardRowDto.addXpForRound(round.getNumber(), new RoundAndGroupPosition(
-              String.valueOf((char) (groupNumber + 'A' - 1)),
-              placeInGroup,
-              placeInRound,
-              scoreboardRow.getXpEarned(),
-              isLastPlace)
-          );
+          seasonScoreboardRowDto.addXpForRound(
+              round.getNumber(),
+              new RoundAndGroupPosition(
+                  String.valueOf((char) (groupNumber + 'A' - 1)),
+                  placeInGroup,
+                  placeInRound,
+                  scoreboardRow.getXpEarned(),
+                  isLastPlace));
           final boolean containsPlayer =
               seasonScoreboardDto.getSeasonScoreboardRows().contains(seasonScoreboardRowDto);
           if (!containsPlayer) {
@@ -265,7 +271,8 @@ public class SeasonService {
   }
 
   public UUID getCurrentSeasonUuidForLeague(final UUID leagueUuid) {
-    final List<Season> currentSeasonAsList = seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
+    final List<Season> currentSeasonAsList =
+        seasonRepository.findCurrentSeasonForLeague(leagueUuid, PageRequest.of(0, 1));
     if (currentSeasonAsList.isEmpty()) {
       return null;
     } else {
@@ -315,6 +322,15 @@ public class SeasonService {
       season.setDescription(description);
     }
     league.addSeason(season);
+
+    seasonRepository
+        .findByLeagueAndNumber(league, season.getNumber() - 1)
+        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
+
+    seasonRepository
+        .findByLeagueAndNumber(league, season.getNumber() + 1)
+        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
+
     redisCacheService.evictCacheForSeason(season);
     leagueRepository.save(league);
     return season;
@@ -323,9 +339,13 @@ public class SeasonService {
   public void deleteSeason(final UUID seasonUuid) {
     final Season seasonToDelete = seasonRepository.findByUuidWithLeague(seasonUuid);
 
-    final JsonSeason jsonSeason = backupService.seasonToJson(seasonUuid);
-    final String seasonJsonContent = GsonUtil.gsonWithDateAndDateTime().toJson(jsonSeason);
-    log.info("Removing season: \n{}", seasonJsonContent);
+    seasonRepository
+        .findByLeagueAndNumber(seasonToDelete.getLeague(), seasonToDelete.getNumber() - 1)
+        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
+
+    seasonRepository
+        .findByLeagueAndNumber(seasonToDelete.getLeague(), seasonToDelete.getNumber() + 1)
+        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
 
     redisCacheService.evictCacheForSeason(seasonToDelete);
     seasonRepository.delete(seasonToDelete);

@@ -39,6 +39,15 @@ public class UserAccessController {
   private final TokenCreateService tokenCreateService;
   private final SendEmailFacade sendEmailFacade;
 
+
+  @SecretMethod
+  @GetMapping(value = "/check-password-strength/{password}")
+  @ResponseBody
+  boolean checkPasswordStrength(@PathVariable final String password) {
+    final boolean isPasswordWeak = playerService.isPasswordWeak(password);
+    return isPasswordWeak;
+  }
+
   @GetMapping(value = "/reset-password-player/{passwordResetToken}")
   @ResponseBody
   PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {

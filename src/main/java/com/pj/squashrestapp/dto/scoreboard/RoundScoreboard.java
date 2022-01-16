@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 public class RoundScoreboard {
 
   private String leagueName;
+  private UUID leagueUuid;
 
   private UUID seasonUuid;
   private int seasonNumber;
@@ -50,6 +51,7 @@ public class RoundScoreboard {
     this.nextRoundUuid = nextRoundUuid;
 
     this.leagueName = round.getSeason().getLeague().getName();
+    this.leagueUuid = round.getSeason().getLeague().getUuid();
 
     this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();
@@ -66,6 +68,7 @@ public class RoundScoreboard {
 
   public RoundScoreboard(final Round round) {
     this.leagueName = round.getSeason().getLeague().getName();
+    this.leagueUuid = round.getSeason().getLeague().getUuid();
 
     this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();

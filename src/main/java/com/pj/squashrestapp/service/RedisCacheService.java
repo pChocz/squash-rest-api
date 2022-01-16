@@ -110,6 +110,11 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
   }
 
+  public void evictCacheForRoundOnly(final Round round) {
+    final String roundUuid = round.getUuid().toString();
+    clearSingle(RedisCacheConfig.ROUND_SCOREBOARD_CACHE, roundUuid);
+  }
+
   public void evictCacheForSeason(final Season season) {
     final String seasonUuid = season.getUuid().toString();
     final String leagueUuid = season.getLeague().getUuid().toString();
@@ -117,6 +122,11 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
+  }
+
+  public void evictCacheForSeasonOnly(final Season season) {
+    final String seasonUuid = season.getUuid().toString();
+    clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
   }
 
   public void evictCacheForLeagueLogo(final League league) {

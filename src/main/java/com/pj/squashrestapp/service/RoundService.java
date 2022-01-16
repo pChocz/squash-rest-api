@@ -38,6 +38,33 @@ public class RoundService {
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findByUuidWithSeason(roundUuid);
+
+    final int roundNumber = roundToDelete.getNumber();
+    final Season season = roundToDelete.getSeason();
+    final UUID leagueUuid = season.getLeague().getUuid();
+    final int seasonNumber = season.getNumber();
+    final int lastRoundNumber = season.getNumberOfRounds();
+    final boolean isFirstRound = (roundNumber == 1);
+    final boolean isLastRound = (roundNumber == lastRoundNumber);
+
+    final UUID previousRoundUuid =
+        isFirstRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
+
+    final UUID nextRoundUuid =
+        isLastRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
+
+    if (previousRoundUuid != null) {
+      redisCacheService.evictCacheForRoundOnly(roundToDelete);
+    }
+
+    if (nextRoundUuid != null) {
+      redisCacheService.evictCacheForRoundOnly(roundToDelete);
+    }
+
     roundRepository.delete(roundToDelete);
     redisCacheService.evictCacheForRound(roundToDelete);
   }
@@ -208,6 +235,13 @@ public class RoundService {
     redisCacheService.evictCacheForRound(round);
 
     return round;
+  }
+
+  private UUID getRoundUuidOrNull(UUID leagueUuid, int seasonNumber, int roundNumber) {
+    return roundRepository
+        .findBySeasonLeagueUuidAndSeasonNumberAndNumber(leagueUuid, seasonNumber, roundNumber)
+        .map(Round::getUuid)
+        .orElse(null);
   }
 
 }

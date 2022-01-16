@@ -116,6 +116,10 @@ public class PlayerService {
     }
   }
 
+  public boolean isPasswordWeak(final String password) {
+    return !PasswordStrengthValidator.isValid(password);
+  }
+
   public void createAndPersistVerificationToken(final UUID token, final Player user) {
     final LocalDateTime expirationDateTime =
         LocalDateTime.now(UTC_ZONE_ID).plusDays(VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS);

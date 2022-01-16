@@ -90,6 +90,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.GET, "/players/name-taken/*")
         .permitAll()
+        .antMatchers(HttpMethod.GET, "/access/check-password-strength/*")
+        .permitAll()
         .antMatchers(HttpMethod.POST, "/contact-form/send")
         .permitAll()
         .antMatchers(HttpMethod.POST, "/frontend-logs")
