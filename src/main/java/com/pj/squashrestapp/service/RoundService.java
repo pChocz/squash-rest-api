@@ -14,7 +14,6 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -58,11 +57,11 @@ public class RoundService {
             : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
 
     if (previousRoundUuid != null) {
-      redisCacheService.evictCacheForRoundOnly(roundToDelete);
+      redisCacheService.evictCacheForRoundUuidOnly(previousRoundUuid);
     }
 
     if (nextRoundUuid != null) {
-      redisCacheService.evictCacheForRoundOnly(roundToDelete);
+      redisCacheService.evictCacheForRoundUuidOnly(nextRoundUuid);
     }
 
     roundRepository.delete(roundToDelete);
@@ -89,6 +88,30 @@ public class RoundService {
 
     // saving to DB
     roundRepository.save(round);
+
+    final UUID leagueUuid = season.getLeague().getUuid();
+    final int seasonNumber = season.getNumber();
+    final int lastRoundNumber = season.getNumberOfRounds();
+    final boolean isFirstRound = (roundNumber == 1);
+    final boolean isLastRound = (roundNumber == lastRoundNumber);
+
+    final UUID previousRoundUuid =
+        isFirstRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
+
+    final UUID nextRoundUuid =
+        isLastRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
+
+    if (previousRoundUuid != null) {
+      redisCacheService.evictCacheForRoundUuidOnly(previousRoundUuid);
+    }
+
+    if (nextRoundUuid != null) {
+      redisCacheService.evictCacheForRoundUuidOnly(nextRoundUuid);
+    }
 
     redisCacheService.evictCacheForRound(round);
 
