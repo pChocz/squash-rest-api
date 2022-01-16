@@ -41,9 +41,9 @@ public class UserAccessController {
 
 
   @SecretMethod
-  @GetMapping(value = "/check-password-strength/{password}")
+  @PostMapping(value = "/check-password-strength")
   @ResponseBody
-  boolean checkPasswordStrength(@PathVariable final String password) {
+  boolean checkPasswordStrength(@RequestParam final String password) {
     final boolean isPasswordWeak = playerService.isPasswordWeak(password);
     return isPasswordWeak;
   }
