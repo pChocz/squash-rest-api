@@ -16,10 +16,12 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,34 +38,7 @@ public class RoundService {
   private final RedisCacheService redisCacheService;
 
   public void deleteRound(final UUID roundUuid) {
-    final Round roundToDelete = roundRepository.findByUuidWithSeason(roundUuid);
-
-    final int roundNumber = roundToDelete.getNumber();
-    final Season season = roundToDelete.getSeason();
-    final UUID leagueUuid = season.getLeague().getUuid();
-    final int seasonNumber = season.getNumber();
-    final int lastRoundNumber = season.getNumberOfRounds();
-    final boolean isFirstRound = (roundNumber == 1);
-    final boolean isLastRound = (roundNumber == lastRoundNumber);
-
-    final UUID previousRoundUuid =
-        isFirstRound
-            ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
-            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
-
-    final UUID nextRoundUuid =
-        isLastRound
-            ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
-            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
-
-    if (previousRoundUuid != null) {
-      redisCacheService.evictCacheForRoundUuidOnly(previousRoundUuid);
-    }
-
-    if (nextRoundUuid != null) {
-      redisCacheService.evictCacheForRoundUuidOnly(nextRoundUuid);
-    }
-
+    final Round roundToDelete = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
     roundRepository.delete(roundToDelete);
     redisCacheService.evictCacheForRound(roundToDelete);
   }
@@ -86,40 +61,14 @@ public class RoundService {
             league, roundNumber, roundDate, playersPerGroup, setsPerMatch);
     season.addRound(round);
 
-    // saving to DB
     roundRepository.save(round);
-
-    final UUID leagueUuid = season.getLeague().getUuid();
-    final int seasonNumber = season.getNumber();
-    final int lastRoundNumber = season.getNumberOfRounds();
-    final boolean isFirstRound = (roundNumber == 1);
-    final boolean isLastRound = (roundNumber == lastRoundNumber);
-
-    final UUID previousRoundUuid =
-        isFirstRound
-            ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
-            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
-
-    final UUID nextRoundUuid =
-        isLastRound
-            ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
-            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
-
-    if (previousRoundUuid != null) {
-      redisCacheService.evictCacheForRoundUuidOnly(previousRoundUuid);
-    }
-
-    if (nextRoundUuid != null) {
-      redisCacheService.evictCacheForRoundUuidOnly(nextRoundUuid);
-    }
-
     redisCacheService.evictCacheForRound(round);
-
     return round;
   }
 
   private List<List<Player>> getPlayersPerGroups(final List<UUID[]> playersUuids) {
-    final UUID[] allPlayersUuids = playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
+    final UUID[] allPlayersUuids =
+        playersUuids.stream().flatMap(Arrays::stream).toArray(UUID[]::new);
 
     final List<Player> allPlayers = playerRepository.findByUuids(allPlayersUuids);
 
@@ -215,7 +164,7 @@ public class RoundService {
   }
 
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
-    final Round round = roundRepository.findByUuidWithSeason(roundUuid);
+    final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
     round.setFinished(finishedState);
     redisCacheService.evictCacheForRound(round);
     roundRepository.save(round);
@@ -260,11 +209,33 @@ public class RoundService {
     return round;
   }
 
+  public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentRoundsUuids(UUID roundUuid) {
+    final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
+    final int roundNumber = round.getNumber();
+    final Season season = round.getSeason();
+    final UUID leagueUuid = season.getLeague().getUuid();
+    final int seasonNumber = season.getNumber();
+    final int lastRoundNumber = season.getNumberOfRounds();
+    final boolean isFirstRound = (roundNumber == 1);
+    final boolean isLastRound = (roundNumber == lastRoundNumber);
+
+    final UUID previousRoundUuid =
+        isFirstRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
+
+    final UUID nextRoundUuid =
+        isLastRound
+            ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
+            : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
+
+    return Pair.of(Optional.ofNullable(previousRoundUuid), Optional.ofNullable(nextRoundUuid));
+  }
+
   private UUID getRoundUuidOrNull(UUID leagueUuid, int seasonNumber, int roundNumber) {
     return roundRepository
         .findBySeasonLeagueUuidAndSeasonNumberAndNumber(leagueUuid, seasonNumber, roundNumber)
         .map(Round::getUuid)
         .orElse(null);
   }
-
 }

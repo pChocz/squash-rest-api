@@ -27,31 +27,11 @@ public class SeasonScoreboardDto {
   private List<SeasonScoreboardRowDto> seasonScoreboardRows;
   private List<RoundDto> rounds;
   private String xpPointsType;
-  private UUID previousSeasonUuid;
-  private UUID nextSeasonUuid;
   private Map<UUID, SeasonStar> seasonStars;
 
   public SeasonScoreboardDto(final Season season) {
     this.season = new SeasonDto(season);
     this.seasonScoreboardRows = new ArrayList<>();
-    this.previousSeasonUuid = null;
-    this.nextSeasonUuid = null;
-    this.xpPointsType = season.getXpPointsType();
-    this.finishedRounds = (int) season.getRounds().stream().filter(Round::isFinished).count();
-    this.allRounds = season.getNumberOfRounds();
-    this.countedRoundsOnSeasonFinished =
-        season.getNumberOfRounds() - season.getRoundsToBeDeducted();
-    this.countedRounds = getNumberOfRoundsThatCount();
-    this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
-    this.seasonStars = new HashMap<>();
-  }
-
-  public SeasonScoreboardDto(
-      final Season season, final UUID previousSeasonUuid, final UUID nextSeasonUuid) {
-    this.season = new SeasonDto(season);
-    this.seasonScoreboardRows = new ArrayList<>();
-    this.previousSeasonUuid = previousSeasonUuid;
-    this.nextSeasonUuid = nextSeasonUuid;
     this.xpPointsType = season.getXpPointsType();
     this.finishedRounds = (int) season.getRounds().stream().filter(Round::isFinished).count();
     this.allRounds = season.getNumberOfRounds();
@@ -85,19 +65,6 @@ public class SeasonScoreboardDto {
   public void sortByTotalPoints() {
     seasonScoreboardRows.sort(
         Comparator.comparing(SeasonScoreboardRowDto::getTotalPoints).reversed());
-  }
-
-  public void sortByPretendersPoints() {
-    seasonScoreboardRows.sort(
-        Comparator.comparing(SeasonScoreboardRowDto::getCountedPointsPretenders).reversed());
-  }
-
-  public boolean previousSeasonExists() {
-    return this.previousSeasonUuid != null;
-  }
-
-  public boolean nextSeasonExists() {
-    return this.nextSeasonUuid != null;
   }
 
   @Override

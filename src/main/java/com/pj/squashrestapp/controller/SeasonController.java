@@ -7,9 +7,11 @@ import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,6 +39,13 @@ public class SeasonController {
   SeasonDto extractSeasonDto(@PathVariable final UUID seasonUuid) {
     final SeasonDto seasonDto = seasonService.extractSeasonDtoByUuid(seasonUuid);
     return seasonDto;
+  }
+
+  @GetMapping(value = "/adjacent/{seasonUuid}")
+  @ResponseBody
+  Pair<Optional<UUID>, Optional<UUID>> extractAdjacentSeasonsUuids(@PathVariable final UUID seasonUuid) {
+    final Pair<Optional<UUID>, Optional<UUID>> adjacentSeasonsUuids = seasonService.extractAdjacentSeasonsUuids(seasonUuid);
+    return adjacentSeasonsUuids;
   }
 
   @DeleteMapping(value = "/{seasonUuid}")

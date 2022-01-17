@@ -15,22 +15,20 @@ import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonStar;
 import com.pj.squashrestapp.dto.scoreboard.Type;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.LeagueRepository;
-import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -39,7 +37,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +53,6 @@ public class SeasonService {
   private final RedisCacheService redisCacheService;
 
   private final SetResultRepository setResultRepository;
-  private final PlayerRepository playerRepository;
   private final SeasonRepository seasonRepository;
   private final LeagueRepository leagueRepository;
 
@@ -170,49 +167,6 @@ public class SeasonService {
     return seasonScoreboardDto;
   }
 
-  public SeasonScoreboardDto extractLeaguePlayersSortedByPointsInSeason(final UUID seasonUuid) {
-    // first - get all the players that have already played in the season (need to extract entire
-    // season scoreboard)
-    final SeasonScoreboardDto currentSeasonScoreboardDto = overalScoreboard(seasonUuid);
-
-    final SeasonScoreboardDto seasonScoreboardDto;
-    if (currentSeasonScoreboardDto.getFinishedRounds() == 0
-        && currentSeasonScoreboardDto.previousSeasonExists()) {
-      seasonScoreboardDto = overalScoreboard(currentSeasonScoreboardDto.getPreviousSeasonUuid());
-      seasonScoreboardDto.sortByCountedPoints();
-
-    } else {
-      seasonScoreboardDto = overalScoreboard(seasonUuid);
-      seasonScoreboardDto.sortByTotalPoints();
-    }
-
-    final List<PlayerDto> seasonPlayersSorted =
-        seasonScoreboardDto.getSeasonScoreboardRows().stream()
-            .map(SeasonScoreboardRowDto::getPlayer)
-            .collect(Collectors.toList());
-
-    // second - get all the players from entire League
-    final UUID leagueUuid = seasonScoreboardDto.getSeason().getLeagueUuid();
-    final List<Player> leaguePlayers =
-        playerRepository.fetchGeneralInfoSorted(
-            leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
-    final List<PlayerDto> leaguePlayersDtos =
-        leaguePlayers.stream().map(PlayerDto::new).collect(Collectors.toList());
-
-    for (final PlayerDto player : leaguePlayersDtos) {
-      if (!seasonPlayersSorted.contains(player)) {
-        seasonPlayersSorted.add(player);
-        seasonScoreboardDto
-            .getSeasonScoreboardRows()
-            .add(
-                new SeasonScoreboardRowDto(
-                    player, new BonusPointsAggregatedForSeason(seasonUuid, new ArrayList<>())));
-      }
-    }
-
-    return seasonScoreboardDto;
-  }
-
   @Cacheable(value = RedisCacheConfig.SEASON_SCOREBOARD_CACHE, key = "#seasonUuid")
   public SeasonScoreboardDto overalScoreboard(final UUID seasonUuid) {
     final SeasonScoreboardDto seasonScoreboardDto = buildSeasonScoreboardDto(seasonUuid);
@@ -251,20 +205,7 @@ public class SeasonService {
     final int currentSeasonNumber = season.getNumber();
     final League currentLeague = season.getLeague();
 
-    final UUID previousSeasonUuid =
-        seasonRepository
-            .findByLeagueAndNumber(currentLeague, currentSeasonNumber - 1)
-            .map(Season::getUuid)
-            .orElse(null);
-
-    final UUID nextSeasonUuid =
-        seasonRepository
-            .findByLeagueAndNumber(currentLeague, currentSeasonNumber + 1)
-            .map(Season::getUuid)
-            .orElse(null);
-
-    final SeasonScoreboardDto seasonScoreboardDto =
-        new SeasonScoreboardDto(season, previousSeasonUuid, nextSeasonUuid);
+    final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
     return buildSeasonScoreboardDto(
         seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
@@ -323,14 +264,6 @@ public class SeasonService {
     }
     league.addSeason(season);
 
-    seasonRepository
-        .findByLeagueAndNumber(league, season.getNumber() - 1)
-        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
-
-    seasonRepository
-        .findByLeagueAndNumber(league, season.getNumber() + 1)
-        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
-
     redisCacheService.evictCacheForSeason(season);
     leagueRepository.save(league);
     return season;
@@ -338,16 +271,25 @@ public class SeasonService {
 
   public void deleteSeason(final UUID seasonUuid) {
     final Season seasonToDelete = seasonRepository.findByUuidWithLeague(seasonUuid);
-
-    seasonRepository
-        .findByLeagueAndNumber(seasonToDelete.getLeague(), seasonToDelete.getNumber() - 1)
-        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
-
-    seasonRepository
-        .findByLeagueAndNumber(seasonToDelete.getLeague(), seasonToDelete.getNumber() + 1)
-        .ifPresent(redisCacheService::evictCacheForSeasonOnly);
-
     redisCacheService.evictCacheForSeason(seasonToDelete);
     seasonRepository.delete(seasonToDelete);
+  }
+
+  public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentSeasonsUuids(UUID seasonUuid) {
+    final Season season = seasonRepository.findByUuidWithLeague(seasonUuid);
+
+    final UUID previousSeasonUuid =
+        seasonRepository
+            .findByLeagueAndNumber(season.getLeague(), season.getNumber() - 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    final UUID nextSeasonUuid =
+        seasonRepository
+            .findByLeagueAndNumber(season.getLeague(), season.getNumber() + 1)
+            .map(Season::getUuid)
+            .orElse(null);
+
+    return Pair.of(Optional.ofNullable(previousSeasonUuid), Optional.ofNullable(nextSeasonUuid));
   }
 }

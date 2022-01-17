@@ -43,26 +43,9 @@ public class ScoreboardService {
               .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
     }
 
-    final int roundNumber = round.getNumber();
     final Season season = round.getSeason();
-    final UUID leagueUuid = season.getLeague().getUuid();
-    final int seasonNumber = season.getNumber();
-    final int lastRoundNumber = season.getNumberOfRounds();
-    final boolean isFirstRound = (roundNumber == 1);
-    final boolean isLastRound = (roundNumber == lastRoundNumber);
 
-    final UUID previousRoundUuid =
-            isFirstRound
-                    ? getRoundUuidOrNull(leagueUuid, seasonNumber - 1, lastRoundNumber)
-                    : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber - 1);
-
-    final UUID nextRoundUuid =
-            isLastRound
-                    ? getRoundUuidOrNull(leagueUuid, seasonNumber + 1, 1)
-                    : getRoundUuidOrNull(leagueUuid, seasonNumber, roundNumber + 1);
-
-    final RoundScoreboard roundScoreboard =
-        new RoundScoreboard(round, previousRoundUuid, nextRoundUuid);
+    final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
     for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
       roundScoreboard.addRoundGroupNew(roundGroup);
     }
@@ -74,13 +57,6 @@ public class ScoreboardService {
 
     roundScoreboard.assignPointsAndPlaces(xpPoints);
     return roundScoreboard;
-  }
-
-  private UUID getRoundUuidOrNull(UUID leagueUuid, int seasonNumber, int roundNumber) {
-    return roundRepository
-            .findBySeasonLeagueUuidAndSeasonNumberAndNumber(leagueUuid, seasonNumber, roundNumber)
-            .map(Round::getUuid)
-            .orElse(null);
   }
 
   public UUID getMostRecentRoundUuidForPlayer(final UUID playerUuid) {

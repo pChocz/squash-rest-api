@@ -42,29 +42,6 @@ public class RoundScoreboard {
   @JsonIgnore private List<Integer> playersPerGroup;
   private List<RoundGroupScoreboard> roundGroupScoreboards;
   private boolean finishedState;
-  private UUID previousRoundUuid;
-  private UUID nextRoundUuid;
-
-  public RoundScoreboard(
-      final Round round, final UUID previousRoundUuid, final UUID nextRoundUuid) {
-    this.previousRoundUuid = previousRoundUuid;
-    this.nextRoundUuid = nextRoundUuid;
-
-    this.leagueName = round.getSeason().getLeague().getName();
-    this.leagueUuid = round.getSeason().getLeague().getUuid();
-
-    this.seasonUuid = round.getSeason().getUuid();
-    this.seasonNumber = round.getSeason().getNumber();
-    this.seasonNumberRoman = RomanUtil.toRoman(this.seasonNumber);
-
-    this.roundUuid = round.getUuid();
-    this.roundNumber = round.getNumber();
-    this.roundDate = round.getDate();
-    this.finishedState = round.isFinished();
-
-    this.roundGroupScoreboards = new ArrayList<>();
-    this.playersPerGroup = new ArrayList<>();
-  }
 
   public RoundScoreboard(final Round round) {
     this.leagueName = round.getSeason().getLeague().getName();

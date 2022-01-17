@@ -56,6 +56,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // allowing not authenticated players view scoreboard for rounds and seasons
         .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*")
         .permitAll()
+        .antMatchers(HttpMethod.GET, "/seasons/adjacent/*")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/rounds/adjacent/*")
+        .permitAll()
         .antMatchers(HttpMethod.GET, "/scoreboards/rounds/*")
         .permitAll()
         .antMatchers(HttpMethod.GET, "/league-logos/season/*")

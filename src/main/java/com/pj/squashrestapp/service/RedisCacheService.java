@@ -9,7 +9,6 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -111,10 +110,6 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
   }
 
-  public void evictCacheForRoundUuidOnly(final UUID roundUuid) {
-    clearSingle(RedisCacheConfig.ROUND_SCOREBOARD_CACHE, roundUuid);
-  }
-
   public void evictCacheForSeason(final Season season) {
     final String seasonUuid = season.getUuid().toString();
     final String leagueUuid = season.getLeague().getUuid().toString();
@@ -122,11 +117,6 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
-  }
-
-  public void evictCacheForSeasonOnly(final Season season) {
-    final String seasonUuid = season.getUuid().toString();
-    clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
   }
 
   public void evictCacheForLeagueLogo(final League league) {
