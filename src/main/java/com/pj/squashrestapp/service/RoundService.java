@@ -11,6 +11,7 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
+import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,12 +36,13 @@ public class RoundService {
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
   private final RoundGroupRepository roundGroupRepository;
+  private final SetResultRepository setResultRepository;
   private final RedisCacheService redisCacheService;
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
+    redisCacheService.evictCacheForRoundDeep(roundToDelete);
     roundRepository.delete(roundToDelete);
-    redisCacheService.evictCacheForRound(roundToDelete);
   }
 
   @Transactional
@@ -62,7 +64,7 @@ public class RoundService {
     season.addRound(round);
 
     roundRepository.save(round);
-    redisCacheService.evictCacheForRound(round);
+    redisCacheService.evictCacheForRoundDeep(round);
     return round;
   }
 
@@ -166,7 +168,7 @@ public class RoundService {
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
     final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
     round.setFinished(finishedState);
-    redisCacheService.evictCacheForRound(round);
+    redisCacheService.evictCacheForRoundDeep(round);
     roundRepository.save(round);
   }
 
@@ -204,13 +206,17 @@ public class RoundService {
       roundGroupRepository.save(roundGroup);
     }
 
-    redisCacheService.evictCacheForRound(round);
+    redisCacheService.evictCacheForRoundDeep(round);
 
     return round;
   }
 
   public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentRoundsUuids(UUID roundUuid) {
     final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
+    if (round == null) {
+      return Pair.of(Optional.empty(), Optional.empty());
+    }
+
     final int roundNumber = round.getNumber();
     final Season season = round.getSeason();
     final UUID leagueUuid = season.getLeague().getUuid();

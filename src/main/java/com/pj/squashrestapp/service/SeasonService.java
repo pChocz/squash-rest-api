@@ -277,6 +277,9 @@ public class SeasonService {
 
   public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentSeasonsUuids(UUID seasonUuid) {
     final Season season = seasonRepository.findByUuidWithLeague(seasonUuid);
+    if (season == null) {
+      return Pair.of(Optional.empty(), Optional.empty());
+    }
 
     final UUID previousSeasonUuid =
         seasonRepository
