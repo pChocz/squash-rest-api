@@ -64,7 +64,7 @@ public class RoundService {
     season.addRound(round);
 
     roundRepository.save(round);
-    redisCacheService.evictCacheForRoundDeep(round);
+    redisCacheService.evictCacheForRound(round);
     return round;
   }
 
@@ -206,7 +206,7 @@ public class RoundService {
       roundGroupRepository.save(roundGroup);
     }
 
-    redisCacheService.evictCacheForRoundDeep(round);
+    redisCacheService.evictCacheForRound(round);
 
     return round;
   }
