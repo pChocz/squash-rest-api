@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.repository;
 
+import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.List;
@@ -101,4 +102,39 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
+  @Query("""
+          SELECT
+            CASE WHEN COUNT(m) > 0
+              THEN true
+              ELSE false
+            END
+           FROM Match m
+           JOIN m.firstPlayer p1
+           JOIN m.secondPlayer p2
+           JOIN m.roundGroup rg
+           JOIN rg.round r
+              WHERE (p1.uuid = :playerUuid
+                  OR p2.uuid = :playerUuid)
+                  AND r.uuid = :roundUuid
+              """)
+  boolean checkIfPlayerOfRound(@Param("roundUuid") UUID roundUuid, @Param("playerUuid") UUID playerUuid);
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

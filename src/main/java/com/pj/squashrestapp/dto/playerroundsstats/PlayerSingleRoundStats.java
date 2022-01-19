@@ -24,6 +24,7 @@ public class PlayerSingleRoundStats {
 
   final int seasonNumber;
   final int roundGroupNumber;
+  final String roundGroupCharacter;
   final String split;
   final RoundDto round;
   final RoundGroupScoreboardRow row;
@@ -46,6 +47,7 @@ public class PlayerSingleRoundStats {
       row.setPlaceInGroup(place++);
     }
     this.roundGroupNumber = roundGroupScoreboard.getRoundGroupNumber();
+    this.roundGroupCharacter = String.valueOf((char) (roundGroupNumber + 'A' - 1));
 
     final RoundGroupScoreboardRow correctRow =
         roundGroupScoreboard.getScoreboardRows().stream()

@@ -118,6 +118,7 @@ public class AdditionalMatchService {
     }
 
     league.get().addAdditionalMatch(match);
+    redisCacheService.evictCacheForAdditionalMatch(match);
     log.info("Adding additional match!\n\t-> {}", match.detailedInfo());
   }
 

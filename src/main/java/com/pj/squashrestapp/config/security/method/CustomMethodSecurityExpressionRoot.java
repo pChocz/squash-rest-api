@@ -1,9 +1,10 @@
 package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
+import com.pj.squashrestapp.dto.match.MatchSimpleDto;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
@@ -120,11 +121,5 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
     return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
         || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
-  }
-
-  public boolean isRoundOfMatchInProgress(final UUID matchUuid) {
-    final Round round = roundRepository.findByMatchUuid(matchUuid);
-    final boolean isRoundFinished = round.isFinished();
-    return !isRoundFinished;
   }
 }

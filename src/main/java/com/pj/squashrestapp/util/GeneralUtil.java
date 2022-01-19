@@ -77,6 +77,11 @@ public class GeneralUtil {
     }
   }
 
+  public UserDetailsImpl extractSessionUser() {
+    return
+        (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
   public UUID extractSessionUserUuid() {
     final UserDetailsImpl userDetails =
         (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

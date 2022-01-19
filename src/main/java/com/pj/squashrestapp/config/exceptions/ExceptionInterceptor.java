@@ -155,7 +155,7 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(
         ErrorResponse.builder()
             .timestamp(LocalDateTime.now())
-            .message(ex.getMessage())
+            .message(((ResponseStatusException) ex).getReason())
             .status(httpStatus.value())
             .path(request.getRequestURI())
             .build(),

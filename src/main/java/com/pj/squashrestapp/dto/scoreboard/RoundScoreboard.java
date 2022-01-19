@@ -57,6 +57,7 @@ public class RoundScoreboard {
 
     this.roundGroupScoreboards = new ArrayList<>();
     this.playersPerGroup = new ArrayList<>();
+    this.finishedState = round.isFinished();
   }
 
   public void addRoundGroupNew(final RoundGroup roundGroup) {
