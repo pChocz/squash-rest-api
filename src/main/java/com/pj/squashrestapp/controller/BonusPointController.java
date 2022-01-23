@@ -3,6 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dto.BonusPointsDto;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.service.BonusPointService;
+import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.List;
@@ -58,8 +59,7 @@ public class BonusPointController {
   @ResponseBody
   List<BonusPointsDto> extractForSeason(@PathVariable final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(seasonUuid);
-    final List<BonusPointsDto> bonusPointsForSeason =
-        bonusPoints.stream().map(BonusPointsDto::new).collect(Collectors.toList());
+    final List<BonusPointsDto> bonusPointsForSeason = bonusPoints.stream().map(BonusPointsDto::new).collect(Collectors.toList());
     return bonusPointsForSeason;
   }
 }

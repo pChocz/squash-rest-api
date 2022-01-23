@@ -2,7 +2,6 @@ package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.config.RedisCacheConfig;
-import com.pj.squashrestapp.dbinit.service.BackupService;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
@@ -23,6 +22,7 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -36,10 +36,13 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /** */
 @Slf4j
@@ -49,8 +52,6 @@ public class SeasonService {
 
   private final BonusPointService bonusPointService;
   private final XpPointsService xpPointsService;
-  private final BackupService backupService;
-  private final RedisCacheService redisCacheService;
 
   private final SetResultRepository setResultRepository;
   private final SeasonRepository seasonRepository;
@@ -264,14 +265,17 @@ public class SeasonService {
     }
     league.addSeason(season);
 
-    redisCacheService.evictCacheForSeason(season);
-    leagueRepository.save(league);
-    return season;
+    try {
+      seasonRepository.save(season);
+      return season;
+
+    } catch (final DataIntegrityViolationException ex) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.SEASON_DUPLICATE_ERROR);
+    }
   }
 
   public void deleteSeason(final UUID seasonUuid) {
     final Season seasonToDelete = seasonRepository.findByUuidWithLeague(seasonUuid);
-    redisCacheService.evictCacheForSeason(seasonToDelete);
     seasonRepository.delete(seasonToDelete);
   }
 

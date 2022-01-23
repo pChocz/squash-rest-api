@@ -21,4 +21,7 @@ public class ErrorCode {
   public static final String USER_DISABLED = "USER_DISABLED";
   public static final String MATCH_MODIFY_ERROR_IS_FINISHED = "MATCH_MODIFY_ERROR_IS_FINISHED";
   public static final String MATCH_MODIFY_ERROR_NOT_ALLOWED = "MATCH_MODIFY_ERROR_NOT_ALLOWED";
+  public static final String ROUND_DUPLICATE_ERROR = "ROUND_DUPLICATE_ERROR";
+  public static final String SEASON_DUPLICATE_ERROR = "SEASON_DUPLICATE_ERROR";
+  public static final String INVALID_MATCH_RESULT = "INVALID_MATCH_RESULT";
 }

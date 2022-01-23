@@ -25,7 +25,6 @@ import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.SetWinningType;
@@ -62,7 +61,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,17 +77,13 @@ public class LeagueService {
   private final BonusPointService bonusPointService;
   private final SeasonService seasonService;
   private final DeepRemovalService deepRemovalService;
-  private final RedisCacheService redisCacheService;
 
   private final LeagueRepository leagueRepository;
   private final LeagueLogoRepository leagueLogoRepository;
   private final LeagueRulesRepository leagueRulesRepository;
-  private final SeasonRepository seasonRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
   private final PlayerRepository playerRepository;
   private final RoleForLeagueRepository roleForLeagueRepository;
   private final SetResultRepository setResultRepository;
-  private final TrophiesForLeagueRepository trophiesForLeagueRepository;
 
   /**
    * This method creates the league itself as well as both roles (PLAYER, MODERATOR) that can be
@@ -184,7 +178,6 @@ public class LeagueService {
     final Optional<LeagueLogo> logoOptional = leagueLogoRepository.findByLeague(leagueToRemove);
     logoOptional.ifPresent(leagueLogoRepository::delete);
 
-    redisCacheService.evictCacheForLeagueLogo(leagueToRemove);
     // deep removal of:
     // - additional matches
     // - round matches / roundgroups / rounds / seasons
@@ -202,8 +195,6 @@ public class LeagueService {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     league.setLeagueLogo(leagueLogo);
     leagueLogo.setLeague(league);
-
-    redisCacheService.evictCacheForLeagueLogo(league);
 
     leagueLogoRepository.save(leagueLogo);
   }

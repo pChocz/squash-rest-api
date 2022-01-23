@@ -12,6 +12,7 @@ import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -22,9 +23,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.util.Pair;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 /** */
 @Slf4j
@@ -36,12 +40,9 @@ public class RoundService {
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
   private final RoundGroupRepository roundGroupRepository;
-  private final SetResultRepository setResultRepository;
-  private final RedisCacheService redisCacheService;
 
   public void deleteRound(final UUID roundUuid) {
     final Round roundToDelete = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
-    redisCacheService.evictCacheForRoundDeep(roundToDelete);
     roundRepository.delete(roundToDelete);
   }
 
@@ -63,9 +64,13 @@ public class RoundService {
             league, roundNumber, roundDate, playersPerGroup, setsPerMatch);
     season.addRound(round);
 
-    roundRepository.save(round);
-    redisCacheService.evictCacheForRound(round);
-    return round;
+    try {
+      roundRepository.save(round);
+      return round;
+
+    } catch (final DataIntegrityViolationException ex) {
+      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.ROUND_DUPLICATE_ERROR);
+    }
   }
 
   private List<List<Player>> getPlayersPerGroups(final List<UUID[]> playersUuids) {
@@ -168,7 +173,6 @@ public class RoundService {
   public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
     final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
     round.setFinished(finishedState);
-    redisCacheService.evictCacheForRoundDeep(round);
     roundRepository.save(round);
   }
 
@@ -177,7 +181,7 @@ public class RoundService {
   }
 
   @Transactional
-  public Round recreateRound(final UUID roundUuid, final List<UUID[]> playersUuids) {
+  public void recreateRound(final UUID roundUuid, final List<UUID[]> playersUuids) {
     final Round round = roundRepository.findByUuidWithSeasonLeague(roundUuid);
     final League league = round.getSeason().getLeague();
     final int setsPerMatch = league.getMatchFormatType().getMaxNumberOfSets();
@@ -205,10 +209,6 @@ public class RoundService {
       round.addRoundGroup(roundGroup);
       roundGroupRepository.save(roundGroup);
     }
-
-    redisCacheService.evictCacheForRound(round);
-
-    return round;
   }
 
   public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentRoundsUuids(UUID roundUuid) {
@@ -244,4 +244,5 @@ public class RoundService {
         .map(Round::getUuid)
         .orElse(null);
   }
+
 }

@@ -3,6 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.service.SeasonService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
@@ -32,7 +33,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SeasonController {
 
+  private final RedisCacheService redisCacheService;
   private final SeasonService seasonService;
+
+  @PostMapping
+  @ResponseBody
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+  UUID createNewSeason(
+      @RequestParam final int seasonNumber,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
+      @RequestParam final UUID leagueUuid,
+      @RequestParam final String xpPointsType,
+      @RequestParam(required = false) final String description) {
+    final Season season = seasonService.createNewSeason(seasonNumber, startDate, leagueUuid, xpPointsType, description);
+    redisCacheService.evictCacheForSeason(season.getUuid());
+    return season.getUuid();
+  }
 
   @GetMapping(value = "/{seasonUuid}")
   @ResponseBody
@@ -48,33 +64,20 @@ public class SeasonController {
     return adjacentSeasonsUuids;
   }
 
-  @DeleteMapping(value = "/{seasonUuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
-  void deleteSeason(@PathVariable final UUID seasonUuid) {
-    seasonService.deleteSeason(seasonUuid);
-    log.info("Season {} has been deleted", seasonUuid);
-  }
-
-  @PostMapping
-  @ResponseBody
-  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  SeasonDto createNewSeason(
-      @RequestParam final int seasonNumber,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
-      @RequestParam final UUID leagueUuid,
-      @RequestParam final String xpPointsType,
-      @RequestParam(required = false) final String description) {
-    final Season season =
-        seasonService.createNewSeason(
-            seasonNumber, startDate, leagueUuid, xpPointsType, description);
-    return new SeasonDto(season);
-  }
-
   @GetMapping(value = "/players/{seasonUuid}")
   @ResponseBody
   List<PlayerDto> extractSeasonPlayers(@PathVariable final UUID seasonUuid) {
     final List<PlayerDto> seasonPlayers = seasonService.extractSeasonPlayers(seasonUuid);
     return seasonPlayers;
   }
+
+  @DeleteMapping(value = "/{seasonUuid}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
+  void deleteSeason(@PathVariable final UUID seasonUuid) {
+    redisCacheService.evictCacheForSeasonMatches(seasonUuid);
+    redisCacheService.evictCacheForSeason(seasonUuid);
+    seasonService.deleteSeason(seasonUuid);
+  }
+
 }

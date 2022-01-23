@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
-import com.pj.squashrestapp.config.exceptions.MatchModificationException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
@@ -9,11 +8,11 @@ import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
+import com.pj.squashrestapp.dto.matchresulthelper.WrongResultException;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
@@ -46,7 +45,7 @@ public class MatchService {
   private final SeasonRepository seasonRepository;
   private final RedisCacheService redisCacheService;
 
-  public void modifySingleScore(
+  public MatchSimpleDto modifySingleScore(
       final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
     final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
     final Round round = matchToModify.getRoundGroup().getRound();
@@ -91,19 +90,24 @@ public class MatchService {
     } else {
 
       final Integer winnerScore;
-      if (setIsTiebreak(matchToModify, setNumber)) {
-        winnerScore =
-            SetScoreHelper.computeWinnerScore(
-                looserScore,
-                matchToModify.getTiebreakWinningPoints(),
-                matchToModify.getTiebreakWinningType());
-      } else {
-        winnerScore =
-            SetScoreHelper.computeWinnerScore(
-                looserScore,
-                matchToModify.getRegularSetWinningPoints(),
-                matchToModify.getRegularSetWinningType());
+      try {
+        if (setIsTiebreak(matchToModify, setNumber)) {
+          winnerScore =
+              SetScoreHelper.computeWinnerScore(
+                  looserScore,
+                  matchToModify.getTiebreakWinningPoints(),
+                  matchToModify.getTiebreakWinningType());
+        } else {
+          winnerScore =
+              SetScoreHelper.computeWinnerScore(
+                  looserScore,
+                  matchToModify.getRegularSetWinningPoints(),
+                  matchToModify.getRegularSetWinningType());
+        }
+      } catch (final WrongResultException ex) {
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_MATCH_RESULT);
       }
+
 
       if (player.equals("FIRST")) {
         setToModify.setFirstPlayerScore(looserScore);
@@ -123,6 +127,8 @@ public class MatchService {
         "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
         initialMatchResult,
         matchToModify);
+
+    return new MatchSimpleDto(matchToModify);
   }
 
   private boolean isMatchInProgress(final Match matchToModify) {

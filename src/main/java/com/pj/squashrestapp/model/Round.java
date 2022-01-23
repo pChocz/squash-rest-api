@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -112,6 +114,31 @@ public class Round implements Identifiable, Comparable<Round> {
     return this.getRoundGroups().stream()
         .sorted(Comparator.comparingInt(RoundGroup::getNumber))
         .collect(Collectors.toList());
+  }
+
+  public List<UUID[]> extractPlayersUuidsPerGroup() {
+    final List<UUID[]> playersUuidsPerGroup = new ArrayList<>();
+
+    for (final RoundGroup roundGroup : getRoundGroupsOrdered()) {
+      Stream<UUID> uuidStream1 = roundGroup
+          .getMatches()
+          .stream()
+          .map(match -> match.getFirstPlayer().getUuid());
+
+      Stream<UUID> uuidStream2 = roundGroup
+          .getMatches()
+          .stream()
+          .map(match -> match.getSecondPlayer().getUuid());
+
+      UUID[] uuidsSorted = Stream.concat(uuidStream1, uuidStream2)
+          .sorted()
+          .distinct()
+          .toArray(UUID[]::new);
+
+      playersUuidsPerGroup.add(uuidsSorted);
+    }
+
+    return playersUuidsPerGroup;
   }
 
   @Override

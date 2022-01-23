@@ -8,6 +8,7 @@ import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.service.LeagueService;
+import com.pj.squashrestapp.service.RedisCacheService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class LeagueController {
 
   private final LeagueService leagueService;
+  private final RedisCacheService redisCacheService;
 
   @PostMapping
   @ResponseBody
@@ -72,6 +74,7 @@ public class LeagueController {
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   void removeLeague(@PathVariable final UUID leagueUuid) {
     leagueService.removeLeague(leagueUuid);
+    redisCacheService.clearAll();
   }
 
   @PutMapping(value = "/{leagueUuid}")
@@ -80,6 +83,7 @@ public class LeagueController {
   void changeLeagueLogo(
       @PathVariable final UUID leagueUuid, @RequestParam final String logoBase64) {
     leagueService.changeLogoForLeague(leagueUuid, logoBase64);
+    redisCacheService.evictCacheForLeagueLogo(leagueUuid);
   }
 
   @GetMapping(value = "/general-info/{leagueUuid}")

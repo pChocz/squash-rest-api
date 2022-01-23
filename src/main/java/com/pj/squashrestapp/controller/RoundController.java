@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDate;
@@ -14,7 +15,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -31,18 +31,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class RoundController {
 
+  private final RedisCacheService redisCacheService;
   private final RoundService roundService;
 
   @PostMapping
   @ResponseBody
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
-  UUID newRound(
+  UUID createNewRound(
       @RequestBody @RequestParam final int roundNumber,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
       @RequestParam final UUID seasonUuid,
       @RequestParam final List<UUID[]> playersUuids) {
     final Round round = roundService.createRound(roundNumber, roundDate, seasonUuid, playersUuids);
-    log.info("created round {}", round.getUuid());
+    redisCacheService.evictCacheForRoundMatches(round.getUuid());
+    redisCacheService.evictCacheForRound(round.getUuid());
     return round.getUuid();
   }
 
@@ -52,16 +54,17 @@ public class RoundController {
   void recreateRound(
       @PathVariable final UUID roundUuid,
       @RequestParam final List<UUID[]> playersUuids) {
-    final Round round = roundService.recreateRound(roundUuid, playersUuids);
-    log.info("re-created round {}", round.getUuid());
+    redisCacheService.evictCacheForPlayersHeadToHead(playersUuids);
+    redisCacheService.evictCacheForRoundMatches(roundUuid);
+    roundService.recreateRound(roundUuid, playersUuids);
   }
 
   @PutMapping(value = "{roundUuid}/{finishedState}")
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void updateRoundFinishState(
       @PathVariable final UUID roundUuid, @PathVariable final boolean finishedState) {
+    redisCacheService.evictCacheForRound(roundUuid);
     roundService.updateRoundFinishedState(roundUuid, finishedState);
-    log.info("update round {}: finished state: {}", roundUuid, finishedState);
   }
 
   @GetMapping(value = "league-uuid/{roundUuid}")
@@ -80,7 +83,8 @@ public class RoundController {
   @DeleteMapping(value = "/{roundUuid}")
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void deleteRound(@PathVariable final UUID roundUuid) {
+    redisCacheService.evictCacheForRoundMatches(roundUuid);
+    redisCacheService.evictCacheForRound(roundUuid);
     roundService.deleteRound(roundUuid);
-    log.info("Round {} has been deleted", roundUuid);
   }
 }

@@ -2,7 +2,10 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
 import com.pj.squashrestapp.service.HeadToHeadScoreboardService;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +30,9 @@ public class HeadToHeadScoreboardController {
       @PathVariable final UUID firstPlayerUuid,
       @PathVariable final UUID secondPlayerUuid,
       @RequestParam(defaultValue = "true") final boolean includeAdditional) {
-    log.info("{}", includeAdditional);
+    List<UUID> uuids = Stream.of(firstPlayerUuid, secondPlayerUuid).sorted().toList();
     final HeadToHeadScoreboard scoreboard =
-        headToHeadScoreboardService.build(firstPlayerUuid, secondPlayerUuid, includeAdditional);
+        headToHeadScoreboardService.build(uuids.get(0), uuids.get(1), includeAdditional);
     return scoreboard;
   }
 }
