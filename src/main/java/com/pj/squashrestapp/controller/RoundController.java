@@ -56,6 +56,7 @@ public class RoundController {
       @RequestParam final List<UUID[]> playersUuids) {
     redisCacheService.evictCacheForPlayersHeadToHead(playersUuids);
     redisCacheService.evictCacheForRoundMatches(roundUuid);
+    redisCacheService.evictCacheForRound(roundUuid);
     roundService.recreateRound(roundUuid, playersUuids);
   }
 
