@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.LeagueDto;
-import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.PlayerForLeagueDto;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
 import com.pj.squashrestapp.model.MatchFormatType;
@@ -110,17 +110,16 @@ public class LeagueController {
   @GetMapping(value = "/players/{leagueUuid}")
   @ResponseBody
   List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
-    final List<PlayerDto> playersGeneralInfo =
-        leagueService.extractLeaguePlayersGeneral(leagueUuid);
+    final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
   }
 
-  @GetMapping(value = "/players-detailed/{leagueUuid}")
+  @GetMapping(value = "/players-for-league-moderator/{leagueUuid}")
   @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  List<PlayerDetailedDto> playersDetailedByLeagueId(@PathVariable final UUID leagueUuid) {
-    final List<PlayerDetailedDto> players = leagueService.extractLeaguePlayersDetailed(leagueUuid);
-    return players;
+  List<PlayerForLeagueDto> playersForLeagueModeratorByLeagueUuid(@PathVariable final UUID leagueUuid) {
+    final List<PlayerForLeagueDto> playersForLeague = leagueService.extractLeaguePlayersForLeague(leagueUuid);
+    return playersForLeague;
   }
 
   @GetMapping(value = "/stats/{leagueUuid}")

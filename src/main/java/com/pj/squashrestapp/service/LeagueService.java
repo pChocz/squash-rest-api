@@ -9,6 +9,7 @@ import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.PlayerForLeagueDto;
 import com.pj.squashrestapp.dto.PlayerLeagueXpOveral;
 import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
 import com.pj.squashrestapp.dto.leaguestats.OveralStats;
@@ -351,6 +352,14 @@ public class LeagueService {
     final List<LeagueDto> leaguesDtos =
         leagues.stream().map(LeagueDto::new).collect(Collectors.toList());
     return leaguesDtos;
+  }
+
+  public List<PlayerForLeagueDto> extractLeaguePlayersForLeague(final UUID leagueUuid) {
+    final List<Player> players = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
+    final List<PlayerForLeagueDto> playersDtos = players
+        .stream()
+        .map(player -> new PlayerForLeagueDto(player, leagueUuid)).collect(Collectors.toList());
+    return playersDtos;
   }
 
   public List<PlayerDto> extractLeaguePlayersGeneral(final UUID leagueUuid) {
