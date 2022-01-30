@@ -2,7 +2,6 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +17,8 @@ import org.springframework.data.repository.query.Param;
 /**
  *
  */
-public interface SeasonRepository extends JpaRepository<Season, Long>, BulkDeletableByLeagueUuid {
+public interface SeasonRepository extends JpaRepository<Season, Long>,
+    SearchableByLeagueUuid, BulkDeletable {
 
 
   Optional<Season> findByUuid(UUID uuid);

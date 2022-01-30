@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 /** */
 public interface AdditionalSetResultRepository extends JpaRepository<AdditionalSetResult, Long>,
-    BulkDeletableByLeagueUuid {
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
   @Override
   @Modifying
@@ -25,5 +25,14 @@ public interface AdditionalSetResultRepository extends JpaRepository<AdditionalS
               WHERE l.uuid = :leagueUuid
             """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+            SELECT asr.id FROM AdditionalSetResult asr
+              JOIN asr.match m
+              JOIN Season s ON m.seasonNumber = s.number AND m.league = s.league
+              WHERE s.uuid = :seasonUuid
+            """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }

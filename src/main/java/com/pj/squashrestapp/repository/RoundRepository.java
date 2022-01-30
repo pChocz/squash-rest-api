@@ -1,8 +1,6 @@
 package com.pj.squashrestapp.repository;
 
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.Season;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,7 +11,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletableByLeagueUuid {
+public interface RoundRepository extends JpaRepository<Round, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
 
   Optional<Round> findByUuid(UUID uuid);
@@ -101,6 +100,14 @@ public interface RoundRepository extends JpaRepository<Round, Long>, BulkDeletab
               WHERE l.uuid = :leagueUuid
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+          SELECT r.id FROM Round r
+            INNER JOIN r.season s
+              WHERE s.uuid = :seasonUuid
+              """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
   @Query("""
           SELECT

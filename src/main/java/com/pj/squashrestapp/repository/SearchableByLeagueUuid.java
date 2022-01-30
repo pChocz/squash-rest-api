@@ -3,9 +3,8 @@ package com.pj.squashrestapp.repository;
 import java.util.List;
 import java.util.UUID;
 
-public interface BulkDeletableByLeagueUuid {
-
-  void deleteAllByIdIn(List<Long> ids);
+public interface SearchableByLeagueUuid {
 
   List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
+
 }

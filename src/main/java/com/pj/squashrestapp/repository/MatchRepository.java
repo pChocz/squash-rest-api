@@ -15,7 +15,8 @@ import org.springframework.data.repository.query.Param;
 /**
  *
  */
-public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletableByLeagueUuid {
+public interface MatchRepository extends JpaRepository<Match, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
   @Query("""
           SELECT l.uuid FROM Match m
@@ -216,4 +217,15 @@ public interface MatchRepository extends JpaRepository<Match, Long>, BulkDeletab
               WHERE l.uuid = :leagueUuid
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+          SELECT m.id FROM Match m
+            INNER JOIN m.roundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+              WHERE s.uuid = :seasonUuid
+              """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
+
 }

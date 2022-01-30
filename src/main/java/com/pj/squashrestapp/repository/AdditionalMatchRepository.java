@@ -17,7 +17,8 @@ import org.springframework.data.repository.query.Param;
 /**
  *
  */
-public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch, Long>, BulkDeletableByLeagueUuid {
+public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -184,6 +185,14 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
   List<AdditionalMatch> findAllByLeagueOrderByDateDescIdDesc(League league);
 
   @Override
+  @Query("""
+            SELECT m.id FROM AdditionalMatch m
+              JOIN Season s ON m.seasonNumber = s.number AND m.league = s.league
+              WHERE s.uuid = :seasonUuid
+            """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
+
+  @Override
   @Modifying
   @Query("DELETE FROM AdditionalMatch m WHERE m.id IN :ids")
   void deleteAllByIdIn(@Param("ids") List<Long> ids);
@@ -195,6 +204,5 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
               WHERE l.uuid = :leagueUuid
             """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
-
 
 }

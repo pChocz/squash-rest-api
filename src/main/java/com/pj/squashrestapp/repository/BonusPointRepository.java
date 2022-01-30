@@ -13,7 +13,8 @@ import org.springframework.data.repository.query.Param;
 /**
  *
  */
-public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, BulkDeletableByLeagueUuid {
+public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
   @EntityGraph(attributePaths = {
       "season.league"
@@ -71,4 +72,11 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>, B
   @Query("DELETE FROM BonusPoint bp WHERE bp.id IN :ids")
   void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
+  @Override
+  @Query("""
+          SELECT bp.id FROM BonusPoint bp
+            JOIN bp.season s
+              WHERE s.uuid = :seasonUuid
+            """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 }

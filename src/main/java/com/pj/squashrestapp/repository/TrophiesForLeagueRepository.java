@@ -16,7 +16,8 @@ import org.springframework.data.repository.query.Param;
 /**
  *
  */
-public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeague, Long>, BulkDeletableByLeagueUuid {
+public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeague, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
   @EntityGraph(attributePaths = {"player"})
   List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
@@ -42,9 +43,17 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
   @Override
   @Query("""
           SELECT tfl.id FROM TrophyForLeague tfl
-            INNER JOIN tfl.league l
+            JOIN tfl.league l
               WHERE l.uuid = :leagueUuid
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+          SELECT tfl.id FROM TrophyForLeague tfl
+            JOIN Season s ON tfl.seasonNumber = s.number AND tfl.league = s.league
+              WHERE s.uuid = :seasonUuid
+            """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }

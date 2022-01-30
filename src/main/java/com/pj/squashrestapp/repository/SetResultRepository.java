@@ -33,7 +33,8 @@ import org.springframework.data.repository.query.Param;
  * As a result we can extract entire league with a single query and
  * reconstruct it later with {@link EntityGraphBuildUtil} utility class.
  */
-public interface SetResultRepository extends JpaRepository<SetResult, Long>, BulkDeletableByLeagueUuid {
+public interface SetResultRepository extends JpaRepository<SetResult, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
 
   @Query("""
@@ -114,5 +115,16 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>, Bul
               WHERE l.uuid = :leagueUuid
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+          SELECT sr.id FROM SetResult sr
+            INNER JOIN sr.match m
+            INNER JOIN m.roundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+              WHERE s.uuid = :seasonUuid
+              """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }

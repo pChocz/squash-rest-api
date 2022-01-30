@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, BulkDeletableByLeagueUuid {
+public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>,
+    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
 
   @Query("""
@@ -38,5 +39,14 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>, B
               WHERE l.uuid = :leagueUuid
               """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+
+  @Override
+  @Query("""
+          SELECT rg.id FROM RoundGroup rg
+            INNER JOIN rg.round r
+            INNER JOIN r.season s
+              WHERE s.uuid = :seasonUuid
+              """)
+  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }
