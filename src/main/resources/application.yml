@@ -25,6 +25,10 @@ spring:
         jdbc:
           time_zone: UTC
     show-sql: _REPLACE_
+  data:
+    redis:
+      repositories:
+        enabled: false
   datasource:
     platform: _REPLACE_
     driver-class-name: _REPLACE_
