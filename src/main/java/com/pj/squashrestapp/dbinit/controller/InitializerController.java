@@ -7,6 +7,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.util.GsonUtil;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -38,7 +39,7 @@ public class InitializerController {
 
   private final FakeLeagueService fakeLeagueService;
   private final AdminInitializerService adminInitializerService;
-  private final PlayerRepository playerRepository;
+  private final RedisCacheService redisCacheService;
 
   @PostMapping(value = "/leagues")
   @PreAuthorize("isAdmin()")
@@ -61,6 +62,7 @@ public class InitializerController {
     final boolean initialized = adminInitializerService.initialize(initAllJsonContent);
     if (initialized) {
       log.info("Database initialized properly");
+      redisCacheService.clearAll();
     } else {
       throw new UnsupportedOperationException(
           "It seems that database has already been populated earlier so we leave it as is");
