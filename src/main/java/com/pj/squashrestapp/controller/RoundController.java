@@ -50,7 +50,7 @@ public class RoundController {
 
   @PutMapping(value = "{roundUuid}")
   @ResponseBody
-  @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
+  @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void recreateRound(
       @PathVariable final UUID roundUuid,
       @RequestParam final List<UUID[]> playersUuids) {
