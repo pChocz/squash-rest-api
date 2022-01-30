@@ -53,6 +53,7 @@ public class SeasonService {
   private final BonusPointService bonusPointService;
   private final XpPointsService xpPointsService;
 
+  private final DeepRemovalService deepRemovalService;
   private final SetResultRepository setResultRepository;
   private final SeasonRepository seasonRepository;
   private final LeagueRepository leagueRepository;
@@ -275,8 +276,7 @@ public class SeasonService {
   }
 
   public void deleteSeason(final UUID seasonUuid) {
-    final Season seasonToDelete = seasonRepository.findByUuidWithLeague(seasonUuid);
-    seasonRepository.delete(seasonToDelete);
+    deepRemovalService.deepRemoveSeason(seasonUuid);
   }
 
   public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentSeasonsUuids(UUID seasonUuid) {
