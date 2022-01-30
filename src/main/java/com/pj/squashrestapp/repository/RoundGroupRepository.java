@@ -14,13 +14,12 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>,
 
   @Query("""
           SELECT rg.id FROM Match m
-            INNER JOIN m.roundGroup rg
-            INNER JOIN rg.round r
-            INNER JOIN r.season s
-            INNER JOIN s.league l
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              AND (m.firstPlayer.uuid = :playerUuid 
-                OR m.secondPlayer.uuid = :playerUuid)
+              AND (m.firstPlayer.uuid = :playerUuid OR m.secondPlayer.uuid = :playerUuid)
               AND r.finished = true
           """)
   List<Long> retrieveRoundGroupsIdsForPlayer(@Param("leagueUuid") UUID leagueUuid, @Param("playerUuid") UUID playerUuid);
@@ -33,20 +32,20 @@ public interface RoundGroupRepository extends JpaRepository<RoundGroup, Long>,
   @Override
   @Query("""
           SELECT rg.id FROM RoundGroup rg
-            INNER JOIN rg.round r
-            INNER JOIN r.season s
-            INNER JOIN s.league l
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
   @Override
   @Query("""
           SELECT rg.id FROM RoundGroup rg
-            INNER JOIN rg.round r
-            INNER JOIN r.season s
+            JOIN rg.round r
+            JOIN r.season s
               WHERE s.uuid = :seasonUuid
-              """)
+          """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }

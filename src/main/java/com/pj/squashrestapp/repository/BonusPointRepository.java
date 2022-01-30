@@ -24,10 +24,10 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
 
   @Query("""
           SELECT bp FROM BonusPoint bp
-            JOIN Season s ON bp.season = s
+            JOIN bp.season s
               WHERE s.uuid = :seasonUuid
-                ORDER BY bp.date DESC, bp.id DESC
-                """)
+          ORDER BY bp.date DESC, bp.id DESC
+          """)
   @EntityGraph(attributePaths = {
           "winner",
           "looser",
@@ -38,10 +38,10 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
 
   @Query("""
           SELECT bp FROM BonusPoint bp
-            JOIN Season s ON bp.season = s
-            JOIN League l ON s.league = l
+            JOIN bp.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   @EntityGraph(attributePaths = {
           "winner",
           "looser",
@@ -52,8 +52,8 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
 
   @Query("""
           SELECT l.uuid FROM BonusPoint bp
-           JOIN Season s ON bp.season = s
-           JOIN League l ON s.league = l
+            JOIN bp.season s
+            JOIN s.league l
               WHERE bp.uuid = :uuid
               """)
   UUID retrieveLeagueUuidOfBonusPoint(@Param("uuid") UUID uuid);
@@ -61,10 +61,10 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
   @Override
   @Query("""
           SELECT bp.id FROM BonusPoint bp
-            INNER JOIN bp.season s
-            INNER JOIN s.league l
+            JOIN bp.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
   @Override
@@ -77,6 +77,6 @@ public interface BonusPointRepository extends JpaRepository<BonusPoint, Long>,
           SELECT bp.id FROM BonusPoint bp
             JOIN bp.season s
               WHERE s.uuid = :seasonUuid
-            """)
+          """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 }

@@ -29,10 +29,7 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
 
   Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophyAndPlayer(League league, int seasonNumber, Trophy trophy, Player player);
 
-  @Query("""
-          SELECT tfl FROM TrophyForLeague tfl
-            WHERE tfl.player.uuid = :playerUuid
-            """)
+  @Query("SELECT tfl FROM TrophyForLeague tfl WHERE tfl.player.uuid = :playerUuid")
   List<TrophyForLeague> findAllByPlayerUuid(@Param("playerUuid") UUID playerUuid);
 
   @Override
@@ -45,7 +42,7 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
           SELECT tfl.id FROM TrophyForLeague tfl
             JOIN tfl.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
   @Override
@@ -53,7 +50,7 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
           SELECT tfl.id FROM TrophyForLeague tfl
             JOIN Season s ON tfl.seasonNumber = s.number AND tfl.league = s.league
               WHERE s.uuid = :seasonUuid
-            """)
+          """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
 }

@@ -28,28 +28,28 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
 
   @Query("""
           SELECT ll.picture FROM LeagueLogo ll
-            JOIN League l ON l.leagueLogo = ll
+            JOIN ll.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   Optional<byte[]> extractLogoBlobByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
 
   @Query("""
           SELECT ll.picture FROM LeagueLogo ll
-            JOIN League l ON l.leagueLogo = ll
-            JOIN Season s ON s.league = l
+            JOIN ll.league l
+            JOIN l.seasons s
               WHERE s.uuid = :seasonUuid
-              """)
+          """)
   Optional<byte[]> extractLogoBlobBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT ll.picture FROM LeagueLogo ll
-            JOIN League l ON l.leagueLogo = ll
-            JOIN Season s ON s.league = l
-            JOIN Round r ON r.season = s
+            JOIN ll.league l
+            JOIN l.seasons s
+            JOIN s.rounds r
               WHERE r.uuid = :roundUuid
-              """)
+          """)
   Optional<byte[]> extractLogoBlobByRoundUuid(@Param("roundUuid") UUID roundUuid);
 
 }

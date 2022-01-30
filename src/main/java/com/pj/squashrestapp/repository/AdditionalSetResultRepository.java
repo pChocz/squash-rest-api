@@ -20,9 +20,9 @@ public interface AdditionalSetResultRepository extends JpaRepository<AdditionalS
   @Override
   @Query("""
             SELECT asr.id FROM AdditionalSetResult asr
-              INNER JOIN asr.match m
-              INNER JOIN m.league l
-              WHERE l.uuid = :leagueUuid
+              JOIN asr.match m
+              JOIN m.league l
+                WHERE l.uuid = :leagueUuid
             """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
@@ -31,7 +31,7 @@ public interface AdditionalSetResultRepository extends JpaRepository<AdditionalS
             SELECT asr.id FROM AdditionalSetResult asr
               JOIN asr.match m
               JOIN Season s ON m.seasonNumber = s.number AND m.league = s.league
-              WHERE s.uuid = :seasonUuid
+                WHERE s.uuid = :seasonUuid
             """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 

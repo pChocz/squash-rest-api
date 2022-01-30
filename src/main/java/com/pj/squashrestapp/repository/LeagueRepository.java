@@ -61,68 +61,64 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
 
 
   @Query("""
-           SELECT COUNT(DISTINCT s), COUNT(DISTINCT r), COUNT(DISTINCT m), COUNT(DISTINCT sr), SUM(sr.firstPlayerScore) + SUM(sr.secondPlayerScore)
-             FROM SetResult sr
-             INNER JOIN sr.match m
-             INNER JOIN m.roundGroup rg
-             INNER JOIN rg.round r
-             INNER JOIN r.season s
-             INNER JOIN s.league l
+           SELECT COUNT(DISTINCT s), COUNT(DISTINCT r), COUNT(DISTINCT m), COUNT(DISTINCT sr), SUM(sr.firstPlayerScore) + SUM(sr.secondPlayerScore) FROM SetResult sr
+             JOIN sr.match m
+             JOIN m.roundGroup rg
+             JOIN rg.round r
+             JOIN r.season s
+             JOIN s.league l
                WHERE l.uuid = :uuid
-               AND sr.firstPlayerScore IS NOT NULL
-               AND sr.secondPlayerScore IS NOT NULL
+                 AND sr.firstPlayerScore IS NOT NULL
+                 AND sr.secondPlayerScore IS NOT NULL
           """)
   Object findAllCountsForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
-           SELECT DISTINCT p1.id
-             FROM SetResult sr
-             INNER JOIN sr.match m
-             INNER JOIN m.roundGroup rg
-             INNER JOIN rg.round r
-             INNER JOIN r.season s
-             INNER JOIN s.league l
-             INNER JOIN m.firstPlayer p1
-             INNER JOIN m.secondPlayer p2
+           SELECT DISTINCT p1.id FROM SetResult sr
+             JOIN sr.match m
+             JOIN m.roundGroup rg
+             JOIN rg.round r
+             JOIN r.season s
+             JOIN s.league l
+             JOIN m.firstPlayer p1
+             JOIN m.secondPlayer p2
                WHERE l.uuid = :uuid
-               AND sr.firstPlayerScore IS NOT NULL
-               AND sr.secondPlayerScore IS NOT NULL
+                 AND sr.firstPlayerScore IS NOT NULL
+                 AND sr.secondPlayerScore IS NOT NULL
           """)
   List<Long> findPlayersIdsFirstPlayerForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
-           SELECT DISTINCT p2.id
-             FROM SetResult sr
-             INNER JOIN sr.match m
-             INNER JOIN m.roundGroup rg
-             INNER JOIN rg.round r
-             INNER JOIN r.season s
-             INNER JOIN s.league l
-             INNER JOIN m.firstPlayer p1
-             INNER JOIN m.secondPlayer p2
+           SELECT DISTINCT p2.id FROM SetResult sr
+             JOIN sr.match m
+             JOIN m.roundGroup rg
+             JOIN rg.round r
+             JOIN r.season s
+             JOIN s.league l
+             JOIN m.firstPlayer p1
+             JOIN m.secondPlayer p2
                WHERE l.uuid = :uuid
-               AND sr.firstPlayerScore IS NOT NULL
-               AND sr.secondPlayerScore IS NOT NULL
+                 AND sr.firstPlayerScore IS NOT NULL
+                 AND sr.secondPlayerScore IS NOT NULL
           """)
   List<Long> findPlayersIdsSecondPlayerForLeagueByUuid(@Param("uuid") UUID uuid);
 
 
   @Query("""
-           SELECT r.split, COUNT(DISTINCT r)
-             FROM SetResult sr
-             INNER JOIN sr.match m
-             INNER JOIN m.roundGroup rg
-             INNER JOIN rg.round r
-             INNER JOIN r.season s
-             INNER JOIN s.league l
-             INNER JOIN m.firstPlayer p1
-             INNER JOIN m.secondPlayer p2
+           SELECT r.split, COUNT(DISTINCT r) FROM SetResult sr
+             JOIN sr.match m
+             JOIN m.roundGroup rg
+             JOIN rg.round r
+             JOIN r.season s
+             JOIN s.league l
+             JOIN m.firstPlayer p1
+             JOIN m.secondPlayer p2
                WHERE l.uuid = :uuid
-               AND sr.firstPlayerScore IS NOT NULL
-               AND sr.secondPlayerScore IS NOT NULL
-             GROUP BY r.split
+                 AND sr.firstPlayerScore IS NOT NULL
+                 AND sr.secondPlayerScore IS NOT NULL
+           GROUP BY r.split
           """)
   List<Object> findRoundsPerSplitGroupedForLeagueByUuid(@Param("uuid") UUID uuid);
 

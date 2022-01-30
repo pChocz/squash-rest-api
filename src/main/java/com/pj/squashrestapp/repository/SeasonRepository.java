@@ -43,48 +43,45 @@ public interface SeasonRepository extends JpaRepository<Season, Long>,
 
   @Query("""
           SELECT l.uuid FROM Season s
-            JOIN League l ON s.league = l
+            JOIN s.league l
               WHERE s.uuid = :seasonUuid
-              """)
+          """)
   UUID retrieveLeagueUuidOfSeason(@Param("seasonUuid") UUID seasonUuid);
 
 
-  @Query("""
-          SELECT s.id FROM Season s 
-            WHERE s.uuid = :seasonUuid
-            """)
+  @Query("SELECT s.id FROM Season s WHERE s.uuid = :seasonUuid")
   Long findIdByUuid(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT p1 from Match m
-          INNER JOIN m.roundGroup rg
-          INNER JOIN rg.round r
-          INNER JOIN r.season s
-          INNER JOIN s.league l
-          INNER JOIN m.firstPlayer p1
-            WHERE s.uuid = :seasonUuid
-            """)
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
+            JOIN m.firstPlayer p1
+              WHERE s.uuid = :seasonUuid
+          """)
   List<Player> extractSeasonPlayersFirst(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT p2 from Match m
-          INNER JOIN m.roundGroup rg
-          INNER JOIN rg.round r
-          INNER JOIN r.season s
-          INNER JOIN s.league l
-          INNER JOIN m.secondPlayer p2
-            WHERE s.uuid = :seasonUuid
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
+            JOIN m.secondPlayer p2
+              WHERE s.uuid = :seasonUuid
             """)
   List<Player> extractSeasonPlayersSecond(@Param("seasonUuid") UUID seasonUuid);
 
 
   @Query("""
           SELECT DISTINCT s FROM Season s
-           INNER JOIN s.league l
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-           ORDER BY s.startDate DESC
+          ORDER BY s.startDate DESC
           """)
   List<Season> findCurrentSeasonForLeague(@Param("leagueUuid") UUID leagueUuid, Pageable pageable);
 
@@ -96,8 +93,8 @@ public interface SeasonRepository extends JpaRepository<Season, Long>,
   @Override
   @Query("""
           SELECT s.id FROM Season s
-            INNER JOIN s.league l
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 }

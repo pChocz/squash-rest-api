@@ -20,21 +20,21 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
   Optional<XpPointsForRound> findByTypeAndSplit(String type, String split);
 
   @Query("""
-          SELECT xpp.points FROM XpPointsForRound xpr 
-            JOIN XpPointsForRoundGroup xpg ON xpr = xpg.xpPointsForRound 
-            JOIN XpPointsForPlace xpp ON xpg = xpp.xpPointsForRoundGroup
+          SELECT xpp.points FROM XpPointsForRound xpr
+            JOIN xpr.xpPointsForRoundGroups xpg
+            JOIN xpg.xpPointsForPlaces xpp
               WHERE xpr.split = :split
-                and xpr.type = :type
-                  ORDER BY xpp.placeInRound
-                """)
+                AND xpr.type = :type
+          ORDER BY xpp.placeInRound
+          """)
   List<Integer> retrievePointsBySplitAndType(@Param("split") String split, @Param("type") String type);
 
 
   @Query("""
           SELECT xpp FROM XpPointsForPlace xpp
-            INNER JOIN FETCH xpp.xpPointsForRoundGroup xprg
-            INNER JOIN FETCH xprg.xpPointsForRound xpr
-            """)
+            JOIN FETCH xpp.xpPointsForRoundGroup xprg
+            JOIN FETCH xprg.xpPointsForRound xpr
+          """)
   List<XpPointsForPlace> fetchAll();
 
 
@@ -44,10 +44,10 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
 
   @Query("""
           SELECT xpp FROM XpPointsForPlace xpp
-            INNER JOIN FETCH xpp.xpPointsForRoundGroup xprg
-            INNER JOIN FETCH xprg.xpPointsForRound xpr
+            JOIN FETCH xpp.xpPointsForRoundGroup xprg
+            JOIN FETCH xprg.xpPointsForRound xpr
               WHERE xpr.type = :type
-            """)
+          """)
   List<XpPointsForPlace> fetchAllByType(@Param("type") String type);
 
 }

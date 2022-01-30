@@ -35,18 +35,14 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   List<Player> findAll();
 
 
-  @Query("""
-          SELECT p FROM Player p 
-            WHERE p.uuid IN :uuids
-            """)
+  @Query("SELECT p FROM Player p WHERE p.uuid IN :uuids")
   List<Player> findByUuids(@Param("uuids") UUID[] uuids);
 
 
   @Query("""
-          SELECT p FROM Player p 
-            WHERE (upper(p.username) = :usernameOrEmail 
-              OR upper(p.email) = :usernameOrEmail)
-              """)
+          SELECT p FROM Player p
+            WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)
+          """)
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
@@ -55,10 +51,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
   Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(@Param("usernameOrEmail") String usernameOrEmail);
 
 
-  @Query("""
-          SELECT p FROM Player p 
-            WHERE p.uuid = :uuid
-            """)
+  @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
@@ -71,7 +64,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           SELECT p FROM Player p
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
-              """)
+          """)
   @EntityGraph(attributePaths = {
           "authorities",
           "roles",
@@ -84,7 +77,7 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
           SELECT DISTINCT p FROM Player p
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
-              """)
+          """)
   List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
 
 }

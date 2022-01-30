@@ -38,52 +38,39 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
 
   @Query("""
           SELECT l.uuid FROM Round r
-           JOIN Season s ON r.season = s
-           JOIN League l ON s.league = l
+            JOIN r.season s
+            JOIN s.league l
               WHERE r.uuid = :roundUuid
           """)
   UUID retrieveLeagueUuidOfRound(@Param("roundUuid") UUID roundUuid);
 
 
-  @Query("""
-          SELECT r FROM Match m
-           JOIN RoundGroup rg ON m.roundGroup = rg
-           JOIN Round r ON rg.round = r
-              WHERE m.uuid = :matchUuid
-          """)
-  Round findByMatchUuid(@Param("matchUuid") UUID matchUuid);
-
-
-  @Query("""
-          SELECT r.id FROM Round r
-              WHERE r.uuid = :roundUuid
-          """)
+  @Query("SELECT r.id FROM Round r WHERE r.uuid = :roundUuid")
   Long findIdByUuid(@Param("roundUuid") UUID roundUuid);
 
 
   @Query("""
           SELECT DISTINCT r FROM Match m
-           INNER JOIN m.firstPlayer p1
-           INNER JOIN m.secondPlayer p2
-           INNER JOIN m.roundGroup rg
-           INNER JOIN rg.round r
-              WHERE (p1.uuid = :playerUuid 
-                  OR p2.uuid = :playerUuid)
-           ORDER BY r.date DESC
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+              WHERE (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
+          ORDER BY r.date DESC
           """)
   List<Round> findMostRecentRoundOfPlayer(@Param("playerUuid") UUID playerUuid, Pageable pageable);
 
 
   @Query("""
           SELECT DISTINCT r FROM Match m
-           INNER JOIN m.firstPlayer p1
-           INNER JOIN m.secondPlayer p2
-           INNER JOIN m.roundGroup rg
-           INNER JOIN rg.round r
-           INNER JOIN r.season s
-           INNER JOIN s.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-           ORDER BY r.date DESC
+          ORDER BY r.date DESC
           """)
   List<Round> findMostRecentRoundOfLeague(@Param("leagueUuid") UUID leagueUuid, Pageable pageable);
 
@@ -95,18 +82,18 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
   @Override
   @Query("""
           SELECT r.id FROM Round r
-            INNER JOIN r.season s
-            INNER JOIN s.league l
+            JOIN r.season s
+            JOIN s.league l
               WHERE l.uuid = :leagueUuid
-              """)
+          """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
   @Override
   @Query("""
           SELECT r.id FROM Round r
-            INNER JOIN r.season s
+            JOIN r.season s
               WHERE s.uuid = :seasonUuid
-              """)
+          """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
   @Query("""
@@ -115,15 +102,14 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
               THEN true
               ELSE false
             END
-           FROM Match m
-           JOIN m.firstPlayer p1
-           JOIN m.secondPlayer p2
-           JOIN m.roundGroup rg
-           JOIN rg.round r
-              WHERE (p1.uuid = :playerUuid
-                  OR p2.uuid = :playerUuid)
-                  AND r.uuid = :roundUuid
-              """)
+          FROM Match m
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+              WHERE (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
+                AND r.uuid = :roundUuid
+          """)
   boolean checkIfPlayerOfRound(@Param("roundUuid") UUID roundUuid, @Param("playerUuid") UUID playerUuid);
 
 }

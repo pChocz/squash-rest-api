@@ -31,11 +31,10 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
-              WHERE (p1 = :player 
-                  OR p2 = :player)
-                  AND m.league = :league
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE (p1 = :player OR p2 = :player)
+                AND m.league = :league
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -48,10 +47,9 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
-              WHERE (p1 = :player 
-                  OR p2 = :player)
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE (p1 = :player OR p2 = :player)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -63,10 +61,10 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
-              WHERE (p1.uuid IN :playersUuids 
-                 AND p2.uuid IN :playersUuids)
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE (p1.uuid IN :playersUuids
+                AND  p2.uuid IN :playersUuids)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -79,11 +77,11 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
-              WHERE (p1.uuid IN :playersUuids 
-                 AND p2.uuid IN :playersUuids)
-                 AND m.league = :league
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE (p1.uuid IN :playersUuids
+                AND  p2.uuid IN :playersUuids)
+                AND  m.league = :league
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -95,13 +93,13 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-          INNER JOIN m.league l
-          INNER JOIN m.firstPlayer p1
-          INNER JOIN m.secondPlayer p2
-            WHERE l.uuid = :leagueUuid
-              AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
-              AND p1.uuid IN :playersUuids 
-              AND p2.uuid IN :playersUuids
+            JOIN m.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE l.uuid = :leagueUuid
+                AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND p1.uuid IN :playersUuids
+                AND p2.uuid IN :playersUuids
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -116,12 +114,12 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m FROM AdditionalMatch m
-          INNER JOIN m.league l
-          INNER JOIN m.firstPlayer p1
-          INNER JOIN m.secondPlayer p2
-            WHERE l.uuid = :leagueUuid
-              AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
-              AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
+            JOIN m.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE l.uuid = :leagueUuid
+                AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
           """)
   @EntityGraph(attributePaths = {
           "firstPlayer",
@@ -136,14 +134,14 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m.id FROM AdditionalMatch m
-            INNER JOIN m.league l
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
+            JOIN m.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
                 AND p1.uuid IN :playersUuids 
                 AND p2.uuid IN :playersUuids
-                """)
+          """)
   Page<Long> findIdsMultiple(
           Pageable pageable,
           @Param("leagueUuid") UUID leagueUuid,
@@ -153,9 +151,9 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
 
   @Query("""
           SELECT m.id FROM AdditionalMatch m
-            INNER JOIN m.league l
-            INNER JOIN m.firstPlayer p1
-            INNER JOIN m.secondPlayer p2
+            JOIN m.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
                 AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
@@ -188,7 +186,7 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
   @Query("""
             SELECT m.id FROM AdditionalMatch m
               JOIN Season s ON m.seasonNumber = s.number AND m.league = s.league
-              WHERE s.uuid = :seasonUuid
+                WHERE s.uuid = :seasonUuid
             """)
   List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 
@@ -200,8 +198,8 @@ public interface AdditionalMatchRepository extends JpaRepository<AdditionalMatch
   @Override
   @Query("""
             SELECT m.id FROM AdditionalMatch m
-              INNER JOIN m.league l
-              WHERE l.uuid = :leagueUuid
+              JOIN m.league l
+                WHERE l.uuid = :leagueUuid
             """)
   List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
