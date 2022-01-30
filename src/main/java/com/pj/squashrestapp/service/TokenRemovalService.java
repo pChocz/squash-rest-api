@@ -78,11 +78,13 @@ public class TokenRemovalService {
   private void removeNotActivatedPlayers(final List<VerificationToken> expiredVerificationTokens) {
     for (final VerificationToken token : expiredVerificationTokens) {
       final Player player = token.getPlayer();
-      for (final Authority authority : player.getAuthorities()) {
-        player.removeAuthority(authority);
+      if (player.isEnabled()) {
+        for (final Authority authority : player.getAuthorities()) {
+          player.removeAuthority(authority);
+        }
+        playerRepository.delete(player);
       }
       verificationTokenRepository.delete(token);
-      playerRepository.delete(player);
       log.info("Player [{}] has been removed", player.getUsername());
     }
   }
