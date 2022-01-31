@@ -197,6 +197,7 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
   }
 
   public void evictCacheForLeagueLogo(final UUID leagueUuid) {
