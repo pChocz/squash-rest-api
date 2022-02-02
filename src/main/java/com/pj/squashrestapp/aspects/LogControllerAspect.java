@@ -1,8 +1,13 @@
 package com.pj.squashrestapp.aspects;
 
+import com.pj.squashrestapp.model.LogEntry;
+import com.pj.squashrestapp.repository.LogEntryRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +27,7 @@ import org.springframework.util.StopWatch;
 public class LogControllerAspect {
 
   private final HibernateQueryInterceptor hibernateQueryInterceptor;
+  private final LogEntryRepository logEntryRepository;
 
   @Pointcut("execution(* com.pj.squashrestapp.util.*.*(..)))")
   public void utilMethodsPointcut() {
@@ -143,7 +149,7 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
-  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut()")
   public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
@@ -160,7 +166,14 @@ public class LogControllerAspect {
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
-    Object result = null;
+    final LogEntry logEntry = new LogEntry();
+    logEntry.setTimestamp(LocalDateTime.now());
+    logEntry.setArguments(isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
+    logEntry.setMethodName(methodName);
+    logEntry.setClassName(className);
+    logEntry.setUsername(username);
+
+    Object result;
     try {
       result = proceedingJoinPoint.proceed();
       stopWatch.stop();
@@ -168,17 +181,34 @@ public class LogControllerAspect {
 
     } catch (final Throwable throwable) {
       log.error(throwable.getMessage(), throwable);
+      logEntry.setErrorMessage(throwable.getMessage());
+      logEntry.setStackTrace(stackTraceToString(throwable));
       throw throwable;
 
     } finally {
+      final long totalTimeMillis = stopWatch.getTotalTimeMillis();
+      final Long queryCount = hibernateQueryInterceptor.getQueryCount();
+
       log.info(
           "REST-REQUEST  {}  {}  {}ms  {}.{}{}",
-          hibernateQueryInterceptor.getQueryCount(),
+          queryCount,
           username,
-          stopWatch.getTotalTimeMillis(),
+          totalTimeMillis,
           className,
           methodName,
           isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
+
+      logEntry.setDuration(totalTimeMillis);
+      logEntry.setQueryCount(queryCount);
+
+      logEntryRepository.save(logEntry);
     }
+  }
+
+  private String stackTraceToString(final Throwable t) {
+    final StringWriter sw = new StringWriter();
+    final PrintWriter pw = new PrintWriter(sw);
+    t.printStackTrace(pw);
+    return sw.toString();
   }
 }

@@ -29,6 +29,11 @@ spring:
     redis:
       repositories:
         enabled: false
+    mongodb:
+      host: localhost
+      port: 27017
+      database: logs
+
   datasource:
     platform: _REPLACE_
     driver-class-name: _REPLACE_
