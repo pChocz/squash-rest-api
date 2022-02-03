@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.model.LogEntry;
-import com.pj.squashrestapp.repository.LogEntryRepository;
+import com.pj.squashrestapp.repositorymongo.LogEntryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

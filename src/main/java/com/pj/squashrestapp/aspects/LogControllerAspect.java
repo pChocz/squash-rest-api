@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.aspects;
 
 import com.pj.squashrestapp.model.LogEntry;
-import com.pj.squashrestapp.repository.LogEntryRepository;
+import com.pj.squashrestapp.repositorymongo.LogEntryRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import java.io.PrintWriter;
