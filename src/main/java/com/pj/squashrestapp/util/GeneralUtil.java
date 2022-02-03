@@ -11,6 +11,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /** */
@@ -68,10 +69,14 @@ public class GeneralUtil {
   }
 
   public String extractSessionUsername() {
-    final Object userDetails =
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    if (userDetails instanceof UserDetailsImpl) {
-      return ((UserDetailsImpl) userDetails).getUsername();
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null) {
+      return "ANONYMOUS";
+    }
+
+    final Object userDetailsObject = authentication.getPrincipal();
+    if (userDetailsObject instanceof UserDetailsImpl userDetails) {
+      return userDetails.getUsername();
     } else {
       return "ANONYMOUS";
     }
