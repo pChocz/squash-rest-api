@@ -32,5 +32,7 @@ public class LogEntry {
   private long queryCount;
   private String errorMessage;
   private String stackTrace;
+  private String message;
+  private String type;
 
 }

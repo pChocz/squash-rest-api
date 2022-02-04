@@ -1,11 +1,13 @@
 package com.pj.squashrestapp.aspects;
 
+import static java.util.Arrays.asList;
+
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.pj.squashrestapp.model.LogEntry;
 import com.pj.squashrestapp.repositorymongo.LogEntryRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -145,12 +147,14 @@ public class LogControllerAspect {
   /**
    * Logging aspect that matches all controller methods.
    *
+   * It logs to Mongo DB as well.
+   *
    * @param proceedingJoinPoint Spring method execution join point
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
-  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut()")
-  public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint)
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut() || repositoryMethodsPointcut()")
+  public Object logAllControllerAndRepositoriesMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
     final Object[] args = proceedingJoinPoint.getArgs();
@@ -161,18 +165,28 @@ public class LogControllerAspect {
     final String methodName = methodSignature.getName();
     final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
 
-    hibernateQueryInterceptor.startQueryCount();
-
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
     final LogEntry logEntry = new LogEntry();
     logEntry.setTimestamp(LocalDateTime.now());
-    logEntry.setArguments(isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
     logEntry.setMethodName(methodName);
     logEntry.setClassName(className);
     logEntry.setUsername(username);
 
+    if (!isSecretMethod) {
+      logEntry.setArguments(Arrays.deepToString(args));
+    }
+
+    if (className.endsWith("Controller")) {
+      logEntry.setType("CONTROLLER");
+    } else if (className.endsWith("Service")) {
+      logEntry.setType("SERVICE");
+    } else if (className.endsWith("Repository")) {
+      logEntry.setType("REPOSITORY");
+    }
+
+    hibernateQueryInterceptor.startQueryCount();
     Object result;
     try {
       result = proceedingJoinPoint.proceed();
@@ -182,7 +196,9 @@ public class LogControllerAspect {
     } catch (final Throwable throwable) {
       log.error(throwable.getMessage(), throwable);
       logEntry.setErrorMessage(throwable.getMessage());
-      logEntry.setStackTrace(stackTraceToString(throwable));
+      logEntry.setStackTrace(Joiner
+          .on("\n")
+          .join(Iterables.limit(asList(throwable.getStackTrace()), 10)));
       throw throwable;
 
     } finally {
@@ -205,10 +221,4 @@ public class LogControllerAspect {
     }
   }
 
-  private String stackTraceToString(final Throwable t) {
-    final StringWriter sw = new StringWriter();
-    final PrintWriter pw = new PrintWriter(sw);
-    t.printStackTrace(pw);
-    return sw.toString();
-  }
 }
