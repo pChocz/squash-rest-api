@@ -1,9 +1,7 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
-import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;

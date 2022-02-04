@@ -6,7 +6,6 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dbinit.jsondto.JsonXpPointsForRound;
 import com.pj.squashrestapp.dbinit.service.AdminInitializerService;
 import com.pj.squashrestapp.dbinit.service.FakeLeagueService;
-import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.util.GsonUtil;
 import java.io.IOException;

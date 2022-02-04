@@ -1,8 +1,6 @@
 package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
-import com.pj.squashrestapp.dto.match.MatchSimpleDto;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
