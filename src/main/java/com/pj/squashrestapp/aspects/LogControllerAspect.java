@@ -153,7 +153,7 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
-  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut() || repositoryMethodsPointcut()")
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || repositoryMethodsPointcut()")
   public Object logAllControllerAndRepositoriesMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
