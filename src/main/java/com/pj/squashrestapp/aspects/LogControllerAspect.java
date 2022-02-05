@@ -153,7 +153,7 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
-  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || repositoryMethodsPointcut()")
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut() || repositoryMethodsPointcut()")
   public Object logAllControllerAndRepositoriesMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
@@ -174,16 +174,18 @@ public class LogControllerAspect {
     logEntry.setClassName(className);
     logEntry.setUsername(username);
 
-    if (!isSecretMethod) {
-      logEntry.setArguments(Arrays.deepToString(args));
-    }
-
+    boolean isRepositoryMethod = false;
     if (className.endsWith("Controller")) {
       logEntry.setType("CONTROLLER");
     } else if (className.endsWith("Service")) {
       logEntry.setType("SERVICE");
     } else if (className.endsWith("Repository")) {
       logEntry.setType("REPOSITORY");
+      isRepositoryMethod = true;
+    }
+
+    if (!isSecretMethod && !isRepositoryMethod) {
+      logEntry.setArguments(Arrays.deepToString(args));
     }
 
     hibernateQueryInterceptor.startQueryCount();
@@ -212,7 +214,11 @@ public class LogControllerAspect {
           totalTimeMillis,
           className,
           methodName,
-          isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : Arrays.deepToString(args));
+          isSecretMethod
+              ? "[**_SECRET_ARGUMENTS_**]"
+              : isRepositoryMethod
+                  ? "[**_REPOSITORY_METHOD_**]"
+                  : Arrays.deepToString(args));
 
       logEntry.setDuration(totalTimeMillis);
       logEntry.setQueryCount(queryCount);
