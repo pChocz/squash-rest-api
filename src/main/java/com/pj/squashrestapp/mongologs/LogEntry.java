@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model;
+package com.pj.squashrestapp.mongologs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -21,7 +21,7 @@ public class LogEntry {
   @Id
   private String id;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+  @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
   private LocalDateTime timestamp;
 
   private String username;
@@ -29,10 +29,8 @@ public class LogEntry {
   private String methodName;
   private String arguments;
   private Long duration;
-  private long queryCount;
-  private String errorMessage;
-  private String stackTrace;
+  private Long queryCount;
+  private Boolean isException;
   private String message;
-  private String type;
-
+  private LogType type;
 }

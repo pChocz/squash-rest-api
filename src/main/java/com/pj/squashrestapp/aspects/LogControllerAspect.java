@@ -4,8 +4,9 @@ import static java.util.Arrays.asList;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
-import com.pj.squashrestapp.model.LogEntry;
-import com.pj.squashrestapp.repositorymongo.LogEntryRepository;
+import com.pj.squashrestapp.mongologs.LogEntry;
+import com.pj.squashrestapp.mongologs.LogEntryRepository;
+import com.pj.squashrestapp.mongologs.LogType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import java.lang.reflect.Method;
@@ -153,7 +154,7 @@ public class LogControllerAspect {
    * @return unmodified return object from the controller method
    * @throws Throwable rethrows exception after logging it, so it can be passed to the client
    */
-  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut() || repositoryMethodsPointcut()")
+  @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut() || serviceMethodsPointcut()")
   public Object logAllControllerAndRepositoriesMethods(final ProceedingJoinPoint proceedingJoinPoint)
       throws Throwable {
     final String username = GeneralUtil.extractSessionUsername();
@@ -173,18 +174,15 @@ public class LogControllerAspect {
     logEntry.setMethodName(methodName);
     logEntry.setClassName(className);
     logEntry.setUsername(username);
+    logEntry.setIsException(false);
 
-    boolean isRepositoryMethod = false;
     if (className.endsWith("Controller")) {
-      logEntry.setType("CONTROLLER");
+      logEntry.setType(LogType.CONTROLLER);
     } else if (className.endsWith("Service")) {
-      logEntry.setType("SERVICE");
-    } else if (className.endsWith("Repository")) {
-      logEntry.setType("REPOSITORY");
-      isRepositoryMethod = true;
+      logEntry.setType(LogType.SERVICE);
     }
 
-    if (!isSecretMethod && !isRepositoryMethod) {
+    if (!isSecretMethod) {
       logEntry.setArguments(Arrays.deepToString(args));
     }
 
@@ -197,8 +195,11 @@ public class LogControllerAspect {
 
     } catch (final Throwable throwable) {
       log.error(throwable.getMessage(), throwable);
-      logEntry.setErrorMessage(throwable.getMessage());
-      logEntry.setStackTrace(Joiner
+      logEntry.setIsException(true);
+      logEntry.setMessage(
+          throwable.getMessage()
+          + "\n" +
+          Joiner
           .on("\n")
           .join(Iterables.limit(asList(throwable.getStackTrace()), 10)));
       throw throwable;
@@ -216,9 +217,7 @@ public class LogControllerAspect {
           methodName,
           isSecretMethod
               ? "[**_SECRET_ARGUMENTS_**]"
-              : isRepositoryMethod
-                  ? "[**_REPOSITORY_METHOD_**]"
-                  : Arrays.deepToString(args));
+              : Arrays.deepToString(args));
 
       logEntry.setDuration(totalTimeMillis);
       logEntry.setQueryCount(queryCount);

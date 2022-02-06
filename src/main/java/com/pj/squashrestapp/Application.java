@@ -15,7 +15,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @SuppressWarnings({"JavaDoc", "resource"})
 @EnableJpaRepositories(basePackages = "com.pj.squashrestapp.repository")
-@EnableMongoRepositories(basePackages = "com.pj.squashrestapp.repositorymongo")
+@EnableMongoRepositories(basePackages = "com.pj.squashrestapp.mongologs")
 public class Application {
 
   public static void main(final String[] args) {

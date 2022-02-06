@@ -1,7 +1,5 @@
-package com.pj.squashrestapp.controller;
+package com.pj.squashrestapp.mongologs;
 
-import com.pj.squashrestapp.model.LogEntry;
-import com.pj.squashrestapp.repositorymongo.LogEntryRepository;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -24,11 +22,12 @@ public class LogFrontendController {
   void post(@RequestParam final String message) {
     final String username = GeneralUtil.extractSessionUsername();
     log.info("FRONTEND-LOG  |  {}  |  {}", username, message);
+
     final LogEntry logEntry = new LogEntry();
     logEntry.setTimestamp(LocalDateTime.now());
     logEntry.setUsername(username);
     logEntry.setMessage(message);
-    logEntry.setType("FRONTEND");
+    logEntry.setType(LogType.FRONTEND);
     logEntryRepository.save(logEntry);
   }
 }

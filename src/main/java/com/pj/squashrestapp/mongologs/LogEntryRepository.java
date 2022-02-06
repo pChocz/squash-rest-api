@@ -1,6 +1,5 @@
-package com.pj.squashrestapp.repositorymongo;
+package com.pj.squashrestapp.mongologs;
 
-import com.pj.squashrestapp.model.LogEntry;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /** */
