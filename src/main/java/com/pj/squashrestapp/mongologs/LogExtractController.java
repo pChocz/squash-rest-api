@@ -2,10 +2,10 @@ package com.pj.squashrestapp.mongologs;
 
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Query;
@@ -36,16 +36,27 @@ class LogExtractController {
     logExtractService.deleteAll();
   }
 
+  // AGGREGATE
+
+  @GetMapping("/aggregate-by-user")
+  List<LogAggregateByUser> getLogsAggregateByUser() {
+    return logExtractService.logAggregateByUser();
+  }
+
+  @GetMapping("/aggregate-by-method")
+  List<LogAggregateByMethod> getLogsAggregateByMethod() {
+    return logExtractService.logAggregateByMethod();
+  }
 
   // LOGS PAGED
 
   @GetMapping("/all")
-  Page<LogEntry> getAllLogs(@PageableDefault(sort = {"timestamp"}, direction = Sort.Direction.DESC, size = 50) final Pageable pageable) {
+  LogEntriesPaginated getAllLogs(@PageableDefault(sort = {"timestamp"}, direction = Sort.Direction.DESC, size = 50) final Pageable pageable) {
     return logExtractService.extractLogs(new Query(), pageable);
   }
 
   @GetMapping()
-  Page<LogEntry> getFilteredLogs(
+  LogEntriesPaginated getFilteredLogs(
       @PageableDefault(sort = {"timestamp"}, direction = Sort.Direction.DESC, size = 50) final Pageable pageable,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> start,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> stop,

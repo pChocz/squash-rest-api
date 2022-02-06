@@ -10,6 +10,7 @@ public class LogConstants {
   public static final String COLLECTION_NAME = "logEntries";
 
   // field names
+  public static final String FIELD_ID = "id";
   public static final String FIELD_TIMESTAMP = "timestamp";
   public static final String FIELD_USERNAME = "username";
   public static final String FIELD_CLASS_NAME = "className";
@@ -20,4 +21,10 @@ public class LogConstants {
   public static final String FIELD_IS_EXCEPTION = "isException";
   public static final String FIELD_MESSAGE = "message";
   public static final String FIELD_TYPE = "type";
+
+  // aggregate
+  public static final String FIELD_AGGREGATE_SUM_DURATION = "durationSum";
+  public static final String FIELD_AGGREGATE_AVG_DURATION = "durationAvg";
+  public static final String FIELD_AGGREGATE_SUM_QUERY_COUNT = "queryCountSum";
+  public static final String FIELD_AGGREGATE_SUM_COUNT = "countSum";
 }
