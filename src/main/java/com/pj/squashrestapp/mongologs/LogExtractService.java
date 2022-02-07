@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCursor;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +19,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.BucketAutoOperation;
+import org.springframework.data.mongodb.core.aggregation.BucketAutoOperation.BucketAutoOperationOutputBuilder;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StopWatch;
 
 /** */
 @Slf4j
@@ -38,7 +43,7 @@ class LogExtractService {
   }
 
   List<LogAggregateByMethod> logAggregateByMethod() {
-    final GroupOperation groupByMethod = group(LogConstants.FIELD_CLASS_NAME)
+    final GroupOperation groupByMethod = group(LogConstants.FIELD_METHOD_NAME)
         .count().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT)
         .sum(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_SUM_DURATION)
         .avg(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_AVG_DURATION)
@@ -65,6 +70,9 @@ class LogExtractService {
   }
 
   LogEntriesPaginated extractLogs(final Query query, final Pageable pageable) {
+    final StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+
     List<LogEntry> list = mongoTemplate.find(query.with(pageable), LogEntry.class, LogConstants.COLLECTION_NAME);
     Page<LogEntry> page = PageableExecutionUtils.getPage(
         list,
@@ -72,10 +80,15 @@ class LogExtractService {
         () ->
             mongoTemplate.count(Query.of(query).limit(-1).skip(-1), LogEntry.class,
                 LogConstants.COLLECTION_NAME));
-    return new LogEntriesPaginated(page);
+
+    stopWatch.stop();
+    return new LogEntriesPaginated(page, stopWatch.getTotalTimeMillis());
   }
 
   LogsStats buildStatsBasedOnQuery(Query query) {
+    final StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+
     final Long countAll = mongoTemplate.count(query, LogEntry.class, LogConstants.COLLECTION_NAME);
     final LogsStats logsStats = new LogsStats();
     logsStats.setCount(countAll);
@@ -98,6 +111,8 @@ class LogExtractService {
       logsStats.setMinQueryCount(queryCountRange.getLeft());
       logsStats.setMaxQueryCount(queryCountRange.getRight());
     }
+    stopWatch.stop();
+    logsStats.setTimeTook(stopWatch.getTotalTimeMillis());
 
     return logsStats;
   }

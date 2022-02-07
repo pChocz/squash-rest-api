@@ -16,6 +16,8 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class LogsStats {
 
+  private long timeTook;
+
   private Long count;
 
   private List<String> usernames;

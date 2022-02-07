@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
@@ -26,39 +25,25 @@ class QueryBuilder {
       final Optional<String> messageContains) {
 
     final Query query = new Query();
-
-    if (start.isPresent() && stop.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start.get()).lte(stop.get()));
-    } else if (start.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start.get()));
-    } else if (stop.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_TIMESTAMP).lte(stop.get()));
-    }
-
-    if (durationMin.isPresent() && durationMax.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_DURATION).gte(durationMin.get()).lte(durationMax.get()));
-    } else if (durationMin.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_DURATION).gte(durationMin.get()));
-    } else if (durationMax.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_DURATION).lte(durationMax.get()));
-    }
-
-    if (queryCountMin.isPresent() && queryCountMax.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_QUERY_COUNT).gte(queryCountMin.get()).lte(queryCountMax.get()));
-    } else if (queryCountMin.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_QUERY_COUNT).gte(queryCountMin.get()));
-    } else if (queryCountMax.isPresent()) {
-      query.addCriteria(Criteria.where(LogConstants.FIELD_QUERY_COUNT).lte(queryCountMax.get()));
-    }
-
+    applyRangeToQueryIfPresent(LogConstants.FIELD_TIMESTAMP, start, stop, query);
+    applyRangeToQueryIfPresent(LogConstants.FIELD_DURATION, durationMin, durationMax, query);
+    applyRangeToQueryIfPresent(LogConstants.FIELD_QUERY_COUNT, queryCountMin, queryCountMax, query);
     isException.ifPresent(s -> query.addCriteria(Criteria.where(LogConstants.FIELD_IS_EXCEPTION).is(s)));
     username.ifPresent(s -> query.addCriteria(Criteria.where(LogConstants.FIELD_USERNAME).is(s)));
     type.ifPresent(s -> query.addCriteria(Criteria.where(LogConstants.FIELD_TYPE).is(s.name())));
     messageContains.ifPresent(s -> query.addCriteria(Criteria.where(LogConstants.FIELD_MESSAGE).regex(".*" + s + ".*")));
-
     log.info("query: {}", query);
-
     return query;
+  }
+
+  private void applyRangeToQueryIfPresent(final String fieldName, final Optional min, final Optional max, final Query query) {
+    if (min.isPresent() && max.isPresent()) {
+      query.addCriteria(Criteria.where(fieldName).gte(min.get()).lte(max.get()));
+    } else if (min.isPresent()) {
+      query.addCriteria(Criteria.where(fieldName).gte(min.get()));
+    } else if (max.isPresent()) {
+      query.addCriteria(Criteria.where(fieldName).lte(max.get()));
+    }
   }
 
 }
