@@ -1,14 +1,10 @@
 package com.pj.squashrestapp.mongologs;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.sort;
-
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCursor;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,11 +15,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
-import org.springframework.data.mongodb.core.aggregation.BucketAutoOperation;
-import org.springframework.data.mongodb.core.aggregation.BucketAutoOperation.BucketAutoOperationOutputBuilder;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
@@ -43,27 +38,34 @@ class LogExtractService {
   }
 
   List<LogAggregateByMethod> logAggregateByMethod() {
-    final GroupOperation groupByMethod = group(LogConstants.FIELD_METHOD_NAME)
+    final MatchOperation match = Aggregation.match(Criteria.where(LogConstants.FIELD_METHOD_NAME).exists(true));
+
+    final GroupOperation group = Aggregation.group(LogConstants.FIELD_METHOD_NAME)
         .count().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT)
         .sum(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_SUM_DURATION)
+        .min(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_MIN_DURATION)
+        .max(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_MAX_DURATION)
         .avg(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_AVG_DURATION)
+        .stdDevSamp(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_DEV_DURATION)
         .sum(LogConstants.FIELD_QUERY_COUNT).as(LogConstants.FIELD_AGGREGATE_SUM_QUERY_COUNT);
 
-    final SortOperation sortByCount = sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_SUM_COUNT));
-    final Aggregation aggregation = Aggregation.newAggregation(sortByCount, groupByMethod);
+    final SortOperation sort = Aggregation.sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_SUM_COUNT));
+    final Aggregation aggregation = Aggregation.newAggregation(match, group, sort);
     return mongoTemplate
         .aggregate(aggregation, LogConstants.COLLECTION_NAME, LogAggregateByMethod.class)
         .getMappedResults();
   }
 
   List<LogAggregateByUser> logAggregateByUser() {
-    final GroupOperation groupByUser = group(LogConstants.FIELD_USERNAME)
+    final MatchOperation match = Aggregation.match(Criteria.where(LogConstants.FIELD_USERNAME).exists(true));
+
+    final GroupOperation group = Aggregation.group(LogConstants.FIELD_USERNAME)
         .count().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT)
         .sum(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_SUM_DURATION)
         .sum(LogConstants.FIELD_QUERY_COUNT).as(LogConstants.FIELD_AGGREGATE_SUM_QUERY_COUNT);
 
-    final SortOperation sortByCount = sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_SUM_COUNT));
-    final Aggregation aggregation = Aggregation.newAggregation(sortByCount, groupByUser);
+    final SortOperation sort = Aggregation.sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_SUM_COUNT));
+    final Aggregation aggregation = Aggregation.newAggregation(match, group, sort);
     return mongoTemplate
         .aggregate(aggregation, LogConstants.COLLECTION_NAME, LogAggregateByUser.class)
         .getMappedResults();

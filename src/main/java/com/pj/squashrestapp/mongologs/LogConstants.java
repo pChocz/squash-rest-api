@@ -24,7 +24,10 @@ public class LogConstants {
 
   // aggregate
   public static final String FIELD_AGGREGATE_SUM_DURATION = "durationSum";
+  public static final String FIELD_AGGREGATE_MIN_DURATION = "durationMin";
+  public static final String FIELD_AGGREGATE_MAX_DURATION = "durationMax";
   public static final String FIELD_AGGREGATE_AVG_DURATION = "durationAvg";
+  public static final String FIELD_AGGREGATE_DEV_DURATION = "durationDev";
   public static final String FIELD_AGGREGATE_SUM_QUERY_COUNT = "queryCountSum";
   public static final String FIELD_AGGREGATE_SUM_COUNT = "countSum";
 }
