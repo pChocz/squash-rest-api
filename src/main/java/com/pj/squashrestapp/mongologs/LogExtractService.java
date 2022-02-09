@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -22,6 +23,7 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
@@ -40,14 +42,20 @@ class LogExtractService {
     logEntryRepository.deleteAll();
   }
 
-  List<LogBucket> extractLogBuckets(final Date start, final Date end, final int numberOfBuckets) {
+  List<LogBucket> extractLogBuckets(
+      final Date start,
+      final Date end,
+      final Optional<String> username,
+      final Optional<LogType> type,
+      final int numberOfBuckets) {
+
     final long millisBetween = end.getTime() - start.getTime();
     final long bucketWidthMillis = millisBetween / numberOfBuckets;
 
-    log.info("{} - {}",
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(start),
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(end)
-    );
+//    log.info("{} - {}",
+//        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(start),
+//        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(end)
+//    );
 
     final Date[] bucketsRangesBegins = new Date[numberOfBuckets+1];
     for (int i=0; i<numberOfBuckets+1; i++) {
@@ -55,7 +63,12 @@ class LogExtractService {
 //      log.info("range begin - {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(bucketsRangesBegins[i]));
     }
 
-    Criteria criteria = Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start).lte(end);
+    final List<Criteria> criterias = new ArrayList<>();
+    criterias.add(Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start).lte(end));
+    username.ifPresent(s -> criterias.add(Criteria.where(LogConstants.FIELD_USERNAME).is(s)));
+    type.ifPresent(s -> criterias.add(Criteria.where(LogConstants.FIELD_TYPE).is(s)));
+    Criteria criteria = new Criteria().andOperator(criterias);
+
     final MatchOperation bucketMatch = Aggregation.match(criteria);
 
     final BucketOperation bucketOperation = Aggregation
@@ -70,9 +83,9 @@ class LogExtractService {
         .aggregate(bucketAggregation, LogConstants.COLLECTION_NAME, LogBucket.class)
         .getMappedResults();
 
-    for (final LogBucket logBucket : mappedBucketResults) {
-      log.info("\t\t- {}: {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logBucket.getId()), logBucket.getCountSum());
-    }
+//    for (final LogBucket logBucket : mappedBucketResults) {
+//      log.info("\t\t- {}: {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logBucket.getId()), logBucket.getCountSum());
+//    }
 
 //    List<LogEntry> list = mongoTemplate.find(new Query(criteria), LogEntry.class, LogConstants.COLLECTION_NAME);
 //    for (final LogEntry logEntry : list) {

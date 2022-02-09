@@ -53,8 +53,10 @@ class LogExtractController {
   List<LogBucket> getLogBuckets(
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date start,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date end,
+      @RequestParam final Optional<String> username,
+      @RequestParam final Optional<LogType> type,
       @RequestParam final int numberOfBuckets) {
-    return logExtractService.extractLogBuckets(start, end, numberOfBuckets);
+    return logExtractService.extractLogBuckets(start, end, username, type, numberOfBuckets);
   }
 
   // LOGS PAGED
