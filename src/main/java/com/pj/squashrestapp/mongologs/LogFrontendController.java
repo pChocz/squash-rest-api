@@ -1,7 +1,12 @@
 package com.pj.squashrestapp.mongologs;
 
 import com.pj.squashrestapp.util.GeneralUtil;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +29,7 @@ public class LogFrontendController {
     log.info("FRONTEND-LOG  |  {}  |  {}", username, message);
 
     final LogEntry logEntry = new LogEntry();
-    logEntry.setTimestamp(LocalDateTime.now());
+    logEntry.setTimestamp(Date.from(Instant.now(Clock.systemUTC())));
     logEntry.setUsername(username);
     logEntry.setMessage(message);
     logEntry.setType(LogType.FRONTEND);

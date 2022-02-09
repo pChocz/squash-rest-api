@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.mongologs;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Optional;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +14,8 @@ import org.springframework.data.mongodb.core.query.Query;
 class QueryBuilder {
 
   Query build(
-      final Optional<LocalDateTime> start,
-      final Optional<LocalDateTime> stop,
+      final Optional<Date> start,
+      final Optional<Date> stop,
       final Optional<Boolean> isException,
       final Optional<String> username,
       final Optional<LogType> type,

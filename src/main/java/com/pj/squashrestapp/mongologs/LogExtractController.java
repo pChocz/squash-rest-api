@@ -2,6 +2,7 @@ package com.pj.squashrestapp.mongologs;
 
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,14 @@ class LogExtractController {
     return logExtractService.logAggregateByMethod();
   }
 
+  @GetMapping("/buckets")
+  List<LogBucket> getLogBuckets(
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date start,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date end,
+      @RequestParam final int numberOfBuckets) {
+    return logExtractService.extractLogBuckets(start, end, numberOfBuckets);
+  }
+
   // LOGS PAGED
 
   @GetMapping("/all")
@@ -58,8 +67,8 @@ class LogExtractController {
   @GetMapping()
   LogEntriesPaginated getFilteredLogs(
       @PageableDefault(sort = {"timestamp"}, direction = Sort.Direction.DESC, size = 50) final Pageable pageable,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> start,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> stop,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> start,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> stop,
       @RequestParam final Optional<Boolean> isException,
       @RequestParam final Optional<String> username,
       @RequestParam final Optional<LogType> type,
@@ -94,8 +103,8 @@ class LogExtractController {
 
   @GetMapping("/stats")
   LogsStats getFilteredLogsStats(
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> start,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_FORMAT) final Optional<LocalDateTime> stop,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> start,
+      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> stop,
       @RequestParam final Optional<Boolean> isException,
       @RequestParam final Optional<String> username,
       @RequestParam final Optional<LogType> type,

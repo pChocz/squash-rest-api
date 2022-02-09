@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,8 @@ public class LogsStats {
   private List<String> logTypes;
   private List<String> classNames;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
-  private LocalDateTime minDateTime;
-  @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
-  private LocalDateTime maxDateTime;
+  private Date minDateTime;
+  private Date maxDateTime;
 
   private Long minDuration;
   private Long maxDuration;

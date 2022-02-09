@@ -3,8 +3,10 @@ package com.pj.squashrestapp.mongologs;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCursor;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.BucketOperation;
 import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
@@ -37,6 +40,48 @@ class LogExtractService {
     logEntryRepository.deleteAll();
   }
 
+  List<LogBucket> extractLogBuckets(final Date start, final Date end, final int numberOfBuckets) {
+    final long millisBetween = end.getTime() - start.getTime();
+    final long bucketWidthMillis = millisBetween / numberOfBuckets;
+
+    log.info("{} - {}",
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(start),
+        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(end)
+    );
+
+    final Date[] bucketsRangesBegins = new Date[numberOfBuckets+1];
+    for (int i=0; i<numberOfBuckets+1; i++) {
+      bucketsRangesBegins[i] = Date.from(start.toInstant().plus(i * bucketWidthMillis, ChronoUnit.MILLIS));
+//      log.info("range begin - {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(bucketsRangesBegins[i]));
+    }
+
+    Criteria criteria = Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start).lte(end);
+    final MatchOperation bucketMatch = Aggregation.match(criteria);
+
+    final BucketOperation bucketOperation = Aggregation
+        .bucket(LogConstants.FIELD_TIMESTAMP)
+        .withBoundaries((Object[]) bucketsRangesBegins)
+//            .withDefaultBucket(Date.from(Instant.now(Clock.systemUTC()).minus(60*24*30, ChronoUnit.MINUTES)))
+        .andOutputCount().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT);
+
+    final Aggregation bucketAggregation = Aggregation.newAggregation(bucketMatch, bucketOperation);
+
+    List<LogBucket> mappedBucketResults = mongoTemplate
+        .aggregate(bucketAggregation, LogConstants.COLLECTION_NAME, LogBucket.class)
+        .getMappedResults();
+
+    for (final LogBucket logBucket : mappedBucketResults) {
+      log.info("\t\t- {}: {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logBucket.getId()), logBucket.getCountSum());
+    }
+
+//    List<LogEntry> list = mongoTemplate.find(new Query(criteria), LogEntry.class, LogConstants.COLLECTION_NAME);
+//    for (final LogEntry logEntry : list) {
+//      log.info("\t\t {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logEntry.getTimestamp()));
+//    }
+
+    return mappedBucketResults;
+  }
+
   List<LogAggregateByMethod> logAggregateByMethod() {
     final MatchOperation match = Aggregation.match(Criteria.where(LogConstants.FIELD_METHOD_NAME).exists(true));
 
@@ -49,7 +94,7 @@ class LogExtractService {
         .stdDevSamp(LogConstants.FIELD_DURATION).as(LogConstants.FIELD_AGGREGATE_DEV_DURATION)
         .sum(LogConstants.FIELD_QUERY_COUNT).as(LogConstants.FIELD_AGGREGATE_SUM_QUERY_COUNT);
 
-    final SortOperation sort = Aggregation.sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_SUM_COUNT));
+    final SortOperation sort = Aggregation.sort(Sort.by(Direction.DESC, LogConstants.FIELD_AGGREGATE_AVG_DURATION));
     final Aggregation aggregation = Aggregation.newAggregation(match, group, sort);
     return mongoTemplate
         .aggregate(aggregation, LogConstants.COLLECTION_NAME, LogAggregateByMethod.class)
@@ -99,7 +144,7 @@ class LogExtractService {
       final List<String> usernames = extractUniqueValuesOfStringField(query, LogConstants.FIELD_USERNAME);
       final List<String> logTypes = extractUniqueValuesOfStringField(query, LogConstants.FIELD_TYPE);
       final List<String> classNames = extractUniqueValuesOfStringField(query, LogConstants.FIELD_CLASS_NAME);
-      final Pair<LocalDateTime, LocalDateTime> datesRange = extractMinMax(query, LogConstants.FIELD_TIMESTAMP);
+      final Pair<Date, Date> datesRange = extractMinMax(query, LogConstants.FIELD_TIMESTAMP);
       final Pair<Long, Long> durationRange = extractMinMax(query, LogConstants.FIELD_DURATION);
       final Pair<Long, Long> queryCountRange = extractMinMax(query, LogConstants.FIELD_QUERY_COUNT);
 

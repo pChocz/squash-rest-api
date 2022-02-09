@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.pj.squashrestapp.util.GeneralUtil;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.Date;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,8 +23,8 @@ public class LogEntry {
   @Id
   private String id;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
-  private LocalDateTime timestamp;
+//  @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
+  private Date timestamp;
 
   private String username;
   private String className;

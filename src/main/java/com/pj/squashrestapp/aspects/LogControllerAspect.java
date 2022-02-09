@@ -10,8 +10,13 @@ import com.pj.squashrestapp.mongologs.LogType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import java.lang.reflect.Method;
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -170,7 +175,7 @@ public class LogControllerAspect {
     stopWatch.start();
 
     final LogEntry logEntry = new LogEntry();
-    logEntry.setTimestamp(LocalDateTime.now());
+    logEntry.setTimestamp(Date.from(Instant.now(Clock.systemUTC())));
     logEntry.setMethodName(methodName);
     logEntry.setClassName(className);
     logEntry.setUsername(username);
