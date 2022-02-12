@@ -170,6 +170,9 @@ public class LogControllerAspect {
     final String className = methodSignature.getDeclaringType().getSimpleName();
     final String methodName = methodSignature.getName();
     final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
+    final String arguments = isSecretMethod
+            ? "[**_SECRET_ARGUMENTS_**]"
+            : Arrays.deepToString(args);
 
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
@@ -181,15 +184,13 @@ public class LogControllerAspect {
     logEntry.setUsername(username);
     logEntry.setIsException(false);
     logEntry.setType(LogType.CONTROLLER);
-
-    if (!isSecretMethod) {
-      logEntry.setArguments(Arrays.deepToString(args));
-    }
+    logEntry.setArguments(arguments);
 
     hibernateQueryInterceptor.startQueryCount();
     Object result;
     try {
       result = proceedingJoinPoint.proceed();
+      logEntry.setMessage(className + "." + methodName + arguments);
       stopWatch.stop();
       return result;
 
@@ -197,11 +198,14 @@ public class LogControllerAspect {
       log.error(throwable.getMessage(), throwable);
       logEntry.setIsException(true);
       logEntry.setMessage(
+          className + "." + methodName + arguments
+          + "\n" +
           throwable.getMessage()
           + "\n" +
           Joiner
           .on("\n")
-          .join(Iterables.limit(asList(throwable.getStackTrace()), 10)));
+          .join(Iterables.limit(asList(throwable.getStackTrace()), 10))
+      );
       throw throwable;
 
     } finally {
@@ -215,9 +219,8 @@ public class LogControllerAspect {
           totalTimeMillis,
           className,
           methodName,
-          isSecretMethod
-              ? "[**_SECRET_ARGUMENTS_**]"
-              : Arrays.deepToString(args));
+          arguments
+      );
 
       logEntry.setDuration(totalTimeMillis);
       logEntry.setQueryCount(queryCount);

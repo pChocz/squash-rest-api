@@ -3,12 +3,11 @@ package com.pj.squashrestapp.mongologs;
 import com.mongodb.client.DistinctIterable;
 import com.mongodb.client.MongoCursor;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
-import java.text.SimpleDateFormat;
+
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,7 +22,6 @@ import org.springframework.data.mongodb.core.aggregation.GroupOperation;
 import org.springframework.data.mongodb.core.aggregation.MatchOperation;
 import org.springframework.data.mongodb.core.aggregation.SortOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.CriteriaDefinition;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
@@ -43,56 +41,31 @@ class LogExtractService {
   }
 
   List<LogBucket> extractLogBuckets(
-      final Date start,
-      final Date end,
-      final Optional<String> username,
-      final Optional<LogType> type,
-      final int numberOfBuckets) {
+          final Criteria criteria,
+          final Date start,
+          final Date stop,
+          final int numberOfBuckets) {
 
-    final long millisBetween = end.getTime() - start.getTime();
+    final long millisBetween = stop.getTime() - start.getTime();
     final long bucketWidthMillis = millisBetween / numberOfBuckets;
-
-//    log.info("{} - {}",
-//        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(start),
-//        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(end)
-//    );
 
     final Date[] bucketsRangesBegins = new Date[numberOfBuckets+1];
     for (int i=0; i<numberOfBuckets+1; i++) {
       bucketsRangesBegins[i] = Date.from(start.toInstant().plus(i * bucketWidthMillis, ChronoUnit.MILLIS));
-//      log.info("range begin - {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(bucketsRangesBegins[i]));
     }
-
-    final List<Criteria> criterias = new ArrayList<>();
-    criterias.add(Criteria.where(LogConstants.FIELD_TIMESTAMP).gte(start).lte(end));
-    username.ifPresent(s -> criterias.add(Criteria.where(LogConstants.FIELD_USERNAME).is(s)));
-    type.ifPresent(s -> criterias.add(Criteria.where(LogConstants.FIELD_TYPE).is(s)));
-    Criteria criteria = new Criteria().andOperator(criterias);
 
     final MatchOperation bucketMatch = Aggregation.match(criteria);
 
     final BucketOperation bucketOperation = Aggregation
         .bucket(LogConstants.FIELD_TIMESTAMP)
         .withBoundaries((Object[]) bucketsRangesBegins)
-//            .withDefaultBucket(Date.from(Instant.now(Clock.systemUTC()).minus(60*24*30, ChronoUnit.MINUTES)))
         .andOutputCount().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT);
 
     final Aggregation bucketAggregation = Aggregation.newAggregation(bucketMatch, bucketOperation);
 
-    List<LogBucket> mappedBucketResults = mongoTemplate
+    return mongoTemplate
         .aggregate(bucketAggregation, LogConstants.COLLECTION_NAME, LogBucket.class)
         .getMappedResults();
-
-//    for (final LogBucket logBucket : mappedBucketResults) {
-//      log.info("\t\t- {}: {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logBucket.getId()), logBucket.getCountSum());
-//    }
-
-//    List<LogEntry> list = mongoTemplate.find(new Query(criteria), LogEntry.class, LogConstants.COLLECTION_NAME);
-//    for (final LogEntry logEntry : list) {
-//      log.info("\t\t {}", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX").format(logEntry.getTimestamp()));
-//    }
-
-    return mappedBucketResults;
   }
 
   List<LogAggregateByMethod> logAggregateByMethod() {
@@ -129,26 +102,29 @@ class LogExtractService {
         .getMappedResults();
   }
 
-  LogEntriesPaginated extractLogs(final Query query, final Pageable pageable) {
+  LogEntriesPaginated extractLogs(final Criteria criteria, final Pageable pageable) {
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
+    Query query = new Query(criteria);
+    log.info("query: {}", query);
     List<LogEntry> list = mongoTemplate.find(query.with(pageable), LogEntry.class, LogConstants.COLLECTION_NAME);
     Page<LogEntry> page = PageableExecutionUtils.getPage(
         list,
         pageable,
         () ->
-            mongoTemplate.count(Query.of(query).limit(-1).skip(-1), LogEntry.class,
+            mongoTemplate.count(query.limit(-1).skip(-1), LogEntry.class,
                 LogConstants.COLLECTION_NAME));
 
     stopWatch.stop();
     return new LogEntriesPaginated(page, stopWatch.getTotalTimeMillis());
   }
 
-  LogsStats buildStatsBasedOnQuery(Query query) {
+  LogsStats buildStatsBasedOnQuery(final Criteria criteria) {
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
+    final Query query = new Query(criteria);
     final Long countAll = mongoTemplate.count(query, LogEntry.class, LogConstants.COLLECTION_NAME);
     final LogsStats logsStats = new LogsStats();
     logsStats.setCount(countAll);

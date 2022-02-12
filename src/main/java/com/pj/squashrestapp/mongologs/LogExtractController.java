@@ -1,7 +1,6 @@
 package com.pj.squashrestapp.mongologs;
 
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -51,19 +50,38 @@ class LogExtractController {
 
   @GetMapping("/buckets")
   List<LogBucket> getLogBuckets(
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date start,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Date end,
-      @RequestParam final Optional<String> username,
-      @RequestParam final Optional<LogType> type,
-      @RequestParam final int numberOfBuckets) {
-    return logExtractService.extractLogBuckets(start, end, username, type, numberOfBuckets);
+          @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> start,
+          @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> stop,
+          @RequestParam final int numberOfBuckets,
+          @RequestParam final Optional<Boolean> isException,
+          @RequestParam final Optional<String> username,
+          @RequestParam final Optional<LogType> type,
+          @RequestParam final Optional<Long> durationMin,
+          @RequestParam final Optional<Long> durationMax,
+          @RequestParam final Optional<Long> queryCountMin,
+          @RequestParam final Optional<Long> queryCountMax,
+          @RequestParam final Optional<String> messageContains) {
+
+    final Criteria criteria = CriteriaForQueryBuilder.build(
+            start,
+            stop,
+            isException,
+            username,
+            type,
+            durationMin,
+            durationMax,
+            queryCountMin,
+            queryCountMax,
+            messageContains);
+
+    return logExtractService.extractLogBuckets(criteria, start.get(), stop.get(), numberOfBuckets);
   }
 
   // LOGS PAGED
 
   @GetMapping("/all")
   LogEntriesPaginated getAllLogs(@PageableDefault(sort = {"timestamp"}, direction = Sort.Direction.DESC, size = 50) final Pageable pageable) {
-    return logExtractService.extractLogs(new Query(), pageable);
+    return logExtractService.extractLogs(new Criteria(), pageable);
   }
 
   @GetMapping()
@@ -80,7 +98,7 @@ class LogExtractController {
       @RequestParam final Optional<Long> queryCountMax,
       @RequestParam final Optional<String> messageContains) {
 
-    final Query query = QueryBuilder.build(
+    final Criteria criteria = CriteriaForQueryBuilder.build(
         start,
         stop,
         isException,
@@ -92,7 +110,7 @@ class LogExtractController {
         queryCountMax,
         messageContains);
 
-    return logExtractService.extractLogs(query, pageable);
+    return logExtractService.extractLogs(criteria, pageable);
   }
 
 
@@ -100,7 +118,7 @@ class LogExtractController {
 
   @GetMapping("/all-stats")
   LogsStats getAllLogsStats() {
-    return logExtractService.buildStatsBasedOnQuery(new Query());
+    return logExtractService.buildStatsBasedOnQuery(new Criteria());
   }
 
   @GetMapping("/stats")
@@ -116,7 +134,7 @@ class LogExtractController {
       @RequestParam final Optional<Long> queryCountMax,
       @RequestParam final Optional<String> messageContains) {
 
-    final Query query = QueryBuilder.build(
+    final Criteria criteria = CriteriaForQueryBuilder.build(
         start,
         stop,
         isException,
@@ -128,6 +146,6 @@ class LogExtractController {
         queryCountMax,
         messageContains);
 
-    return logExtractService.buildStatsBasedOnQuery(query);
+    return logExtractService.buildStatsBasedOnQuery(criteria);
   }
 }
