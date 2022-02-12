@@ -6,6 +6,7 @@ import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -63,9 +64,25 @@ class LogExtractService {
 
     final Aggregation bucketAggregation = Aggregation.newAggregation(bucketMatch, bucketOperation);
 
-    return mongoTemplate
-        .aggregate(bucketAggregation, LogConstants.COLLECTION_NAME, LogBucket.class)
-        .getMappedResults();
+    final List<LogBucket> mappedResults = mongoTemplate
+            .aggregate(bucketAggregation, LogConstants.COLLECTION_NAME, LogBucket.class)
+            .getMappedResults();
+
+    final List<LogBucket> readyResult = appendEmptyBuckets(mappedResults, bucketsRangesBegins);
+
+    return readyResult;
+  }
+
+  private List<LogBucket> appendEmptyBuckets(final List<LogBucket> buckets, Date[] rangesBegins) {
+    final List<LogBucket> list = new ArrayList<>(buckets);
+    final List<Date> presentDates = buckets.stream().map(LogBucket::getId).toList();
+    for (final Date date : rangesBegins) {
+      if (!presentDates.contains(date)) {
+        list.add(new LogBucket(date, 0));
+      }
+    }
+    list.sort(Comparator.comparingLong(bucket -> bucket.getId().getTime()));
+    return list;
   }
 
   List<LogAggregateByMethod> logAggregateByMethod() {
