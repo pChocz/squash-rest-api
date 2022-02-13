@@ -4,6 +4,8 @@ import com.pj.squashrestapp.util.GeneralUtil;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -49,7 +51,7 @@ class LogExtractController {
   }
 
   @GetMapping("/buckets")
-  List<LogBucket> getLogBuckets(
+  Set<LogBucket> getLogBuckets(
           @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> start,
           @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT) final Optional<Date> stop,
           @RequestParam final int numberOfBuckets,

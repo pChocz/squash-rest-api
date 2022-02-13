@@ -13,7 +13,13 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
-public class LogBucket {
+public class LogBucket implements Comparable<LogBucket> {
+
   private Date id;
   private Integer countSum;
+
+  @Override
+  public int compareTo(LogBucket o) {
+    return this.getId().compareTo(o.getId());
+  }
 }
