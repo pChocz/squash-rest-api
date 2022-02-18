@@ -5,7 +5,13 @@ import com.mongodb.client.MongoCursor;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -80,8 +86,11 @@ class LogExtractService {
     return set;
   }
 
-  List<LogAggregateByMethod> logAggregateByMethod() {
-    final MatchOperation match = Aggregation.match(Criteria.where(LogConstants.FIELD_METHOD_NAME).exists(true));
+  List<LogAggregateByMethod> logAggregateByMethod(final Criteria criteria) {
+    final MatchOperation match = Aggregation.match(new Criteria().andOperator(
+            criteria,
+            Criteria.where(LogConstants.FIELD_METHOD_NAME).exists(true))
+    );
 
     final GroupOperation group = Aggregation.group(LogConstants.FIELD_METHOD_NAME)
         .count().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT)
@@ -99,8 +108,11 @@ class LogExtractService {
         .getMappedResults();
   }
 
-  List<LogAggregateByUser> logAggregateByUser() {
-    final MatchOperation match = Aggregation.match(Criteria.where(LogConstants.FIELD_USERNAME).exists(true));
+  List<LogAggregateByUser> logAggregateByUser(final Criteria criteria) {
+    final MatchOperation match = Aggregation.match(new Criteria().andOperator(
+            criteria,
+            Criteria.where(LogConstants.FIELD_USERNAME).exists(true))
+    );
 
     final GroupOperation group = Aggregation.group(LogConstants.FIELD_USERNAME)
         .count().as(LogConstants.FIELD_AGGREGATE_SUM_COUNT)
@@ -119,7 +131,6 @@ class LogExtractService {
     stopWatch.start();
 
     Query query = new Query(criteria);
-    log.info("query: {}", query);
     List<LogEntry> list = mongoTemplate.find(query.with(pageable), LogEntry.class, LogConstants.COLLECTION_NAME);
     Page<LogEntry> page = PageableExecutionUtils.getPage(
         list,
@@ -176,7 +187,6 @@ class LogExtractService {
     while (cursor.hasNext()) {
       usernamesList.add(cursor.next());
     }
-
     return usernamesList;
   }
 
@@ -207,4 +217,49 @@ class LogExtractService {
     throw new GeneralBadRequestException("Should not happen!");
   }
 
+  public LogSummary buildLogSummary(
+          int numberOfBuckets,
+          Optional<Date> start,
+          Optional<Date> stop,
+          Optional<Boolean> isException,
+          Optional<String> username,
+          Optional<LogType> type,
+          Optional<Long> durationMin,
+          Optional<Long> durationMax,
+          Optional<Long> queryCountMin,
+          Optional<Long> queryCountMax,
+          Optional<String> messageContains) {
+
+    final StopWatch stopWatch = new StopWatch();
+    stopWatch.start();
+
+    final Criteria criteria = CriteriaForQueryBuilder.build(
+            start,
+            stop,
+            isException,
+            username,
+            type,
+            durationMin,
+            durationMax,
+            queryCountMin,
+            queryCountMax,
+            messageContains);
+
+    final LogSummary logSummary = new LogSummary();
+    logSummary.setLogBuckets(new ArrayList<>(extractLogBuckets(criteria, start.orElseThrow(), stop.orElseThrow(), numberOfBuckets)));
+
+    if (username.isPresent()) {
+      logSummary.setFilteredLogsAggregateByUser(null);
+    } else {
+      logSummary.setFilteredLogsAggregateByUser(logAggregateByUser(criteria));
+    }
+
+    logSummary.setFilteredLogsAggregateByMethod(logAggregateByMethod(criteria));
+    logSummary.setAllLogsStats(buildStatsBasedOnQuery(new Criteria()));
+    logSummary.setFilteredLogsStats(buildStatsBasedOnQuery(criteria));
+
+    stopWatch.stop();
+    logSummary.setTimeTookMillis(stopWatch.getTotalTimeMillis());
+    return logSummary;
+  }
 }
