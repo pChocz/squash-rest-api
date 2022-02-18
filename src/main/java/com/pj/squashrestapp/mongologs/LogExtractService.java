@@ -247,13 +247,7 @@ class LogExtractService {
 
     final LogSummary logSummary = new LogSummary();
     logSummary.setLogBuckets(new ArrayList<>(extractLogBuckets(criteria, start.orElseThrow(), stop.orElseThrow(), numberOfBuckets)));
-
-    if (username.isPresent()) {
-      logSummary.setFilteredLogsAggregateByUser(null);
-    } else {
-      logSummary.setFilteredLogsAggregateByUser(logAggregateByUser(criteria));
-    }
-
+    logSummary.setFilteredLogsAggregateByUser(logAggregateByUser(criteria));
     logSummary.setFilteredLogsAggregateByMethod(logAggregateByMethod(criteria));
     logSummary.setAllLogsStats(buildStatsBasedOnQuery(new Criteria()));
     logSummary.setFilteredLogsStats(buildStatsBasedOnQuery(criteria));
