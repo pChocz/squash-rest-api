@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,23 +26,20 @@ public class XpPointsController {
   private final XpPointsService xpPointsService;
 
   @GetMapping
-  @ResponseBody
-  List<XpPointsForTable> extractAllForTable() {
+  List<XpPointsForTable> getAllXpPoints() {
     final List<XpPointsForTable> xpPointsForTableList = xpPointsService.buildXpPointsForTableAll();
     return xpPointsForTableList;
   }
 
   @GetMapping("/{type}")
-  @ResponseBody
-  List<XpPointsForTable> extractAllForTableForType(@PathVariable final String type) {
+  List<XpPointsForTable> getAllXpPointsForType(@PathVariable final String type) {
     final List<XpPointsForTable> xpPointsForTableList =
         xpPointsService.buildXpPointsForTableForType(type);
     return xpPointsForTableList;
   }
 
   @GetMapping("/types")
-  @ResponseBody
-  List<String> extractTypes() {
+  List<String> getAllXpPointsTypes() {
     final List<String> xpPointsTypes = xpPointsService.getTypes();
     return xpPointsTypes;
   }
@@ -51,7 +47,7 @@ public class XpPointsController {
   @PostMapping
   @PreAuthorize("isAdmin()")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void addNewXpPoints(
+  void createXpPoints(
       @RequestParam final String type,
       @RequestParam final int[] split,
       @RequestParam final String[] points) {
@@ -61,7 +57,7 @@ public class XpPointsController {
   @DeleteMapping
   @PreAuthorize("isAdmin()")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  void deleteExistingXpPoints(@RequestParam final String type, @RequestParam final int[] split) {
+  void deleteXpPoints(@RequestParam final String type, @RequestParam final int[] split) {
     xpPointsService.deleteExistingXpPoints(type, split);
   }
 }

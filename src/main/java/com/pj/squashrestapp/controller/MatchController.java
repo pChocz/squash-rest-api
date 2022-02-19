@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -33,7 +31,7 @@ public class MatchController {
 
 
   @PutMapping(value = "/{matchUuid}")
-  MatchSimpleDto updateSingleScore(@PathVariable final UUID matchUuid,
+  MatchSimpleDto updateMatchSingleScore(@PathVariable final UUID matchUuid,
                          @RequestParam final int setNumber,
                          @RequestParam final String player,
                          @RequestParam final Integer newScore) {
@@ -43,8 +41,7 @@ public class MatchController {
 
 
   @GetMapping(value = "/for-league-for-players/{leagueUuid}/{playersUuids}")
-  @ResponseBody
-  MatchesSimplePaginated matchesPageable(@PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
+  MatchesSimplePaginated getMatchesPageable(@PageableDefault(sort = {"id", "number"}, direction = Sort.Direction.DESC) final Pageable pageable,
                                          @PathVariable final UUID leagueUuid,
                                          @PathVariable final UUID[] playersUuids,
                                          @RequestParam(required = false) final UUID seasonUuid,
@@ -55,8 +52,7 @@ public class MatchController {
   }
 
   @GetMapping(value = "/for-league-for-players-additional/{leagueUuid}/{playersUuids}")
-  @ResponseBody
-  MatchesSimplePaginated matchesAdditionalPageable(@PageableDefault(sort = {"id", "date"}, direction = Sort.Direction.DESC) final Pageable pageable,
+  MatchesSimplePaginated getAdditionalMatchesPageable(@PageableDefault(sort = {"id", "date"}, direction = Sort.Direction.DESC) final Pageable pageable,
                                                    @PathVariable final UUID leagueUuid,
                                                    @PathVariable final UUID[] playersUuids,
                                                    @RequestParam(required = false) final UUID seasonUuid) {

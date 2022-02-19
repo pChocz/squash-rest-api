@@ -49,22 +49,23 @@ public class AdditionalMatchController {
 
   @DeleteMapping("{matchUuid}")
   @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
-  void deleteMatchByUuid(@PathVariable final UUID matchUuid) {
+  void deleteAdditionalMatchByUuid(@PathVariable final UUID matchUuid) {
     additionalMatchService.deleteMatchByUuid(matchUuid);
   }
 
   @GetMapping(value = "/{matchUuid}")
-  ResponseEntity<?> getSingleMatch(@PathVariable final UUID matchUuid) {
+  ResponseEntity<?> getSingleAdditionalMatch(@PathVariable final UUID matchUuid) {
     final AdditionalMatchDetailedDto match = additionalMatchService.getSingleMatch(matchUuid);
     return new ResponseEntity<>(match, HttpStatus.OK);
   }
 
   @PutMapping(value = "/{matchUuid}")
   @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
-  void updateSingleScore(@PathVariable final UUID matchUuid,
-                         @RequestParam final int setNumber,
-                         @RequestParam final String player,
-                         @RequestParam final Integer newScore) {
+  void updateAdditionalMatchSingleScore(
+          @PathVariable final UUID matchUuid,
+          @RequestParam final int setNumber,
+          @RequestParam final String player,
+          @RequestParam final Integer newScore) {
     additionalMatchService.modifySingleScore(matchUuid, setNumber, player, newScore);
   }
 
@@ -82,8 +83,8 @@ public class AdditionalMatchController {
   }
 
   @GetMapping("/multiple-players/{leagueUuid}/{playersUuids}")
-  ResponseEntity<?> getAdditionalMatchesForMultiplePlayers(@PathVariable final UUID leagueUuid,
-                                                           @PathVariable final UUID[] playersUuids) {
+  ResponseEntity<?> getAdditionalMatchesForMultiplePlayersForLeague(@PathVariable final UUID leagueUuid,
+                                                                    @PathVariable final UUID[] playersUuids) {
     final List<AdditionalMatchDetailedDto> additionalMatchesForMultiplePlayers = additionalMatchService.getAdditionalMatchesForMultiplePlayers(leagueUuid, playersUuids);
     return new ResponseEntity<>(additionalMatchesForMultiplePlayers, HttpStatus.OK);
   }

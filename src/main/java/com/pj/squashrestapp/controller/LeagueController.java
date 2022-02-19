@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,8 +37,7 @@ public class LeagueController {
   private final RedisCacheService redisCacheService;
 
   @PostMapping
-  @ResponseBody
-  UUID createNewLeague(
+  UUID createLeague(
       @RequestParam final String leagueName,
       @RequestParam final String logoBase64,
       @RequestParam final int numberOfRounds,
@@ -72,7 +70,7 @@ public class LeagueController {
   @DeleteMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void removeLeague(@PathVariable final UUID leagueUuid) {
+  void deleteLeague(@PathVariable final UUID leagueUuid) {
     leagueService.removeLeague(leagueUuid);
     redisCacheService.clearAll();
   }
@@ -80,68 +78,60 @@ public class LeagueController {
   @PutMapping(value = "/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void changeLeagueLogo(
+  void updateLeagueLogo(
       @PathVariable final UUID leagueUuid, @RequestParam final String logoBase64) {
     leagueService.changeLogoForLeague(leagueUuid, logoBase64);
     redisCacheService.evictCacheForLeagueLogo(leagueUuid);
   }
 
   @GetMapping(value = "/general-info/{leagueUuid}")
-  @ResponseBody
-  LeagueDto extractLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
+  LeagueDto getLeagueGeneralInfo(@PathVariable final UUID leagueUuid) {
     final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
     return leagueGeneralInfo;
   }
 
   @GetMapping(value = "/general-info")
-  @ResponseBody
-  List<LeagueDto> extractAllLeaguesGeneralInfo() {
+  List<LeagueDto> getAllLeaguesGeneralInfo() {
     final List<LeagueDto> allLeaguesGeneralInfo = leagueService.buildGeneralInfoForAllLeagues();
     return allLeaguesGeneralInfo;
   }
 
   @GetMapping(value = "/all-logos")
-  @ResponseBody
-  Map<UUID, byte[]> extractAllLeaguesLogosMap() {
+  Map<UUID, byte[]> getAllLeaguesLogosMap() {
     final Map<UUID, byte[]> allLeaguesLogos = leagueService.extractAllLogos();
     return allLeaguesLogos;
   }
 
   @GetMapping(value = "/players/{leagueUuid}")
-  @ResponseBody
-  List<PlayerDto> playersGeneralByLeagueId(@PathVariable final UUID leagueUuid) {
+  List<PlayerDto> getPlayersGeneralInfoByLeague(@PathVariable final UUID leagueUuid) {
     final List<PlayerDto> playersGeneralInfo = leagueService.extractLeaguePlayersGeneral(leagueUuid);
     return playersGeneralInfo;
   }
 
   @GetMapping(value = "/players-for-league-moderator/{leagueUuid}")
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  List<PlayerForLeagueDto> playersForLeagueModeratorByLeagueUuid(@PathVariable final UUID leagueUuid) {
+  List<PlayerForLeagueDto> getPlayersForLeagueModeratorByLeagueUuid(@PathVariable final UUID leagueUuid) {
     final List<PlayerForLeagueDto> playersForLeague = leagueService.extractLeaguePlayersForLeague(leagueUuid);
     return playersForLeague;
   }
 
   @GetMapping(value = "/stats/{leagueUuid}")
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
-  LeagueStatsWrapper extractLeagueStatistics(@PathVariable final UUID leagueUuid) {
+  LeagueStatsWrapper getLeagueStatistics(@PathVariable final UUID leagueUuid) {
     final LeagueStatsWrapper leagueStatsWrapper = leagueService.buildStatsForLeagueUuid(leagueUuid);
     return leagueStatsWrapper;
   }
 
   @GetMapping(value = "/overal-stats/{leagueUuid}")
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
-  OveralStats extractLeagueOveralStats(@PathVariable final UUID leagueUuid) {
+  OveralStats getLeagueOveralStats(@PathVariable final UUID leagueUuid) {
     final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
     return leagueOveralStats;
   }
 
   @GetMapping(value = "/name-taken/{leagueName}")
-  @ResponseBody
-  boolean checkLeagueNameTaken(@PathVariable final String leagueName) {
-    final boolean isLeagueNameAvailable = leagueService.checkLeagueNameTaken(leagueName);
-    return isLeagueNameAvailable;
+  boolean getIsLeagueNameTaken(@PathVariable final String leagueName) {
+    final boolean isLeagueNameTaken = leagueService.checkLeagueNameTaken(leagueName);
+    return isLeagueNameTaken;
   }
 }

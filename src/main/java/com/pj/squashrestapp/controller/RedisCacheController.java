@@ -24,21 +24,21 @@ public class RedisCacheController {
 
   @GetMapping(value = "/all")
   @PreAuthorize("isAdmin()")
-  Set<String> getAllKeys() {
+  Set<String> getAllRedisKeys() {
     return redisCacheService.getAllKeys();
   }
 
   @DeleteMapping(value = "/all")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void clearAll() {
+  void deleteAllRedisKeys() {
     redisCacheService.clearAll();
   }
 
   @DeleteMapping(value = "/{cacheName}/{key}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void clearKey(@PathVariable final String cacheName, @PathVariable final String key) {
+  void deleteSingleRedisKey(@PathVariable final String cacheName, @PathVariable final String key) {
     redisCacheService.clearSingle(cacheName, key);
   }
 }

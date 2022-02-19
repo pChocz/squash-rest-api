@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /** */
@@ -24,8 +23,7 @@ public class PlayersScoreboardController {
   private final PlayersScoreboardService playersScoreboardService;
 
   @GetMapping(value = "/{leagueUuid}/{playersUuids}")
-  @ResponseBody
-  Scoreboard extractAllAgainstAll(
+  Scoreboard getScoreboardAllAgainstAll(
       @PathVariable final UUID leagueUuid,
       @PathVariable final UUID[] playersUuids,
       @RequestParam(required = false) final UUID seasonUuid,
@@ -43,16 +41,14 @@ public class PlayersScoreboardController {
   }
 
   @GetMapping(value = "/me-against-all/{leagueUuid}")
-  @ResponseBody
-  Scoreboard extractMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
+  Scoreboard getScoreboardMeAgainstAllForLeague(@PathVariable final UUID leagueUuid) {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
     final Scoreboard scoreboard = playersScoreboardService.buildMultiplePlayerAgainstAll(leagueUuid, currentPlayerUuid);
     return scoreboard;
   }
 
   @GetMapping(value = "/me-against-all")
-  @ResponseBody
-  PlayerSummary extractMeAgainstAllForAllLeagues() {
+  PlayerSummary getScoreboardMeAgainstAllForAllLeagues() {
     final UUID currentPlayerUuid = GeneralUtil.extractSessionUserUuid();
     final PlayerSummary playerSummary = playersScoreboardService.buildPlayerAgainstAllForAllLeagues(currentPlayerUuid);
     return playerSummary;

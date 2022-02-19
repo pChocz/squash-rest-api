@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,14 +41,12 @@ public class UserAccessController {
 
   @SecretMethod
   @PostMapping(value = "/check-password-strength")
-  @ResponseBody
   boolean checkPasswordStrength(@RequestParam final String password) {
     final boolean isPasswordWeak = playerService.isPasswordWeak(password);
     return isPasswordWeak;
   }
 
   @GetMapping(value = "/reset-password-player/{passwordResetToken}")
-  @ResponseBody
   PlayerDetailedDto getPlayerForPasswordReset(@PathVariable final UUID passwordResetToken) {
     final PlayerDetailedDto player =
         playerService.extractPlayerByPasswordResetToken(passwordResetToken);
@@ -58,7 +55,7 @@ public class UserAccessController {
 
   @SecretMethod
   @PutMapping(value = "/change-my-password")
-  TokenPair changeMyPassword(
+  TokenPair updateMyPassword(
       @RequestParam final String oldPassword, @RequestParam final String newPassword) {
     final TokenPair tokenPair =
         playerService.changeCurrentSessionPlayerPasswordAndGetNewTokens(oldPassword, newPassword);
@@ -73,7 +70,6 @@ public class UserAccessController {
 
   @SecretMethod
   @PostMapping(value = "/sign-up")
-  @ResponseBody
   PlayerDetailedDto signUpPlayer(
       @RequestParam final String username,
       @RequestParam final String email,
@@ -210,7 +206,6 @@ public class UserAccessController {
   }
 
   @GetMapping(value = "/refresh-token/{oldRefreshTokenUuid}")
-  @ResponseBody
   TokenPair refreshToken(@PathVariable final UUID oldRefreshTokenUuid) {
     final TokenPair tokenPair =
         tokenCreateService.attemptToCreateNewTokensPairUsingRefreshToken(oldRefreshTokenUuid);
@@ -219,7 +214,6 @@ public class UserAccessController {
 
   @SecretMethod
   @PostMapping(value = "/confirm-password-reset")
-  @ResponseBody
   TokenPair confirmResetPassword(
       @RequestParam final UUID passwordChangeToken, @RequestParam final String newPassword) {
     final TokenPair tokenPair =
@@ -236,7 +230,6 @@ public class UserAccessController {
 
   @SecretMethod
   @PostMapping(value = "/login-with-magic-link")
-  @ResponseBody
   TokenPair loginWithMagicLink(@RequestParam final UUID token) {
     final TokenPair tokenPair = playerService.loginWithMagicLink(token);
     return tokenPair;

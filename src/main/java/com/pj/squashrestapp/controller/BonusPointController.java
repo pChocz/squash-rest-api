@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,9 +33,8 @@ public class BonusPointController {
   private final BonusPointService bonusPointService;
 
   @PostMapping
-  @ResponseBody
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
-  BonusPoint apply(
+  BonusPoint createNewBonusPoint(
       @RequestParam final UUID winnerUuid,
       @RequestParam final UUID looserUuid,
       @RequestParam final UUID seasonUuid,
@@ -51,13 +49,12 @@ public class BonusPointController {
   @DeleteMapping("/{uuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForBonusPoint(#uuid, 'MODERATOR')")
-  void apply(@PathVariable final UUID uuid) {
+  void deleteBonusPoint(@PathVariable final UUID uuid) {
     bonusPointService.deleteBonusPoint(uuid);
   }
 
   @GetMapping("/seasons/{seasonUuid}")
-  @ResponseBody
-  List<BonusPointsDto> extractForSeason(@PathVariable final UUID seasonUuid) {
+  List<BonusPointsDto> getBonusPointsForSeason(@PathVariable final UUID seasonUuid) {
     final List<BonusPoint> bonusPoints = bonusPointService.extractBonusPoints(seasonUuid);
     final List<BonusPointsDto> bonusPointsForSeason = bonusPoints.stream().map(BonusPointsDto::new).collect(Collectors.toList());
     return bonusPointsForSeason;

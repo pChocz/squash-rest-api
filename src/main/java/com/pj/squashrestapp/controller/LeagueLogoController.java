@@ -10,7 +10,6 @@ import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /** */
@@ -25,24 +24,21 @@ public class LeagueLogoController {
   private final SeasonService seasonService;
 
   @GetMapping(value = "/season/{seasonUuid}")
-  @ResponseBody
-  String extractLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
+  String getLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
     final UUID leagueUuid = seasonService.extractLeagueUuid(seasonUuid);
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 
   @GetMapping(value = "/round/{roundUuid}")
-  @ResponseBody
-  String extractLeagueLogoByRoundUuid(@PathVariable final UUID roundUuid) {
+  String getLeagueLogoByRoundUuid(@PathVariable final UUID roundUuid) {
     final UUID leagueUuid = roundService.extractLeagueUuid(roundUuid);
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }
 
   @GetMapping(value = "/{leagueUuid}")
-  @ResponseBody
-  String extractLeagueLogo(@PathVariable final UUID leagueUuid) {
+  String getLeagueLogo(@PathVariable final UUID leagueUuid) {
     final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);
     return Base64Utils.encodeToString(leagueLogoBytes);
   }

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /** */
@@ -35,9 +34,8 @@ public class RoundController {
   private final RoundService roundService;
 
   @PostMapping
-  @ResponseBody
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
-  UUID createNewRound(
+  UUID createRound(
       @RequestBody @RequestParam final int roundNumber,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate roundDate,
       @RequestParam final UUID seasonUuid,
@@ -49,7 +47,6 @@ public class RoundController {
   }
 
   @PutMapping(value = "{roundUuid}")
-  @ResponseBody
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
   void recreateRound(
       @PathVariable final UUID roundUuid,
@@ -62,21 +59,19 @@ public class RoundController {
 
   @PutMapping(value = "{roundUuid}/{finishedState}")
   @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
-  void updateRoundFinishState(
+  void updateRoundFinishedState(
       @PathVariable final UUID roundUuid, @PathVariable final boolean finishedState) {
     redisCacheService.evictCacheForRound(roundUuid);
     roundService.updateRoundFinishedState(roundUuid, finishedState);
   }
 
   @GetMapping(value = "league-uuid/{roundUuid}")
-  @ResponseBody
   UUID getLeagueUuidFromRoundUuid(@PathVariable final UUID roundUuid) {
     return roundService.extractLeagueUuid(roundUuid);
   }
 
   @GetMapping(value = "/adjacent/{roundUuid}")
-  @ResponseBody
-  Pair<Optional<UUID>, Optional<UUID>> extractAdjacentRoundsUuids(@PathVariable final UUID roundUuid) {
+  Pair<Optional<UUID>, Optional<UUID>> getAdjacentRoundsUuids(@PathVariable final UUID roundUuid) {
     final Pair<Optional<UUID>, Optional<UUID>> adjacentRoundsUuids = roundService.extractAdjacentRoundsUuids(roundUuid);
     return adjacentRoundsUuids;
   }

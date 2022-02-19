@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,9 +36,8 @@ public class SeasonController {
   private final SeasonService seasonService;
 
   @PostMapping
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  UUID createNewSeason(
+  UUID createSeason(
       @RequestParam final int seasonNumber,
       @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate startDate,
       @RequestParam final UUID leagueUuid,
@@ -51,22 +49,19 @@ public class SeasonController {
   }
 
   @GetMapping(value = "/{seasonUuid}")
-  @ResponseBody
-  SeasonDto extractSeasonDto(@PathVariable final UUID seasonUuid) {
+  SeasonDto getSeason(@PathVariable final UUID seasonUuid) {
     final SeasonDto seasonDto = seasonService.extractSeasonDtoByUuid(seasonUuid);
     return seasonDto;
   }
 
   @GetMapping(value = "/adjacent/{seasonUuid}")
-  @ResponseBody
-  Pair<Optional<UUID>, Optional<UUID>> extractAdjacentSeasonsUuids(@PathVariable final UUID seasonUuid) {
+  Pair<Optional<UUID>, Optional<UUID>> getAdjacentSeasonsUuids(@PathVariable final UUID seasonUuid) {
     final Pair<Optional<UUID>, Optional<UUID>> adjacentSeasonsUuids = seasonService.extractAdjacentSeasonsUuids(seasonUuid);
     return adjacentSeasonsUuids;
   }
 
   @GetMapping(value = "/players/{seasonUuid}")
-  @ResponseBody
-  List<PlayerDto> extractSeasonPlayers(@PathVariable final UUID seasonUuid) {
+  List<PlayerDto> getSeasonPlayers(@PathVariable final UUID seasonUuid) {
     final List<PlayerDto> seasonPlayers = seasonService.extractSeasonPlayers(seasonUuid);
     return seasonPlayers;
   }

@@ -27,7 +27,7 @@ public class LeagueRolesController {
   @PutMapping(value = "/{leagueUuid}/{playerUuid}/{role}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void assignRole(
+  void updateLeagueRoleAssign(
       @PathVariable final UUID leagueUuid,
       @PathVariable final UUID playerUuid,
       @PathVariable final LeagueRole role) {
@@ -37,7 +37,7 @@ public class LeagueRolesController {
   @DeleteMapping(value = "/{leagueUuid}/{playerUuid}/{role}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void unassignRole(
+  void updateLeagueRoleUnassign(
       @PathVariable final UUID leagueUuid,
       @PathVariable final UUID playerUuid,
       @PathVariable final LeagueRole role) {

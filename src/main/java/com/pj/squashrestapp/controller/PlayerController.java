@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,56 +34,50 @@ public class PlayerController {
   private final PlayerService playerService;
 
   @GetMapping(value = "/name-taken/{usernameOrEmail}")
-  @ResponseBody
   boolean checkUsernameOrEmailTaken(@PathVariable final String usernameOrEmail) {
-    final boolean playerExists = playerService.checkUsernameOrEmailTaken(usernameOrEmail);
-    return playerExists;
+    final boolean usernameOrEmailTaken = playerService.checkUsernameOrEmailTaken(usernameOrEmail);
+    return usernameOrEmailTaken;
   }
 
   @GetMapping(value = "/emoji")
-  @ResponseBody
-  List<String> extractAllEmojis() {
+  List<String> getAllEmojis() {
     final List<String> allEmojis = playerService.getAllEmojis();
     return allEmojis;
   }
 
   @PostMapping(value = "/emoji")
   @ResponseStatus(HttpStatus.OK)
-  void changeEmoji(@RequestParam final String newEmoji) {
+  void updateMyEmoji(@RequestParam final String newEmoji) {
     playerService.changeEmojiForCurrentPlayer(newEmoji);
   }
 
   @PostMapping(value = "/emoji/{playerUuid}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void changeEmoji(@PathVariable final UUID playerUuid, @RequestParam final String newEmoji) {
+  void updateEmojiForPlayer(@PathVariable final UUID playerUuid, @RequestParam final String newEmoji) {
     playerService.changeEmojiForPlayer(playerUuid, newEmoji);
   }
 
   @GetMapping(value = "/all")
-  @ResponseBody
   @PreAuthorize("isAdmin()")
-  List<PlayerDetailedDto> extractAllPlayers() {
+  List<PlayerDetailedDto> getAllPlayers() {
     final List<PlayerDetailedDto> allPlayers = playerService.getAllPlayers();
     return allPlayers;
   }
 
   @GetMapping(value = "/all-general")
-  @ResponseBody
-  List<PlayerDto> extractAllPlayersGeneralInfo() {
+  List<PlayerDto> getAllPlayersGeneralInfo() {
     final List<PlayerDto> allPlayers = playerService.getAllPlayersGeneral();
     return allPlayers;
   }
 
   @GetMapping(value = "/me")
-  @ResponseBody
-  PlayerDetailedDto aboutMe() {
+  PlayerDetailedDto getAboutMe() {
     final PlayerDetailedDto aboutMeInfo = playerService.getAboutMeInfo();
     return aboutMeInfo;
   }
 
   @GetMapping(value = "/{playerUuid}")
-  @ResponseBody
   @PreAuthorize("isAdmin()")
   PlayerDetailedDto getPlayerDetailedInfo(@PathVariable final UUID playerUuid) {
     final PlayerDetailedDto playerDetailedDto = playerService.getPlayerDetailedInfo(playerUuid);
@@ -92,8 +85,7 @@ public class PlayerController {
   }
 
   @GetMapping(value = "/my-leagues")
-  @ResponseBody
-  Set<LeagueDtoSimple> myLeagues() {
+  Set<LeagueDtoSimple> getMyLeagues() {
     final Set<LeagueDtoSimple> myLeagues = playerService.getMyLeagues();
     return myLeagues;
   }
@@ -101,7 +93,7 @@ public class PlayerController {
   @PutMapping(value = "/{playerUuid}")
   @ResponseStatus(HttpStatus.OK)
   @PreAuthorize("isAdmin()")
-  void modifyParameters(
+  void updatePlayerParameters(
       @PathVariable final UUID playerUuid,
       @RequestParam final Optional<Boolean> nonLocked,
       @RequestParam final Optional<Boolean> wantsEmails,
@@ -118,9 +110,8 @@ public class PlayerController {
   }
 
   @PostMapping(value = "/newEnabled")
-  @ResponseBody
   @PreAuthorize("isAdmin()")
-  PlayerDetailedDto createNewPlayerEnabled(
+  PlayerDetailedDto createPlayerEnabled(
       @RequestParam final String username,
       @RequestParam final String email,
       @RequestParam final String password) {

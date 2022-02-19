@@ -26,6 +26,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 /** */
 @Slf4j
@@ -174,6 +178,17 @@ public class LogControllerAspect {
             ? "[**_SECRET_ARGUMENTS_**]"
             : Arrays.deepToString(args);
 
+    final String requestMapping =
+            method.getAnnotation(GetMapping.class) != null
+                    ? "GET"
+                    : method.getAnnotation(PutMapping.class) != null
+                    ? "PUT"
+                    : method.getAnnotation(PostMapping.class) != null
+                    ? "POST"
+                    : method.getAnnotation(DeleteMapping.class) != null
+                    ? "DELETE"
+                    : null;
+
     final StopWatch stopWatch = new StopWatch();
     stopWatch.start();
 
@@ -185,13 +200,15 @@ public class LogControllerAspect {
     logEntry.setIsException(false);
     logEntry.setType(LogType.CONTROLLER);
     logEntry.setArguments(arguments);
+    if (requestMapping != null) {
+      logEntry.setRequestMapping(requestMapping);
+    }
 
     hibernateQueryInterceptor.startQueryCount();
     Object result;
     try {
       result = proceedingJoinPoint.proceed();
       logEntry.setMessage(className + "." + methodName + arguments);
-      stopWatch.stop();
       return result;
 
     } catch (final Throwable throwable) {
@@ -209,8 +226,13 @@ public class LogControllerAspect {
       throw throwable;
 
     } finally {
+      stopWatch.stop();
       final long totalTimeMillis = stopWatch.getTotalTimeMillis();
       final Long queryCount = hibernateQueryInterceptor.getQueryCount();
+
+      logEntry.setDuration(totalTimeMillis);
+      logEntry.setQueryCount(queryCount);
+      logEntryRepository.save(logEntry);
 
       log.info(
           "REST-REQUEST  {}  {}  {}ms  {}.{}{}",
@@ -221,11 +243,6 @@ public class LogControllerAspect {
           methodName,
           arguments
       );
-
-      logEntry.setDuration(totalTimeMillis);
-      logEntry.setQueryCount(queryCount);
-
-      logEntryRepository.save(logEntry);
     }
   }
 

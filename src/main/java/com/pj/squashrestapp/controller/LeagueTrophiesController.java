@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /** */
@@ -30,7 +29,6 @@ public class LeagueTrophiesController {
   private final LeagueTrophiesService leagueTrophiesService;
 
   @PostMapping
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
   TrophyForLeague addTrophy(
       @RequestParam final UUID playerUuid,
@@ -43,9 +41,8 @@ public class LeagueTrophiesController {
   }
 
   @PutMapping
-  @ResponseBody
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  TrophyForLeague replaceTrophy(
+  TrophyForLeague updateTrophy(
       @RequestParam(required = false) final UUID previousPlayerUuid,
       @RequestParam final UUID newPlayerUuid,
       @RequestParam final UUID leagueUuid,
@@ -60,7 +57,7 @@ public class LeagueTrophiesController {
 
   @DeleteMapping
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void removeTrophy(
+  void deleteTrophy(
       @RequestParam final UUID playerUuid,
       @RequestParam final UUID leagueUuid,
       @RequestParam final int seasonNumber,
@@ -69,24 +66,21 @@ public class LeagueTrophiesController {
   }
 
   @GetMapping(value = "/{playerUuid}")
-  @ResponseBody
-  List<TrophiesWonForLeague> extractTrophiesForPlayer(@PathVariable final UUID playerUuid) {
+  List<TrophiesWonForLeague> getTrophiesForPlayer(@PathVariable final UUID playerUuid) {
     final List<TrophiesWonForLeague> trophiesWonForLeagues =
         leagueTrophiesService.extractTrophiesForPlayer(playerUuid);
     return trophiesWonForLeagues;
   }
 
   @GetMapping(value = "/league/{leagueUuid}")
-  @ResponseBody
-  List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(@PathVariable final UUID leagueUuid) {
+  List<SeasonTrophies> getTrophiesForAllSeasonsForLeague(@PathVariable final UUID leagueUuid) {
     final List<SeasonTrophies> trophiesForSeasons =
         leagueTrophiesService.extractTrophiesForAllSeasonsForLeague(leagueUuid);
     return trophiesForSeasons;
   }
 
   @GetMapping(value = "/league/{leagueUuid}/{seasonNumber}")
-  @ResponseBody
-  SeasonTrophies extractTrophiesForSingleSeasonForLeague(
+  SeasonTrophies getTrophiesForSingleSeasonForLeague(
       @PathVariable final UUID leagueUuid,
       @PathVariable final int seasonNumber) {
     final SeasonTrophies trophiesForSeasons =
