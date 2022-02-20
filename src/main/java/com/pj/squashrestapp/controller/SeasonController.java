@@ -68,7 +68,7 @@ public class SeasonController {
 
   @DeleteMapping(value = "/{seasonUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForRound(#seasonUuid, 'MODERATOR')")
+  @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
   void deleteSeason(@PathVariable final UUID seasonUuid) {
     redisCacheService.evictCacheForSeasonMatches(seasonUuid);
     redisCacheService.evictCacheForSeason(seasonUuid);
