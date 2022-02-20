@@ -12,11 +12,12 @@ import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import java.lang.reflect.Method;
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -176,7 +177,7 @@ public class LogControllerAspect {
     final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
     final String arguments = isSecretMethod
             ? "[**_SECRET_ARGUMENTS_**]"
-            : Arrays.deepToString(args);
+            : customArrayDeepToString(args);
 
     final String requestMapping =
             method.getAnnotation(GetMapping.class) != null
@@ -244,6 +245,22 @@ public class LogControllerAspect {
           arguments
       );
     }
+  }
+
+  private String customArrayDeepToString(Object[] args) {
+    return Arrays.stream(args).map(o -> {
+      if (o instanceof List
+              && !((List<?>) o).isEmpty()
+              && ((List<?>) o).get(0) instanceof UUID[]) {
+        final StringBuilder tempArgsBuilder = new StringBuilder("[");
+        for (final UUID[] uuidArray : (List<UUID[]>) o) {
+          tempArgsBuilder.append(Arrays.deepToString(uuidArray));
+        }
+        return tempArgsBuilder.append("]").toString();
+      } else {
+        return o.toString();
+      }
+    }).collect(Collectors.joining(", ", "[", "]"));
   }
 
 }
