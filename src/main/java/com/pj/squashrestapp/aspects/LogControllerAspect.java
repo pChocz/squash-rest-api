@@ -251,23 +251,25 @@ public class LogControllerAspect {
     return Arrays
             .stream(args)
             .map(arg -> {
-              if (arg instanceof List
-                      && !((List<?>) arg).isEmpty()
-                      && ((List<?>) arg).get(0) instanceof UUID[]) {
-                final StringBuilder tempArgsBuilder = new StringBuilder("[");
-                for (final UUID[] uuidArray : (List<UUID[]>) arg) {
-                  tempArgsBuilder.append(Arrays.deepToString(uuidArray));
-                }
-                return tempArgsBuilder.append("]").toString();
-              } else if (arg instanceof Object[]) {
-                return Arrays.deepToString((Object[]) arg);
+              if (arg instanceof List list
+                      && !list.isEmpty()
+                      && list.get(0) instanceof UUID[]) {
+                return ((List<UUID[]>) arg)
+                        .stream()
+                        .map(Arrays::deepToString)
+                        .collect(Collectors.joining(", ", "[", "]"));
+
+              } else if (arg instanceof Object[] argArray) {
+                return Arrays.deepToString(argArray);
+
               } else if (arg == null) {
                 return "null";
+
               } else {
                 return arg.toString();
               }
             })
-            .collect(Collectors.joining(", ", "[", "]"));
+            .collect(Collectors.joining(", ", "(", ")"));
   }
 
 }
