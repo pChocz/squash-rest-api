@@ -259,6 +259,8 @@ public class LogControllerAspect {
                   tempArgsBuilder.append(Arrays.deepToString(uuidArray));
                 }
                 return tempArgsBuilder.append("]").toString();
+              } else if (arg instanceof Object[]) {
+                return Arrays.deepToString((Object[]) arg);
               } else if (arg == null) {
                 return "null";
               } else {
