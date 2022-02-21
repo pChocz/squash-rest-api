@@ -1,7 +1,5 @@
 package com.pj.squashrestapp.aspects;
 
-import static java.util.Arrays.asList;
-
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.pj.squashrestapp.mongologs.LogEntry;
@@ -9,15 +7,6 @@ import com.pj.squashrestapp.mongologs.LogEntryRepository;
 import com.pj.squashrestapp.mongologs.LogType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
-import java.lang.reflect.Method;
-import java.time.Clock;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -31,6 +20,17 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+
+import java.lang.reflect.Method;
+import java.time.Clock;
+import java.time.Instant;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /** */
 @Slf4j
@@ -248,19 +248,24 @@ public class LogControllerAspect {
   }
 
   private String customArrayDeepToString(Object[] args) {
-    return Arrays.stream(args).map(o -> {
-      if (o instanceof List
-              && !((List<?>) o).isEmpty()
-              && ((List<?>) o).get(0) instanceof UUID[]) {
-        final StringBuilder tempArgsBuilder = new StringBuilder("[");
-        for (final UUID[] uuidArray : (List<UUID[]>) o) {
-          tempArgsBuilder.append(Arrays.deepToString(uuidArray));
-        }
-        return tempArgsBuilder.append("]").toString();
-      } else {
-        return o.toString();
-      }
-    }).collect(Collectors.joining(", ", "[", "]"));
+    return Arrays
+            .stream(args)
+            .map(arg -> {
+              if (arg instanceof List
+                      && !((List<?>) arg).isEmpty()
+                      && ((List<?>) arg).get(0) instanceof UUID[]) {
+                final StringBuilder tempArgsBuilder = new StringBuilder("[");
+                for (final UUID[] uuidArray : (List<UUID[]>) arg) {
+                  tempArgsBuilder.append(Arrays.deepToString(uuidArray));
+                }
+                return tempArgsBuilder.append("]").toString();
+              } else if (arg == null) {
+                return "null";
+              } else {
+                return arg.toString();
+              }
+            })
+            .collect(Collectors.joining(", ", "[", "]"));
   }
 
 }
