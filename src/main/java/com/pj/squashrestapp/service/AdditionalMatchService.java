@@ -32,7 +32,7 @@ public class AdditionalMatchService {
 
   private final RedisCacheService redisCacheService;
   private final AdditionalMatchRepository additionalMatchRepository;
-  private final AdditionalSetResultRepository additonalSetResultRepository;
+  private final AdditionalSetResultRepository additionalSetResultRepository;
   private final PlayerRepository playerRepository;
   private final LeagueRepository leagueRepository;
 
@@ -140,11 +140,12 @@ public class AdditionalMatchService {
 
     final String initialMatchResult = matchToModify.toString();
 
-    final AdditionalSetResult setToModify =
-        matchToModify.getSetResults().stream()
+    final AdditionalSetResult setToModify = matchToModify
+            .getSetResults()
+            .stream()
             .filter(set -> set.getNumber() == setNumber)
             .findFirst()
-            .orElse(null);
+            .orElseThrow();
 
     if (looserScore == -1) {
       setToModify.setFirstPlayerScore(null);
@@ -179,7 +180,7 @@ public class AdditionalMatchService {
 
     redisCacheService.evictCacheForAdditionalMatch(matchToModify);
 
-    additonalSetResultRepository.save(setToModify);
+    additionalSetResultRepository.save(setToModify);
 
     log.info(
         "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",

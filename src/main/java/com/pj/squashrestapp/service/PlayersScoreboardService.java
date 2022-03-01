@@ -53,11 +53,13 @@ public class PlayersScoreboardService {
         matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(
             leagueUuid, playerUuid, seasonUuid, groupNumber);
 
-    final List<MatchDto> roundMatchesDtos =
-        matches.stream().map(MatchSimpleDto::new).collect(Collectors.toList());
+    final List<MatchDto> roundMatchesDtos = matches
+            .stream()
+            .map(MatchSimpleDto::new)
+            .filter(MatchSimpleDto::checkFinished)
+            .collect(Collectors.toList());
 
-    final Collection<MatchDto> allMatches = new ArrayList<>();
-    allMatches.addAll(roundMatchesDtos);
+    final Collection<MatchDto> allMatches = new ArrayList<>(roundMatchesDtos);
 
     if (includeAdditionalMatches) {
       final Integer seasonNumber =
@@ -66,9 +68,11 @@ public class PlayersScoreboardService {
       final List<AdditionalMatch> additionalMatches =
           additionalMatchRepository.fetchForSinglePlayerForLeagueForSeasonNumber(
               leagueUuid, playerUuid, seasonNumber);
-      final List<MatchDto> additionalMatchesDtos =
-          additionalMatches.stream()
+
+      final List<MatchDto> additionalMatchesDtos = additionalMatches
+              .stream()
               .map(AdditionalMatchSimpleDto::new)
+              .filter(AdditionalMatchSimpleDto::checkFinished)
               .collect(Collectors.toList());
 
       allMatches.addAll(additionalMatchesDtos);
@@ -90,8 +94,12 @@ public class PlayersScoreboardService {
     final List<Match> roundMatches =
         matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(
             leagueUuid, playersUuids, seasonUuid, groupNumber);
-    final List<MatchDto> roundMatchesDtos =
-        roundMatches.stream().map(MatchSimpleDto::new).collect(Collectors.toList());
+
+    final List<MatchDto> roundMatchesDtos = roundMatches
+            .stream()
+            .map(MatchSimpleDto::new)
+            .filter(MatchSimpleDto::checkFinished)
+            .collect(Collectors.toList());
 
     final Collection<MatchDto> allMatches = new ArrayList<>();
     allMatches.addAll(roundMatchesDtos);
@@ -103,9 +111,11 @@ public class PlayersScoreboardService {
       final List<AdditionalMatch> additionalMatches =
           additionalMatchRepository.fetchForSeveralPlayersForLeagueForSeasonNumber(
               leagueUuid, playersUuids, seasonNumber);
-      final List<MatchDto> additionalMatchesDtos =
-          additionalMatches.stream()
+
+      final List<MatchDto> additionalMatchesDtos = additionalMatches
+              .stream()
               .map(AdditionalMatchSimpleDto::new)
+              .filter(AdditionalMatchSimpleDto::checkFinished)
               .collect(Collectors.toList());
 
       allMatches.addAll(additionalMatchesDtos);
@@ -124,11 +134,17 @@ public class PlayersScoreboardService {
     final List<AdditionalMatch> additionalMatches =
         additionalMatchRepository.fetchAllForSinglePlayer(player);
 
-    final List<MatchDto> roundMatchesDtos =
-        roundMatches.stream().map(MatchDetailedDto::new).collect(Collectors.toList());
+    final List<MatchDto> roundMatchesDtos = roundMatches
+            .stream()
+            .map(MatchDetailedDto::new)
+            .filter(MatchDetailedDto::checkFinished)
+            .collect(Collectors.toList());
 
-    final List<MatchDto> additionalMatchesDtos =
-        additionalMatches.stream().map(AdditionalMatchSimpleDto::new).collect(Collectors.toList());
+    final List<MatchDto> additionalMatchesDtos = additionalMatches
+            .stream()
+            .map(AdditionalMatchSimpleDto::new)
+            .filter(AdditionalMatchSimpleDto::checkFinished)
+            .collect(Collectors.toList());
 
     final List<MatchDto> allMatchesDtos = new ArrayList<>();
     allMatchesDtos.addAll(roundMatchesDtos);
@@ -147,8 +163,7 @@ public class PlayersScoreboardService {
     final Scoreboard scoreboard = new Scoreboard(allMatchesDtos);
     final PlayersStatsScoreboardRow scoreboardRow = scoreboard.getRowForPlayer(playerDto);
 
-    final PlayerSummary playerSummary =
-        new PlayerSummary(scoreboardRow, leagues.size(), seasons.size(), rounds.size());
+    final PlayerSummary playerSummary = new PlayerSummary(scoreboardRow, leagues.size(), seasons.size(), rounds.size());
 
     return playerSummary;
   }
@@ -164,11 +179,17 @@ public class PlayersScoreboardService {
     final List<AdditionalMatch> additionalMatches =
         additionalMatchRepository.fetchForSinglePlayerForLeague(player, league);
 
-    final List<MatchDto> roundMatchesDtos =
-        matches.stream().map(MatchSimpleDto::new).collect(Collectors.toList());
+    final List<MatchDto> roundMatchesDtos = matches
+            .stream()
+            .map(MatchSimpleDto::new)
+            .filter(MatchSimpleDto::checkFinished)
+            .collect(Collectors.toList());
 
-    final List<MatchDto> additionalMatchesDtos =
-        additionalMatches.stream().map(AdditionalMatchSimpleDto::new).collect(Collectors.toList());
+    final List<MatchDto> additionalMatchesDtos = additionalMatches
+            .stream()
+            .map(AdditionalMatchSimpleDto::new)
+            .filter(AdditionalMatchSimpleDto::checkFinished)
+            .collect(Collectors.toList());
 
     final List<MatchDto> allMatchesDtos = new ArrayList<>();
     allMatchesDtos.addAll(roundMatchesDtos);

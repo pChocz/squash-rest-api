@@ -15,20 +15,22 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class PlayerSingleRoundStats {
 
-  final int seasonNumber;
-  final int roundGroupNumber;
-  final String roundGroupCharacter;
-  final String split;
-  final RoundDto round;
-  final RoundGroupScoreboardRow row;
-  final List<RoundOpponent> roundOpponents;
+   private int seasonNumber;
+   private int roundGroupNumber;
+   private String roundGroupCharacter;
+   private String split;
+   private RoundDto round;
+   private RoundGroupScoreboardRow row;
+   private List<RoundOpponent> roundOpponents;
 
   public PlayerSingleRoundStats(
       final Player player, final Round round, final List<Integer> xpPoints) {
@@ -125,4 +127,5 @@ public class PlayerSingleRoundStats {
   public String toString() {
     return "S: " + seasonNumber + " | R: " + round.getRoundNumber() + " | RG: " + roundGroupNumber;
   }
+
 }

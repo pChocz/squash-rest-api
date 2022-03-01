@@ -78,6 +78,11 @@ public class AdditionalMatchDetailedDto implements MatchDto {
   }
 
   @Override
+  public boolean checkFinished() {
+    return this.getStatus() == MatchStatus.FINISHED;
+  }
+
+  @Override
   public String toString() {
     return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
   }

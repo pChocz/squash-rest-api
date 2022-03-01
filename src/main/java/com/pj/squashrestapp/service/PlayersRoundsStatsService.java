@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.playerroundsstats.PlayerAllRoundsStats;
 import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
@@ -14,11 +15,11 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -34,8 +35,8 @@ public class PlayersRoundsStatsService {
   private final PlayerRepository playerRepository;
   private final RoundGroupRepository roundGroupRepository;
 
-  public PlayerAllRoundsStats buildRoundsStatsForPlayer(
-      final UUID leagueUuid, final UUID playerUuid) {
+  @Cacheable(value = RedisCacheConfig.PLAYER_LEAGUE_ROUNDS_CACHE, key = "{#leagueUuid, #playerUuid}")
+  public PlayerAllRoundsStats buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Player player = playerRepository.findByUuid(playerUuid);
 
@@ -60,7 +61,6 @@ public class PlayersRoundsStatsService {
         }
       }
     }
-    Collections.reverse(playerAllRoundsStats.getPlayerSingleRoundStats());
     playerAllRoundsStats.calculateScoreboard();
     return playerAllRoundsStats;
   }

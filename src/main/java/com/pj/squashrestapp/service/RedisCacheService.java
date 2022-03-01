@@ -95,6 +95,9 @@ public class RedisCacheService {
       clearSingle(
           RedisCacheConfig.PLAYER_LEAGUE_SCOREBOARD_CACHE,
           String.join(",", leagueUuid.toString(), playerUuid.toString()));
+      clearSingle(
+              RedisCacheConfig.PLAYER_LEAGUE_ROUNDS_CACHE,
+              String.join(",", leagueUuid.toString(), playerUuid.toString()));
     }
   }
 

@@ -5,8 +5,6 @@ import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
-import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import java.util.Comparator;
@@ -32,25 +30,26 @@ public class HeadToHeadScoreboardService {
   public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
     final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
 
-    final List<Match> roundMatches = matchRepository.fetchHeadToHead(playersUuids);
-    final List<MatchDto> allMatches = roundMatches
+    final List<MatchDto> allFinishedMatches = matchRepository
+        .fetchHeadToHead(playersUuids)
         .stream()
         .map(MatchDetailedDto::new)
+        .filter(MatchDetailedDto::checkFinished)
         .collect(Collectors.toList());
 
     if (includeAdditional) {
-      final List<AdditionalMatch> additionalMatches =
-          additionalMatchRepository.fetchHeadToHead(playersUuids);
-      final List<MatchDto> additionalMatchesDtos =
-          additionalMatches.stream()
+      final List<MatchDto> additionalFinishedMatches = additionalMatchRepository
+              .fetchHeadToHead(playersUuids)
+              .stream()
               .map(AdditionalMatchDetailedDto::new)
+              .filter(AdditionalMatchDetailedDto::checkFinished)
               .collect(Collectors.toList());
-      allMatches.addAll(additionalMatchesDtos);
+      allFinishedMatches.addAll(additionalFinishedMatches);
     }
 
-    allMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
+    allFinishedMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
 
-    final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allMatches);
+    final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches);
     return scoreboard;
   }
 }

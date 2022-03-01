@@ -34,25 +34,19 @@ public class MatchDetailedDto implements MatchDto {
   private PlayerDto firstPlayer;
   private PlayerDto secondPlayer;
   private PlayerDto winner;
-
   private int roundGroupNumber;
-
   private UUID roundUuid;
   private int roundNumber;
+  private UUID seasonUuid;
+  private int seasonNumber;
+  private String leagueName;
+  private List<SetDto> sets;
+  private MatchStatus status;
 
   @JsonSerialize(using = LocalDateSerializer.class)
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private LocalDate date;
-
-  private UUID seasonUuid;
-  private int seasonNumber;
-
-  private String leagueName;
-
-  private List<SetDto> sets;
-
-  private MatchStatus status;
 
   @JsonIgnore private MatchFormatType matchFormatType;
   @JsonIgnore private SetWinningType regularSetWinningType;
@@ -90,6 +84,11 @@ public class MatchDetailedDto implements MatchDto {
 
     this.status = MatchStatusHelper.checkStatus(this);
     this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
+  }
+
+  @Override
+  public boolean checkFinished() {
+    return this.getStatus() == MatchStatus.FINISHED;
   }
 
   @Override

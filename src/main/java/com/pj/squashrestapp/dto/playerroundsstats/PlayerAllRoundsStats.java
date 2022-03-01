@@ -6,11 +6,14 @@ import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.ScoreboardRow;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Getter
+@NoArgsConstructor
 public class PlayerAllRoundsStats {
 
   ScoreboardRow scoreboardRow;

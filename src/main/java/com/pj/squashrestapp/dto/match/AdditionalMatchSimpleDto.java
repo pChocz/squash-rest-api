@@ -29,15 +29,13 @@ public class AdditionalMatchSimpleDto implements MatchDto {
   private final PlayerDto secondPlayer;
   private final PlayerDto winner;
   private final AdditionalMatchType type;
+  private final List<SetDto> sets;
+  private final MatchStatus status;
 
   @JsonSerialize(using = LocalDateSerializer.class)
   @JsonDeserialize(using = LocalDateDeserializer.class)
   @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
   private final LocalDate date;
-
-  private final List<SetDto> sets;
-
-  private final MatchStatus status;
 
   @JsonIgnore private final MatchFormatType matchFormatType;
   @JsonIgnore private final SetWinningType regularSetWinningType;
@@ -64,6 +62,11 @@ public class AdditionalMatchSimpleDto implements MatchDto {
 
     this.status = MatchStatusHelper.checkStatus(this);
     this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
+  }
+
+  @Override
+  public boolean checkFinished() {
+    return this.getStatus() == MatchStatus.FINISHED;
   }
 
   @Override
