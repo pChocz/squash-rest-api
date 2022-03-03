@@ -55,6 +55,7 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
             JOIN m.secondPlayer p2
             JOIN m.roundGroup rg
             JOIN rg.round r
+            JOIN FETCH r.season s
               WHERE (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           ORDER BY r.date DESC
           """)

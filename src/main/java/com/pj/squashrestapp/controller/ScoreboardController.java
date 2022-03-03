@@ -46,6 +46,16 @@ public class ScoreboardController {
     }
   }
 
+  @GetMapping(value = "/current-season-for-player/{playerUuid}")
+  SeasonScoreboardDto getSeasonScoreboardCurrentForPlayer(@PathVariable final UUID playerUuid) {
+    final UUID currentSeasonUuid = scoreboardService.getCurrentSeasonUuidForPlayer(playerUuid);
+    if (currentSeasonUuid == null) {
+      return null;
+    } else {
+      return seasonService.overalScoreboard(currentSeasonUuid);
+    }
+  }
+
   @GetMapping(value = "/most-recent-round-for-player/{playerUuid}")
   RoundScoreboard getScoreboardForMostRecentRoundOfPlayer(@PathVariable final UUID playerUuid) {
     final UUID mostRecentRoundUuid = scoreboardService.getMostRecentRoundUuidForPlayer(playerUuid);

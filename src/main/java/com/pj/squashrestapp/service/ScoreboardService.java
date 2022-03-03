@@ -59,6 +59,15 @@ public class ScoreboardService {
     return roundScoreboard;
   }
 
+  public UUID getCurrentSeasonUuidForPlayer(final UUID playerUuid) {
+    final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfPlayer(playerUuid, PageRequest.of(0, 1));
+    if (mostRecentRoundAsList.isEmpty()) {
+      return null;
+    } else {
+      return mostRecentRoundAsList.get(0).getSeason().getUuid();
+    }
+  }
+
   public UUID getMostRecentRoundUuidForPlayer(final UUID playerUuid) {
     final List<Round> mostRecentRoundAsList = roundRepository.findMostRecentRoundOfPlayer(playerUuid, PageRequest.of(0, 1));
     if (mostRecentRoundAsList.isEmpty()) {
