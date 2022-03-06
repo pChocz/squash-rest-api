@@ -9,7 +9,7 @@ It is built with:
 * Java 17
 * Spring Boot 2
 * Hibernate 5
-* PostgreSQL 12
+* PostgreSQL 14
 * Gradle 7
 
 
