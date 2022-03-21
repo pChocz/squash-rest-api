@@ -1,25 +1,18 @@
 package com.pj.squashrestapp.service;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.playerroundsstats.PlayerAllRoundsStats;
 import com.pj.squashrestapp.dto.playerroundsstats.PlayerSingleRoundStats;
-import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
+import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
+import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Round;
-import com.pj.squashrestapp.model.Season;
-import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import com.pj.squashrestapp.repository.RoundGroupRepository;
-import com.pj.squashrestapp.repository.SetResultRepository;
-import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 /** */
@@ -28,40 +21,32 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlayersRoundsStatsService {
 
-  private final XpPointsService xpPointsService;
-
-  private final LeagueRepository leagueRepository;
-  private final SetResultRepository setResultRepository;
   private final PlayerRepository playerRepository;
-  private final RoundGroupRepository roundGroupRepository;
+  private final ScoreboardService scoreboardService;
 
-  @Cacheable(value = RedisCacheConfig.PLAYER_LEAGUE_ROUNDS_CACHE, key = "{#leagueUuid, #playerUuid}")
   public PlayerAllRoundsStats buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final Player player = playerRepository.findByUuid(playerUuid);
+    final PlayerDto playerDto = new PlayerDto(player);
+    final List<RoundScoreboard> allRoundsScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
 
-    final List<Long> roundGroupsIds =
-        roundGroupRepository.retrieveRoundGroupsIdsForPlayer(leagueUuid, playerUuid);
-    final List<SetResult> setResults = setResultRepository.fetchByRoundGroupsIds(roundGroupsIds);
+    final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(playerDto);
 
-    final ArrayListMultimap<String, Integer> xpPointsPerSplit =
-        xpPointsService.buildAllAsIntegerMultimap();
-
-    final League leagueReconstructed =
-        EntityGraphBuildUtil.reconstructLeague(setResults, league.getId());
-
-    final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(new PlayerDto(player));
-
-    if (leagueReconstructed != null) {
-      for (final Season season : leagueReconstructed.getSeasons()) {
-        for (final Round round : season.getRounds()) {
-          final List<Integer> xpPoints =
-              xpPointsPerSplit.get(round.getSplit() + "|" + season.getXpPointsType());
-          playerAllRoundsStats.addSingleRoundStats(new PlayerSingleRoundStats(player, round, xpPoints));
+      for (final RoundScoreboard roundScoreboard : allRoundsScoreboards) {
+        RoundGroupScoreboard properRoundGroupScoreboard = null;
+        for (final RoundGroupScoreboard roundGroupScoreboard : roundScoreboard.getRoundGroupScoreboards()) {
+          for (final RoundGroupScoreboardRow row : roundGroupScoreboard.getScoreboardRows()) {
+            if (row.getPlayer().equals(playerDto)) {
+              properRoundGroupScoreboard = roundGroupScoreboard;
+              break;
+            }
+          }
+        }
+        if (properRoundGroupScoreboard != null) {
+          final RoundDto roundDto = new RoundDto(roundScoreboard);
+          playerAllRoundsStats.addSingleRoundStats(new PlayerSingleRoundStats(player, roundDto, properRoundGroupScoreboard));
         }
       }
-    }
     playerAllRoundsStats.calculateScoreboard();
-    return playerAllRoundsStats;
+      return playerAllRoundsStats;
   }
 }

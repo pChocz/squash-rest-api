@@ -204,13 +204,9 @@ public class SeasonService {
       final ArrayListMultimap<String, Integer> xpPointsPerSplit,
       final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
 
-    final int currentSeasonNumber = season.getNumber();
-    final League currentLeague = season.getLeague();
-
     final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
-    return buildSeasonScoreboardDto(
-        seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+    return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
   }
 
   public UUID getCurrentSeasonUuidForLeague(final UUID leagueUuid) {

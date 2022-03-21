@@ -199,8 +199,7 @@ public class LeagueService {
 
   @Cacheable(value = RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
-    final List<SetResult> setResultListForLeague =
-        setResultRepository.fetchByLeagueUuid(leagueUuid);
+    final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
     final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
     final League leagueReconstructed =
         EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, league.getId());

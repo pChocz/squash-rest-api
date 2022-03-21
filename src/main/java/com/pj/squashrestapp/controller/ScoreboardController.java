@@ -2,9 +2,10 @@ package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
-import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.service.ScoreboardService;
 import com.pj.squashrestapp.service.SeasonService;
+
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,18 @@ public class ScoreboardController {
 
   private final ScoreboardService scoreboardService;
   private final SeasonService seasonService;
-  private final RoundService roundService;
+
+  @GetMapping(value = "/all-seasons-scoreboards-for-league/{leagueUuid}")
+  List<SeasonScoreboardDto> allSeasonsScoreboardsForLeague(@PathVariable final UUID leagueUuid) {
+    final List<SeasonScoreboardDto> allSeasonsScoreboardsForLeague = scoreboardService.allSeasonsScoreboards(leagueUuid);
+    return allSeasonsScoreboardsForLeague;
+  }
+
+  @GetMapping(value = "/all-rounds-scoreboards-for-league/{leagueUuid}")
+  List<RoundScoreboard> allRoundsScoreboardsForLeague(@PathVariable final UUID leagueUuid) {
+    final List<RoundScoreboard> allRoundsScoreboardsForLeague = scoreboardService.allRoundsScoreboards(leagueUuid);
+    return allRoundsScoreboardsForLeague;
+  }
 
   @GetMapping(value = "/seasons/{seasonUuid}")
   SeasonScoreboardDto getSeasonScoreboard(@PathVariable final UUID seasonUuid) {

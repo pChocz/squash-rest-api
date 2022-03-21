@@ -20,6 +20,8 @@ public class RedisCacheConfig {
   public static final String LEAGUE_LOGOS_CACHE = "league_logos";
   public static final String LEAGUE_DETAILED_STATS_CACHE = "league_detailed_stats";
   public static final String LEAGUE_OVERALL_STATS_CACHE = "league_overall_stats";
+  public static final String LEAGUE_ALL_ROUNDS_SCOREBOARDS = "league_all_rounds_scoreboards";
+  public static final String LEAGUE_ALL_SEASONS_SCOREBOARDS = "league_all_seasons_scoreboards";
   public static final String SEASON_SCOREBOARD_CACHE = "season_scoreboard";
   public static final String ROUND_SCOREBOARD_CACHE = "round_scoreboard";
   public static final String H2H_SCOREBOARD_CACHE = "h2h_scoreboard";

@@ -30,6 +30,7 @@ public class RoundScoreboard {
   private UUID seasonUuid;
   private int seasonNumber;
   private String seasonNumberRoman;
+  private String split;
 
   private UUID roundUuid;
   private int roundNumber;
@@ -50,6 +51,7 @@ public class RoundScoreboard {
     this.seasonUuid = round.getSeason().getUuid();
     this.seasonNumber = round.getSeason().getNumber();
     this.seasonNumberRoman = RomanUtil.toRoman(this.seasonNumber);
+    this.split = round.getSplit();
 
     this.roundUuid = round.getUuid();
     this.roundNumber = round.getNumber();

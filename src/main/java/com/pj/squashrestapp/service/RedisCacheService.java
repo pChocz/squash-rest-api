@@ -98,6 +98,8 @@ public class RedisCacheService {
       clearSingle(
               RedisCacheConfig.PLAYER_LEAGUE_ROUNDS_CACHE,
               String.join(",", leagueUuid.toString(), playerUuid.toString()));
+      clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+      clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
     }
   }
 
@@ -140,6 +142,8 @@ public class RedisCacheService {
     final String p2Uuid = match.getSecondPlayer().getUuid().toString();
 
     clearSingle(RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
 
     evictMatchRelatedCache(leagueUuid, p1Uuid, p2Uuid);
     evictHeadToHeadStats(p1Uuid, p2Uuid);
@@ -154,6 +158,8 @@ public class RedisCacheService {
 
     clearSingle(RedisCacheConfig.ROUND_SCOREBOARD_CACHE, roundUuid);
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
 
     evictMatchRelatedCache(leagueUuid, p1Uuid, p2Uuid);
     evictHeadToHeadStats(p1Uuid, p2Uuid);
@@ -166,6 +172,8 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.PLAYER_LEAGUE_SCOREBOARD_CACHE, String.join(",", leagueUuid, p2Uuid));
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
   }
 
   private void evictHeadToHeadStats(String p1Uuid, String p2Uuid) {
@@ -180,6 +188,8 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
   }
 
   public void evictCacheForRound(final UUID roundUuid) {
@@ -191,6 +201,8 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
   }
 
   public void evictCacheForSeason(final UUID seasonUuid) {
@@ -201,6 +213,8 @@ public class RedisCacheService {
     clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
     clearSingle(RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
+    clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
   }
 
   public void evictCacheForLeagueLogo(final UUID leagueUuid) {

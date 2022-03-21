@@ -7,13 +7,10 @@ import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.model.Round;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,56 +30,34 @@ public class PlayerSingleRoundStats {
    private List<RoundOpponent> roundOpponents;
 
   public PlayerSingleRoundStats(
-      final Player player, final Round round, final List<Integer> xpPoints) {
-    this.seasonNumber = round.getSeason().getNumber();
-    this.split = round.getSplit();
-    this.round = new RoundDto(round);
+      final Player player, final RoundDto roundDto, final RoundGroupScoreboard roundGroupScoreboard) {
 
-    final List<MatchDetailedDto> matches =
-        round.getRoundGroups().stream().findFirst().orElseThrow().getMatches().stream()
-            .map(MatchDetailedDto::new)
-            .collect(Collectors.toList());
-
-    final RoundGroupScoreboard roundGroupScoreboard = new RoundGroupScoreboard(matches);
-    int place = 1;
-    for (final RoundGroupScoreboardRow row : roundGroupScoreboard.getScoreboardRows()) {
-      row.setPlaceInGroup(place++);
-    }
+    this.round = roundDto;
+    this.seasonNumber = roundDto.getSeasonNumber();
+    this.split = roundDto.getSplit();
     this.roundGroupNumber = roundGroupScoreboard.getRoundGroupNumber();
     this.roundGroupCharacter = String.valueOf((char) (roundGroupNumber + 'A' - 1));
-
-    final RoundGroupScoreboardRow correctRow =
-        roundGroupScoreboard.getScoreboardRows().stream()
+    this.row = roundGroupScoreboard
+            .getScoreboardRows()
+            .stream()
             .filter(row -> row.getPlayer().getUuid().equals(player.getUuid()))
             .findFirst()
             .orElseThrow();
 
-    correctRow.setPlaceInRound(
-        calculatePlaceInRound(
-            roundGroupScoreboard.getRoundGroupNumber(), correctRow.getPlaceInGroup()));
-    correctRow.setXpEarned(xpPoints.get(correctRow.getPlaceInRound() - 1));
-
-    this.row = correctRow;
-
     final PlayerDto currentPlayer = new PlayerDto(player);
     this.roundOpponents = new ArrayList<>();
-    for (final RoundGroupScoreboardRow row : roundGroupScoreboard.getScoreboardRows()) {
-      if (row.getPlayer().equals(currentPlayer)) {
-        this.roundOpponents.add(new RoundOpponent(currentPlayer, true, row.getPlaceInGroup()));
+    for (final RoundGroupScoreboardRow roundGroupScoreboardRow : roundGroupScoreboard.getScoreboardRows()) {
+      if (roundGroupScoreboardRow.getPlayer().equals(currentPlayer)) {
+        this.roundOpponents.add(new RoundOpponent(currentPlayer, true, roundGroupScoreboardRow.getPlaceInGroup()));
 
       } else {
-        final PlayerDto opponent = row.getPlayer();
-        final MatchDetailedDto match =
-            matches.stream().filter(predicate(currentPlayer, opponent)).findFirst().orElseThrow();
+        final PlayerDto opponent = roundGroupScoreboardRow.getPlayer();
+        final MatchDetailedDto match = roundGroupScoreboard.getMatches()
+                .stream().filter(predicate(currentPlayer, opponent)).findFirst().orElseThrow();
         final boolean hasWon = hasCurrentPlayerWonMatch(currentPlayer, match);
-        this.roundOpponents.add(new RoundOpponent(opponent, hasWon, row.getPlaceInGroup()));
+        this.roundOpponents.add(new RoundOpponent(opponent, hasWon, roundGroupScoreboardRow.getPlaceInGroup()));
       }
     }
-  }
-
-  private int calculatePlaceInRound(final int roundGroupNumber, final int placeInGroup) {
-    final int[] splitAsArray = getSplitAsArray();
-    return placeInGroup + Arrays.stream(splitAsArray, 0, roundGroupNumber - 1).sum();
   }
 
   private Predicate<? super MatchDetailedDto> predicate(
@@ -112,15 +87,6 @@ public class PlayerSingleRoundStats {
         firstPlayerWonSets > secondPlayerWonSets ? match.getFirstPlayer() : match.getSecondPlayer();
 
     return currentPlayer.equals(winner);
-  }
-
-  private int[] getSplitAsArray() {
-    final int[] splitAsArray =
-        Arrays.stream(this.split.split("\\|"))
-            .map(String::trim)
-            .mapToInt(Integer::valueOf)
-            .toArray();
-    return splitAsArray;
   }
 
   @Override
