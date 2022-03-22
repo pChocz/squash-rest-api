@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
 import com.pj.squashrestapp.dto.playerseasonsstats.PlayerAllSeasonsStats;
 import com.pj.squashrestapp.dto.playerseasonsstats.PlayerSingleSeasonStats;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
@@ -22,13 +23,15 @@ public class PlayersSeasonsStatsService {
 
   private final PlayerRepository playerRepository;
   private final ScoreboardService scoreboardService;
+  private final LeagueTrophiesService leagueTrophiesService;
 
   public PlayerAllSeasonsStats buildSeasonsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
     final List<SeasonScoreboardDto> allSeasonScoreboards = scoreboardService.allSeasonsScoreboards(leagueUuid);
+    final List<SeasonTrophies> seasonTrophies = leagueTrophiesService.extractTrophiesForPlayerForLeague(playerDto, leagueUuid);
 
-    final PlayerAllSeasonsStats playerAllSeasonsStats = new PlayerAllSeasonsStats(playerDto);
+    final PlayerAllSeasonsStats playerAllSeasonsStats = new PlayerAllSeasonsStats(playerDto, seasonTrophies);
 
     for (final SeasonScoreboardDto seasonScoreboardDto : allSeasonScoreboards) {
       PlayerSingleSeasonStats playerSingleSeasonStats = null;

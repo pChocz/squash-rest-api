@@ -62,8 +62,6 @@ public class ScoreboardService {
       seasonScoreboardDtoList.add(seasonScoreboardDto);
     }
 
-    // Comparator.comparing(SeasonScoreboardDto::getSeason)
-
     return seasonScoreboardDtoList;
   }
 

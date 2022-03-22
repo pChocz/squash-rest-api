@@ -32,6 +32,9 @@ public interface TrophiesForLeagueRepository extends JpaRepository<TrophyForLeag
   @Query("SELECT tfl FROM TrophyForLeague tfl WHERE tfl.player.uuid = :playerUuid")
   List<TrophyForLeague> findAllByPlayerUuid(@Param("playerUuid") UUID playerUuid);
 
+  @Query("SELECT tfl FROM TrophyForLeague tfl WHERE tfl.player.uuid = :playerUuid AND tfl.league.uuid = :leagueUuid")
+  List<TrophyForLeague> findAllByPlayerUuidAndLeagueUuid(@Param("playerUuid") UUID playerUuid, @Param("leagueUuid") UUID leagueUuid);
+
   @Override
   @Modifying
   @Query("DELETE FROM TrophyForLeague tfl WHERE tfl.id IN :ids")

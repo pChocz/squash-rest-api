@@ -36,11 +36,42 @@ public class LeagueTrophiesService {
   private final LeagueRepository leagueRepository;
 
   @Transactional
+  public List<SeasonTrophies> extractTrophiesForPlayerForLeague(final PlayerDto playerDto, final UUID leagueUuid) {
+    final List<TrophyForLeague> trophiesForPlayer = trophiesForLeagueRepository
+            .findAllByPlayerUuidAndLeagueUuid(playerDto.getUuid(), leagueUuid);
+
+    final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(trophiesForPlayer);
+
+    return leagueTrophiesPerSeason;
+  }
+
+  private List<SeasonTrophies> buildSeasonTrophies(List<TrophyForLeague> trophiesForPlayer) {
+    final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
+    final List<Integer> listOfSeasonNumbers =
+            trophiesForPlayer.stream()
+                    .map(TrophyForLeague::getSeasonNumber)
+                    .distinct()
+                    .sorted(Comparator.reverseOrder())
+                    .collect(Collectors.toList());
+
+    for (final int seasonNumber : listOfSeasonNumbers) {
+      final List<TrophyForLeague> seasonTrophies =
+              trophiesForPlayer.stream()
+                      .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
+                      .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
+                      .collect(Collectors.toList());
+      leagueTrophiesPerSeason.add(new SeasonTrophies(seasonNumber, seasonTrophies));
+    }
+    return leagueTrophiesPerSeason;
+  }
+
+
+  @Transactional
   public List<TrophiesWonForLeague> extractTrophiesForPlayer(final UUID playerUuid) {
     final Player player = playerRepository.findByUuid(playerUuid);
     final PlayerDto playerDto = new PlayerDto(player);
-    final List<TrophyForLeague> trophiesForPlayer =
-        trophiesForLeagueRepository.findAllByPlayerUuid(playerUuid);
+    final List<TrophyForLeague> trophiesForPlayer = trophiesForLeagueRepository
+            .findAllByPlayerUuid(playerUuid);
 
     final List<LeagueDtoSimple> leagues =
         trophiesForPlayer.stream()
@@ -116,22 +147,8 @@ public class LeagueTrophiesService {
   public List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(final UUID leagueUuid) {
     final List<TrophyForLeague> allTrophiesForLeague =
         trophiesForLeagueRepository.findByLeagueUuid(leagueUuid);
-    final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
-    final List<Integer> listOfSeasonNumbers =
-        allTrophiesForLeague.stream()
-            .map(TrophyForLeague::getSeasonNumber)
-            .distinct()
-            .sorted(Comparator.reverseOrder())
-            .collect(Collectors.toList());
 
-    for (final int seasonNumber : listOfSeasonNumbers) {
-      final List<TrophyForLeague> seasonTrophies =
-          allTrophiesForLeague.stream()
-              .filter(trophyForLeague -> trophyForLeague.getSeasonNumber() == seasonNumber)
-              .sorted(Comparator.comparingInt(o -> o.getTrophy().ordinal()))
-              .collect(Collectors.toList());
-      leagueTrophiesPerSeason.add(new SeasonTrophies(seasonNumber, seasonTrophies));
-    }
+    final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(allTrophiesForLeague);
 
     return leagueTrophiesPerSeason;
   }
