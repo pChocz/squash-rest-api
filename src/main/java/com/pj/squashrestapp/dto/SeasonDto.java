@@ -30,6 +30,8 @@ public class SeasonDto implements Comparable<SeasonDto> {
   private String description;
   private String seasonNumberRoman;
   private String xpPointsType;
+  private int allRounds;
+  private int countedRounds;
 
   @JsonSerialize(using = LocalDateSerializer.class)
   @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -45,6 +47,8 @@ public class SeasonDto implements Comparable<SeasonDto> {
     this.seasonNumberRoman = RomanUtil.toRoman(season.getNumber());
     this.xpPointsType = season.getXpPointsType();
     this.seasonStartDate = season.getStartDate();
+    this.allRounds = season.getNumberOfRounds();
+    this.countedRounds = season.getNumberOfRounds() - season.getRoundsToBeDeducted();
   }
 
   @Override

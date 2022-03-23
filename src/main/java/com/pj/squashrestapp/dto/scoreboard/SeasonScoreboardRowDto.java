@@ -1,8 +1,5 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.util.RoundingUtil;
@@ -30,7 +27,6 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private int totalPoints;
   private int countedPoints;
   private int countedPointsPretenders;
-  private int eightBestPoints;
 
   private int pointsWon;
   private int pointsLost;
@@ -75,9 +71,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
     this.countedPointsPretenders =
         getPointsForNumberOfRoundsSimple(roundNumberToXpMapPretenders, countedRounds);
 
-    final int eightBestPointsForRounds = getPointsForNumberOfRoundsComplex(roundNumberToXpMapAll, 8);
     this.countedPoints = countedPointsForRounds + bonusPoints;
-    this.eightBestPoints = eightBestPointsForRounds + bonusPoints;
 
     this.attendices = roundNumberToXpMapAll.size();
     this.average = RoundingUtil.round((float) totalPoints / attendices, 1);
