@@ -7,6 +7,7 @@ import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +31,9 @@ public class PlayerSingleRoundStats {
     private RoundGroupScoreboardRow row;
     private List<RoundOpponent> roundOpponents;
 
+    private int playersInGroup;
+    private int playersInRound;
+
     public PlayerSingleRoundStats(
             final Player player, final RoundDto roundDto, final RoundGroupScoreboard roundGroupScoreboard) {
 
@@ -44,6 +48,9 @@ public class PlayerSingleRoundStats {
             .filter(row -> row.getPlayer().getUuid().equals(player.getUuid()))
             .findFirst()
             .orElseThrow();
+
+    this.playersInGroup = roundGroupScoreboard.getScoreboardRows().size();
+    this.playersInRound = GeneralUtil.splitToSum(split);
 
     final PlayerDto currentPlayer = new PlayerDto(player);
     this.roundOpponents = new ArrayList<>();

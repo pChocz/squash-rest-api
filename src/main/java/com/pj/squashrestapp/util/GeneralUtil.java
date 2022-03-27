@@ -52,6 +52,14 @@ public class GeneralUtil {
     return Arrays.stream(integerList).boxed().collect(Collectors.toList());
   }
 
+  public int splitToSum(final String split) {
+    return Arrays
+            .stream(split.split("\\|"))
+            .map(String::trim)
+            .mapToInt(Integer::valueOf)
+            .sum();
+  }
+
   public String buildProperUsername(final String username) {
     return capitalize(username.trim().replaceAll(" +", " "));
   }
