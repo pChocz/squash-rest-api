@@ -1,7 +1,13 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.leaguestats.LeagueStatsWrapper;
+import com.pj.squashrestapp.dto.leaguestats.OveralStats;
+import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
+import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
+import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.RedisCacheService;
-import java.util.Set;
+import com.pj.squashrestapp.service.ScoreboardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -13,32 +19,54 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-/** */
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+/**
+ *
+ */
 @Slf4j
 @RestController
 @RequestMapping("/redis-cache")
 @RequiredArgsConstructor
+@PreAuthorize("isAdmin()")
 public class RedisCacheController {
 
-  private final RedisCacheService redisCacheService;
+    private final RedisCacheService redisCacheService;
+    private final ScoreboardService scoreboardService;
+    private final LeagueService leagueService;
 
-  @GetMapping(value = "/all")
-  @PreAuthorize("isAdmin()")
-  Set<String> getAllRedisKeys() {
-    return redisCacheService.getAllKeys();
-  }
+    @GetMapping(value = "/recreate-leagues")
+    @ResponseStatus(HttpStatus.OK)
+    public void recreateLeaguesCache() {
+        log.info("Invalidating REDIS cache and creating new");
+        redisCacheService.clearAll();
+        List<LeagueDto> allLeagues = leagueService.buildGeneralInfoForAllLeagues();
+        for (final LeagueDto leagueDto : allLeagues) {
+            final UUID leagueUuid = leagueDto.getLeagueUuid();
+            final List<RoundScoreboard> roundScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
+            final List<SeasonScoreboardDto> seasonScoreboards = scoreboardService.allSeasonsScoreboards(leagueUuid);
+            final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
+            final LeagueStatsWrapper leagueStats = leagueService.buildStatsForLeagueUuid(leagueUuid);
+        }
+        log.info("Recreated REDIS cache for all leagues");
+    }
 
-  @DeleteMapping(value = "/all")
-  @ResponseStatus(HttpStatus.OK)
-  @PreAuthorize("isAdmin()")
-  void deleteAllRedisKeys() {
-    redisCacheService.clearAll();
-  }
+    @GetMapping(value = "/all")
+    Set<String> getAllRedisKeys() {
+        return redisCacheService.getAllKeys();
+    }
 
-  @DeleteMapping(value = "/{cacheName}/{key}")
-  @ResponseStatus(HttpStatus.OK)
-  @PreAuthorize("isAdmin()")
-  void deleteSingleRedisKey(@PathVariable final String cacheName, @PathVariable final String key) {
-    redisCacheService.clearSingle(cacheName, key);
-  }
+    @DeleteMapping(value = "/all")
+    @ResponseStatus(HttpStatus.OK)
+    void deleteAllRedisKeys() {
+        redisCacheService.clearAll();
+    }
+
+    @DeleteMapping(value = "/{cacheName}/{key}")
+    @ResponseStatus(HttpStatus.OK)
+    void deleteSingleRedisKey(@PathVariable final String cacheName, @PathVariable final String key) {
+        redisCacheService.clearSingle(cacheName, key);
+    }
 }
