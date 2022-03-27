@@ -3,60 +3,58 @@ package com.pj.squashrestapp.dto.matchresulthelper;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.SetDto;
-import java.util.List;
-import java.util.stream.Collectors;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 /** */
 @Slf4j
 @UtilityClass
 public class MatchStatusHelper {
 
-  public MatchStatus checkStatus(final MatchDto match) {
+    public MatchStatus checkStatus(final MatchDto match) {
 
-    final int numberOfSets = match.getSets().size();
-    final int maxNumberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
+        final int numberOfSets = match.getSets().size();
+        final int maxNumberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
 
-    if (numberOfSets != maxNumberOfSets) {
-      log.error("Some inconsistency in number of sets within a match! {}", match);
-      return MatchStatus.ERROR;
-    }
+        if (numberOfSets != maxNumberOfSets) {
+            log.error("Some inconsistency in number of sets within a match! {}", match);
+            return MatchStatus.ERROR;
+        }
 
-    final List<SetStatus> setStatuses =
-        match.getSets().stream()
-            .map(
-                setDto -> {
-                  if (setDto.getSetNumber() < numberOfSets) {
-                    // regular set
-                    return SetStatusHelper.checkStatus(
-                        setDto, match.getRegularSetWinningPoints(), match.getRegularSetWinningType());
-                  } else {
-                    // tiebreak
-                    return SetStatusHelper.checkStatus(
-                        setDto, match.getTieBreakWinningPoints(), match.getTieBreakWinningType());
-                  }
+        final List<SetStatus> setStatuses = match.getSets().stream()
+                .map(setDto -> {
+                    if (setDto.getSetNumber() < numberOfSets) {
+                        // regular set
+                        return SetStatusHelper.checkStatus(
+                                setDto, match.getRegularSetWinningPoints(), match.getRegularSetWinningType());
+                    } else {
+                        // tiebreak
+                        return SetStatusHelper.checkStatus(
+                                setDto, match.getTieBreakWinningPoints(), match.getTieBreakWinningType());
+                    }
                 })
-            .collect(Collectors.toList());
+                .toList();
 
-    return verifySetStatuses(setStatuses);
+        return verifySetStatuses(setStatuses);
   }
 
-  private static MatchStatus verifySetStatuses(final List<SetStatus> setStatuses) {
+    private static MatchStatus verifySetStatuses(final List<SetStatus> setStatuses) {
 
-    if (setStatuses.stream().allMatch(setStatus -> setStatus == SetStatus.EMPTY)) {
-      return MatchStatus.EMPTY;
-    }
+        if (setStatuses.stream().allMatch(setStatus -> setStatus == SetStatus.EMPTY)) {
+            return MatchStatus.EMPTY;
+        }
 
-    if (setStatuses.stream().anyMatch(setStatus -> setStatus == SetStatus.ERROR)) {
-      return MatchStatus.ERROR;
-    }
+        if (setStatuses.stream().anyMatch(setStatus -> setStatus == SetStatus.ERROR)) {
+            return MatchStatus.ERROR;
+        }
 
-    return determineMatchStatus(setStatuses);
+        return determineMatchStatus(setStatuses);
   }
 
-  @SuppressWarnings({"MethodWithMultipleReturnPoints", "OverlyLongMethod", "OverlyComplexMethod"})
-  private MatchStatus determineMatchStatus(final List<SetStatus> setStatuses) {
+    @SuppressWarnings({"MethodWithMultipleReturnPoints", "OverlyLongMethod", "OverlyComplexMethod"})
+    private MatchStatus determineMatchStatus(final List<SetStatus> setStatuses) {
     final int numberOfSets = setStatuses.size();
     final int numberOfSetsToWinMatch = numberOfSets / 2 + 1;
 
@@ -73,7 +71,7 @@ public class MatchStatusHelper {
         case SECOND_PLAYER_WINS -> secondPlayerWonSets++;
         case IN_PROGRESS -> isCurrentSetInProgress = true;
         case EMPTY -> numberOfEmptySetsInBetween++;
-      };
+      }
 
       final boolean isEnoughSetsFinished = firstPlayerWonSets == numberOfSetsToWinMatch
           || secondPlayerWonSets == numberOfSetsToWinMatch;

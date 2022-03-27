@@ -7,13 +7,14 @@ import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.model.Player;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Predicate;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
@@ -21,16 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 public class PlayerSingleRoundStats {
 
-   private int seasonNumber;
-   private int roundGroupNumber;
-   private String roundGroupCharacter;
-   private String split;
-   private RoundDto round;
-   private RoundGroupScoreboardRow row;
-   private List<RoundOpponent> roundOpponents;
+    private int seasonNumber;
+    private int roundGroupNumber;
+    private String roundGroupCharacter;
+    private String split;
+    private RoundDto round;
+    private RoundGroupScoreboardRow row;
+    private List<RoundOpponent> roundOpponents;
 
-  public PlayerSingleRoundStats(
-      final Player player, final RoundDto roundDto, final RoundGroupScoreboard roundGroupScoreboard) {
+    public PlayerSingleRoundStats(
+            final Player player, final RoundDto roundDto, final RoundGroupScoreboard roundGroupScoreboard) {
 
     this.round = roundDto;
     this.seasonNumber = roundDto.getSeasonNumber();
@@ -60,33 +61,28 @@ public class PlayerSingleRoundStats {
     }
   }
 
-  private Predicate<? super MatchDetailedDto> predicate(
-      final PlayerDto currentPlayer, final PlayerDto opponent) {
-    return (Predicate<MatchDetailedDto>)
-        matchDetailedDto ->
-            Set.of(currentPlayer, opponent)
-                .equals(
-                    Set.of(matchDetailedDto.getFirstPlayer(), matchDetailedDto.getSecondPlayer()));
+    private Predicate<? super MatchDetailedDto> predicate(final PlayerDto currentPlayer, final PlayerDto opponent) {
+        return (Predicate<MatchDetailedDto>) matchDetailedDto -> Set.of(currentPlayer, opponent)
+                .equals(Set.of(matchDetailedDto.getFirstPlayer(), matchDetailedDto.getSecondPlayer()));
   }
 
-  private boolean hasCurrentPlayerWonMatch(
-      final PlayerDto currentPlayer, final MatchDetailedDto match) {
-    int firstPlayerWonSets = 0;
-    int secondPlayerWonSets = 0;
-    for (final SetDto set : match.getSets()) {
-      if (!set.isEmpty()) {
-        if (set.getFirstPlayerScoreNullSafe() > set.getSecondPlayerScoreNullSafe()) {
-          firstPlayerWonSets++;
-        } else if (set.getFirstPlayerScoreNullSafe() < set.getSecondPlayerScoreNullSafe()) {
-          secondPlayerWonSets++;
+    private boolean hasCurrentPlayerWonMatch(final PlayerDto currentPlayer, final MatchDetailedDto match) {
+        int firstPlayerWonSets = 0;
+        int secondPlayerWonSets = 0;
+        for (final SetDto set : match.getSets()) {
+            if (!set.isEmpty()) {
+                if (set.getFirstPlayerScoreNullSafe() > set.getSecondPlayerScoreNullSafe()) {
+                    firstPlayerWonSets++;
+                } else if (set.getFirstPlayerScoreNullSafe() < set.getSecondPlayerScoreNullSafe()) {
+                    secondPlayerWonSets++;
+                }
+            }
         }
-      }
-    }
 
-    final PlayerDto winner =
-        firstPlayerWonSets > secondPlayerWonSets ? match.getFirstPlayer() : match.getSecondPlayer();
+        final PlayerDto winner =
+                firstPlayerWonSets > secondPlayerWonSets ? match.getFirstPlayer() : match.getSecondPlayer();
 
-    return currentPlayer.equals(winner);
+        return currentPlayer.equals(winner);
   }
 
   @Override
