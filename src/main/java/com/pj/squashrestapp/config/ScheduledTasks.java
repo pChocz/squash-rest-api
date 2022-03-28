@@ -1,7 +1,8 @@
 package com.pj.squashrestapp.config;
 
 import com.pj.squashrestapp.controller.RedisCacheController;
-import com.pj.squashrestapp.service.TokenRemovalService;
+import com.pj.squashrestapp.controller.UserAccessController;
+import com.pj.squashrestapp.util.AuthorizationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -35,27 +36,32 @@ public class ScheduledTasks {
   private static final String CRON_EVERY_FULL_MINUTE = "0 * * * * *";
   private static final String CRON_EVERY_FULL_HOUR = "0 0 * * * *";
   private static final String CRON_EVERYDAY_AT_MIDNIGHT = "0 0 0 * * *";
-  private static final String CRON_EVERYDAY_AT_TWO = "0 0 2 * * *";
+  private static final String CRON_NIGHTLY_1 = "0 3 2 * * *";
+  private static final String CRON_NIGHTLY_2 = "0 6 2 * * *";
+  private static final String CRON_NIGHTLY_3 = "0 9 2 * * *";
 
-  private final TokenRemovalService tokenRemovalService;
+  private final UserAccessController userAccessController;
   private final RedisCacheController redisCacheController;
 
 
   /**
-   * Permanently removes all expired temporary tokens from database. It is performed at midnight
-   * every day.
+   * Permanently removes all expired temporary tokens from database.
    */
-  @Scheduled(cron = CRON_EVERYDAY_AT_MIDNIGHT, zone = "UTC")
+  @Scheduled(cron = CRON_NIGHTLY_1, zone = "UTC")
   public void cronScheduledEverydayAtMidnight() {
-    tokenRemovalService.removeExpiredTokensFromDb();
+    AuthorizationUtil.configureAuthentication("CRON", "ROLE_ADMIN");
+    userAccessController.removeExpiredTokensFromDb();
+    AuthorizationUtil.clearAuthentication();
   }
 
   /**
-   * Refreshes redis cache for leagues (all rounds and all seasons scoreboards)
+   * Refreshes redis cache for leagues (all rounds and all seasons scoreboards).
    */
-  @Scheduled(cron = CRON_EVERYDAY_AT_TWO, zone = "UTC")
+  @Scheduled(cron = CRON_NIGHTLY_2, zone = "UTC")
   public void cronRefreshLeaguesRedisCache() {
+    AuthorizationUtil.configureAuthentication("CRON", "ROLE_ADMIN");
     redisCacheController.recreateLeaguesCache();
+    AuthorizationUtil.clearAuthentication();
   }
 
 }
