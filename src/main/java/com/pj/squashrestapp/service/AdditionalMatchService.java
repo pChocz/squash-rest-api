@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,7 +38,9 @@ public class AdditionalMatchService {
     private final LeagueRepository leagueRepository;
 
     private static List<AdditionalMatchDetailedDto> buildDtoList(final List<AdditionalMatch> matches) {
-        return matches.stream().map(AdditionalMatchDetailedDto::new).toList();
+        return matches.isEmpty()
+                ? new ArrayList<>()
+                : matches.stream().map(AdditionalMatchDetailedDto::new).toList();
     }
 
     @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
