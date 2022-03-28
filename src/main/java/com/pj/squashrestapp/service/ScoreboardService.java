@@ -51,8 +51,12 @@ public class ScoreboardService {
                 bonusPointService.extractBonusPointsAggregatedForLeague(leagueUuid);
 
         final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-        final League leagueReconstructed =
-                EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+        final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+
+        if (leagueReconstructed == null) {
+            return new ArrayList<>();
+        }
+
         final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
         final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
@@ -72,8 +76,12 @@ public class ScoreboardService {
     public List<RoundScoreboard> allRoundsScoreboards(final UUID leagueUuid) {
         final League leagueRaw = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-        final League leagueReconstructed =
-                EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+        final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+
+        if (leagueReconstructed == null) {
+            return new ArrayList<>();
+        }
+
         final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();
 
         final List<RoundScoreboard> roundScoreboards = new ArrayList<>();
@@ -92,8 +100,6 @@ public class ScoreboardService {
                 }
             }
         }
-
-        // Comparator.comparing(RoundScoreboard::getRoundDate)
 
         return roundScoreboards;
     }
