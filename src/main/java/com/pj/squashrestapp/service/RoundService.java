@@ -244,4 +244,7 @@ public class RoundService {
         .orElse(null);
   }
 
+  public List<UUID> extractAllRoundsUuidsForLeague(UUID leagueUuid) {
+    return roundRepository.retrieveRoundsUuidsOfLeagueUuid(leagueUuid);
+  }
 }

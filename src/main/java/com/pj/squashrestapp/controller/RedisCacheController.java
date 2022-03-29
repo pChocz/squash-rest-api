@@ -7,7 +7,9 @@ import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.RedisCacheService;
+import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.service.ScoreboardService;
+import com.pj.squashrestapp.service.SeasonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -35,13 +37,30 @@ public class RedisCacheController {
 
     private final RedisCacheService redisCacheService;
     private final ScoreboardService scoreboardService;
+    private final SeasonService seasonService;
+    private final RoundService roundService;
     private final LeagueService leagueService;
 
-    @GetMapping(value = "/recreate-leagues")
+    @GetMapping(value = "/recreate-leagues-small-scoreboards/{leaguesUuids}")
     @ResponseStatus(HttpStatus.OK)
-    public void recreateLeaguesCache() {
-        log.info("Invalidating REDIS cache and creating new");
-        redisCacheService.clearAll();
+    @SuppressWarnings("unused")
+    public void recreateGivenLeaguesSmallScoreboardsCache(@PathVariable final List<UUID> leaguesUuids) {
+        for (final UUID leagueUuid : leaguesUuids) {
+            final List<UUID> roundUuids = roundService.extractAllRoundsUuidsForLeague(leagueUuid);
+            final List<UUID> seasonUuids = seasonService.extractAllSeasonsUuidsForLeague(leagueUuid);
+            for (final UUID roundUuid : roundUuids) {
+                final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
+            }
+            for (final UUID seasonUuid : seasonUuids) {
+                final SeasonScoreboardDto seasonScoreboard = seasonService.overalScoreboard(seasonUuid);
+            }
+        }
+    }
+
+    @GetMapping(value = "/recreate-all-leagues-scoreboards")
+    @ResponseStatus(HttpStatus.OK)
+    @SuppressWarnings("unused")
+    public void recreateAllLeaguesBigScoreboardsCache() {
         List<LeagueDto> allLeagues = leagueService.buildGeneralInfoForAllLeagues();
         for (final LeagueDto leagueDto : allLeagues) {
             final UUID leagueUuid = leagueDto.getLeagueUuid();
@@ -50,7 +69,6 @@ public class RedisCacheController {
             final OveralStats leagueOveralStats = leagueService.buildOveralStatsForLeagueUuid(leagueUuid);
             final LeagueStatsWrapper leagueStats = leagueService.buildStatsForLeagueUuid(leagueUuid);
         }
-        log.info("Recreated REDIS cache for all leagues");
     }
 
     @GetMapping(value = "/all")
@@ -60,7 +78,7 @@ public class RedisCacheController {
 
     @DeleteMapping(value = "/all")
     @ResponseStatus(HttpStatus.OK)
-    void deleteAllRedisKeys() {
+    public void clearWholeCache() {
         redisCacheService.clearAll();
     }
 

@@ -30,6 +30,12 @@ public interface SeasonRepository extends JpaRepository<Season, Long>,
   })
   Season findByUuidWithLeague(@Param("uuid") UUID uuid);
 
+  @Query("""
+          SELECT s.uuid FROM Season s
+            JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+          """)
+  List<UUID> retrieveSeasonsUuidsOfLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
   Optional<Season> findByLeagueAndNumber(League league, int number);
 

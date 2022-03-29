@@ -44,6 +44,13 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
           """)
   UUID retrieveLeagueUuidOfRound(@Param("roundUuid") UUID roundUuid);
 
+  @Query("""
+          SELECT r.uuid FROM Round r
+            JOIN r.season s
+            JOIN s.league l
+              WHERE l.uuid = :leagueUuid
+          """)
+  List<UUID> retrieveRoundsUuidsOfLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
   @Query("SELECT r.id FROM Round r WHERE r.uuid = :roundUuid")
   Long findIdByUuid(@Param("roundUuid") UUID roundUuid);
@@ -114,21 +121,3 @@ public interface RoundRepository extends JpaRepository<Round, Long>,
   boolean checkIfPlayerOfRound(@Param("roundUuid") UUID roundUuid, @Param("playerUuid") UUID playerUuid);
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

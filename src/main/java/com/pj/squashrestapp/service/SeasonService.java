@@ -295,4 +295,8 @@ public class SeasonService {
 
     return Pair.of(Optional.ofNullable(previousSeasonUuid), Optional.ofNullable(nextSeasonUuid));
   }
+
+  public List<UUID> extractAllSeasonsUuidsForLeague(UUID leagueUuid) {
+    return seasonRepository.retrieveSeasonsUuidsOfLeagueUuid(leagueUuid);
+  }
 }
