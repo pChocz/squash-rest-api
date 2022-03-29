@@ -80,7 +80,7 @@ public class TokenRemovalService {
     private void removeNotActivatedPlayers(final List<VerificationToken> expiredVerificationTokens) {
         for (final VerificationToken token : expiredVerificationTokens) {
             final Player player = token.getPlayer();
-            if (player.isEnabled()) {
+            if (!player.isEnabled()) {
                 for (final Authority authority : player.getAuthorities()) {
                     player.removeAuthority(authority);
                 }
