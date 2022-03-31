@@ -85,9 +85,10 @@ public class TokenRemovalService {
                     player.removeAuthority(authority);
                 }
                 playerRepository.delete(player);
+                log.info("Player [{}] has been removed", player.getUsername());
             }
             verificationTokenRepository.delete(token);
-            log.info("Player [{}] has been removed", player.getUsername());
+            log.info("Verification token for player [{}] has been removed", player.getUsername());
         }
     }
 }

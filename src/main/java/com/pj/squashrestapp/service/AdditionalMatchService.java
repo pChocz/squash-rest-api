@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** */
 @Slf4j
@@ -40,7 +41,7 @@ public class AdditionalMatchService {
     private static List<AdditionalMatchDetailedDto> buildDtoList(final List<AdditionalMatch> matches) {
         return matches.isEmpty()
                 ? new ArrayList<>()
-                : matches.stream().map(AdditionalMatchDetailedDto::new).toList();
+                : matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
     }
 
     @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
