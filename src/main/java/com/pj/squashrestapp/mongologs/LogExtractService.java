@@ -156,9 +156,9 @@ class LogExtractService {
       final List<String> usernames = extractUniqueValuesOfStringField(query, LogConstants.FIELD_USERNAME);
       final List<String> logTypes = extractUniqueValuesOfStringField(query, LogConstants.FIELD_TYPE);
       final List<String> classNames = extractUniqueValuesOfStringField(query, LogConstants.FIELD_CLASS_NAME);
-      final Pair<Date, Date> datesRange = extractMinMax(query, LogConstants.FIELD_TIMESTAMP);
-      final Pair<Long, Long> durationRange = extractMinMax(query, LogConstants.FIELD_DURATION);
-      final Pair<Long, Long> queryCountRange = extractMinMax(query, LogConstants.FIELD_QUERY_COUNT);
+      final Pair<Date, Date> datesRange = extractMinMaxDates(query, LogConstants.FIELD_TIMESTAMP);
+      final Pair<Long, Long> durationRange = extractMinMaxValues(query, LogConstants.FIELD_DURATION);
+      final Pair<Long, Long> queryCountRange = extractMinMaxValues(query, LogConstants.FIELD_QUERY_COUNT);
 
       logsStats.setUsernames(usernames);
       logsStats.setLogTypes(logTypes);
@@ -190,14 +190,22 @@ class LogExtractService {
     return usernamesList;
   }
 
-  private Pair extractMinMax(final Query query, final String fieldName) {
+  private Pair<Date, Date> extractMinMaxDates(final Query query, final String fieldName) {
     final Pair<LogEntry, LogEntry> pair = extractMinMaxOfField(query, fieldName);
-    return switch (fieldName) {
-      case LogConstants.FIELD_TIMESTAMP -> Pair.of(pair.getLeft().getTimestamp(), pair.getRight().getTimestamp());
-      case LogConstants.FIELD_DURATION -> Pair.of(pair.getLeft().getDuration(), pair.getRight().getDuration());
-      case LogConstants.FIELD_QUERY_COUNT -> Pair.of(pair.getLeft().getQueryCount(), pair.getRight().getQueryCount());
-      default -> throw new GeneralBadRequestException("NOT SUPPORTED FIELD");
-    };
+    if (LogConstants.FIELD_TIMESTAMP.equals(fieldName)) {
+      return Pair.of(pair.getLeft().getTimestamp(), pair.getRight().getTimestamp());
+    }
+    throw new GeneralBadRequestException("NOT SUPPORTED FIELD");
+  }
+
+  private Pair<Long, Long> extractMinMaxValues(final Query query, final String fieldName) {
+    final Pair<LogEntry, LogEntry> pair = extractMinMaxOfField(query, fieldName);
+    if (LogConstants.FIELD_DURATION.equals(fieldName)) {
+      return Pair.of(pair.getLeft().getDuration(), pair.getRight().getDuration());
+    } else if (LogConstants.FIELD_QUERY_COUNT.equals(fieldName)) {
+      return Pair.of(pair.getLeft().getQueryCount(), pair.getRight().getQueryCount());
+    }
+    throw new GeneralBadRequestException("NOT SUPPORTED FIELD");
   }
 
   private Pair<LogEntry, LogEntry> extractMinMaxOfField(final Query query, final String fieldName) {

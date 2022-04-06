@@ -247,6 +247,7 @@ public class LogControllerAspect {
     }
   }
 
+  @SuppressWarnings("unchecked")
   private String customArrayDeepToString(Object[] args) {
     return Arrays
             .stream(args)
