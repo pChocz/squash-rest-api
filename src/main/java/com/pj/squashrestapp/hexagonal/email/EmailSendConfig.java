@@ -63,8 +63,7 @@ class EmailSendConfig {
     }
   }
 
-  void sendEmailWithHtmlContent(
-      final String receiver, final String subject, final String htmlMessageContent) {
+  void sendEmailWithHtmlContent(final String receiver, final String subject, final String htmlMessageContent) {
     final Properties properties = buildProperties();
     final Session session = buildSession(properties);
 

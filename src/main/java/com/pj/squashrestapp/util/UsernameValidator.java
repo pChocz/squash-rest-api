@@ -7,7 +7,7 @@ import lombok.experimental.UtilityClass;
 public class UsernameValidator {
 
   private final int MIN_LENGTH = 5;
-  private final int MAX_LENGTH = 20;
+  private final int MAX_LENGTH = 30;
   private final String MIN_MAX_CHAR = "{" + MIN_LENGTH + "," + MAX_LENGTH + "}";
 
   private final String ALL_LETTERS = "\\p{L}";

@@ -16,7 +16,7 @@ public class PasswordStrengthValidator {
   private final int MAX_LENGTH = 100;
   private final int MIN_NUMBER_OF_UNIQUE_CHARS_FOR_PASSWORD = 3;
 
-  private final int MIN_LENGTH_FOR_LONG_PASSWORD = 20;
+  private final int MIN_LENGTH_FOR_LONG_PASSWORD = 10;
 
   private final List<String> COMMON_STRINGS =
       List.of(
@@ -42,10 +42,10 @@ public class PasswordStrengthValidator {
    *
    * Password is treated as valid if one of following cases is met:
    *
-   * - contains  5 -  19 characters (out of which at least 3 unique) and is not 'common'
+   * - contains  5 -  9 characters (out of which at least 3 unique) and is not 'common'
    *   (meaning it does not contain any 4-letter-long substring of any common phrases)
    *
-   * - contains 20 - 100 characters (out of which at least 3 unique)
+   * - contains 10 - 100 characters (out of which at least 3 unique)
    *
    * </pre>
    */

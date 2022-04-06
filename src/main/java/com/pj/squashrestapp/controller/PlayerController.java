@@ -39,6 +39,12 @@ public class PlayerController {
     return usernameOrEmailTaken;
   }
 
+  @GetMapping(value = "/email-valid/{email}")
+  boolean checkEmailValid(@PathVariable final String email) {
+    final boolean emailValid = playerService.checkEmailValid(email);
+    return emailValid;
+  }
+
   @GetMapping(value = "/emoji")
   List<String> getAllEmojis() {
     final List<String> allEmojis = playerService.getAllEmojis();

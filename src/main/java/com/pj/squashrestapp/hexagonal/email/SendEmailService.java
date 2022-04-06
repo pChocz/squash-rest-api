@@ -2,9 +2,11 @@ package com.pj.squashrestapp.hexagonal.email;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-import freemarker.template.TemplateException;
+
 import java.io.IOException;
 import java.util.Map;
+
+import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
