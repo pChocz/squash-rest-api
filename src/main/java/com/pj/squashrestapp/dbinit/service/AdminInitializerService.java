@@ -216,6 +216,10 @@ public class AdminInitializerService {
     final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
     league.addRoleForLeague(moderatorRole);
     roleForLeagueRepository.save(moderatorRole);
+
+    final RoleForLeague ownerRole = new RoleForLeague(LeagueRole.OWNER);
+    league.addRoleForLeague(ownerRole);
+    roleForLeagueRepository.save(ownerRole);
   }
 
   private void persistLeagueRoles(

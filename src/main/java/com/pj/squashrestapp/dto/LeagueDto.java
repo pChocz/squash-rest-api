@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class LeagueDto {
 
   private final UUID leagueUuid;
+  private final Long leagueId;
   private final String leagueName;
   private final MatchFormatType matchFormatType;
   private final Set<SeasonDto> seasons;
@@ -23,6 +24,7 @@ public class LeagueDto {
 
   public LeagueDto(final League league) {
     this.leagueUuid = league.getUuid();
+    this.leagueId = league.getId();
     this.leagueName = league.getName();
     this.matchFormatType = league.getMatchFormatType();
 
