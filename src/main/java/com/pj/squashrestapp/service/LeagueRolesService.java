@@ -111,4 +111,15 @@ public class LeagueRolesService {
         final UUID playerUuid = player.getUuid();
         assignRoleByPlayerUuid(leagueUuid, playerUuid, LeagueRole.PLAYER);
     }
+
+    // todo: remove!!
+    public void addRoleForAllLeagues(LeagueRole role) {
+        List<League> allLeagues = leagueRepository.findAll();
+        for (final League league : allLeagues) {
+            final RoleForLeague roleForLeague = new RoleForLeague(role);
+            league.addRoleForLeague(roleForLeague);
+            leagueRepository.save(league);
+            roleForLeagueRepository.save(roleForLeague);
+        }
+    }
 }

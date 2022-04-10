@@ -11,6 +11,7 @@ import com.pj.squashrestapp.service.LeagueService;
 import com.pj.squashrestapp.service.RedisCacheService;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -75,13 +77,28 @@ public class LeagueController {
     redisCacheService.clearAll();
   }
 
-  @PutMapping(value = "/{leagueUuid}")
+  @PutMapping(value = "/owner/{leagueUuid}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @PreAuthorize("hasRoleForLeague(#leagueUuid, 'OWNER')")
+  void updateLeagueAsOwner(
+      @PathVariable final UUID leagueUuid,
+      @RequestBody final Optional<String> logoBase64,
+      @RequestParam final Optional<String> leagueName,
+      @RequestParam final Optional<String> location,
+      @RequestParam final Optional<String> time) {
+    leagueService.updateLeagueAsOwner(leagueUuid, logoBase64, leagueName, location, time);
+    redisCacheService.clearAll();
+  }
+
+  @PutMapping(value = "/moderator/{leagueUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
-  void updateLeagueLogo(
-      @PathVariable final UUID leagueUuid, @RequestParam final String logoBase64) {
-    leagueService.changeLogoForLeague(leagueUuid, logoBase64);
-    redisCacheService.evictCacheForLeagueLogo(leagueUuid);
+  void updateLeagueAsModerator(
+          @PathVariable final UUID leagueUuid,
+          @RequestParam final Optional<String> location,
+          @RequestParam final Optional<String> time) {
+    leagueService.updateLeagueAsModerator(leagueUuid, location, time);
+    redisCacheService.clearAll();
   }
 
   @GetMapping(value = "/general-info/{leagueUuid}")

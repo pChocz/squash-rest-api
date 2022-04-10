@@ -184,19 +184,6 @@ public class LeagueService {
     deepRemovalService.deepRemoveLeague(leagueUuid);
   }
 
-  public void changeLogoForLeague(final UUID leagueUuid, final String logoBase64) {
-    final byte[] logoBytes = Base64.getUrlDecoder().decode(logoBase64);
-
-    final LeagueLogo leagueLogo = new LeagueLogo();
-    leagueLogo.setPicture(logoBytes);
-
-    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-    league.setLeagueLogo(leagueLogo);
-    leagueLogo.setLeague(league);
-
-    leagueLogoRepository.save(leagueLogo);
-  }
-
   @Cacheable(value = RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, key = "#leagueUuid")
   public LeagueStatsWrapper buildStatsForLeagueUuid(final UUID leagueUuid) {
     final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
@@ -491,6 +478,38 @@ public class LeagueService {
 
   private Predicate<League> leagueNameEqualPredicate(final String leagueNameTrimmed) {
     return league -> league.getName().trim().equalsIgnoreCase(leagueNameTrimmed);
+  }
+
+  public void updateLeagueAsOwner(UUID leagueUuid, Optional<String> logoBase64, Optional<String> leagueName, Optional<String> location, Optional<String> time) {
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+
+    if (logoBase64.isPresent()) {
+      final byte[] logoBytes = Base64.getDecoder().decode(logoBase64.get());
+
+      final LeagueLogo leagueLogo = new LeagueLogo();
+      leagueLogo.setPicture(logoBytes);
+
+      league.setLeagueLogo(leagueLogo);
+      leagueLogo.setLeague(league);
+
+      leagueLogoRepository.save(leagueLogo);
+    }
+
+    leagueName.ifPresent(league::setName);
+    location.ifPresent(league::setLocation);
+    time.ifPresent(league::setTime);
+
+    leagueRepository.save(league);
+  }
+
+
+  public void updateLeagueAsModerator(UUID leagueUuid, Optional<String> location, Optional<String> time) {
+    final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
+
+    location.ifPresent(league::setLocation);
+    time.ifPresent(league::setTime);
+
+    leagueRepository.save(league);
   }
 
 }
