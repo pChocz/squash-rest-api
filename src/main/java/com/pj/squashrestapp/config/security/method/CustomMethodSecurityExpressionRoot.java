@@ -65,6 +65,13 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     return principal.isAdmin();
   }
 
+  public boolean isOwnerOfLeague(final UUID leagueUuid) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    return principal.hasRoleForLeague(leagueUuid, LeagueRole.OWNER);
+  }
+
   public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
     if (principal.isAdmin()) {
       return true;
