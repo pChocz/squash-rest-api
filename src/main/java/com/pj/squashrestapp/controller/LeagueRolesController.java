@@ -29,7 +29,7 @@ public class LeagueRolesController {
     @PreAuthorize(
             """
              isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role != 'OWNER')
+              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void assignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
@@ -43,7 +43,7 @@ public class LeagueRolesController {
     @PreAuthorize(
             """
              isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role != 'OWNER')
+              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void unassignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
@@ -57,7 +57,7 @@ public class LeagueRolesController {
     @PreAuthorize(
             """
              isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role != 'OWNER')
+              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void assignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,
@@ -71,7 +71,7 @@ public class LeagueRolesController {
     @PreAuthorize(
             """
              isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role != 'OWNER')
+              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void unassignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,
