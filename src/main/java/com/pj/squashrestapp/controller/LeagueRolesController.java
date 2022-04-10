@@ -24,14 +24,6 @@ public class LeagueRolesController {
 
     private final LeagueRolesService leagueRolesService;
 
-    // todo: remove!!
-    @PutMapping(value = "/add-role/{role}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("isAdmin()")
-    void addRoleForAllLeagues(@PathVariable final LeagueRole role) {
-        leagueRolesService.addRoleForAllLeagues(role);
-    }
-
     @PutMapping(value = "/by-uuid/{leagueUuid}/{playerUuid}/{role}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
