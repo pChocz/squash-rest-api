@@ -66,6 +66,12 @@ public class SeasonController {
     return seasonPlayers;
   }
 
+  @GetMapping(value = "/splits/{seasonUuid}")
+  List<String> getSeasonSplits(@PathVariable final UUID seasonUuid) {
+    final List<String> seasonSplits = seasonService.extractSeasonSplits(seasonUuid);
+    return seasonSplits;
+  }
+
   @DeleteMapping(value = "/{seasonUuid}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")

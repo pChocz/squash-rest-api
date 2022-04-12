@@ -72,6 +72,13 @@ public interface SeasonRepository extends JpaRepository<Season, Long>,
 
 
   @Query("""
+          SELECT r.split from Round r
+            JOIN r.season s
+              WHERE s.uuid = :seasonUuid
+          """)
+  List<String> extractRoundSplitsForSeason(@Param("seasonUuid") UUID seasonUuid);
+
+  @Query("""
           SELECT p2 from Match m
             JOIN m.roundGroup rg
             JOIN rg.round r
