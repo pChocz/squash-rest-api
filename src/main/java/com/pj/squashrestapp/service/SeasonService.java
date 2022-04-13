@@ -5,6 +5,7 @@ import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
+import com.pj.squashrestapp.dto.XpPointsForTable;
 import com.pj.squashrestapp.dto.scoreboard.RoundAndGroupPosition;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
@@ -257,6 +258,28 @@ public class SeasonService {
         } catch (final DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.SEASON_DUPLICATE_ERROR);
         }
+    }
+
+    public void updateSeason(final UUID seasonUuid, final Optional<String> description, final Optional<String> xpPointsType) {
+        final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+        description.ifPresent(season::setDescription);
+        if (xpPointsType.isPresent()) {
+            List<String> seasonSplits = seasonRepository.extractRoundSplitsForSeason(seasonUuid)
+                    .stream()
+                    .distinct()
+                    .toList();
+
+            List<String> xpPointsSplits = xpPointsService.buildXpPointsForTableForType(xpPointsType.get())
+                    .stream()
+                    .map(XpPointsForTable::getSplit)
+                    .distinct()
+                    .toList();
+
+            if (xpPointsSplits.containsAll(seasonSplits)) {
+                season.setXpPointsType(xpPointsType.get());
+            }
+        }
+        seasonRepository.save(season);
     }
 
     public void deleteSeason(final UUID seasonUuid) {
