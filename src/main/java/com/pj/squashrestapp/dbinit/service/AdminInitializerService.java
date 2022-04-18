@@ -9,6 +9,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRoles;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRefreshToken;
@@ -28,6 +29,7 @@ import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.LeagueRule;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
@@ -297,6 +299,11 @@ public class AdminInitializerService {
       for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
         final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
         season.addBonusPoint(bonusPoint);
+      }
+
+      for (final JsonLostBall jsonLostBall : jsonSeason.getLostBalls()) {
+        final LostBall lostBall = JsonImportUtil.constructLostBalls(jsonLostBall, players);
+        season.addLostBall(lostBall);
       }
 
       for (final JsonRound jsonRound : jsonSeason.getRounds()) {

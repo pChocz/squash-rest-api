@@ -8,6 +8,7 @@ import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.BulkDeletable;
 import com.pj.squashrestapp.repository.LeagueRepository;
+import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
@@ -46,6 +47,7 @@ public class DeepRemovalService {
   private final RoundGroupRepository roundGroupRepository;
   private final RoundRepository roundRepository;
   private final BonusPointRepository bonusPointRepository;
+  private final LostBallRepository lostBallRepository;
   private final SeasonRepository seasonRepository;
   // trophies
   private final TrophiesForLeagueRepository trophiesForLeagueRepository;
@@ -76,6 +78,7 @@ public class DeepRemovalService {
         additionalSetResultRepository,
         additionalMatchRepository,
         bonusPointRepository,
+        lostBallRepository,
         trophiesForLeagueRepository,
         setResultRepository,
         matchRepository,
@@ -94,6 +97,7 @@ public class DeepRemovalService {
         additionalSetResultRepository,
         additionalMatchRepository,
         bonusPointRepository,
+        lostBallRepository,
         trophiesForLeagueRepository,
         setResultRepository,
         matchRepository,

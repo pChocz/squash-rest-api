@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.dto.XpPointsForTable;
@@ -53,6 +54,7 @@ import java.util.stream.Stream;
 public class SeasonService {
 
     private final BonusPointService bonusPointService;
+    private final LostBallService lostBallService;
     private final XpPointsService xpPointsService;
 
     private final DeepRemovalService deepRemovalService;
@@ -63,9 +65,10 @@ public class SeasonService {
     public SeasonScoreboardDto getSeasonScoreboardDtoForLeagueStats(
             final Season season,
             final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason,
+            final LostBallsAggregatedForSeason lostBallsAggregatedForSeason) {
         final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
-        return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+        return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
     }
 
     public UUID extractLeagueUuid(final UUID seasonUuid) {
@@ -76,7 +79,8 @@ public class SeasonService {
             final SeasonScoreboardDto seasonScoreboardDto,
             final Season season,
             final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason,
+            final LostBallsAggregatedForSeason lostBallsAggregatedForSeason) {
 
         for (final Round round : season.getFinishedRoundsOrdered()) {
             // remove uber-star immediately (as it's valid for 1 round only)
@@ -99,7 +103,7 @@ public class SeasonService {
                             seasonScoreboardDto.getSeasonScoreboardRows().stream()
                                     .filter(p -> p.getPlayer().equals(player))
                                     .findFirst()
-                                    .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedForSeason));
+                                    .orElse(new SeasonScoreboardRowDto(player, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason));
 
                     seasonScoreboardRowDto.addScoreboardRow(scoreboardRow);
 
@@ -186,19 +190,23 @@ public class SeasonService {
         final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
                 bonusPointService.extractBonusPointsAggregatedForSeason(seasonUuid);
 
+        final LostBallsAggregatedForSeason lostBallsAggregatedForSeason =
+                lostBallService.extractLostBallsAggregatedForSeason(seasonUuid);
+
         final SeasonScoreboardDto seasonScoreboardDto =
-                getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+                getSeasonScoreboardDto(season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
         return seasonScoreboardDto;
     }
 
     public SeasonScoreboardDto getSeasonScoreboardDto(
             final Season season,
             final ArrayListMultimap<String, Integer> xpPointsPerSplit,
-            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+            final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason,
+            final LostBallsAggregatedForSeason lostBallsAggregatedForSeason) {
 
         final SeasonScoreboardDto seasonScoreboardDto = new SeasonScoreboardDto(season);
 
-        return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+        return buildSeasonScoreboardDto(seasonScoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
     }
 
     public UUID getCurrentSeasonUuidForLeague(final UUID leagueUuid) {

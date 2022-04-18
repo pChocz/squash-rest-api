@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.dto.scoreboard;
 
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.util.RoundingUtil;
 import java.math.BigDecimal;
@@ -22,6 +23,7 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private Map<Integer, RoundAndGroupPosition> roundNumberToXpMapAll;
   private Map<Integer, Integer> roundNumberToXpMapPretenders;
   private int bonusPoints;
+  private int lostBalls;
   private BigDecimal average;
   private int attendices;
   private int totalPoints;
@@ -41,13 +43,16 @@ public class SeasonScoreboardRowDto implements Comparable<SeasonScoreboardRowDto
   private int matchesBalance;
 
   public SeasonScoreboardRowDto(
-      final PlayerDto player, final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason) {
+      final PlayerDto player,
+      final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason,
+      final LostBallsAggregatedForSeason lostBallsAggregatedForSeason) {
     this.player = player;
     this.roundNumberToXpMapAll = new HashMap<>();
     this.roundNumberToXpMapPretenders = new HashMap<>();
 
     final UUID currentPlayerUuid = player.getUuid();
     this.bonusPoints = bonusPointsAggregatedForSeason.forPlayer(currentPlayerUuid);
+    this.lostBalls = lostBallsAggregatedForSeason.forPlayer(currentPlayerUuid);
   }
 
   public static double getAverageAsDouble(final SeasonScoreboardRowDto seasonScoreboardRowDto) {

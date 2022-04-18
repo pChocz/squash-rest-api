@@ -7,6 +7,8 @@ import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForLeague;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerForLeagueDto;
@@ -73,6 +75,7 @@ public class LeagueService {
 
   private final XpPointsService xpPointsService;
   private final BonusPointService bonusPointService;
+  private final LostBallService lostBallService;
   private final SeasonService seasonService;
   private final DeepRemovalService deepRemovalService;
 
@@ -285,13 +288,18 @@ public class LeagueService {
     final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague =
         bonusPointService.extractBonusPointsAggregatedForLeague(league.getUuid());
 
+    final LostBallsAggregatedForLeague lostBallsAggregatedForLeague =
+            lostBallService.extractLostBallsAggregatedForLeague(league.getUuid());
+
     final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
     for (final Season season : league.getSeasons()) {
       final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
           bonusPointsAggregatedForLeague.forSeason(season.getUuid());
+      final LostBallsAggregatedForSeason lostBallsAggregatedForSeason =
+              lostBallsAggregatedForLeague.forSeason(season.getUuid());
       final SeasonScoreboardDto scoreboardDto =
           seasonService.getSeasonScoreboardDtoForLeagueStats(
-              season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+              season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
       seasonScoreboardDtoList.add(scoreboardDto);
     }
 

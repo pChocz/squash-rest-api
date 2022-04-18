@@ -4,6 +4,7 @@ import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
@@ -179,6 +180,13 @@ public class RedisCacheService {
   private void evictHeadToHeadStats(String p1Uuid, String p2Uuid) {
     clearSingle(RedisCacheConfig.H2H_SCOREBOARD_CACHE, String.join(",", p1Uuid, p2Uuid, "true"));
     clearSingle(RedisCacheConfig.H2H_SCOREBOARD_CACHE, String.join(",", p1Uuid, p2Uuid, "false"));
+  }
+
+  public void evictCacheForLostBall(final LostBall lostBall) {
+    final String seasonUuid = lostBall.getSeason().getUuid().toString();
+    final String leagueUuid = lostBall.getSeason().getLeague().getUuid().toString();
+
+    clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
   }
 
   public void evictCacheForBonusPoint(final BonusPoint bonusPoint) {

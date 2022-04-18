@@ -6,6 +6,7 @@ import com.pj.squashrestapp.dbinit.fake.FakePlayersCreator;
 import com.pj.squashrestapp.dbinit.fake.FakePlayersRoleAssigner;
 import com.pj.squashrestapp.dbinit.jsondto.JsonFakeLeagueParams;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardRowDto;
 import com.pj.squashrestapp.model.Authority;
@@ -14,6 +15,7 @@ import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
@@ -164,11 +166,14 @@ public class FakeLeagueService {
     for (final Season season : league.getSeasons()) {
       if (season.getRounds().size() == league.getNumberOfRoundsPerSeason()) {
         final List<BonusPoint> bonusPoints = new ArrayList<>(season.getBonusPoints());
+        final List<LostBall> lostBalls = new ArrayList<>(season.getLostBalls());
         final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
             new BonusPointsAggregatedForSeason(season.getUuid(), bonusPoints);
+        final LostBallsAggregatedForSeason lostBallsAggregatedForSeason =
+                new LostBallsAggregatedForSeason(season.getUuid(), lostBalls);
         final SeasonScoreboardDto seasonScoreboardDto =
             seasonService.getSeasonScoreboardDto(
-                season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+                season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
 
         for (final SeasonScoreboardRowDto seasonScoreboardRowDto :
             seasonScoreboardDto.getSeasonScoreboardRows()) {

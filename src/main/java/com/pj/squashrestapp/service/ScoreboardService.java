@@ -4,6 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForLeague;
+import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.dto.scoreboard.SeasonScoreboardDto;
 import com.pj.squashrestapp.model.League;
@@ -40,6 +42,7 @@ public class ScoreboardService {
     private final XpPointsService xpPointsService;
     private final SeasonService seasonService;
     private final BonusPointService bonusPointService;
+    private final LostBallService lostBallService;
     private final LeagueRepository leagueRepository;
 
     @Cacheable(value = RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, key = "#leagueUuid")
@@ -49,6 +52,9 @@ public class ScoreboardService {
 
         final BonusPointsAggregatedForLeague bonusPointsAggregatedForLeague =
                 bonusPointService.extractBonusPointsAggregatedForLeague(leagueUuid);
+
+        final LostBallsAggregatedForLeague lostBallsAggregatedForLeague =
+                lostBallService.extractLostBallsAggregatedForLeague(leagueUuid);
 
         final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
         final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
@@ -61,11 +67,16 @@ public class ScoreboardService {
 
         final List<SeasonScoreboardDto> seasonScoreboardDtoList = new ArrayList<>();
         for (final Season season : leagueReconstructed.getSeasons()) {
+
             final BonusPointsAggregatedForSeason bonusPointsAggregatedForSeason =
                     bonusPointsAggregatedForLeague.forSeason(season.getUuid());
+
+            final LostBallsAggregatedForSeason lostBallsAggregatedForSeason =
+                    lostBallsAggregatedForLeague.forSeason(season.getUuid());
+
             final SeasonScoreboardDto scoreboardDto = new SeasonScoreboardDto(season);
             SeasonScoreboardDto seasonScoreboardDto = seasonService.buildSeasonScoreboardDto(
-                    scoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason);
+                    scoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
             seasonScoreboardDtoList.add(seasonScoreboardDto);
         }
 

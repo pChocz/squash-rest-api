@@ -5,6 +5,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
@@ -16,6 +17,7 @@ import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRule;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -36,7 +38,10 @@ import lombok.extern.slf4j.Slf4j;
 @UtilityClass
 public class JsonExportUtil {
 
-  public JsonLeague buildLeagueJson(final League league, final List<BonusPoint> bonusPoints) {
+  public JsonLeague buildLeagueJson(
+          final League league,
+          final List<BonusPoint> bonusPoints,
+          final List<LostBall> lostBalls) {
     final JsonLeague jsonLeague = new JsonLeague();
     jsonLeague.setUuid(league.getUuid());
     jsonLeague.setName(league.getName());
@@ -54,7 +59,7 @@ public class JsonExportUtil {
         Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
     jsonLeague.setRules(buildRules(league.getRules()));
     jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
-    jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints));
+    jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints, lostBalls));
     jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
 
     return jsonLeague;
@@ -94,14 +99,23 @@ public class JsonExportUtil {
   }
 
   private ArrayList<JsonSeason> buildSeasonsJson(
-      final List<Season> seasonsOrdered, final List<BonusPoint> bonusPoints) {
+      final List<Season> seasonsOrdered,
+      final List<BonusPoint> bonusPoints,
+      final List<LostBall> lostBalls) {
     final ArrayList<JsonSeason> jsonSeasons = new ArrayList<>();
     for (final Season season : seasonsOrdered) {
+
       final List<BonusPoint> bonusPointsForSeason =
           bonusPoints.stream()
               .filter(bonusPoint -> bonusPoint.getSeason().equals(season))
               .collect(Collectors.toList());
-      jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason));
+
+      final List<LostBall> lostBallsForSeason =
+              lostBalls.stream()
+                      .filter(lostBall -> lostBall.getSeason().equals(season))
+                      .collect(Collectors.toList());
+
+      jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason, lostBallsForSeason));
     }
     return jsonSeasons;
   }
@@ -136,7 +150,9 @@ public class JsonExportUtil {
   }
 
   public JsonSeason buildSeasonJson(
-      final Season season, final List<BonusPoint> bonusPointsForSeason) {
+      final Season season,
+      final List<BonusPoint> bonusPointsForSeason,
+      final List<LostBall> lostBallsForSeason) {
     final JsonSeason jsonSeason = new JsonSeason();
     jsonSeason.setUuid(season.getUuid());
     jsonSeason.setDescription(season.getDescription());
@@ -144,6 +160,7 @@ public class JsonExportUtil {
     jsonSeason.setXpPointsType(season.getXpPointsType());
     jsonSeason.setStartDate(season.getStartDate());
     jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
+    jsonSeason.setLostBalls(buildLostBalls(lostBallsForSeason));
     jsonSeason.setRounds(buildRoundsJson(season.getRoundsOrdered()));
 
     return jsonSeason;
@@ -166,6 +183,20 @@ public class JsonExportUtil {
       jsonBonusPoints.add(jsonBonusPoint);
     }
     return jsonBonusPoints;
+  }
+
+  private ArrayList<JsonLostBall> buildLostBalls(final List<LostBall> lostBalls) {
+    final ArrayList<JsonLostBall> jsonLostBalls = new ArrayList<>();
+    for (final LostBall lostBall : lostBalls) {
+      final JsonLostBall jsonLostBall = new JsonLostBall();
+      jsonLostBall.setUuid(lostBall.getUuid());
+      jsonLostBall.setPlayer(lostBall.getPlayer().getUuid());
+      jsonLostBall.setDate(lostBall.getDate());
+      jsonLostBall.setCount(lostBall.getCount());
+
+      jsonLostBalls.add(jsonLostBall);
+    }
+    return jsonLostBalls;
   }
 
   private ArrayList<JsonRound> buildRoundsJson(final List<Round> roundsOrdered) {

@@ -4,6 +4,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonAdditionalMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonBonusPoint;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
+import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
@@ -14,6 +15,7 @@ import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
@@ -161,6 +163,16 @@ public class JsonImportUtil {
     bonusPoint.setLooser(getCorrespondingPlayer(players, jsonBonusPoint.getLooser()));
     bonusPoint.setPoints(jsonBonusPoint.getPoints());
     return bonusPoint;
+  }
+
+  public LostBall constructLostBalls(
+          final JsonLostBall jsonLostBall, final List<Player> players) {
+    final LostBall lostBall = new LostBall();
+    lostBall.setUuid(jsonLostBall.getUuid());
+    lostBall.setDate(jsonLostBall.getDate());
+    lostBall.setCount(jsonLostBall.getCount());
+    lostBall.setPlayer(getCorrespondingPlayer(players, jsonLostBall.getPlayer()));
+    return lostBall;
   }
 
   public League constructLeague(final JsonLeague jsonLeague) {

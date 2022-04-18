@@ -15,6 +15,7 @@ import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.League;
+import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
@@ -26,6 +27,7 @@ import com.pj.squashrestapp.model.XpPointsForRound;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.EmailChangeTokenRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
+import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
@@ -56,6 +58,7 @@ public class BackupService {
   private final PlayerRepository playerRepository;
   private final RoundRepository roundRepository;
   private final BonusPointRepository bonusPointRepository;
+  private final LostBallRepository lostBallRepository;
   private final RefreshTokenRepository refreshTokenRepository;
   private final VerificationTokenRepository verificationTokenRepository;
   private final EmailChangeTokenRepository emailChangeTokenRepository;
@@ -66,7 +69,8 @@ public class BackupService {
     final Long seasonId = seasonRepository.findIdByUuid(seasonUuid);
     final Season season = EntityGraphBuildUtil.reconstructSeason(setResults, seasonId);
     final List<BonusPoint> bonusPoints = bonusPointRepository.findBySeasonUuid(seasonUuid);
-    final JsonSeason seasonJson = JsonExportUtil.buildSeasonJson(season, bonusPoints);
+    final List<LostBall> lostBalls = lostBallRepository.findBySeasonUuid(seasonUuid);
+    final JsonSeason seasonJson = JsonExportUtil.buildSeasonJson(season, bonusPoints, lostBalls);
     return seasonJson;
   }
 
@@ -126,7 +130,8 @@ public class BackupService {
     log.info("\tBacking up league -> {}", leagueName);
     final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
     final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
-    final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints);
+    final List<LostBall> lostBalls = lostBallRepository.findByLeagueUuid(league.getUuid());
+    final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints, lostBalls);
     log.info("\tFinished backing up league -> {}", league.getName());
     return leagueJson;
   }

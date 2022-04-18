@@ -97,6 +97,14 @@ public class Season implements Identifiable, Comparable<Season> {
   private Set<BonusPoint> bonusPoints = new HashSet<>();
 
   @Setter
+  @OneToMany(
+          mappedBy = "season",
+          cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          orphanRemoval = true)
+  private Set<LostBall> lostBalls = new HashSet<>();
+
+  @Setter
   @Column(name = "number_of_rounds")
   private int numberOfRounds;
 
@@ -124,6 +132,11 @@ public class Season implements Identifiable, Comparable<Season> {
   public void addBonusPoint(final BonusPoint bonusPoint) {
     this.bonusPoints.add(bonusPoint);
     bonusPoint.setSeason(this);
+  }
+
+  public void addLostBall(final LostBall lostBall) {
+    this.lostBalls.add(lostBall);
+    lostBall.setSeason(this);
   }
 
   @Override

@@ -27,7 +27,7 @@ public final class BonusPointsAggregatedForLeague {
     for (final UUID seasonUuid : allSeasonsUuids) {
       final List<BonusPoint> bonusPointsPerSeason =
           bonusPoints.stream()
-              .filter(bonusPoint -> bonusPoint.getSeason().getId().equals(seasonUuid))
+              .filter(bonusPoint -> bonusPoint.getSeason().getUuid().equals(seasonUuid))
               .collect(Collectors.toList());
 
       this.bonusPointsAggregatedForSeasons.add(

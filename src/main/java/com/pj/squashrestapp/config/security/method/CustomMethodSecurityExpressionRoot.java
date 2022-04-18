@@ -5,6 +5,7 @@ import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
+import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -36,6 +37,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
   private RoundRepository roundRepository;
   private SeasonRepository seasonRepository;
   private BonusPointRepository bonusPointRepository;
+  private LostBallRepository lostBallRepository;
   private AdditionalMatchRepository additionalMatchRepository;
 
   private Object target;
@@ -100,6 +102,14 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
       return true;
     }
     final UUID leagueUuid = bonusPointRepository.retrieveLeagueUuidOfBonusPoint(bonusPointUuid);
+    return principal.hasRoleForLeague(leagueUuid, role);
+  }
+
+  public boolean hasRoleForLostBall(final UUID lostBallUuid, final LeagueRole role) {
+    if (principal.isAdmin()) {
+      return true;
+    }
+    final UUID leagueUuid = lostBallRepository.retrieveLeagueUuidOfLostBall(lostBallUuid);
     return principal.hasRoleForLeague(leagueUuid, role);
   }
 

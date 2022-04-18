@@ -25,5 +25,7 @@ public class JsonSeason {
 
   private ArrayList<JsonBonusPoint> bonusPoints;
 
+  private ArrayList<JsonLostBall> lostBalls;
+
   private ArrayList<JsonRound> rounds;
 }
