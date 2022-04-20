@@ -17,5 +17,4 @@ public class PlayerSingleSeasonStats {
     private int placeInSeason;
     private SeasonDto season;
     private SeasonScoreboardRowDto seasonScoreboardRow;
-
 }

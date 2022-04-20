@@ -20,7 +20,8 @@ public class AuthorizationUtil {
 
     public static void configureAuthentication(final String username, final String role) {
         Collection<GrantedAuthority> authorities = AuthorityUtils.createAuthorityList(role);
-        Authentication authentication = new UsernamePasswordAuthenticationToken(new UserDetailsImpl("CRON", authorities), role, authorities);
+        Authentication authentication =
+                new UsernamePasswordAuthenticationToken(new UserDetailsImpl("CRON", authorities), role, authorities);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }

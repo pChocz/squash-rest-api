@@ -1,7 +1,10 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import java.util.UUID;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,9 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.UUID;
 
 @Entity
 @Table(name = "league_rules")
@@ -21,29 +22,29 @@ import lombok.Setter;
 @NoArgsConstructor
 public class LeagueRule {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Setter
-  @Column(name = "uuid", nullable = false)
-  private UUID uuid = UUID.randomUUID();
+    @Setter
+    @Column(name = "uuid", nullable = false)
+    private UUID uuid = UUID.randomUUID();
 
-  @Setter
-  @Column(name = "orderValue")
-  private Double orderValue;
+    @Setter
+    @Column(name = "orderValue")
+    private Double orderValue;
 
-  @Setter
-  @Column(name = "rule")
-  private String rule;
+    @Setter
+    @Column(name = "rule")
+    private String rule;
 
-  @JsonIgnore
-  @Setter
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "league_id")
-  private League league;
+    @JsonIgnore
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "league_id")
+    private League league;
 
-  public LeagueRule(final String rule) {
-    this.rule = rule;
-  }
+    public LeagueRule(final String rule) {
+        this.rule = rule;
+    }
 }

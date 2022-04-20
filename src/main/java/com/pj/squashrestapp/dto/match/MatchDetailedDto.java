@@ -17,82 +17,92 @@ import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 /** */
 @Getter
 @NoArgsConstructor
 public class MatchDetailedDto implements MatchDto {
 
-  private UUID matchUuid;
-  private PlayerDto firstPlayer;
-  private PlayerDto secondPlayer;
-  private PlayerDto winner;
-  private int roundGroupNumber;
-  private UUID roundUuid;
-  private int roundNumber;
-  private UUID seasonUuid;
-  private int seasonNumber;
-  private String leagueName;
-  private List<SetDto> sets;
-  private MatchStatus status;
+    private UUID matchUuid;
+    private PlayerDto firstPlayer;
+    private PlayerDto secondPlayer;
+    private PlayerDto winner;
+    private int roundGroupNumber;
+    private UUID roundUuid;
+    private int roundNumber;
+    private UUID seasonUuid;
+    private int seasonNumber;
+    private String leagueName;
+    private List<SetDto> sets;
+    private MatchStatus status;
 
-  @JsonSerialize(using = LocalDateSerializer.class)
-  @JsonDeserialize(using = LocalDateDeserializer.class)
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private LocalDate date;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    private LocalDate date;
 
-  @JsonIgnore private MatchFormatType matchFormatType;
-  @JsonIgnore private SetWinningType regularSetWinningType;
-  @JsonIgnore private int regularSetWinningPoints;
-  @JsonIgnore private SetWinningType tieBreakWinningType;
-  @JsonIgnore private int tieBreakWinningPoints;
+    @JsonIgnore
+    private MatchFormatType matchFormatType;
 
-  public MatchDetailedDto(final Match match) {
-    final RoundGroup roundGroup = match.getRoundGroup();
-    final Round round = roundGroup.getRound();
-    final Season season = round.getSeason();
+    @JsonIgnore
+    private SetWinningType regularSetWinningType;
 
-    this.matchUuid = match.getUuid();
-    this.firstPlayer = new PlayerDto(match.getFirstPlayer());
-    this.secondPlayer = new PlayerDto(match.getSecondPlayer());
-    this.roundGroupNumber = roundGroup.getNumber();
-    this.date = round.getDate();
-    this.roundUuid = round.getUuid();
-    this.roundNumber = round.getNumber();
-    this.seasonUuid = season.getUuid();
-    this.seasonNumber = season.getNumber();
-    this.leagueName = season.getLeague().getName();
+    @JsonIgnore
+    private int regularSetWinningPoints;
 
-    this.matchFormatType = match.getMatchFormatType();
-    this.regularSetWinningType = match.getRegularSetWinningType();
-    this.regularSetWinningPoints = match.getRegularSetWinningPoints();
-    this.tieBreakWinningType = match.getTiebreakWinningType();
-    this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
+    @JsonIgnore
+    private SetWinningType tieBreakWinningType;
 
-    this.sets = new ArrayList<>();
-    for (final SetResult setResult : match.getSetResults()) {
-      this.sets.add(new SetDto(setResult, matchFormatType));
+    @JsonIgnore
+    private int tieBreakWinningPoints;
+
+    public MatchDetailedDto(final Match match) {
+        final RoundGroup roundGroup = match.getRoundGroup();
+        final Round round = roundGroup.getRound();
+        final Season season = round.getSeason();
+
+        this.matchUuid = match.getUuid();
+        this.firstPlayer = new PlayerDto(match.getFirstPlayer());
+        this.secondPlayer = new PlayerDto(match.getSecondPlayer());
+        this.roundGroupNumber = roundGroup.getNumber();
+        this.date = round.getDate();
+        this.roundUuid = round.getUuid();
+        this.roundNumber = round.getNumber();
+        this.seasonUuid = season.getUuid();
+        this.seasonNumber = season.getNumber();
+        this.leagueName = season.getLeague().getName();
+
+        this.matchFormatType = match.getMatchFormatType();
+        this.regularSetWinningType = match.getRegularSetWinningType();
+        this.regularSetWinningPoints = match.getRegularSetWinningPoints();
+        this.tieBreakWinningType = match.getTiebreakWinningType();
+        this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
+
+        this.sets = new ArrayList<>();
+        for (final SetResult setResult : match.getSetResults()) {
+            this.sets.add(new SetDto(setResult, matchFormatType));
+        }
+        this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
+
+        this.status = MatchStatusHelper.checkStatus(this);
+        this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
     }
-    this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
 
-    this.status = MatchStatusHelper.checkStatus(this);
-    this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
-  }
+    @Override
+    public boolean checkFinished() {
+        return this.getStatus() == MatchStatus.FINISHED;
+    }
 
-  @Override
-  public boolean checkFinished() {
-    return this.getStatus() == MatchStatus.FINISHED;
-  }
-
-  @Override
-  public String toString() {
-    return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
-  }
+    @Override
+    public String toString() {
+        return "[" + matchUuid + "] " + firstPlayer + " vs. " + secondPlayer + " : " + sets;
+    }
 }

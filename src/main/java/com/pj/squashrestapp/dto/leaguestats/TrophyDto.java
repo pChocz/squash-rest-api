@@ -8,11 +8,11 @@ import lombok.Getter;
 @Getter
 public class TrophyDto {
 
-  private final Trophy trophy;
-  private final PlayerDto player;
+    private final Trophy trophy;
+    private final PlayerDto player;
 
-  public TrophyDto(final Trophy trophy, final PlayerDto player) {
-    this.trophy = trophy;
-    this.player = player;
-  }
+    public TrophyDto(final Trophy trophy, final PlayerDto player) {
+        this.trophy = trophy;
+        this.player = player;
+    }
 }

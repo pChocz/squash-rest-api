@@ -4,33 +4,34 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
+
 import java.time.LocalDate;
 import java.util.List;
 
 /** */
 public interface MatchDto {
 
-  PlayerDto getFirstPlayer();
+    PlayerDto getFirstPlayer();
 
-  PlayerDto getSecondPlayer();
+    PlayerDto getSecondPlayer();
 
-  PlayerDto getWinner();
+    PlayerDto getWinner();
 
-  LocalDate getDate();
+    LocalDate getDate();
 
-  List<SetDto> getSets();
+    List<SetDto> getSets();
 
-  MatchFormatType getMatchFormatType();
+    MatchFormatType getMatchFormatType();
 
-  SetWinningType getRegularSetWinningType();
+    SetWinningType getRegularSetWinningType();
 
-  int getRegularSetWinningPoints();
+    int getRegularSetWinningPoints();
 
-  SetWinningType getTieBreakWinningType();
+    SetWinningType getTieBreakWinningType();
 
-  int getTieBreakWinningPoints();
+    int getTieBreakWinningPoints();
 
-  MatchStatus getStatus();
+    MatchStatus getStatus();
 
-  boolean checkFinished();
+    boolean checkFinished();
 }

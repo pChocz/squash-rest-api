@@ -8,6 +8,6 @@ import lombok.Getter;
 @SuppressWarnings("JavaDoc")
 public class ClassId<T> {
 
-  private final Class<T> clazz;
-  private final Long id;
+    private final Class<T> clazz;
+    private final Long id;
 }

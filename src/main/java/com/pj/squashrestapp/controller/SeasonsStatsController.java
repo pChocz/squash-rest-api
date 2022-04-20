@@ -18,13 +18,13 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SeasonsStatsController {
 
-  private final PlayersSeasonsStatsService playersSeasonsStatsService;
+    private final PlayersSeasonsStatsService playersSeasonsStatsService;
 
-  @GetMapping(value = "/{leagueUuid}/{playerUuid}")
-  PlayerAllSeasonsStats getSeasonsStatsForPlayer(
-      @PathVariable final UUID leagueUuid, @PathVariable final UUID playerUuid) {
-    final PlayerAllSeasonsStats seasonsStatsForPlayer =
-            playersSeasonsStatsService.buildSeasonsStatsForPlayer(leagueUuid, playerUuid);
-    return seasonsStatsForPlayer;
-  }
+    @GetMapping(value = "/{leagueUuid}/{playerUuid}")
+    PlayerAllSeasonsStats getSeasonsStatsForPlayer(
+            @PathVariable final UUID leagueUuid, @PathVariable final UUID playerUuid) {
+        final PlayerAllSeasonsStats seasonsStatsForPlayer =
+                playersSeasonsStatsService.buildSeasonsStatsForPlayer(leagueUuid, playerUuid);
+        return seasonsStatsForPlayer;
+    }
 }

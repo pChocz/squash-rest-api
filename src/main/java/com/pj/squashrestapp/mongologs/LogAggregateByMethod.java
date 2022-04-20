@@ -13,13 +13,14 @@ import org.springframework.data.annotation.Id;
 @JsonInclude(Include.NON_NULL)
 public class LogAggregateByMethod {
 
-  @Id
-  private String methodName;
-  private Long durationSum;
-  private Long durationMin;
-  private Long durationMax;
-  private Double durationAvg;
-  private Double durationDev;
-  private Long queryCountSum;
-  private Long countSum;
+    @Id
+    private String methodName;
+
+    private Long durationSum;
+    private Long durationMin;
+    private Long durationMax;
+    private Double durationAvg;
+    private Double durationDev;
+    private Long queryCountSum;
+    private Long countSum;
 }

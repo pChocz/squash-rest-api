@@ -5,6 +5,6 @@ import org.springframework.security.web.context.AbstractSecurityWebApplicationIn
 /** */
 public class SpringSecurityInitializer extends AbstractSecurityWebApplicationInitializer {
 
-  // no code needed
+    // no code needed
 
 }

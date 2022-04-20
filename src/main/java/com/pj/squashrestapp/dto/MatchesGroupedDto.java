@@ -8,19 +8,19 @@ import lombok.Getter;
 @Getter
 public class MatchesGroupedDto {
 
-  private final long count;
-  private final Player opponent;
-  private final League league;
+    private final long count;
+    private final Player opponent;
+    private final League league;
 
-  public MatchesGroupedDto(final Object object, final Player currentPlayer) {
-    final Object[] array = (Object[]) object;
+    public MatchesGroupedDto(final Object object, final Player currentPlayer) {
+        final Object[] array = (Object[]) object;
 
-    final Player firstPlayer = (Player) array[1];
-    final Player secondPlayer = (Player) array[2];
+        final Player firstPlayer = (Player) array[1];
+        final Player secondPlayer = (Player) array[2];
 
-    this.opponent = firstPlayer.equals(currentPlayer) ? secondPlayer : firstPlayer;
+        this.opponent = firstPlayer.equals(currentPlayer) ? secondPlayer : firstPlayer;
 
-    this.count = (long) array[0];
-    this.league = (League) array[3];
-  }
+        this.count = (long) array[0];
+        this.league = (League) array[3];
+    }
 }

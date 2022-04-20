@@ -9,20 +9,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlayerSummary {
 
-  private ScoreboardRow scoreboardRow;
-  private int leagues;
-  private int seasons;
-  private int rounds;
+    private ScoreboardRow scoreboardRow;
+    private int leagues;
+    private int seasons;
+    private int rounds;
 
-  @Override
-  public String toString() {
-    return scoreboardRow.getPlayer()
-        + " | leagues: "
-        + leagues
-        + " | seasons: "
-        + seasons
-        + " | rounds: "
-        + rounds;
-  }
-
+    @Override
+    public String toString() {
+        return scoreboardRow.getPlayer() + " | leagues: " + leagues + " | seasons: " + seasons + " | rounds: " + rounds;
+    }
 }

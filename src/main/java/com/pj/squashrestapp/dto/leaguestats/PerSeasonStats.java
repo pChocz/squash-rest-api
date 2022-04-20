@@ -8,13 +8,14 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
 
 /** */
 @Getter
@@ -23,22 +24,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PerSeasonStats {
 
-  private int seasonNumber;
-  private String seasonNumberRoman;
+    private int seasonNumber;
+    private String seasonNumberRoman;
 
-  @JsonSerialize(using = LocalDateSerializer.class)
-  @JsonDeserialize(using = LocalDateDeserializer.class)
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private LocalDate seasonStartDate;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    private LocalDate seasonStartDate;
 
-  private UUID seasonUuid;
-  private int rounds;
-  private int regularMatches;
-  private int tieBreakMatches;
-  private BigDecimal tieBreakMatchesPercents;
-  private int points;
-  private int players;
-  private BigDecimal playersAverage;
+    private UUID seasonUuid;
+    private int rounds;
+    private int regularMatches;
+    private int tieBreakMatches;
+    private BigDecimal tieBreakMatchesPercents;
+    private int points;
+    private int players;
+    private BigDecimal playersAverage;
 
-  @JsonIgnore private Multimap<UUID, UUID> playersAttendicesMap;
+    @JsonIgnore
+    private Multimap<UUID, UUID> playersAttendicesMap;
 }

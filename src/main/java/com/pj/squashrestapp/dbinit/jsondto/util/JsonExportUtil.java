@@ -24,253 +24,246 @@ import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.TrophyForLeague;
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 
 /** */
 @Slf4j
 @UtilityClass
 public class JsonExportUtil {
 
-  public JsonLeague buildLeagueJson(
-          final League league,
-          final List<BonusPoint> bonusPoints,
-          final List<LostBall> lostBalls) {
-    final JsonLeague jsonLeague = new JsonLeague();
-    jsonLeague.setUuid(league.getUuid());
-    jsonLeague.setName(league.getName());
-    jsonLeague.setTime(league.getTime());
-    jsonLeague.setDateOfCreation(league.getDateOfCreation());
-    jsonLeague.setLocation(league.getLocation());
-    jsonLeague.setMatchFormatType(league.getMatchFormatType());
-    jsonLeague.setRegularSetWinningPoints(league.getRegularSetWinningPoints());
-    jsonLeague.setTiebreakWinningPoints(league.getTiebreakWinningPoints());
-    jsonLeague.setRegularSetWinningType(league.getRegularSetWinningType());
-    jsonLeague.setTiebreakWinningType(league.getTiebreakWinningType());
-    jsonLeague.setNumberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason());
-    jsonLeague.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
-    jsonLeague.setLogoBase64(
-        Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
-    jsonLeague.setRules(buildRules(league.getRules()));
-    jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
-    jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints, lostBalls));
-    jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
+    public JsonLeague buildLeagueJson(
+            final League league, final List<BonusPoint> bonusPoints, final List<LostBall> lostBalls) {
+        final JsonLeague jsonLeague = new JsonLeague();
+        jsonLeague.setUuid(league.getUuid());
+        jsonLeague.setName(league.getName());
+        jsonLeague.setTime(league.getTime());
+        jsonLeague.setDateOfCreation(league.getDateOfCreation());
+        jsonLeague.setLocation(league.getLocation());
+        jsonLeague.setMatchFormatType(league.getMatchFormatType());
+        jsonLeague.setRegularSetWinningPoints(league.getRegularSetWinningPoints());
+        jsonLeague.setTiebreakWinningPoints(league.getTiebreakWinningPoints());
+        jsonLeague.setRegularSetWinningType(league.getRegularSetWinningType());
+        jsonLeague.setTiebreakWinningType(league.getTiebreakWinningType());
+        jsonLeague.setNumberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason());
+        jsonLeague.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
+        jsonLeague.setLogoBase64(
+                Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
+        jsonLeague.setRules(buildRules(league.getRules()));
+        jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
+        jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints, lostBalls));
+        jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
 
-    return jsonLeague;
-  }
-
-  private ArrayList<JsonLeagueRule> buildRules(final Set<LeagueRule> leagueRules) {
-    final ArrayList<JsonLeagueRule> rules = new ArrayList<>();
-
-    for (final LeagueRule leagueRule : leagueRules) {
-      final JsonLeagueRule jsonLeagueRule = new JsonLeagueRule();
-      jsonLeagueRule.setUuid(leagueRule.getUuid());
-      jsonLeagueRule.setOrderValue(leagueRule.getOrderValue());
-      jsonLeagueRule.setRule(leagueRule.getRule());
-      rules.add(jsonLeagueRule);
+        return jsonLeague;
     }
 
-    return rules;
-  }
+    private ArrayList<JsonLeagueRule> buildRules(final Set<LeagueRule> leagueRules) {
+        final ArrayList<JsonLeagueRule> rules = new ArrayList<>();
 
-  private ArrayList<JsonAdditionalMatch> buildAdditionalMatches(
-      final Set<AdditionalMatch> additionalMatchesForLeague) {
-    final ArrayList<JsonAdditionalMatch> additionalMatches = new ArrayList<>();
+        for (final LeagueRule leagueRule : leagueRules) {
+            final JsonLeagueRule jsonLeagueRule = new JsonLeagueRule();
+            jsonLeagueRule.setUuid(leagueRule.getUuid());
+            jsonLeagueRule.setOrderValue(leagueRule.getOrderValue());
+            jsonLeagueRule.setRule(leagueRule.getRule());
+            rules.add(jsonLeagueRule);
+        }
 
-    for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
-      final JsonAdditionalMatch jsonAdditionalMatch = new JsonAdditionalMatch();
-      jsonAdditionalMatch.setDate(additionalMatch.getDate());
-      jsonAdditionalMatch.setType(additionalMatch.getType());
-      jsonAdditionalMatch.setSeasonNumber(additionalMatch.getSeasonNumber());
-      jsonAdditionalMatch.setFirstPlayer(additionalMatch.getFirstPlayer().getUuid());
-      jsonAdditionalMatch.setSecondPlayer(additionalMatch.getSecondPlayer().getUuid());
-      jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
-
-      additionalMatches.add(jsonAdditionalMatch);
+        return rules;
     }
 
-    return additionalMatches;
-  }
+    private ArrayList<JsonAdditionalMatch> buildAdditionalMatches(
+            final Set<AdditionalMatch> additionalMatchesForLeague) {
+        final ArrayList<JsonAdditionalMatch> additionalMatches = new ArrayList<>();
 
-  private ArrayList<JsonSeason> buildSeasonsJson(
-      final List<Season> seasonsOrdered,
-      final List<BonusPoint> bonusPoints,
-      final List<LostBall> lostBalls) {
-    final ArrayList<JsonSeason> jsonSeasons = new ArrayList<>();
-    for (final Season season : seasonsOrdered) {
+        for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
+            final JsonAdditionalMatch jsonAdditionalMatch = new JsonAdditionalMatch();
+            jsonAdditionalMatch.setDate(additionalMatch.getDate());
+            jsonAdditionalMatch.setType(additionalMatch.getType());
+            jsonAdditionalMatch.setSeasonNumber(additionalMatch.getSeasonNumber());
+            jsonAdditionalMatch.setFirstPlayer(additionalMatch.getFirstPlayer().getUuid());
+            jsonAdditionalMatch.setSecondPlayer(
+                    additionalMatch.getSecondPlayer().getUuid());
+            jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
 
-      final List<BonusPoint> bonusPointsForSeason =
-          bonusPoints.stream()
-              .filter(bonusPoint -> bonusPoint.getSeason().equals(season))
-              .collect(Collectors.toList());
+            additionalMatches.add(jsonAdditionalMatch);
+        }
 
-      final List<LostBall> lostBallsForSeason =
-              lostBalls.stream()
-                      .filter(lostBall -> lostBall.getSeason().equals(season))
-                      .collect(Collectors.toList());
-
-      jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason, lostBallsForSeason));
-    }
-    return jsonSeasons;
-  }
-
-  private ArrayList<JsonLeagueTrophy> buildTrophiesList(
-      final List<TrophyForLeague> trophiesForLeague) {
-    final ArrayList<JsonLeagueTrophy> trophies = new ArrayList<>();
-
-    for (final TrophyForLeague trophyForLeague : trophiesForLeague) {
-      final JsonLeagueTrophy trophy = new JsonLeagueTrophy();
-      trophy.setSeasonNumber(trophyForLeague.getSeasonNumber());
-      trophy.setPlayerUuid(trophyForLeague.getPlayer().getUuid());
-      trophy.setTrophy(trophyForLeague.getTrophy());
-      trophies.add(trophy);
+        return additionalMatches;
     }
 
-    return trophies;
-  }
+    private ArrayList<JsonSeason> buildSeasonsJson(
+            final List<Season> seasonsOrdered, final List<BonusPoint> bonusPoints, final List<LostBall> lostBalls) {
+        final ArrayList<JsonSeason> jsonSeasons = new ArrayList<>();
+        for (final Season season : seasonsOrdered) {
 
-  private ArrayList<JsonSetResult> buildSetResultsJson(final AdditionalMatch match) {
-    final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
-    for (final AdditionalSetResult setResult : match.getSetResultsOrdered()) {
-      if (isNotNull(setResult)) {
-        final JsonSetResult jsonSetResult = new JsonSetResult();
-        jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
-        jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
+            final List<BonusPoint> bonusPointsForSeason = bonusPoints.stream()
+                    .filter(bonusPoint -> bonusPoint.getSeason().equals(season))
+                    .collect(Collectors.toList());
 
-        jsonSetResults.add(jsonSetResult);
-      }
+            final List<LostBall> lostBallsForSeason = lostBalls.stream()
+                    .filter(lostBall -> lostBall.getSeason().equals(season))
+                    .collect(Collectors.toList());
+
+            jsonSeasons.add(buildSeasonJson(season, bonusPointsForSeason, lostBallsForSeason));
+        }
+        return jsonSeasons;
     }
-    return jsonSetResults;
-  }
 
-  public JsonSeason buildSeasonJson(
-      final Season season,
-      final List<BonusPoint> bonusPointsForSeason,
-      final List<LostBall> lostBallsForSeason) {
-    final JsonSeason jsonSeason = new JsonSeason();
-    jsonSeason.setUuid(season.getUuid());
-    jsonSeason.setDescription(season.getDescription());
-    jsonSeason.setNumber(season.getNumber());
-    jsonSeason.setXpPointsType(season.getXpPointsType());
-    jsonSeason.setStartDate(season.getStartDate());
-    jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
-    jsonSeason.setLostBalls(buildLostBalls(lostBallsForSeason));
-    jsonSeason.setRounds(buildRoundsJson(season.getRoundsOrdered()));
+    private ArrayList<JsonLeagueTrophy> buildTrophiesList(final List<TrophyForLeague> trophiesForLeague) {
+        final ArrayList<JsonLeagueTrophy> trophies = new ArrayList<>();
 
-    return jsonSeason;
-  }
+        for (final TrophyForLeague trophyForLeague : trophiesForLeague) {
+            final JsonLeagueTrophy trophy = new JsonLeagueTrophy();
+            trophy.setSeasonNumber(trophyForLeague.getSeasonNumber());
+            trophy.setPlayerUuid(trophyForLeague.getPlayer().getUuid());
+            trophy.setTrophy(trophyForLeague.getTrophy());
+            trophies.add(trophy);
+        }
 
-  private boolean isNotNull(final AdditionalSetResult setResult) {
-    return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
-  }
-
-  private ArrayList<JsonBonusPoint> buildBonusPoints(final List<BonusPoint> bonusPoints) {
-    final ArrayList<JsonBonusPoint> jsonBonusPoints = new ArrayList<>();
-    for (final BonusPoint bonusPoint : bonusPoints) {
-      final JsonBonusPoint jsonBonusPoint = new JsonBonusPoint();
-      jsonBonusPoint.setWinner(bonusPoint.getWinner().getUuid());
-      jsonBonusPoint.setLooser(bonusPoint.getLooser().getUuid());
-      jsonBonusPoint.setDate(bonusPoint.getDate());
-      jsonBonusPoint.setUuid(bonusPoint.getUuid());
-      jsonBonusPoint.setPoints(bonusPoint.getPoints());
-
-      jsonBonusPoints.add(jsonBonusPoint);
+        return trophies;
     }
-    return jsonBonusPoints;
-  }
 
-  private ArrayList<JsonLostBall> buildLostBalls(final List<LostBall> lostBalls) {
-    final ArrayList<JsonLostBall> jsonLostBalls = new ArrayList<>();
-    for (final LostBall lostBall : lostBalls) {
-      final JsonLostBall jsonLostBall = new JsonLostBall();
-      jsonLostBall.setUuid(lostBall.getUuid());
-      jsonLostBall.setPlayer(lostBall.getPlayer().getUuid());
-      jsonLostBall.setDate(lostBall.getDate());
-      jsonLostBall.setCount(lostBall.getCount());
+    private ArrayList<JsonSetResult> buildSetResultsJson(final AdditionalMatch match) {
+        final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
+        for (final AdditionalSetResult setResult : match.getSetResultsOrdered()) {
+            if (isNotNull(setResult)) {
+                final JsonSetResult jsonSetResult = new JsonSetResult();
+                jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
+                jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
 
-      jsonLostBalls.add(jsonLostBall);
+                jsonSetResults.add(jsonSetResult);
+            }
+        }
+        return jsonSetResults;
     }
-    return jsonLostBalls;
-  }
 
-  private ArrayList<JsonRound> buildRoundsJson(final List<Round> roundsOrdered) {
-    final ArrayList<JsonRound> jsonRounds = new ArrayList<>();
-    for (final Round round : roundsOrdered) {
-      jsonRounds.add(buildRoundJson(round));
+    public JsonSeason buildSeasonJson(
+            final Season season, final List<BonusPoint> bonusPointsForSeason, final List<LostBall> lostBallsForSeason) {
+        final JsonSeason jsonSeason = new JsonSeason();
+        jsonSeason.setUuid(season.getUuid());
+        jsonSeason.setDescription(season.getDescription());
+        jsonSeason.setNumber(season.getNumber());
+        jsonSeason.setXpPointsType(season.getXpPointsType());
+        jsonSeason.setStartDate(season.getStartDate());
+        jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
+        jsonSeason.setLostBalls(buildLostBalls(lostBallsForSeason));
+        jsonSeason.setRounds(buildRoundsJson(season.getRoundsOrdered()));
+
+        return jsonSeason;
     }
-    return jsonRounds;
-  }
 
-  public JsonRound buildRoundJson(final Round round) {
-    final JsonRound jsonRound = new JsonRound();
-    jsonRound.setUuid(round.getUuid());
-    jsonRound.setDate(round.getDate());
-    jsonRound.setNumber(round.getNumber());
-    jsonRound.setGroups(buildRoundGroupsJson(round));
-
-    return jsonRound;
-  }
-
-  private ArrayList<JsonRoundGroup> buildRoundGroupsJson(final Round round) {
-    final ArrayList<JsonRoundGroup> jsonRoundGroups = new ArrayList<>();
-    for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
-      final JsonRoundGroup jsonRoundGroup = new JsonRoundGroup();
-      jsonRoundGroup.setNumber(roundGroup.getNumber());
-      jsonRoundGroup.setPlayers(buildPlayersJson(roundGroup));
-      jsonRoundGroup.setMatches(buildMatchesJson(roundGroup));
-
-      jsonRoundGroups.add(jsonRoundGroup);
+    private boolean isNotNull(final AdditionalSetResult setResult) {
+        return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
     }
-    return jsonRoundGroups;
-  }
 
-  private ArrayList<JsonPlayer> buildPlayersJson(final RoundGroup roundGroup) {
-    final Set<JsonPlayer> jsonPlayers = new LinkedHashSet<>();
-    for (final Match match : roundGroup.getMatchesOrdered()) {
-      final JsonPlayer jsonPlayer1 = new JsonPlayer();
-      jsonPlayer1.setUuid(match.getFirstPlayer().getUuid());
-      jsonPlayers.add(jsonPlayer1);
+    private ArrayList<JsonBonusPoint> buildBonusPoints(final List<BonusPoint> bonusPoints) {
+        final ArrayList<JsonBonusPoint> jsonBonusPoints = new ArrayList<>();
+        for (final BonusPoint bonusPoint : bonusPoints) {
+            final JsonBonusPoint jsonBonusPoint = new JsonBonusPoint();
+            jsonBonusPoint.setWinner(bonusPoint.getWinner().getUuid());
+            jsonBonusPoint.setLooser(bonusPoint.getLooser().getUuid());
+            jsonBonusPoint.setDate(bonusPoint.getDate());
+            jsonBonusPoint.setUuid(bonusPoint.getUuid());
+            jsonBonusPoint.setPoints(bonusPoint.getPoints());
 
-      final JsonPlayer jsonPlayer2 = new JsonPlayer();
-      jsonPlayer2.setUuid(match.getSecondPlayer().getUuid());
-      jsonPlayers.add(jsonPlayer2);
+            jsonBonusPoints.add(jsonBonusPoint);
+        }
+        return jsonBonusPoints;
     }
-    return new ArrayList<>(jsonPlayers);
-  }
 
-  private ArrayList<JsonMatch> buildMatchesJson(final RoundGroup roundGroup) {
-    final ArrayList<JsonMatch> jsonMatches = new ArrayList<>();
-    for (final Match match : roundGroup.getMatchesOrdered()) {
-      final JsonMatch jsonMatch = new JsonMatch();
-      jsonMatch.setFirstPlayer(match.getFirstPlayer().getUuid());
-      jsonMatch.setSecondPlayer(match.getSecondPlayer().getUuid());
-      jsonMatch.setSets(buildSetResultsJson(match));
-      jsonMatches.add(jsonMatch);
+    private ArrayList<JsonLostBall> buildLostBalls(final List<LostBall> lostBalls) {
+        final ArrayList<JsonLostBall> jsonLostBalls = new ArrayList<>();
+        for (final LostBall lostBall : lostBalls) {
+            final JsonLostBall jsonLostBall = new JsonLostBall();
+            jsonLostBall.setUuid(lostBall.getUuid());
+            jsonLostBall.setPlayer(lostBall.getPlayer().getUuid());
+            jsonLostBall.setDate(lostBall.getDate());
+            jsonLostBall.setCount(lostBall.getCount());
+
+            jsonLostBalls.add(jsonLostBall);
+        }
+        return jsonLostBalls;
     }
-    return jsonMatches;
-  }
 
-  private ArrayList<JsonSetResult> buildSetResultsJson(final Match match) {
-    final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
-    for (final SetResult setResult : match.getSetResultsOrdered()) {
-      if (isNotNull(setResult)) {
-        final JsonSetResult jsonSetResult = new JsonSetResult();
-        jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
-        jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
-
-        jsonSetResults.add(jsonSetResult);
-      }
+    private ArrayList<JsonRound> buildRoundsJson(final List<Round> roundsOrdered) {
+        final ArrayList<JsonRound> jsonRounds = new ArrayList<>();
+        for (final Round round : roundsOrdered) {
+            jsonRounds.add(buildRoundJson(round));
+        }
+        return jsonRounds;
     }
-    return jsonSetResults;
-  }
 
-  private boolean isNotNull(final SetResult setResult) {
-    return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
-  }
+    public JsonRound buildRoundJson(final Round round) {
+        final JsonRound jsonRound = new JsonRound();
+        jsonRound.setUuid(round.getUuid());
+        jsonRound.setDate(round.getDate());
+        jsonRound.setNumber(round.getNumber());
+        jsonRound.setGroups(buildRoundGroupsJson(round));
+
+        return jsonRound;
+    }
+
+    private ArrayList<JsonRoundGroup> buildRoundGroupsJson(final Round round) {
+        final ArrayList<JsonRoundGroup> jsonRoundGroups = new ArrayList<>();
+        for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
+            final JsonRoundGroup jsonRoundGroup = new JsonRoundGroup();
+            jsonRoundGroup.setNumber(roundGroup.getNumber());
+            jsonRoundGroup.setPlayers(buildPlayersJson(roundGroup));
+            jsonRoundGroup.setMatches(buildMatchesJson(roundGroup));
+
+            jsonRoundGroups.add(jsonRoundGroup);
+        }
+        return jsonRoundGroups;
+    }
+
+    private ArrayList<JsonPlayer> buildPlayersJson(final RoundGroup roundGroup) {
+        final Set<JsonPlayer> jsonPlayers = new LinkedHashSet<>();
+        for (final Match match : roundGroup.getMatchesOrdered()) {
+            final JsonPlayer jsonPlayer1 = new JsonPlayer();
+            jsonPlayer1.setUuid(match.getFirstPlayer().getUuid());
+            jsonPlayers.add(jsonPlayer1);
+
+            final JsonPlayer jsonPlayer2 = new JsonPlayer();
+            jsonPlayer2.setUuid(match.getSecondPlayer().getUuid());
+            jsonPlayers.add(jsonPlayer2);
+        }
+        return new ArrayList<>(jsonPlayers);
+    }
+
+    private ArrayList<JsonMatch> buildMatchesJson(final RoundGroup roundGroup) {
+        final ArrayList<JsonMatch> jsonMatches = new ArrayList<>();
+        for (final Match match : roundGroup.getMatchesOrdered()) {
+            final JsonMatch jsonMatch = new JsonMatch();
+            jsonMatch.setFirstPlayer(match.getFirstPlayer().getUuid());
+            jsonMatch.setSecondPlayer(match.getSecondPlayer().getUuid());
+            jsonMatch.setSets(buildSetResultsJson(match));
+            jsonMatches.add(jsonMatch);
+        }
+        return jsonMatches;
+    }
+
+    private ArrayList<JsonSetResult> buildSetResultsJson(final Match match) {
+        final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
+        for (final SetResult setResult : match.getSetResultsOrdered()) {
+            if (isNotNull(setResult)) {
+                final JsonSetResult jsonSetResult = new JsonSetResult();
+                jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
+                jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
+
+                jsonSetResults.add(jsonSetResult);
+            }
+        }
+        return jsonSetResults;
+    }
+
+    private boolean isNotNull(final SetResult setResult) {
+        return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
+    }
 }

@@ -2,23 +2,24 @@ package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.time.LocalDate;
-import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 public class JsonBonusPoint {
 
-  private UUID uuid;
+    private UUID uuid;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private LocalDate date;
+    @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    private LocalDate date;
 
-  private UUID winner;
+    private UUID winner;
 
-  private UUID looser;
+    private UUID looser;
 
-  private int points;
+    private int points;
 }

@@ -1,10 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.base.Objects;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -49,6 +47,7 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
             };
     public static EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR_FINAL =
             new EntityVisitor<>(XpPointsForRoundGroup.class) {};
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

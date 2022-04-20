@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RoundOpponent {
 
-  private PlayerDto player;
-  private boolean won;
-  private int placeInGroup;
+    private PlayerDto player;
+    private boolean won;
+    private int placeInGroup;
 }

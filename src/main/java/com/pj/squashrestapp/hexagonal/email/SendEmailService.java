@@ -2,15 +2,14 @@ package com.pj.squashrestapp.hexagonal.email;
 
 import freemarker.template.Configuration;
 import freemarker.template.Template;
-
-import java.io.IOException;
-import java.util.Map;
-
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
+import java.io.IOException;
+import java.util.Map;
 
 /** Service responsible for sending various types of emails to users of the app */
 @Slf4j
@@ -18,23 +17,19 @@ import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 @RequiredArgsConstructor
 class SendEmailService {
 
-  private final Configuration freemarkerConfiguration;
-  private final EmailSendConfig emailSendConfig;
+    private final Configuration freemarkerConfiguration;
+    private final EmailSendConfig emailSendConfig;
 
-  void sendEmailWithModel(
-      final String email,
-      final String subject,
-      final Map<String, Object> model,
-      final String templateString) {
+    void sendEmailWithModel(
+            final String email, final String subject, final Map<String, Object> model, final String templateString) {
 
-    try {
-      final Template template = freemarkerConfiguration.getTemplate(templateString);
-      final String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
-      emailSendConfig.sendEmailWithHtmlContent(email, subject, content);
+        try {
+            final Template template = freemarkerConfiguration.getTemplate(templateString);
+            final String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+            emailSendConfig.sendEmailWithHtmlContent(email, subject, content);
 
-    } catch (final IOException | TemplateException e) {
-      log.error("Template problem - {}", templateString, e);
+        } catch (final IOException | TemplateException e) {
+            log.error("Template problem - {}", templateString, e);
+        }
     }
-  }
-
 }

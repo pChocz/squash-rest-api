@@ -5,6 +5,5 @@ import java.util.UUID;
 
 public interface SearchableByLeagueUuid {
 
-  List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
-
+    List<Long> fetchIdsByLeagueUuidRaw(UUID leagueUuid);
 }

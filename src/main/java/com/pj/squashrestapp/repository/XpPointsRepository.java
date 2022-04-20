@@ -2,24 +2,26 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.XpPointsForPlace;
 import com.pj.squashrestapp.model.XpPointsForRound;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
  */
 public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long> {
 
-  List<XpPointsForRound> findAllByOrderByNumberOfPlayersAscSplitAsc();
+    List<XpPointsForRound> findAllByOrderByNumberOfPlayersAscSplitAsc();
 
-  List<XpPointsForRound> findAllByType(String type);
+    List<XpPointsForRound> findAllByType(String type);
 
-  Optional<XpPointsForRound> findByTypeAndSplit(String type, String split);
+    Optional<XpPointsForRound> findByTypeAndSplit(String type, String split);
 
-  @Query("""
+    @Query(
+            """
           SELECT xpp.points FROM XpPointsForRound xpr
             JOIN xpr.xpPointsForRoundGroups xpg
             JOIN xpg.xpPointsForPlaces xpp
@@ -27,27 +29,25 @@ public interface XpPointsRepository extends JpaRepository<XpPointsForRound, Long
                 AND xpr.type = :type
           ORDER BY xpp.placeInRound
           """)
-  List<Integer> retrievePointsBySplitAndType(@Param("split") String split, @Param("type") String type);
+    List<Integer> retrievePointsBySplitAndType(@Param("split") String split, @Param("type") String type);
 
-
-  @Query("""
+    @Query(
+            """
           SELECT xpp FROM XpPointsForPlace xpp
             JOIN FETCH xpp.xpPointsForRoundGroup xprg
             JOIN FETCH xprg.xpPointsForRound xpr
           """)
-  List<XpPointsForPlace> fetchAll();
+    List<XpPointsForPlace> fetchAll();
 
+    @Query("SELECT DISTINCT xpr.type FROM XpPointsForRound xpr")
+    List<String> getAllTypes();
 
-  @Query("SELECT DISTINCT xpr.type FROM XpPointsForRound xpr")
-  List<String> getAllTypes();
-
-
-  @Query("""
+    @Query(
+            """
           SELECT xpp FROM XpPointsForPlace xpp
             JOIN FETCH xpp.xpPointsForRoundGroup xprg
             JOIN FETCH xprg.xpPointsForRound xpr
               WHERE xpr.type = :type
           """)
-  List<XpPointsForPlace> fetchAllByType(@Param("type") String type);
-
+    List<XpPointsForPlace> fetchAllByType(@Param("type") String type);
 }

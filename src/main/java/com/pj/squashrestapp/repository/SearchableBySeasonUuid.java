@@ -5,6 +5,5 @@ import java.util.UUID;
 
 public interface SearchableBySeasonUuid {
 
-  List<Long> fetchIdsBySeasonUuidRaw(UUID seasonUuid);
-
+    List<Long> fetchIdsBySeasonUuidRaw(UUID seasonUuid);
 }

@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class WrongCredentialsFormatException extends AuthenticationException {
 
-  public WrongCredentialsFormatException(final String message) {
-    super(message);
-    log.warn(message);
-  }
+    public WrongCredentialsFormatException(final String message) {
+        super(message);
+        log.warn(message);
+    }
 }

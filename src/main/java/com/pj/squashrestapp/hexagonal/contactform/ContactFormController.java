@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 class ContactFormController {
 
-  private final ContactFormService service;
+    private final ContactFormService service;
 
-  @PostMapping(value = "/send")
-  void sendPasswordResetEmail(
-      @RequestParam final String name,
-      @RequestParam final String email,
-      @RequestParam final String subject,
-      @RequestParam final String message) {
+    @PostMapping(value = "/send")
+    void sendPasswordResetEmail(
+            @RequestParam final String name,
+            @RequestParam final String email,
+            @RequestParam final String subject,
+            @RequestParam final String message) {
 
-    service.sendContactFormEmail(name, email, subject, message);
-  }
+        service.sendContactFormEmail(name, email, subject, message);
+    }
 }

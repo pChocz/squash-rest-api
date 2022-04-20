@@ -13,13 +13,12 @@ import org.springframework.security.config.annotation.method.configuration.Globa
 @AllArgsConstructor
 public class MethodSecurityConfig extends GlobalMethodSecurityConfiguration {
 
-  private final ApplicationContext applicationContext;
+    private final ApplicationContext applicationContext;
 
-  @Override
-  protected MethodSecurityExpressionHandler createExpressionHandler() {
-    final CustomMethodSecurityExpressionHandler handler =
-        new CustomMethodSecurityExpressionHandler();
-    handler.setApplicationContext(applicationContext);
-    return handler;
-  }
+    @Override
+    protected MethodSecurityExpressionHandler createExpressionHandler() {
+        final CustomMethodSecurityExpressionHandler handler = new CustomMethodSecurityExpressionHandler();
+        handler.setApplicationContext(applicationContext);
+        return handler;
+    }
 }

@@ -24,41 +24,41 @@ import java.util.UUID;
 @NoArgsConstructor
 public class LostBall {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Setter
-  @Column(name = "uuid", nullable = false)
-  private UUID uuid = UUID.randomUUID();
+    @Setter
+    @Column(name = "uuid", nullable = false)
+    private UUID uuid = UUID.randomUUID();
 
-  @JsonIgnore
-  @Setter
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "season_id")
-  private Season season;
+    @JsonIgnore
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "season_id")
+    private Season season;
 
-  @Setter
-  @Column(name = "date")
-  private LocalDate date;
+    @Setter
+    @Column(name = "date")
+    private LocalDate date;
 
-  @Setter
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "player_id")
-  private Player player;
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "player_id")
+    private Player player;
 
-  @Setter
-  @Column(name = "count")
-  private int count;
+    @Setter
+    @Column(name = "count")
+    private int count;
 
-  public LostBall(final Player player, final LocalDate date, final int count) {
-    this.player = player;
-    this.date = date;
-    this.count = count;
-  }
+    public LostBall(final Player player, final LocalDate date, final int count) {
+        this.player = player;
+        this.date = date;
+        this.count = count;
+    }
 
-  @Override
-  public String toString() {
-    return uuid + " -> " + player.getUsername();
-  }
+    @Override
+    public String toString() {
+        return uuid + " -> " + player.getUsername();
+    }
 }

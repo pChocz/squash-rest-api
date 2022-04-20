@@ -12,12 +12,12 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JsonLostBall {
 
-  private UUID uuid;
+    private UUID uuid;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private LocalDate date;
+    @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    private LocalDate date;
 
-  private UUID player;
+    private UUID player;
 
-  private int count;
+    private int count;
 }

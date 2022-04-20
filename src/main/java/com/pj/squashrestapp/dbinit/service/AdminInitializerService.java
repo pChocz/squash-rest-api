@@ -50,12 +50,13 @@ import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.GsonUtil;
-import java.util.ArrayList;
-import java.util.List;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * ex. of deserializing list with GSON:
@@ -69,278 +70,274 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AdminInitializerService {
 
-  private final XpPointsRepository xpPointsRepository;
-  private final PlayerRepository playerRepository;
-  private final LeagueRepository leagueRepository;
-  private final AuthorityRepository authorityRepository;
-  private final RoleForLeagueRepository roleForLeagueRepository;
-  private final RefreshTokenRepository refreshTokenRepository;
-  private final VerificationTokenRepository verificationTokenRepository;
-  private final EmailChangeTokenRepository emailChangeTokenRepository;
+    private final XpPointsRepository xpPointsRepository;
+    private final PlayerRepository playerRepository;
+    private final LeagueRepository leagueRepository;
+    private final AuthorityRepository authorityRepository;
+    private final RoleForLeagueRepository roleForLeagueRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final EmailChangeTokenRepository emailChangeTokenRepository;
 
-  public boolean initialize(final String initAllJsonContent) {
-    final Player adminPlayer = playerRepository.findByUsername("Admin");
+    public boolean initialize(final String initAllJsonContent) {
+        final Player adminPlayer = playerRepository.findByUsername("Admin");
 
-    if (adminPlayer != null) {
-      // means that Admin already exists so we cannot initialize it again
-      return false;
+        if (adminPlayer != null) {
+            // means that Admin already exists so we cannot initialize it again
+            return false;
 
-    } else {
-      log.info("Initializing - BEGIN");
+        } else {
+            log.info("Initializing - BEGIN");
 
-      persistStandardAuthorities();
+            persistStandardAuthorities();
 
-      final JsonAll jsonAll =
-          GsonUtil.gsonWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
-      persistXpPointsFromJson(jsonAll.getXpPoints());
-      persistLeaguesInitializeOnly(jsonAll.getLeagues());
-      persistCredentials(jsonAll.getCredentials());
-      persistAllLeaguesContent(jsonAll.getLeagues());
-      persistRefreshTokens(jsonAll.getRefreshTokens());
-      persistVerificationTokens(jsonAll.getVerificationTokens());
-      persistEmailChangeTokens(jsonAll.getEmailChangeTokens());
+            final JsonAll jsonAll = GsonUtil.gsonWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
+            persistXpPointsFromJson(jsonAll.getXpPoints());
+            persistLeaguesInitializeOnly(jsonAll.getLeagues());
+            persistCredentials(jsonAll.getCredentials());
+            persistAllLeaguesContent(jsonAll.getLeagues());
+            persistRefreshTokens(jsonAll.getRefreshTokens());
+            persistVerificationTokens(jsonAll.getVerificationTokens());
+            persistEmailChangeTokens(jsonAll.getEmailChangeTokens());
 
-      log.info("Initializing - FINISHED");
-      return true;
-    }
-  }
-
-  private void persistStandardAuthorities() {
-    final Authority adminAuthority = new Authority(AuthorityType.ROLE_ADMIN);
-    final Authority userAuthority = new Authority(AuthorityType.ROLE_USER);
-
-    authorityRepository.save(adminAuthority);
-    authorityRepository.save(userAuthority);
-  }
-
-  private void persistXpPointsFromJson(final List<JsonXpPointsForRound> jsonXpPointsForRoundAll) {
-    final List<XpPointsForRound> xpPoints = new ArrayList<>();
-    for (final JsonXpPointsForRound jsonXpPointsForRound : jsonXpPointsForRoundAll) {
-      final String type = jsonXpPointsForRound.getType();
-      final int[] players = jsonXpPointsForRound.buildPlayerSplitArray();
-      final int[][] points = jsonXpPointsForRound.buildXpPointsArray();
-      final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, players, points);
-      xpPoints.add(xpPointsForRound);
+            log.info("Initializing - FINISHED");
+            return true;
+        }
     }
 
-    xpPointsRepository.saveAll(xpPoints);
-  }
+    private void persistStandardAuthorities() {
+        final Authority adminAuthority = new Authority(AuthorityType.ROLE_ADMIN);
+        final Authority userAuthority = new Authority(AuthorityType.ROLE_USER);
 
-  private void persistLeaguesInitializeOnly(final List<JsonLeague> jsonLeagues) {
-    for (final JsonLeague jsonLeague : jsonLeagues) {
-      final League league = JsonImportUtil.constructLeague(jsonLeague);
-      leagueRepository.save(league);
-      createLeagueRoles(league);
-    }
-  }
-
-  private void persistCredentials(final List<JsonPlayerCredentials> jsonCredentials) {
-    for (final JsonPlayerCredentials credentials : jsonCredentials) {
-      final Player player = new Player();
-      player.setEnabled(true);
-      player.setUsername(credentials.getUsername());
-      player.setEmoji(credentials.getEmoji());
-      player.setEmail(credentials.getEmail());
-      player.setPassword(credentials.getPasswordHashed());
-      player.setNonLocked(credentials.isNonLocked());
-      player.setSuccessfulLoginAttempts(credentials.getSuccessfulLoginAttempts());
-      player.setRegistrationDateTime(credentials.getRegistrationDateTime());
-      player.setLastLoggedInDateTime(credentials.getLastLoggedInDateTime());
-      player.setUuid(credentials.getUuid());
-      player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
-      player.setEnabled(credentials.isEnabled());
-      player.setLocale(credentials.getLocale());
-      player.setWantsEmails(credentials.getWantsEmails());
-
-      playerRepository.save(player);
-      persistLeagueRoles(credentials, player);
-      persistAuthorities(credentials, player);
-    }
-  }
-
-  private void persistAllLeaguesContent(final List<JsonLeague> jsonLeagues) {
-    for (final JsonLeague jsonLeague : jsonLeagues) {
-      final List<Player> allPlayers = playerRepository.findAll();
-
-      final League league = buildLeague(jsonLeague, allPlayers);
-      leagueRepository.save(league);
-    }
-  }
-
-  private void persistRefreshTokens(final List<JsonRefreshToken> jsonRefreshTokens) {
-    final List<RefreshToken> refreshTokens = new ArrayList<>();
-    for (final JsonRefreshToken jsonRefreshToken : jsonRefreshTokens) {
-      final Player player = playerRepository.findByUuid(jsonRefreshToken.getPlayerUuid());
-      final RefreshToken refreshToken = new RefreshToken();
-      refreshToken.setToken(jsonRefreshToken.getToken());
-      refreshToken.setPlayer(player);
-      refreshToken.setExpirationDateTime(jsonRefreshToken.getExpirationDateTime());
-      refreshTokens.add(refreshToken);
+        authorityRepository.save(adminAuthority);
+        authorityRepository.save(userAuthority);
     }
 
-    refreshTokenRepository.saveAll(refreshTokens);
-  }
+    private void persistXpPointsFromJson(final List<JsonXpPointsForRound> jsonXpPointsForRoundAll) {
+        final List<XpPointsForRound> xpPoints = new ArrayList<>();
+        for (final JsonXpPointsForRound jsonXpPointsForRound : jsonXpPointsForRoundAll) {
+            final String type = jsonXpPointsForRound.getType();
+            final int[] players = jsonXpPointsForRound.buildPlayerSplitArray();
+            final int[][] points = jsonXpPointsForRound.buildXpPointsArray();
+            final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, players, points);
+            xpPoints.add(xpPointsForRound);
+        }
 
-  private void persistVerificationTokens(final List<JsonVerificationToken> jsonVerificationTokens) {
-    final List<VerificationToken> verificationTokens = new ArrayList<>();
-    for (final JsonVerificationToken jsonVerificationToken : jsonVerificationTokens) {
-      final Player player = playerRepository.findByUuid(jsonVerificationToken.getPlayerUuid());
-      final VerificationToken verificationToken = new VerificationToken();
-      verificationToken.setToken(jsonVerificationToken.getToken());
-      verificationToken.setPlayer(player);
-      verificationToken.setExpirationDateTime(jsonVerificationToken.getExpirationDateTime());
-      verificationTokens.add(verificationToken);
+        xpPointsRepository.saveAll(xpPoints);
     }
 
-    verificationTokenRepository.saveAll(verificationTokens);
-  }
-
-  private void persistEmailChangeTokens(final List<JsonEmailChangeToken> emailChangeTokens) {
-    final List<EmailChangeToken> verificationTokens = new ArrayList<>();
-    for (final JsonEmailChangeToken jsonEmailChangeToken : emailChangeTokens) {
-      final Player player = playerRepository.findByUuid(jsonEmailChangeToken.getPlayerUuid());
-      final EmailChangeToken emailChangeToken = new EmailChangeToken();
-      emailChangeToken.setToken(jsonEmailChangeToken.getToken());
-      emailChangeToken.setPlayer(player);
-      emailChangeToken.setNewEmail(jsonEmailChangeToken.getNewEmail());
-      emailChangeToken.setExpirationDateTime(jsonEmailChangeToken.getExpirationDateTime());
-      verificationTokens.add(emailChangeToken);
+    private void persistLeaguesInitializeOnly(final List<JsonLeague> jsonLeagues) {
+        for (final JsonLeague jsonLeague : jsonLeagues) {
+            final League league = JsonImportUtil.constructLeague(jsonLeague);
+            leagueRepository.save(league);
+            createLeagueRoles(league);
+        }
     }
 
-    emailChangeTokenRepository.saveAll(verificationTokens);
-  }
+    private void persistCredentials(final List<JsonPlayerCredentials> jsonCredentials) {
+        for (final JsonPlayerCredentials credentials : jsonCredentials) {
+            final Player player = new Player();
+            player.setEnabled(true);
+            player.setUsername(credentials.getUsername());
+            player.setEmoji(credentials.getEmoji());
+            player.setEmail(credentials.getEmail());
+            player.setPassword(credentials.getPasswordHashed());
+            player.setNonLocked(credentials.isNonLocked());
+            player.setSuccessfulLoginAttempts(credentials.getSuccessfulLoginAttempts());
+            player.setRegistrationDateTime(credentials.getRegistrationDateTime());
+            player.setLastLoggedInDateTime(credentials.getLastLoggedInDateTime());
+            player.setUuid(credentials.getUuid());
+            player.setPasswordSessionUuid(credentials.getPasswordSessionUuid());
+            player.setEnabled(credentials.isEnabled());
+            player.setLocale(credentials.getLocale());
+            player.setWantsEmails(credentials.getWantsEmails());
 
-  private void createLeagueRoles(final League league) {
-    final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
-    league.addRoleForLeague(playerRole);
-    roleForLeagueRepository.save(playerRole);
-
-    final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
-    league.addRoleForLeague(moderatorRole);
-    roleForLeagueRepository.save(moderatorRole);
-
-    final RoleForLeague ownerRole = new RoleForLeague(LeagueRole.OWNER);
-    league.addRoleForLeague(ownerRole);
-    roleForLeagueRepository.save(ownerRole);
-  }
-
-  private void persistLeagueRoles(
-      final JsonPlayerCredentials simpleCredentials, final Player player) {
-    final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
-    for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
-      final String leagueName = jsonLeagueRole.getLeague();
-      final String roleAsString = jsonLeagueRole.getRole();
-
-      final League league = leagueRepository.findByName(leagueName);
-      final LeagueRole role = LeagueRole.valueOf(roleAsString);
-
-      final RoleForLeague leagueRole =
-          roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
-      player.addRole(leagueRole);
-      roleForLeagueRepository.save(leagueRole);
-    }
-  }
-
-  private void persistAuthorities(final JsonPlayerCredentials credentials, final Player player) {
-    final List<JsonAuthorities> jsonAuthorities = credentials.getAuthorities();
-    for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
-      final String authorityAsString = jsonAuthority.getAuthority();
-      final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);
-      final Authority authority = authorityRepository.findByType(authorityType);
-      player.addAuthority(authority);
-      authorityRepository.save(authority);
-    }
-  }
-
-  @Transactional
-  public League buildLeague(final JsonLeague jsonLeague, final List<Player> players) {
-    final League league = leagueRepository.findByName(jsonLeague.getName());
-
-    for (final JsonLeagueTrophy jsonLeagueTrophy : jsonLeague.getTrophies()) {
-      final TrophyForLeague trophyForLeague =
-          JsonImportUtil.constructLeagueTrophy(jsonLeagueTrophy, players);
-      league.addTrophyForLeague(trophyForLeague);
+            playerRepository.save(player);
+            persistLeagueRoles(credentials, player);
+            persistAuthorities(credentials, player);
+        }
     }
 
-    for (final JsonLeagueRule rule : jsonLeague.getRules()) {
-      final LeagueRule leagueRule = new LeagueRule();
-      leagueRule.setUuid(rule.getUuid());
-      leagueRule.setOrderValue(rule.getOrderValue());
-      leagueRule.setRule(rule.getRule());
-      league.addRuleForLeague(leagueRule);
+    private void persistAllLeaguesContent(final List<JsonLeague> jsonLeagues) {
+        for (final JsonLeague jsonLeague : jsonLeagues) {
+            final List<Player> allPlayers = playerRepository.findAll();
+
+            final League league = buildLeague(jsonLeague, allPlayers);
+            leagueRepository.save(league);
+        }
     }
 
-    for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
-      final AdditionalMatch additionalMatch =
-          JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players, league);
+    private void persistRefreshTokens(final List<JsonRefreshToken> jsonRefreshTokens) {
+        final List<RefreshToken> refreshTokens = new ArrayList<>();
+        for (final JsonRefreshToken jsonRefreshToken : jsonRefreshTokens) {
+            final Player player = playerRepository.findByUuid(jsonRefreshToken.getPlayerUuid());
+            final RefreshToken refreshToken = new RefreshToken();
+            refreshToken.setToken(jsonRefreshToken.getToken());
+            refreshToken.setPlayer(player);
+            refreshToken.setExpirationDateTime(jsonRefreshToken.getExpirationDateTime());
+            refreshTokens.add(refreshToken);
+        }
 
-      for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
-        final int setNumber = i + 1;
-        final JsonSetResult jsonSetResult = jsonAdditionalMatch.getSets().get(i);
-        final AdditionalSetResult setResult =
-            JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
-        additionalMatch.addSetResult(setResult);
-      }
-
-      // todo: check if working!
-      final int numberOfSets = additionalMatch.getMatchFormatType().getMaxNumberOfSets();
-      while (additionalMatch.getSetResults().size() < numberOfSets) {
-        final int currentSetNumber = additionalMatch.getSetResults().size() + 1;
-        additionalMatch.addSetResult(
-            JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
-      }
-
-      league.addAdditionalMatch(additionalMatch);
+        refreshTokenRepository.saveAll(refreshTokens);
     }
 
-    for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {
-      final Season season = JsonImportUtil.constructSeason(jsonSeason, league);
+    private void persistVerificationTokens(final List<JsonVerificationToken> jsonVerificationTokens) {
+        final List<VerificationToken> verificationTokens = new ArrayList<>();
+        for (final JsonVerificationToken jsonVerificationToken : jsonVerificationTokens) {
+            final Player player = playerRepository.findByUuid(jsonVerificationToken.getPlayerUuid());
+            final VerificationToken verificationToken = new VerificationToken();
+            verificationToken.setToken(jsonVerificationToken.getToken());
+            verificationToken.setPlayer(player);
+            verificationToken.setExpirationDateTime(jsonVerificationToken.getExpirationDateTime());
+            verificationTokens.add(verificationToken);
+        }
 
-      for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
-        final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
-        season.addBonusPoint(bonusPoint);
-      }
+        verificationTokenRepository.saveAll(verificationTokens);
+    }
 
-      for (final JsonLostBall jsonLostBall : jsonSeason.getLostBalls()) {
-        final LostBall lostBall = JsonImportUtil.constructLostBalls(jsonLostBall, players);
-        season.addLostBall(lostBall);
-      }
+    private void persistEmailChangeTokens(final List<JsonEmailChangeToken> emailChangeTokens) {
+        final List<EmailChangeToken> verificationTokens = new ArrayList<>();
+        for (final JsonEmailChangeToken jsonEmailChangeToken : emailChangeTokens) {
+            final Player player = playerRepository.findByUuid(jsonEmailChangeToken.getPlayerUuid());
+            final EmailChangeToken emailChangeToken = new EmailChangeToken();
+            emailChangeToken.setToken(jsonEmailChangeToken.getToken());
+            emailChangeToken.setPlayer(player);
+            emailChangeToken.setNewEmail(jsonEmailChangeToken.getNewEmail());
+            emailChangeToken.setExpirationDateTime(jsonEmailChangeToken.getExpirationDateTime());
+            verificationTokens.add(emailChangeToken);
+        }
 
-      for (final JsonRound jsonRound : jsonSeason.getRounds()) {
-        final Round round = JsonImportUtil.constructRound(jsonRound);
+        emailChangeTokenRepository.saveAll(verificationTokens);
+    }
 
-        for (final JsonRoundGroup jsonRoundGroup : jsonRound.getGroups()) {
-          final RoundGroup roundGroup = JsonImportUtil.constructRoundGroup(jsonRoundGroup);
+    private void createLeagueRoles(final League league) {
+        final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
+        league.addRoleForLeague(playerRole);
+        roleForLeagueRepository.save(playerRole);
 
-          int matchNumber = 1;
-          for (final JsonMatch jsonMatch : jsonRoundGroup.getMatches()) {
-            final Match match = JsonImportUtil.constructMatch(jsonMatch, players, league);
-            match.setNumber(matchNumber++);
+        final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
+        league.addRoleForLeague(moderatorRole);
+        roleForLeagueRepository.save(moderatorRole);
 
-            for (int i = 0; i < jsonMatch.getSets().size(); i++) {
-              final int setNumber = i + 1;
-              final JsonSetResult jsonSetResult = jsonMatch.getSets().get(i);
-              final SetResult setResult =
-                  JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
-              match.addSetResult(setResult);
+        final RoleForLeague ownerRole = new RoleForLeague(LeagueRole.OWNER);
+        league.addRoleForLeague(ownerRole);
+        roleForLeagueRepository.save(ownerRole);
+    }
+
+    private void persistLeagueRoles(final JsonPlayerCredentials simpleCredentials, final Player player) {
+        final List<JsonLeagueRoles> jsonLeagueRoles = simpleCredentials.getLeagueRoles();
+        for (final JsonLeagueRoles jsonLeagueRole : jsonLeagueRoles) {
+            final String leagueName = jsonLeagueRole.getLeague();
+            final String roleAsString = jsonLeagueRole.getRole();
+
+            final League league = leagueRepository.findByName(leagueName);
+            final LeagueRole role = LeagueRole.valueOf(roleAsString);
+
+            final RoleForLeague leagueRole = roleForLeagueRepository.findByLeagueAndLeagueRole(league, role);
+            player.addRole(leagueRole);
+            roleForLeagueRepository.save(leagueRole);
+        }
+    }
+
+    private void persistAuthorities(final JsonPlayerCredentials credentials, final Player player) {
+        final List<JsonAuthorities> jsonAuthorities = credentials.getAuthorities();
+        for (final JsonAuthorities jsonAuthority : jsonAuthorities) {
+            final String authorityAsString = jsonAuthority.getAuthority();
+            final AuthorityType authorityType = AuthorityType.valueOf(authorityAsString);
+            final Authority authority = authorityRepository.findByType(authorityType);
+            player.addAuthority(authority);
+            authorityRepository.save(authority);
+        }
+    }
+
+    @Transactional
+    public League buildLeague(final JsonLeague jsonLeague, final List<Player> players) {
+        final League league = leagueRepository.findByName(jsonLeague.getName());
+
+        for (final JsonLeagueTrophy jsonLeagueTrophy : jsonLeague.getTrophies()) {
+            final TrophyForLeague trophyForLeague = JsonImportUtil.constructLeagueTrophy(jsonLeagueTrophy, players);
+            league.addTrophyForLeague(trophyForLeague);
+        }
+
+        for (final JsonLeagueRule rule : jsonLeague.getRules()) {
+            final LeagueRule leagueRule = new LeagueRule();
+            leagueRule.setUuid(rule.getUuid());
+            leagueRule.setOrderValue(rule.getOrderValue());
+            leagueRule.setRule(rule.getRule());
+            league.addRuleForLeague(leagueRule);
+        }
+
+        for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
+            final AdditionalMatch additionalMatch =
+                    JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players, league);
+
+            for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
+                final int setNumber = i + 1;
+                final JsonSetResult jsonSetResult =
+                        jsonAdditionalMatch.getSets().get(i);
+                final AdditionalSetResult setResult =
+                        JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
+                additionalMatch.addSetResult(setResult);
             }
 
             // todo: check if working!
-            final int numberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
-            while (match.getSetResults().size() < numberOfSets) {
-              final int currentSetNumber = match.getSetResults().size() + 1;
-              match.addSetResult(JsonImportUtil.constructEmptySetResult(currentSetNumber));
+            final int numberOfSets = additionalMatch.getMatchFormatType().getMaxNumberOfSets();
+            while (additionalMatch.getSetResults().size() < numberOfSets) {
+                final int currentSetNumber = additionalMatch.getSetResults().size() + 1;
+                additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
             }
 
-            roundGroup.addMatch(match);
-          }
-          round.addRoundGroup(roundGroup);
+            league.addAdditionalMatch(additionalMatch);
         }
-        JsonImportUtil.setSplitForRound(round);
-        season.addRound(round);
-      }
-      league.addSeason(season);
+
+        for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {
+            final Season season = JsonImportUtil.constructSeason(jsonSeason, league);
+
+            for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
+                final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
+                season.addBonusPoint(bonusPoint);
+            }
+
+            for (final JsonLostBall jsonLostBall : jsonSeason.getLostBalls()) {
+                final LostBall lostBall = JsonImportUtil.constructLostBalls(jsonLostBall, players);
+                season.addLostBall(lostBall);
+            }
+
+            for (final JsonRound jsonRound : jsonSeason.getRounds()) {
+                final Round round = JsonImportUtil.constructRound(jsonRound);
+
+                for (final JsonRoundGroup jsonRoundGroup : jsonRound.getGroups()) {
+                    final RoundGroup roundGroup = JsonImportUtil.constructRoundGroup(jsonRoundGroup);
+
+                    int matchNumber = 1;
+                    for (final JsonMatch jsonMatch : jsonRoundGroup.getMatches()) {
+                        final Match match = JsonImportUtil.constructMatch(jsonMatch, players, league);
+                        match.setNumber(matchNumber++);
+
+                        for (int i = 0; i < jsonMatch.getSets().size(); i++) {
+                            final int setNumber = i + 1;
+                            final JsonSetResult jsonSetResult =
+                                    jsonMatch.getSets().get(i);
+                            final SetResult setResult = JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
+                            match.addSetResult(setResult);
+                        }
+
+                        // todo: check if working!
+                        final int numberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
+                        while (match.getSetResults().size() < numberOfSets) {
+                            final int currentSetNumber = match.getSetResults().size() + 1;
+                            match.addSetResult(JsonImportUtil.constructEmptySetResult(currentSetNumber));
+                        }
+
+                        roundGroup.addMatch(match);
+                    }
+                    round.addRoundGroup(roundGroup);
+                }
+                JsonImportUtil.setSplitForRound(round);
+                season.addRound(round);
+            }
+            league.addSeason(season);
+        }
+        return league;
     }
-    return league;
-  }
 }

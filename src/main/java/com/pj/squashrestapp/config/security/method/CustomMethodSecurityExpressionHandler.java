@@ -19,29 +19,28 @@ import org.springframework.security.core.Authentication;
  */
 public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurityExpressionHandler {
 
-  private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
-  private ApplicationContext applicationContext;
+    private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
+    private ApplicationContext applicationContext;
 
-  @Override
-  protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
-      final Authentication authentication, final MethodInvocation invocation) {
-    final CustomMethodSecurityExpressionRoot root =
-        new CustomMethodSecurityExpressionRoot(authentication);
-    root.setThis(invocation.getThis());
-    root.setPermissionEvaluator(getPermissionEvaluator());
-    root.setTrustResolver(this.trustResolver);
-    root.setRoleHierarchy(getRoleHierarchy());
-    root.setMatchRepository(applicationContext.getBean(MatchRepository.class));
-    root.setRoundRepository(applicationContext.getBean(RoundRepository.class));
-    root.setSeasonRepository(applicationContext.getBean(SeasonRepository.class));
-    root.setBonusPointRepository(applicationContext.getBean(BonusPointRepository.class));
-    root.setAdditionalMatchRepository(applicationContext.getBean(AdditionalMatchRepository.class));
-    return root;
-  }
+    @Override
+    protected MethodSecurityExpressionOperations createSecurityExpressionRoot(
+            final Authentication authentication, final MethodInvocation invocation) {
+        final CustomMethodSecurityExpressionRoot root = new CustomMethodSecurityExpressionRoot(authentication);
+        root.setThis(invocation.getThis());
+        root.setPermissionEvaluator(getPermissionEvaluator());
+        root.setTrustResolver(this.trustResolver);
+        root.setRoleHierarchy(getRoleHierarchy());
+        root.setMatchRepository(applicationContext.getBean(MatchRepository.class));
+        root.setRoundRepository(applicationContext.getBean(RoundRepository.class));
+        root.setSeasonRepository(applicationContext.getBean(SeasonRepository.class));
+        root.setBonusPointRepository(applicationContext.getBean(BonusPointRepository.class));
+        root.setAdditionalMatchRepository(applicationContext.getBean(AdditionalMatchRepository.class));
+        return root;
+    }
 
-  @Override
-  public void setApplicationContext(final ApplicationContext applicationContext) {
-    super.setApplicationContext(applicationContext);
-    this.applicationContext = applicationContext;
-  }
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) {
+        super.setApplicationContext(applicationContext);
+        this.applicationContext = applicationContext;
+    }
 }

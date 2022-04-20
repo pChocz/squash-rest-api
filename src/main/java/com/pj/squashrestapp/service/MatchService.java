@@ -21,9 +21,6 @@ import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,178 +29,168 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 /** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class MatchService {
 
-  private final RoundRepository roundRepository;
-  private final MatchRepository matchRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
-  private final SetResultRepository setResultRepository;
-  private final SeasonRepository seasonRepository;
-  private final RedisCacheService redisCacheService;
+    private final RoundRepository roundRepository;
+    private final MatchRepository matchRepository;
+    private final AdditionalMatchRepository additionalMatchRepository;
+    private final SetResultRepository setResultRepository;
+    private final SeasonRepository seasonRepository;
+    private final RedisCacheService redisCacheService;
 
-  public MatchSimpleDto modifySingleScore(
-      final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
-    final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
-    final Round round = matchToModify.getRoundGroup().getRound();
-    final UUID roundUuid = round.getUuid();
-    final UUID leagueUuid = round.getSeason().getLeague().getUuid();
+    public MatchSimpleDto modifySingleScore(
+            final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
+        final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
+        final Round round = matchToModify.getRoundGroup().getRound();
+        final UUID roundUuid = round.getUuid();
+        final UUID leagueUuid = round.getSeason().getLeague().getUuid();
 
-    final UserDetailsImpl currentUser = GeneralUtil.extractSessionUser();
-    final UUID playerUuid = currentUser.getUuid();
+        final UserDetailsImpl currentUser = GeneralUtil.extractSessionUser();
+        final UUID playerUuid = currentUser.getUuid();
 
-    if (currentUser.isAdmin()
-        || currentUser.hasRoleForLeague(leagueUuid, LeagueRole.MODERATOR)) {
-      // full modify access for admins and league moderators
+        if (currentUser.isAdmin() || currentUser.hasRoleForLeague(leagueUuid, LeagueRole.MODERATOR)) {
+            // full modify access for admins and league moderators
 
-    } else if (roundRepository.checkIfPlayerOfRound(roundUuid, playerUuid)) {
-      // limited modify access for current round players - only if in progress
+        } else if (roundRepository.checkIfPlayerOfRound(roundUuid, playerUuid)) {
+            // limited modify access for current round players - only if in progress
 
-      if (isMatchInProgress(matchToModify)) {
-        // allow if match is in progress
+            if (isMatchInProgress(matchToModify)) {
+                // allow if match is in progress
 
-      } else {
-        log.error("No authorization to modify match that is finished\n{}", matchToModify);
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_IS_FINISHED);
-      }
+            } else {
+                log.error("No authorization to modify match that is finished\n{}", matchToModify);
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_IS_FINISHED);
+            }
 
-    } else {
-      log.error("No authorization to modify match in this round\n{}", matchToModify);
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_NOT_ALLOWED);
-    }
-
-    final String initialMatchResult = matchToModify.toString();
-
-    final SetResult setToModify =
-        matchToModify.getSetResults().stream()
-            .filter(set -> set.getNumber() == setNumber)
-            .findFirst()
-            .orElse(null);
-
-    if (looserScore == -1) {
-      setToModify.setFirstPlayerScore(null);
-      setToModify.setSecondPlayerScore(null);
-
-    } else {
-
-      final Integer winnerScore;
-      try {
-        if (setIsTiebreak(matchToModify, setNumber)) {
-          winnerScore =
-              SetScoreHelper.computeWinnerScore(
-                  looserScore,
-                  matchToModify.getTiebreakWinningPoints(),
-                  matchToModify.getTiebreakWinningType());
         } else {
-          winnerScore =
-              SetScoreHelper.computeWinnerScore(
-                  looserScore,
-                  matchToModify.getRegularSetWinningPoints(),
-                  matchToModify.getRegularSetWinningType());
+            log.error("No authorization to modify match in this round\n{}", matchToModify);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_NOT_ALLOWED);
         }
-      } catch (final WrongResultException ex) {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_MATCH_RESULT);
-      }
 
+        final String initialMatchResult = matchToModify.toString();
 
-      if (player.equals("FIRST")) {
-        setToModify.setFirstPlayerScore(looserScore);
-        setToModify.setSecondPlayerScore(winnerScore);
+        final SetResult setToModify = matchToModify.getSetResults().stream()
+                .filter(set -> set.getNumber() == setNumber)
+                .findFirst()
+                .orElse(null);
 
-      } else if (player.equals("SECOND")) {
-        setToModify.setFirstPlayerScore(winnerScore);
-        setToModify.setSecondPlayerScore(looserScore);
-      }
+        if (looserScore == -1) {
+            setToModify.setFirstPlayerScore(null);
+            setToModify.setSecondPlayerScore(null);
+
+        } else {
+
+            final Integer winnerScore;
+            try {
+                if (setIsTiebreak(matchToModify, setNumber)) {
+                    winnerScore = SetScoreHelper.computeWinnerScore(
+                            looserScore,
+                            matchToModify.getTiebreakWinningPoints(),
+                            matchToModify.getTiebreakWinningType());
+                } else {
+                    winnerScore = SetScoreHelper.computeWinnerScore(
+                            looserScore,
+                            matchToModify.getRegularSetWinningPoints(),
+                            matchToModify.getRegularSetWinningType());
+                }
+            } catch (final WrongResultException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_MATCH_RESULT);
+            }
+
+            if (player.equals("FIRST")) {
+                setToModify.setFirstPlayerScore(looserScore);
+                setToModify.setSecondPlayerScore(winnerScore);
+
+            } else if (player.equals("SECOND")) {
+                setToModify.setFirstPlayerScore(winnerScore);
+                setToModify.setSecondPlayerScore(looserScore);
+            }
+        }
+
+        setResultRepository.save(setToModify);
+
+        redisCacheService.evictCacheForRoundMatch(matchToModify);
+
+        log.info(
+                "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
+                initialMatchResult,
+                matchToModify);
+
+        return new MatchSimpleDto(matchToModify);
     }
 
-    setResultRepository.save(setToModify);
-
-    redisCacheService.evictCacheForRoundMatch(matchToModify);
-
-    log.info(
-        "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
-        initialMatchResult,
-        matchToModify);
-
-    return new MatchSimpleDto(matchToModify);
-  }
-
-  private boolean isMatchInProgress(final Match matchToModify) {
-      final MatchStatus matchStatus = new MatchSimpleDto(matchToModify).getStatus();
-      return matchStatus != MatchStatus.FINISHED;
-  }
-
-  private boolean setIsTiebreak(final Match match, final int setNumber) {
-    return setNumber == match.getMatchFormatType().getMaxNumberOfSets();
-  }
-
-  private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
-    if (setNumber < 3) {
-      return computeWinnerScoreForRegularSet(looserScore);
-    } else {
-      return 9;
+    private boolean isMatchInProgress(final Match matchToModify) {
+        final MatchStatus matchStatus = new MatchSimpleDto(matchToModify).getStatus();
+        return matchStatus != MatchStatus.FINISHED;
     }
-  }
 
-  private Integer computeWinnerScoreForRegularSet(final Integer looserScore) {
-    if (looserScore < 10) {
-      return 11;
-    } else {
-      return 12;
+    private boolean setIsTiebreak(final Match match, final int setNumber) {
+        return setNumber == match.getMatchFormatType().getMaxNumberOfSets();
     }
-  }
 
-  public MatchesSimplePaginated getRoundMatchesPaginated(
-      final Pageable pageable,
-      final UUID leagueUuid,
-      final UUID[] playersUuids,
-      final UUID seasonUuid,
-      final Integer groupNumber) {
+    private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
+        if (setNumber < 3) {
+            return computeWinnerScoreForRegularSet(looserScore);
+        } else {
+            return 9;
+        }
+    }
 
-    final Page<Long> roundMatchesIds =
-        (playersUuids.length == 1)
-            ? matchRepository.findIdsSingle(
-                pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber)
-            : matchRepository.findIdsMultiple(
-                pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+    private Integer computeWinnerScoreForRegularSet(final Integer looserScore) {
+        if (looserScore < 10) {
+            return 11;
+        } else {
+            return 12;
+        }
+    }
 
-    final List<Match> roundMatches = matchRepository.findByIdIn(roundMatchesIds.getContent());
+    public MatchesSimplePaginated getRoundMatchesPaginated(
+            final Pageable pageable,
+            final UUID leagueUuid,
+            final UUID[] playersUuids,
+            final UUID seasonUuid,
+            final Integer groupNumber) {
 
-    final List<MatchDto> roundMatchesDtos =
-        roundMatches.stream().map(MatchDetailedDto::new).collect(Collectors.toList());
+        final Page<Long> roundMatchesIds = (playersUuids.length == 1)
+                ? matchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber)
+                : matchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
 
-    final MatchesSimplePaginated matchesDtoPage =
-        new MatchesSimplePaginated(roundMatchesIds, roundMatchesDtos);
-    return matchesDtoPage;
-  }
+        final List<Match> roundMatches = matchRepository.findByIdIn(roundMatchesIds.getContent());
 
-  public MatchesSimplePaginated getAdditionalMatchesPaginated(
-      final Pageable pageable,
-      final UUID leagueUuid,
-      final UUID[] playersUuids,
-      final UUID seasonUuid) {
+        final List<MatchDto> roundMatchesDtos =
+                roundMatches.stream().map(MatchDetailedDto::new).collect(Collectors.toList());
 
-    final Integer seasonNumber =
-        seasonUuid == null ? null : seasonRepository.findByUuid(seasonUuid).get().getNumber();
+        final MatchesSimplePaginated matchesDtoPage = new MatchesSimplePaginated(roundMatchesIds, roundMatchesDtos);
+        return matchesDtoPage;
+    }
 
-    final Page<Long> additionalMatchesIds =
-        (playersUuids.length == 1)
-            ? additionalMatchRepository.findIdsSingle(
-                pageable, leagueUuid, playersUuids[0], seasonNumber)
-            : additionalMatchRepository.findIdsMultiple(
-                pageable, leagueUuid, playersUuids, seasonNumber);
+    public MatchesSimplePaginated getAdditionalMatchesPaginated(
+            final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids, final UUID seasonUuid) {
 
-    final List<AdditionalMatch> additionalMatches =
-        additionalMatchRepository.findByIdIn(additionalMatchesIds.getContent());
+        final Integer seasonNumber = seasonUuid == null
+                ? null
+                : seasonRepository.findByUuid(seasonUuid).get().getNumber();
 
-    final List<MatchDto> additionalMatchesDtos =
-        additionalMatches.stream().map(AdditionalMatchSimpleDto::new).collect(Collectors.toList());
+        final Page<Long> additionalMatchesIds = (playersUuids.length == 1)
+                ? additionalMatchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonNumber)
+                : additionalMatchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonNumber);
 
-    final MatchesSimplePaginated matchesDtoPage =
-        new MatchesSimplePaginated(additionalMatchesIds, additionalMatchesDtos);
-    return matchesDtoPage;
-  }
+        final List<AdditionalMatch> additionalMatches =
+                additionalMatchRepository.findByIdIn(additionalMatchesIds.getContent());
+
+        final List<MatchDto> additionalMatchesDtos =
+                additionalMatches.stream().map(AdditionalMatchSimpleDto::new).collect(Collectors.toList());
+
+        final MatchesSimplePaginated matchesDtoPage =
+                new MatchesSimplePaginated(additionalMatchesIds, additionalMatchesDtos);
+        return matchesDtoPage;
+    }
 }

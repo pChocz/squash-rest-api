@@ -1,17 +1,18 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.pj.squashrestapp.dto.Trophy;
-import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 public class JsonLeagueTrophy {
 
-  private int seasonNumber;
+    private int seasonNumber;
 
-  private UUID playerUuid;
+    private UUID playerUuid;
 
-  private Trophy trophy;
+    private Trophy trophy;
 }

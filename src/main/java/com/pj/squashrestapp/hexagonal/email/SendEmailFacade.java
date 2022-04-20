@@ -3,10 +3,11 @@ package com.pj.squashrestapp.hexagonal.email;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import java.util.Locale;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.Locale;
 
 /** */
 @Slf4j
@@ -14,74 +15,61 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class SendEmailFacade {
 
-  private final AccountActivationEmailService accountActivationEmailService;
-  private final PasswordResetEmailService passwordResetEmailService;
-  private final EmailChangeEmailService emailChangeEmailService;
-  private final MagicLoginLinkEmailService magicLoginLinkEmailService;
-  private final PlainEmailService plainEmailService;
-  private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
+    private final AccountActivationEmailService accountActivationEmailService;
+    private final PasswordResetEmailService passwordResetEmailService;
+    private final EmailChangeEmailService emailChangeEmailService;
+    private final MagicLoginLinkEmailService magicLoginLinkEmailService;
+    private final PlainEmailService plainEmailService;
+    private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
 
-  private final PlayerRepository playerRepository;
+    private final PlayerRepository playerRepository;
 
+    public void sendAccountActivationEmail(
+            final String receiverEmail, final String receiverName, final Locale locale, final String activationLink) {
 
-  public void sendAccountActivationEmail(
-      final String receiverEmail,
-      final String receiverName,
-      final Locale locale,
-      final String activationLink) {
+        accountActivationEmailService.sendEmail(receiverEmail, receiverName, locale, activationLink);
+    }
 
-    accountActivationEmailService.sendEmail(
-        receiverEmail, receiverName, locale, activationLink);
-  }
+    public void sendPasswordResetEmail(
+            final String receiverEmail,
+            final String receiverName,
+            final Locale locale,
+            final String passwordResetLink) {
 
-  public void sendPasswordResetEmail(
-      final String receiverEmail,
-      final String receiverName,
-      final Locale locale,
-      final String passwordResetLink) {
+        passwordResetEmailService.sendEmail(receiverEmail, receiverName, locale, passwordResetLink);
+    }
 
-    passwordResetEmailService.sendEmail(
-        receiverEmail, receiverName, locale, passwordResetLink);
-  }
+    public void sendEmailChangeEmail(
+            final String receiverEmail, final String receiverName, final Locale locale, final String emailChangeLink) {
 
-  public void sendEmailChangeEmail(
-      final String receiverEmail,
-      final String receiverName,
-      final Locale locale,
-      final String emailChangeLink) {
+        emailChangeEmailService.sendEmail(receiverEmail, receiverName, locale, emailChangeLink);
+    }
 
-    emailChangeEmailService.sendEmail(
-        receiverEmail, receiverName, locale, emailChangeLink);
-  }
+    public void sendMagicLoginLinkEmail(
+            final String receiverEmail,
+            final String receiverName,
+            final Locale locale,
+            final String passwordResetLink) {
 
-  public void sendMagicLoginLinkEmail(
-      final String receiverEmail,
-      final String receiverName,
-      final Locale locale,
-      final String passwordResetLink) {
+        magicLoginLinkEmailService.sendEmail(receiverEmail, receiverName, locale, passwordResetLink);
+    }
 
-    magicLoginLinkEmailService.sendEmail(
-        receiverEmail, receiverName, locale, passwordResetLink);
-  }
+    public void sendPlainEmail(
+            final String receiverEmail,
+            final String receiverName,
+            final Locale locale,
+            final String subject,
+            final String preheader,
+            final String... contentLines) {
 
-  public void sendPlainEmail(
-      final String receiverEmail,
-      final String receiverName,
-      final Locale locale,
-      final String subject,
-      final String preheader,
-      final String... contentLines) {
+        plainEmailService.sendEmail(receiverEmail, receiverName, locale, subject, preheader, contentLines);
+    }
 
-    plainEmailService.sendEmail(
-        receiverEmail, receiverName, locale, subject, preheader, contentLines);
-  }
+    public void sendRecruiterLoggedInEmail() {
+        recruiterLoggedInEmailService.sendEmail();
+    }
 
-  public void sendRecruiterLoggedInEmail() {
-    recruiterLoggedInEmailService.sendEmail();
-  }
-
-  private boolean isModeratorOfLeague(final Player player) {
-    return player.getRoles().stream()
-        .anyMatch(role -> role.getLeagueRole() == LeagueRole.MODERATOR);
-  }
+    private boolean isModeratorOfLeague(final Player player) {
+        return player.getRoles().stream().anyMatch(role -> role.getLeagueRole() == LeagueRole.MODERATOR);
+    }
 }

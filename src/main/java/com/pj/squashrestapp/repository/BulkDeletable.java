@@ -4,6 +4,5 @@ import java.util.List;
 
 public interface BulkDeletable {
 
-  void deleteAllByIdIn(List<Long> ids);
-
+    void deleteAllByIdIn(List<Long> ids);
 }

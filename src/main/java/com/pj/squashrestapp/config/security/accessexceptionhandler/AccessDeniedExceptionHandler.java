@@ -1,49 +1,47 @@
 package com.pj.squashrestapp.config.security.accessexceptionhandler;
 
-import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
-
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.time.LocalDateTime;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import net.minidev.json.JSONObject;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+
+import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
+
 /** */
 public class AccessDeniedExceptionHandler {
 
-  public AccessDeniedExceptionHandler(
-      final HttpServletRequest request,
-      final HttpServletResponse response,
-      final AccessDeniedException e)
-      throws IOException {
+    public AccessDeniedExceptionHandler(
+            final HttpServletRequest request, final HttpServletResponse response, final AccessDeniedException e)
+            throws IOException {
 
-    final UsernamePasswordAuthenticationToken token =
-        (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
-    final String username = token.getName();
-    final String[] authorities = extractAuthoritiesFromToken(token);
+        final UsernamePasswordAuthenticationToken token =
+                (UsernamePasswordAuthenticationToken) request.getUserPrincipal();
+        final String username = token.getName();
+        final String[] authorities = extractAuthoritiesFromToken(token);
 
-    response.setContentType("application/json;charset=UTF-8");
-    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 
-    try (final PrintWriter writer = response.getWriter()) {
-      writer.write(
-          new JSONObject()
-              .appendField("status", HttpServletResponse.SC_FORBIDDEN)
-              .appendField("user", username)
-              .appendField("authorities", authorities)
-              .appendField("timestamp", LocalDateTime.now(UTC_ZONE_ID).toString())
-              .appendField("message", "FORBIDDEN")
-              .toString());
+        try (final PrintWriter writer = response.getWriter()) {
+            writer.write(new JSONObject()
+                    .appendField("status", HttpServletResponse.SC_FORBIDDEN)
+                    .appendField("user", username)
+                    .appendField("authorities", authorities)
+                    .appendField("timestamp", LocalDateTime.now(UTC_ZONE_ID).toString())
+                    .appendField("message", "FORBIDDEN")
+                    .toString());
+        }
     }
-  }
 
-  private String[] extractAuthoritiesFromToken(final UsernamePasswordAuthenticationToken token) {
-    return token.getAuthorities().stream()
-        .map(GrantedAuthority::getAuthority)
-        .toArray(String[]::new);
-  }
+    private String[] extractAuthoritiesFromToken(final UsernamePasswordAuthenticationToken token) {
+        return token.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .toArray(String[]::new);
+    }
 }

@@ -7,26 +7,24 @@ import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class GsonLocalDateTime
-    implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
+public class GsonLocalDateTime implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
 
-  @Override
-  public LocalDateTime deserialize(
-      JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
-      throws JsonParseException {
-    String ldtString = jsonElement.getAsString();
-    return LocalDateTime.parse(
-        ldtString, DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT));
-  }
+    @Override
+    public LocalDateTime deserialize(
+            JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
+            throws JsonParseException {
+        String ldtString = jsonElement.getAsString();
+        return LocalDateTime.parse(ldtString, DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT));
+    }
 
-  @Override
-  public JsonElement serialize(
-      LocalDateTime localDateTime, Type type, JsonSerializationContext jsonSerializationContext) {
-    return new JsonPrimitive(
-        localDateTime.format(DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT)));
-  }
+    @Override
+    public JsonElement serialize(
+            LocalDateTime localDateTime, Type type, JsonSerializationContext jsonSerializationContext) {
+        return new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT)));
+    }
 }

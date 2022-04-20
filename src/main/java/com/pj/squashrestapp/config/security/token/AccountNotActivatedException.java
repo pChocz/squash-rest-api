@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class AccountNotActivatedException extends AuthenticationException {
 
-  public AccountNotActivatedException(final String message) {
-    super(message);
-    log.warn(message);
-  }
+    public AccountNotActivatedException(final String message) {
+        super(message);
+        log.warn(message);
+    }
 }

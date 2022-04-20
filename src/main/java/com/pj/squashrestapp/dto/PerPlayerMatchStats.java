@@ -8,6 +8,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class PerPlayerMatchStats {
 
-  private final long matches;
-  private final PlayerDto player;
+    private final long matches;
+    private final PlayerDto player;
 }

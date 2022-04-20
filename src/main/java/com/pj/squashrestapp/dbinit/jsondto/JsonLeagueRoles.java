@@ -7,6 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JsonLeagueRoles {
 
-  private String league;
-  private String role;
+    private String league;
+    private String role;
 }

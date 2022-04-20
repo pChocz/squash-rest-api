@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
+    // not used
+    private final boolean accountNonExpired = true;
+    private final boolean credentialsNonExpired = true;
     private String username;
     private String password;
     private Set<GrantedAuthority> authorities;
@@ -31,10 +34,6 @@ public class UserDetailsImpl implements UserDetails {
     private UUID uuid;
     private UUID passwordSessionUuid;
     private boolean accountNonLocked;
-
-    // not used
-    private final boolean accountNonExpired = true;
-    private final boolean credentialsNonExpired = true;
 
     public UserDetailsImpl(final String username, final Collection<GrantedAuthority> authorities) {
         this.username = username;

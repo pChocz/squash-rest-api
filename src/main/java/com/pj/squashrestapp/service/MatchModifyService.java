@@ -11,11 +11,12 @@ import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 /** Common service for modifications of both additional and round matches. */
 @Slf4j
@@ -23,119 +24,107 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MatchModifyService {
 
-  private final MatchRepository matchRepository;
-  private final SetResultRepository setResultRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
-  private final AdditionalSetResultRepository additonalSetResultRepository;
+    private final MatchRepository matchRepository;
+    private final SetResultRepository setResultRepository;
+    private final AdditionalMatchRepository additionalMatchRepository;
+    private final AdditionalSetResultRepository additonalSetResultRepository;
 
-  public void modifySingleScoreForAdditionalMatch(
-      final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
+    public void modifySingleScoreForAdditionalMatch(
+            final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
 
-    final AdditionalMatch match = additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
-    final League league = match.getLeague();
-    final AdditionalSetResult setToModify =
-        match.getSetResults().stream()
-            .filter(set -> set.getNumber() == setNumber)
-            .findFirst()
-            .orElse(null);
-    final int numberOfSets = match.getNumberOfSets();
-    final boolean isTiebreak = numberOfSets == setNumber;
+        final AdditionalMatch match =
+                additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
+        final League league = match.getLeague();
+        final AdditionalSetResult setToModify = match.getSetResults().stream()
+                .filter(set -> set.getNumber() == setNumber)
+                .findFirst()
+                .orElse(null);
+        final int numberOfSets = match.getNumberOfSets();
+        final boolean isTiebreak = numberOfSets == setNumber;
 
-    final String initialMatchResult = match.toString();
+        final String initialMatchResult = match.toString();
 
-    if (looserScore == -1) {
-      setToModify.setFirstPlayerScore(null);
-      setToModify.setSecondPlayerScore(null);
+        if (looserScore == -1) {
+            setToModify.setFirstPlayerScore(null);
+            setToModify.setSecondPlayerScore(null);
+        }
+
+        final Pair<Integer, Integer> scores = buildScores(looserScore, player, isTiebreak, league);
+        setToModify.setFirstPlayerScore(scores.getFirst());
+        setToModify.setSecondPlayerScore(scores.getSecond());
+
+        additonalSetResultRepository.save(setToModify);
+
+        log.info(
+                "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
     }
 
-    final Pair<Integer, Integer> scores = buildScores(looserScore, player, isTiebreak, league);
-    setToModify.setFirstPlayerScore(scores.getFirst());
-    setToModify.setSecondPlayerScore(scores.getSecond());
+    private Pair<Integer, Integer> buildScores(
+            final Integer looserScore, final String player, final boolean isTiebreak, final League league) {
 
-    additonalSetResultRepository.save(setToModify);
+        final Integer firstPlayerScore;
+        final Integer secondPlayerScore;
 
-    log.info(
-        "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
-        initialMatchResult,
-        match);
-  }
+        if (looserScore == -1) {
+            firstPlayerScore = null;
+            secondPlayerScore = null;
 
-  private Pair<Integer, Integer> buildScores(
-      final Integer looserScore,
-      final String player,
-      final boolean isTiebreak,
-      final League league) {
+        } else {
+            final Integer winnerScore = computeWinnerScoreForLeague(looserScore, isTiebreak, league);
+            firstPlayerScore = player.equals("FIRST") ? looserScore : winnerScore;
+            secondPlayerScore = player.equals("FIRST") ? winnerScore : looserScore;
+        }
 
-    final Integer firstPlayerScore;
-    final Integer secondPlayerScore;
-
-    if (looserScore == -1) {
-      firstPlayerScore = null;
-      secondPlayerScore = null;
-
-    } else {
-      final Integer winnerScore = computeWinnerScoreForLeague(looserScore, isTiebreak, league);
-      firstPlayerScore = player.equals("FIRST") ? looserScore : winnerScore;
-      secondPlayerScore = player.equals("FIRST") ? winnerScore : looserScore;
+        return Pair.of(firstPlayerScore, secondPlayerScore);
     }
 
-    return Pair.of(firstPlayerScore, secondPlayerScore);
-  }
+    public void modifySingleScoreForRoundMatch(
+            final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
 
-  public void modifySingleScoreForRoundMatch(
-      final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
+        final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
+        final String initialMatchResult = match.toString();
+        final SetResult setToModify = match.getSetResults().stream()
+                .filter(set -> set.getNumber() == setNumber)
+                .findFirst()
+                .orElse(null);
 
-    final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
-    final String initialMatchResult = match.toString();
-    final SetResult setToModify =
-        match.getSetResults().stream()
-            .filter(set -> set.getNumber() == setNumber)
-            .findFirst()
-            .orElse(null);
+        final Integer firstPlayerScore;
+        final Integer secondPlayerScore;
+        if (looserScore == -1) {
+            firstPlayerScore = null;
+            secondPlayerScore = null;
 
-    final Integer firstPlayerScore;
-    final Integer secondPlayerScore;
-    if (looserScore == -1) {
-      firstPlayerScore = null;
-      secondPlayerScore = null;
+        } else {
+            final League league = match.getRoundGroup().getRound().getSeason().getLeague();
+            final int numberOfSets = match.getNumberOfSets();
+            final boolean isTiebreak = numberOfSets == setNumber;
+            final Integer winnerScore = computeWinnerScoreForLeague(looserScore, isTiebreak, league);
+            firstPlayerScore = player.equals("FIRST") ? looserScore : winnerScore;
+            secondPlayerScore = player.equals("FIRST") ? winnerScore : looserScore;
+        }
 
-    } else {
-      final League league = match.getRoundGroup().getRound().getSeason().getLeague();
-      final int numberOfSets = match.getNumberOfSets();
-      final boolean isTiebreak = numberOfSets == setNumber;
-      final Integer winnerScore = computeWinnerScoreForLeague(looserScore, isTiebreak, league);
-      firstPlayerScore = player.equals("FIRST") ? looserScore : winnerScore;
-      secondPlayerScore = player.equals("FIRST") ? winnerScore : looserScore;
+        setToModify.setFirstPlayerScore(firstPlayerScore);
+        setToModify.setSecondPlayerScore(secondPlayerScore);
+        setResultRepository.save(setToModify);
+
+        log.info("Succesfully updated round match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
     }
 
-    setToModify.setFirstPlayerScore(firstPlayerScore);
-    setToModify.setSecondPlayerScore(secondPlayerScore);
-    setResultRepository.save(setToModify);
+    private Integer computeWinnerScoreForLeague(
+            final Integer looserScore, final boolean isTiebreak, final League league) {
 
-    log.info(
-        "Succesfully updated round match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
-        initialMatchResult,
-        match);
-  }
+        //    final int setWinningPoints =
+        //        isTiebreak ? league.getTiebreakWinningPoints() : league.getRegularSetWinningPoints();
+        //    final SetWinningType setWinningType =
+        //        isTiebreak ? league.getTiebreakWinningType() : league.getRegularSetWinningType();
 
-  private Integer computeWinnerScoreForLeague(
-      final Integer looserScore, final boolean isTiebreak, final League league) {
+        final int setWinningPoints = isTiebreak ? 9 : 11;
 
-    //    final int setWinningPoints =
-    //        isTiebreak ? league.getTiebreakWinningPoints() : league.getRegularSetWinningPoints();
-    //    final SetWinningType setWinningType =
-    //        isTiebreak ? league.getTiebreakWinningType() : league.getRegularSetWinningType();
+        final SetWinningType setWinningType =
+                isTiebreak ? SetWinningType.WINNING_POINTS_ABSOLUTE : SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
 
-    final int setWinningPoints = isTiebreak ? 9 : 11;
+        final Integer winnerScore = SetScoreHelper.computeWinnerScore(looserScore, setWinningPoints, setWinningType);
 
-    final SetWinningType setWinningType =
-        isTiebreak
-            ? SetWinningType.WINNING_POINTS_ABSOLUTE
-            : SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
-
-    final Integer winnerScore =
-        SetScoreHelper.computeWinnerScore(looserScore, setWinningPoints, setWinningType);
-
-    return winnerScore;
-  }
+        return winnerScore;
+    }
 }

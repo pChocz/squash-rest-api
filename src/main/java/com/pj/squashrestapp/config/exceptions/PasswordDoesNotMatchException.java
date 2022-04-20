@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PasswordDoesNotMatchException extends RuntimeException {
 
-  public PasswordDoesNotMatchException(final String message) {
-    super(message);
-    log.error(message);
-  }
+    public PasswordDoesNotMatchException(final String message) {
+        super(message);
+        log.error(message);
+    }
 }

@@ -4,48 +4,49 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.UUID;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 public class JsonLeague {
 
-  private String name;
+    private String name;
 
-  private String time;
+    private String time;
 
-  private String location;
+    private String location;
 
-  @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
-  private LocalDateTime dateOfCreation;
+    @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+    private LocalDateTime dateOfCreation;
 
-  private String logoBase64;
+    private String logoBase64;
 
-  private UUID uuid;
+    private UUID uuid;
 
-  private MatchFormatType matchFormatType;
+    private MatchFormatType matchFormatType;
 
-  private SetWinningType regularSetWinningType;
+    private SetWinningType regularSetWinningType;
 
-  private SetWinningType tiebreakWinningType;
+    private SetWinningType tiebreakWinningType;
 
-  private int regularSetWinningPoints;
+    private int regularSetWinningPoints;
 
-  private int tiebreakWinningPoints;
+    private int tiebreakWinningPoints;
 
-  private int numberOfRoundsPerSeason;
+    private int numberOfRoundsPerSeason;
 
-  private int roundsToBeDeducted;
+    private int roundsToBeDeducted;
 
-  private ArrayList<JsonSeason> seasons;
+    private ArrayList<JsonSeason> seasons;
 
-  private ArrayList<JsonLeagueTrophy> trophies;
+    private ArrayList<JsonLeagueTrophy> trophies;
 
-  private ArrayList<JsonLeagueRule> rules;
+    private ArrayList<JsonLeagueRule> rules;
 
-  private ArrayList<JsonAdditionalMatch> additionalMatches;
+    private ArrayList<JsonAdditionalMatch> additionalMatches;
 }

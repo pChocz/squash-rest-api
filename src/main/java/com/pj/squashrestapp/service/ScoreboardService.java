@@ -57,7 +57,8 @@ public class ScoreboardService {
                 lostBallService.extractLostBallsAggregatedForLeague(leagueUuid);
 
         final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-        final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+        final League leagueReconstructed =
+                EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
 
         if (leagueReconstructed == null) {
             return new ArrayList<>();
@@ -76,7 +77,11 @@ public class ScoreboardService {
 
             final SeasonScoreboardDto scoreboardDto = new SeasonScoreboardDto(season);
             SeasonScoreboardDto seasonScoreboardDto = seasonService.buildSeasonScoreboardDto(
-                    scoreboardDto, season, xpPointsPerSplit, bonusPointsAggregatedForSeason, lostBallsAggregatedForSeason);
+                    scoreboardDto,
+                    season,
+                    xpPointsPerSplit,
+                    bonusPointsAggregatedForSeason,
+                    lostBallsAggregatedForSeason);
             seasonScoreboardDtoList.add(seasonScoreboardDto);
         }
 
@@ -87,7 +92,8 @@ public class ScoreboardService {
     public List<RoundScoreboard> allRoundsScoreboards(final UUID leagueUuid) {
         final League leagueRaw = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-        final League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+        final League leagueReconstructed =
+                EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
 
         if (leagueReconstructed == null) {
             return new ArrayList<>();

@@ -1,15 +1,13 @@
 package com.pj.squashrestapp.mongologs;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.pj.squashrestapp.util.GeneralUtil;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
+import java.util.List;
 
 @NoArgsConstructor
 @Setter
@@ -17,21 +15,20 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class LogsStats {
 
-  private long timeTook;
+    private long timeTook;
 
-  private Long count;
+    private Long count;
 
-  private List<String> usernames;
-  private List<String> logTypes;
-  private List<String> classNames;
+    private List<String> usernames;
+    private List<String> logTypes;
+    private List<String> classNames;
 
-  private Date minDateTime;
-  private Date maxDateTime;
+    private Date minDateTime;
+    private Date maxDateTime;
 
-  private Long minDuration;
-  private Long maxDuration;
+    private Long minDuration;
+    private Long maxDuration;
 
-  private Long minQueryCount;
-  private Long maxQueryCount;
-
+    private Long minQueryCount;
+    private Long maxQueryCount;
 }

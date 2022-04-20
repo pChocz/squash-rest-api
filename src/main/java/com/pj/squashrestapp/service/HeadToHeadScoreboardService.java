@@ -7,14 +7,15 @@ import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
-import java.util.Comparator;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** */
 @Slf4j
@@ -22,34 +23,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class HeadToHeadScoreboardService {
 
-  private final MatchRepository matchRepository;
-  private final AdditionalMatchRepository additionalMatchRepository;
+    private final MatchRepository matchRepository;
+    private final AdditionalMatchRepository additionalMatchRepository;
 
+    @Cacheable(
+            value = RedisCacheConfig.H2H_SCOREBOARD_CACHE,
+            key = "{#firstPlayerUuid, #secondPlayerUuid, #includeAdditional}")
+    public HeadToHeadScoreboard build(
+            final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
+        final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
 
-  @Cacheable(value = RedisCacheConfig.H2H_SCOREBOARD_CACHE, key = "{#firstPlayerUuid, #secondPlayerUuid, #includeAdditional}")
-  public HeadToHeadScoreboard build(final UUID firstPlayerUuid, final UUID secondPlayerUuid, final boolean includeAdditional) {
-    final UUID[] playersUuids = new UUID[] {firstPlayerUuid, secondPlayerUuid};
+        final List<MatchDto> allFinishedMatches = matchRepository.fetchHeadToHead(playersUuids).stream()
+                .map(MatchDetailedDto::new)
+                .filter(MatchDetailedDto::checkFinished)
+                .collect(Collectors.toList());
 
-    final List<MatchDto> allFinishedMatches = matchRepository
-        .fetchHeadToHead(playersUuids)
-        .stream()
-        .map(MatchDetailedDto::new)
-        .filter(MatchDetailedDto::checkFinished)
-        .collect(Collectors.toList());
+        if (includeAdditional) {
+            final List<MatchDto> additionalFinishedMatches =
+                    additionalMatchRepository.fetchHeadToHead(playersUuids).stream()
+                            .map(AdditionalMatchDetailedDto::new)
+                            .filter(AdditionalMatchDetailedDto::checkFinished)
+                            .collect(Collectors.toList());
+            allFinishedMatches.addAll(additionalFinishedMatches);
+        }
 
-    if (includeAdditional) {
-      final List<MatchDto> additionalFinishedMatches = additionalMatchRepository
-              .fetchHeadToHead(playersUuids)
-              .stream()
-              .map(AdditionalMatchDetailedDto::new)
-              .filter(AdditionalMatchDetailedDto::checkFinished)
-              .collect(Collectors.toList());
-      allFinishedMatches.addAll(additionalFinishedMatches);
+        allFinishedMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
+
+        final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches);
+        return scoreboard;
     }
-
-    allFinishedMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
-
-    final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches);
-    return scoreboard;
-  }
 }

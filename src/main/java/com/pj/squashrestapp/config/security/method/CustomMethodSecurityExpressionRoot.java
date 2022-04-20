@@ -9,13 +9,14 @@ import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
-import java.util.Optional;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Main class that provides access to specific Entities. It provides methods for securing
@@ -29,112 +30,112 @@ import org.springframework.security.core.Authentication;
 @Getter
 @Setter
 public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
-    implements MethodSecurityExpressionOperations {
+        implements MethodSecurityExpressionOperations {
 
-  private final UserDetailsImpl principal;
+    private final UserDetailsImpl principal;
 
-  private MatchRepository matchRepository;
-  private RoundRepository roundRepository;
-  private SeasonRepository seasonRepository;
-  private BonusPointRepository bonusPointRepository;
-  private LostBallRepository lostBallRepository;
-  private AdditionalMatchRepository additionalMatchRepository;
+    private MatchRepository matchRepository;
+    private RoundRepository roundRepository;
+    private SeasonRepository seasonRepository;
+    private BonusPointRepository bonusPointRepository;
+    private LostBallRepository lostBallRepository;
+    private AdditionalMatchRepository additionalMatchRepository;
 
-  private Object target;
-  private Object filterObject;
-  private Object returnObject;
+    private Object target;
+    private Object filterObject;
+    private Object returnObject;
 
-  /**
-   * Constructor assigns principal field based on the authentication of current session.
-   *
-   * @param authentication authentication object
-   */
-  public CustomMethodSecurityExpressionRoot(final Authentication authentication) {
-    super(authentication);
-    this.principal = (UserDetailsImpl) authentication.getPrincipal();
-  }
-
-  @Override
-  public Object getThis() {
-    return target;
-  }
-
-  void setThis(final Object target) {
-    this.target = target;
-  }
-
-  public boolean isAdmin() {
-    return principal.isAdmin();
-  }
-
-  public boolean isOwnerOfLeague(final UUID leagueUuid) {
-    if (principal.isAdmin()) {
-      return true;
+    /**
+     * Constructor assigns principal field based on the authentication of current session.
+     *
+     * @param authentication authentication object
+     */
+    public CustomMethodSecurityExpressionRoot(final Authentication authentication) {
+        super(authentication);
+        this.principal = (UserDetailsImpl) authentication.getPrincipal();
     }
-    return principal.hasRoleForLeague(leagueUuid, LeagueRole.OWNER);
-  }
 
-  public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    @Override
+    public Object getThis() {
+        return target;
     }
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean hasRoleForSeason(final UUID seasonUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    void setThis(final Object target) {
+        this.target = target;
     }
-    final UUID leagueUuid = seasonRepository.retrieveLeagueUuidOfSeason(seasonUuid);
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean hasRoleForRound(final UUID roundUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean isAdmin() {
+        return principal.isAdmin();
     }
-    final UUID leagueUuid = roundRepository.retrieveLeagueUuidOfRound(roundUuid);
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean hasRoleForBonusPoint(final UUID bonusPointUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean isOwnerOfLeague(final UUID leagueUuid) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        return principal.hasRoleForLeague(leagueUuid, LeagueRole.OWNER);
     }
-    final UUID leagueUuid = bonusPointRepository.retrieveLeagueUuidOfBonusPoint(bonusPointUuid);
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean hasRoleForLostBall(final UUID lostBallUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean hasRoleForLeague(final UUID leagueUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        return principal.hasRoleForLeague(leagueUuid, role);
     }
-    final UUID leagueUuid = lostBallRepository.retrieveLeagueUuidOfLostBall(lostBallUuid);
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean hasRoleForMatch(final UUID matchUuid, final LeagueRole role) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean hasRoleForSeason(final UUID seasonUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final UUID leagueUuid = seasonRepository.retrieveLeagueUuidOfSeason(seasonUuid);
+        return principal.hasRoleForLeague(leagueUuid, role);
     }
-    final UUID leagueUuid = matchRepository.retrieveLeagueUuidOfMatch(matchUuid);
-    return principal.hasRoleForLeague(leagueUuid, role);
-  }
 
-  public boolean isOneOfThePlayers(final UUID firstPlayerUuid, final UUID secondPlayerUuid) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean hasRoleForRound(final UUID roundUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final UUID leagueUuid = roundRepository.retrieveLeagueUuidOfRound(roundUuid);
+        return principal.hasRoleForLeague(leagueUuid, role);
     }
-    return principal.getUuid().equals(firstPlayerUuid)
-        || principal.getUuid().equals(secondPlayerUuid);
-  }
 
-  public boolean isPlayerOfAdditionalMatch(final UUID matchUuid) {
-    if (principal.isAdmin()) {
-      return true;
+    public boolean hasRoleForBonusPoint(final UUID bonusPointUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final UUID leagueUuid = bonusPointRepository.retrieveLeagueUuidOfBonusPoint(bonusPointUuid);
+        return principal.hasRoleForLeague(leagueUuid, role);
     }
-    final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
-    return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
-        || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
-  }
+
+    public boolean hasRoleForLostBall(final UUID lostBallUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final UUID leagueUuid = lostBallRepository.retrieveLeagueUuidOfLostBall(lostBallUuid);
+        return principal.hasRoleForLeague(leagueUuid, role);
+    }
+
+    public boolean hasRoleForMatch(final UUID matchUuid, final LeagueRole role) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final UUID leagueUuid = matchRepository.retrieveLeagueUuidOfMatch(matchUuid);
+        return principal.hasRoleForLeague(leagueUuid, role);
+    }
+
+    public boolean isOneOfThePlayers(final UUID firstPlayerUuid, final UUID secondPlayerUuid) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        return principal.getUuid().equals(firstPlayerUuid)
+                || principal.getUuid().equals(secondPlayerUuid);
+    }
+
+    public boolean isPlayerOfAdditionalMatch(final UUID matchUuid) {
+        if (principal.isAdmin()) {
+            return true;
+        }
+        final Optional<AdditionalMatch> match = additionalMatchRepository.findByUuid(matchUuid);
+        return principal.getUuid().equals(match.get().getFirstPlayer().getUuid())
+                || principal.getUuid().equals(match.get().getSecondPlayer().getUuid());
+    }
 }

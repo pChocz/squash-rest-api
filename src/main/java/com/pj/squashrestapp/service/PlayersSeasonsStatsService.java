@@ -21,37 +21,36 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PlayersSeasonsStatsService {
 
-  private final PlayerRepository playerRepository;
-  private final ScoreboardService scoreboardService;
-  private final LeagueTrophiesService leagueTrophiesService;
+    private final PlayerRepository playerRepository;
+    private final ScoreboardService scoreboardService;
+    private final LeagueTrophiesService leagueTrophiesService;
 
-  public PlayerAllSeasonsStats buildSeasonsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
-    final Player player = playerRepository.findByUuid(playerUuid);
-    final PlayerDto playerDto = new PlayerDto(player);
-    final List<SeasonScoreboardDto> allSeasonScoreboards = scoreboardService.allSeasonsScoreboards(leagueUuid);
-    final List<SeasonTrophies> seasonTrophies = leagueTrophiesService.extractTrophiesForPlayerForLeague(playerDto, leagueUuid);
+    public PlayerAllSeasonsStats buildSeasonsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
+        final Player player = playerRepository.findByUuid(playerUuid);
+        final PlayerDto playerDto = new PlayerDto(player);
+        final List<SeasonScoreboardDto> allSeasonScoreboards = scoreboardService.allSeasonsScoreboards(leagueUuid);
+        final List<SeasonTrophies> seasonTrophies =
+                leagueTrophiesService.extractTrophiesForPlayerForLeague(playerDto, leagueUuid);
 
-    final PlayerAllSeasonsStats playerAllSeasonsStats = new PlayerAllSeasonsStats(playerDto, seasonTrophies);
+        final PlayerAllSeasonsStats playerAllSeasonsStats = new PlayerAllSeasonsStats(playerDto, seasonTrophies);
 
-    for (final SeasonScoreboardDto seasonScoreboardDto : allSeasonScoreboards) {
-      PlayerSingleSeasonStats playerSingleSeasonStats = null;
-      for (int i=0; i < seasonScoreboardDto.getSeasonScoreboardRows().size(); i++) {
-        SeasonScoreboardRowDto seasonScoreboardRow = seasonScoreboardDto.getSeasonScoreboardRows().get(i);
-        if (seasonScoreboardRow.getPlayer().equals(playerDto)) {
-          playerSingleSeasonStats = new PlayerSingleSeasonStats(
-                  i+1,
-                  seasonScoreboardDto.getSeason(),
-                  seasonScoreboardRow
-          );
-          break;
+        for (final SeasonScoreboardDto seasonScoreboardDto : allSeasonScoreboards) {
+            PlayerSingleSeasonStats playerSingleSeasonStats = null;
+            for (int i = 0; i < seasonScoreboardDto.getSeasonScoreboardRows().size(); i++) {
+                SeasonScoreboardRowDto seasonScoreboardRow =
+                        seasonScoreboardDto.getSeasonScoreboardRows().get(i);
+                if (seasonScoreboardRow.getPlayer().equals(playerDto)) {
+                    playerSingleSeasonStats =
+                            new PlayerSingleSeasonStats(i + 1, seasonScoreboardDto.getSeason(), seasonScoreboardRow);
+                    break;
+                }
+            }
+
+            if (playerSingleSeasonStats != null) {
+                playerAllSeasonsStats.addSingleSeasonStats(playerSingleSeasonStats);
+            }
         }
-      }
 
-      if (playerSingleSeasonStats != null) {
-        playerAllSeasonsStats.addSingleSeasonStats(playerSingleSeasonStats);
-      }
+        return playerAllSeasonsStats;
     }
-
-    return playerAllSeasonsStats;
-  }
 }

@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GeneralBadRequestException extends RuntimeException {
 
-  public GeneralBadRequestException(final String message) {
-    super(message);
-    log.error(message);
-  }
+    public GeneralBadRequestException(final String message) {
+        super(message);
+        log.error(message);
+    }
 }

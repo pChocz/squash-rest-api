@@ -8,13 +8,14 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.UUID;
 
 /** */
 @Builder
@@ -23,29 +24,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class OveralStats {
 
-  private String leagueName;
-  private UUID leagueUuid;
-  private String time;
-  private String location;
-  private int seasons;
-  private int players;
-  private BigDecimal averagePlayersPerRound;
-  private BigDecimal averagePlayersPerGroup;
-  private BigDecimal averageGroupsPerRound;
-  private int rounds;
-  private int matches;
-  private int sets;
-  private int points;
-  private MatchFormatType matchFormatType;
-  private SetWinningType regularSetWinningType;
-  private SetWinningType tiebreakWinningType;
-  private int regularSetWinningPoints;
-  private int tiebreakWinningPoints;
-  private int numberOfRoundsPerSeason;
-  private int roundsToBeDeducted;
+    private String leagueName;
+    private UUID leagueUuid;
+    private String time;
+    private String location;
+    private int seasons;
+    private int players;
+    private BigDecimal averagePlayersPerRound;
+    private BigDecimal averagePlayersPerGroup;
+    private BigDecimal averageGroupsPerRound;
+    private int rounds;
+    private int matches;
+    private int sets;
+    private int points;
+    private MatchFormatType matchFormatType;
+    private SetWinningType regularSetWinningType;
+    private SetWinningType tiebreakWinningType;
+    private int regularSetWinningPoints;
+    private int tiebreakWinningPoints;
+    private int numberOfRoundsPerSeason;
+    private int roundsToBeDeducted;
 
-  @JsonSerialize(using = LocalDateSerializer.class)
-  @JsonDeserialize(using = LocalDateDeserializer.class)
-  @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-  private LocalDate dateOfCreation;
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
+    @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    private LocalDate dateOfCreation;
 }

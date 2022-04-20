@@ -111,5 +111,4 @@ public class LeagueRolesService {
         final UUID playerUuid = player.getUuid();
         assignRoleByPlayerUuid(leagueUuid, playerUuid, LeagueRole.PLAYER);
     }
-
 }

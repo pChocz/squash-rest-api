@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WrongResultException extends RuntimeException {
 
-  public WrongResultException(final String message) {
-    super(message);
-    log.error(message);
-  }
+    public WrongResultException(final String message) {
+        super(message);
+        log.error(message);
+    }
 }

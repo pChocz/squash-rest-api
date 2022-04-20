@@ -3,12 +3,10 @@ package com.pj.squashrestapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,9 +21,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** */
 @Entity
@@ -34,129 +35,116 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Match implements Identifiable, Comparable<Match> {
 
-  public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL =
-      new EntityVisitor<>(Match.class) {};
+    public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Match.class) {};
 
-  public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR =
-      new EntityVisitor<>(Match.class) {
+    public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR = new EntityVisitor<>(Match.class) {
         @Override
         public RoundGroup getParent(final Match visitingObject) {
-          return visitingObject.getRoundGroup();
+            return visitingObject.getRoundGroup();
         }
 
         @Override
         public Set<Match> getChildren(final RoundGroup parent) {
-          return parent.getMatches();
+            return parent.getMatches();
         }
 
         @Override
         public void setChildren(final RoundGroup parent) {
-          parent.setMatches(new TreeSet<Match>());
+            parent.setMatches(new TreeSet<Match>());
         }
-      };
+    };
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Setter
-  @Column(name = "uuid", nullable = false)
-  private UUID uuid = UUID.randomUUID();
+    @Setter
+    @Column(name = "uuid", nullable = false)
+    private UUID uuid = UUID.randomUUID();
 
-  @Setter
-  @Column(name = "number")
-  private int number;
+    @Setter
+    @Column(name = "number")
+    private int number;
 
-  @Setter
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "first_player_id")
-  private Player firstPlayer;
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "first_player_id")
+    private Player firstPlayer;
 
-  @Setter
-  @OneToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "second_player_id")
-  private Player secondPlayer;
+    @Setter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "second_player_id")
+    private Player secondPlayer;
 
-  @Setter
-  @Enumerated(EnumType.STRING)
-  private MatchFormatType matchFormatType;
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private MatchFormatType matchFormatType;
 
-  @Setter
-  @Enumerated(EnumType.STRING)
-  private SetWinningType regularSetWinningType;
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private SetWinningType regularSetWinningType;
 
-  @Setter
-  @Enumerated(EnumType.STRING)
-  private SetWinningType tiebreakWinningType;
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private SetWinningType tiebreakWinningType;
 
-  @Setter
-  @Column(name = "regular_set_winning_points")
-  private int regularSetWinningPoints;
+    @Setter
+    @Column(name = "regular_set_winning_points")
+    private int regularSetWinningPoints;
 
-  @Setter
-  @Column(name = "tie_break_winning_points")
-  private int tiebreakWinningPoints;
+    @Setter
+    @Column(name = "tie_break_winning_points")
+    private int tiebreakWinningPoints;
 
-  @Setter
-  @OneToMany(
-      mappedBy = "match",
-      cascade = CascadeType.ALL,
-      fetch = FetchType.LAZY,
-      orphanRemoval = true)
-  private Set<SetResult> setResults = new TreeSet<SetResult>();
+    @Setter
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<SetResult> setResults = new TreeSet<SetResult>();
 
-  @JsonIgnore
-  @Setter
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "round_group_id")
-  private RoundGroup roundGroup;
+    @JsonIgnore
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "round_group_id")
+    private RoundGroup roundGroup;
 
-  public Match(final Player firstPlayer, final Player secondPlayer, final League league) {
-    this.firstPlayer = firstPlayer;
-    this.secondPlayer = secondPlayer;
-    this.matchFormatType = league.getMatchFormatType();
-    this.regularSetWinningType = league.getRegularSetWinningType();
-    this.regularSetWinningPoints = league.getRegularSetWinningPoints();
-    this.tiebreakWinningType = league.getTiebreakWinningType();
-    this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
-  }
+    public Match(final Player firstPlayer, final Player secondPlayer, final League league) {
+        this.firstPlayer = firstPlayer;
+        this.secondPlayer = secondPlayer;
+        this.matchFormatType = league.getMatchFormatType();
+        this.regularSetWinningType = league.getRegularSetWinningType();
+        this.regularSetWinningPoints = league.getRegularSetWinningPoints();
+        this.tiebreakWinningType = league.getTiebreakWinningType();
+        this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
+    }
 
-  public void addSetResult(final SetResult setResult) {
-    this.setResults.add(setResult);
-    setResult.setMatch(this);
-  }
+    public void addSetResult(final SetResult setResult) {
+        this.setResults.add(setResult);
+        setResult.setMatch(this);
+    }
 
-  @Override
-  public String toString() {
-    return "["
-        + getUuid()
-        + "] "
-        + firstPlayer
-        + " vs. "
-        + secondPlayer
-        + " : "
-        + setResultsOrderedNonNull();
-  }
+    @Override
+    public String toString() {
+        return "[" + getUuid() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
+    }
 
-  private List<SetResult> setResultsOrderedNonNull() {
-    return setResults.stream()
-        .filter(SetResult::nonNull)
-        .sorted(Comparator.comparingInt(SetResult::getNumber))
-        .collect(Collectors.toList());
-  }
+    private List<SetResult> setResultsOrderedNonNull() {
+        return setResults.stream()
+                .filter(SetResult::nonNull)
+                .sorted(Comparator.comparingInt(SetResult::getNumber))
+                .collect(Collectors.toList());
+    }
 
-  public List<SetResult> getSetResultsOrdered() {
-    return setResults.stream()
-        .sorted(Comparator.comparingInt(SetResult::getNumber))
-        .collect(Collectors.toList());
-  }
+    public List<SetResult> getSetResultsOrdered() {
+        return setResults.stream()
+                .sorted(Comparator.comparingInt(SetResult::getNumber))
+                .collect(Collectors.toList());
+    }
 
-  @Override
-  public int compareTo(final Match that) {
-    return Comparator.comparingLong(Match::getNumber).compare(this, that);
-  }
+    @Override
+    public int compareTo(final Match that) {
+        return Comparator.comparingLong(Match::getNumber).compare(this, that);
+    }
 
-  public int getNumberOfSets() {
-    return setResults.size();
-  }
+    public int getNumberOfSets() {
+        return setResults.size();
+    }
 }

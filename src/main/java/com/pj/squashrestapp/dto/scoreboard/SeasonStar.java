@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SeasonStar {
 
-  private int roundNumber;
-  private String groupCharacter;
-  private Type type;
-
+    private int roundNumber;
+    private String groupCharacter;
+    private Type type;
 }

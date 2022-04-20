@@ -9,11 +9,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JsonSetResult {
 
-  @JsonProperty("p1")
-  @SerializedName("p1")
-  private Integer firstPlayerResult;
+    @JsonProperty("p1")
+    @SerializedName("p1")
+    private Integer firstPlayerResult;
 
-  @JsonProperty("p2")
-  @SerializedName("p2")
-  private Integer secondPlayerResult;
+    @JsonProperty("p2")
+    @SerializedName("p2")
+    private Integer secondPlayerResult;
 }

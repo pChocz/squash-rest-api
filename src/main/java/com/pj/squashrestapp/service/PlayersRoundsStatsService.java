@@ -9,11 +9,12 @@ import com.pj.squashrestapp.dto.scoreboard.RoundGroupScoreboardRow;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 /** */
 @Slf4j
@@ -21,32 +22,33 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PlayersRoundsStatsService {
 
-  private final PlayerRepository playerRepository;
-  private final ScoreboardService scoreboardService;
+    private final PlayerRepository playerRepository;
+    private final ScoreboardService scoreboardService;
 
-  public PlayerAllRoundsStats buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
-    final Player player = playerRepository.findByUuid(playerUuid);
-    final PlayerDto playerDto = new PlayerDto(player);
-    final List<RoundScoreboard> allRoundsScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
+    public PlayerAllRoundsStats buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
+        final Player player = playerRepository.findByUuid(playerUuid);
+        final PlayerDto playerDto = new PlayerDto(player);
+        final List<RoundScoreboard> allRoundsScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
 
-    final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(playerDto);
+        final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(playerDto);
 
-      for (final RoundScoreboard roundScoreboard : allRoundsScoreboards) {
-        RoundGroupScoreboard properRoundGroupScoreboard = null;
-        for (final RoundGroupScoreboard roundGroupScoreboard : roundScoreboard.getRoundGroupScoreboards()) {
-          for (final RoundGroupScoreboardRow row : roundGroupScoreboard.getScoreboardRows()) {
-            if (row.getPlayer().equals(playerDto)) {
-              properRoundGroupScoreboard = roundGroupScoreboard;
-              break;
+        for (final RoundScoreboard roundScoreboard : allRoundsScoreboards) {
+            RoundGroupScoreboard properRoundGroupScoreboard = null;
+            for (final RoundGroupScoreboard roundGroupScoreboard : roundScoreboard.getRoundGroupScoreboards()) {
+                for (final RoundGroupScoreboardRow row : roundGroupScoreboard.getScoreboardRows()) {
+                    if (row.getPlayer().equals(playerDto)) {
+                        properRoundGroupScoreboard = roundGroupScoreboard;
+                        break;
+                    }
+                }
             }
-          }
+            if (properRoundGroupScoreboard != null) {
+                final RoundDto roundDto = new RoundDto(roundScoreboard);
+                playerAllRoundsStats.addSingleRoundStats(
+                        new PlayerSingleRoundStats(player, roundDto, properRoundGroupScoreboard));
+            }
         }
-        if (properRoundGroupScoreboard != null) {
-          final RoundDto roundDto = new RoundDto(roundScoreboard);
-          playerAllRoundsStats.addSingleRoundStats(new PlayerSingleRoundStats(player, roundDto, properRoundGroupScoreboard));
-        }
-      }
-    playerAllRoundsStats.calculateScoreboard();
-      return playerAllRoundsStats;
-  }
+        playerAllRoundsStats.calculateScoreboard();
+        return playerAllRoundsStats;
+    }
 }

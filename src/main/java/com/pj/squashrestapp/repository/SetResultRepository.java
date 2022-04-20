@@ -2,13 +2,14 @@ package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
-import java.util.List;
-import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Methods in this class implement 2 quite cool performance solutions:
@@ -33,11 +34,11 @@ import org.springframework.data.repository.query.Param;
  * As a result we can extract entire league with a single query and
  * reconstruct it later with {@link EntityGraphBuildUtil} utility class.
  */
-public interface SetResultRepository extends JpaRepository<SetResult, Long>,
-    SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
+public interface SetResultRepository
+        extends JpaRepository<SetResult, Long>, SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
-
-  @Query("""
+    @Query(
+            """
           SELECT sr FROM SetResult sr
             JOIN FETCH sr.match m
             JOIN FETCH m.roundGroup rg
@@ -46,14 +47,15 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>,
             JOIN FETCH s.league l
               WHERE l.uuid = :leagueUuid
           """)
-  @EntityGraph(attributePaths = {
-          "match.firstPlayer",
-          "match.secondPlayer",
-  })
-  List<SetResult> fetchByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
+    @EntityGraph(
+            attributePaths = {
+                "match.firstPlayer",
+                "match.secondPlayer",
+            })
+    List<SetResult> fetchByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
-
-  @Query("""
+    @Query(
+            """
           SELECT sr FROM SetResult sr
             JOIN FETCH sr.match m
             JOIN FETCH m.roundGroup rg
@@ -61,51 +63,50 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>,
             JOIN FETCH r.season s
               WHERE s.uuid = :seasonUuid
           """)
-  @EntityGraph(attributePaths = {
-          "match.firstPlayer",
-          "match.secondPlayer",
-          "match.roundGroup.round.season.league"
-  })
-  List<SetResult> fetchBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
+    @EntityGraph(attributePaths = {"match.firstPlayer", "match.secondPlayer", "match.roundGroup.round.season.league"})
+    List<SetResult> fetchBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
-
-  @Query("""
+    @Query(
+            """
           SELECT sr FROM SetResult sr
             JOIN FETCH sr.match m
             JOIN FETCH m.roundGroup rg
             JOIN FETCH rg.round r
               WHERE r.uuid = :roundUuid
           """)
-  @EntityGraph(attributePaths = {
-          "match.firstPlayer",
-          "match.secondPlayer",
-          "match.roundGroup.round.season",
-          "match.roundGroup.round.season.league"
-  })
-  List<SetResult> fetchByRoundUuid(@Param("roundUuid") UUID roundUuid);
+    @EntityGraph(
+            attributePaths = {
+                "match.firstPlayer",
+                "match.secondPlayer",
+                "match.roundGroup.round.season",
+                "match.roundGroup.round.season.league"
+            })
+    List<SetResult> fetchByRoundUuid(@Param("roundUuid") UUID roundUuid);
 
-
-  @Query("""
+    @Query(
+            """
           SELECT sr FROM SetResult sr
             JOIN FETCH sr.match m
             JOIN FETCH m.roundGroup rg
               WHERE rg.id IN :ids
           """)
-  @EntityGraph(attributePaths = {
-          "match.firstPlayer",
-          "match.secondPlayer",
-          "match.roundGroup.round.season",
-          "match.roundGroup.round.season.league"
-  })
-  List<SetResult> fetchByRoundGroupsIds(@Param("ids") List<Long> ids);
+    @EntityGraph(
+            attributePaths = {
+                "match.firstPlayer",
+                "match.secondPlayer",
+                "match.roundGroup.round.season",
+                "match.roundGroup.round.season.league"
+            })
+    List<SetResult> fetchByRoundGroupsIds(@Param("ids") List<Long> ids);
 
-  @Override
-  @Modifying
-  @Query("DELETE FROM SetResult sr WHERE sr.id IN :ids")
-  void deleteAllByIdIn(@Param("ids") List<Long> ids);
+    @Override
+    @Modifying
+    @Query("DELETE FROM SetResult sr WHERE sr.id IN :ids")
+    void deleteAllByIdIn(@Param("ids") List<Long> ids);
 
-  @Override
-  @Query("""
+    @Override
+    @Query(
+            """
           SELECT sr.id FROM SetResult sr
             JOIN sr.match m
             JOIN m.roundGroup rg
@@ -114,10 +115,11 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>,
             JOIN s.league l
               WHERE l.uuid = :leagueUuid
           """)
-  List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
+    List<Long> fetchIdsByLeagueUuidRaw(@Param("leagueUuid") UUID leagueUuid);
 
-  @Override
-  @Query("""
+    @Override
+    @Query(
+            """
           SELECT sr.id FROM SetResult sr
             JOIN sr.match m
             JOIN m.roundGroup rg
@@ -125,6 +127,5 @@ public interface SetResultRepository extends JpaRepository<SetResult, Long>,
             JOIN r.season s
               WHERE s.uuid = :seasonUuid
           """)
-  List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
-
+    List<Long> fetchIdsBySeasonUuidRaw(@Param("seasonUuid") UUID seasonUuid);
 }

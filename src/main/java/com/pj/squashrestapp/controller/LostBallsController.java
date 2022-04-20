@@ -30,32 +30,31 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class LostBallsController {
 
-  private final LostBallService lostBallService;
+    private final LostBallService lostBallService;
 
-  @PostMapping
-  @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
-  LostBall createNewLostBall(
-      @RequestParam final UUID playerUuid,
-      @RequestParam final UUID seasonUuid,
-      @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
-      @RequestParam final int count) {
-    final LostBall lostBall =
-            lostBallService.applyLostBallForPlayer(
-            playerUuid, seasonUuid, date, count);
-    return lostBall;
-  }
+    @PostMapping
+    @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
+    LostBall createNewLostBall(
+            @RequestParam final UUID playerUuid,
+            @RequestParam final UUID seasonUuid,
+            @RequestParam @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate date,
+            @RequestParam final int count) {
+        final LostBall lostBall = lostBallService.applyLostBallForPlayer(playerUuid, seasonUuid, date, count);
+        return lostBall;
+    }
 
-  @DeleteMapping("/{uuid}")
-  @ResponseStatus(HttpStatus.NO_CONTENT)
-  @PreAuthorize("hasRoleForLostBall(#uuid, 'MODERATOR')")
-  void deleteLostBall(@PathVariable final UUID uuid) {
-    lostBallService.deleteLostBall(uuid);
-  }
+    @DeleteMapping("/{uuid}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasRoleForLostBall(#uuid, 'MODERATOR')")
+    void deleteLostBall(@PathVariable final UUID uuid) {
+        lostBallService.deleteLostBall(uuid);
+    }
 
-  @GetMapping("/seasons/{seasonUuid}")
-  List<LostBallsDto> getBonusPointsForSeason(@PathVariable final UUID seasonUuid) {
-    final List<LostBall> lostBalls = lostBallService.extractLostBalls(seasonUuid);
-    final List<LostBallsDto> lostBallsForSeason = lostBalls.stream().map(LostBallsDto::new).collect(Collectors.toList());
-    return lostBallsForSeason;
-  }
+    @GetMapping("/seasons/{seasonUuid}")
+    List<LostBallsDto> getBonusPointsForSeason(@PathVariable final UUID seasonUuid) {
+        final List<LostBall> lostBalls = lostBallService.extractLostBalls(seasonUuid);
+        final List<LostBallsDto> lostBallsForSeason =
+                lostBalls.stream().map(LostBallsDto::new).collect(Collectors.toList());
+        return lostBallsForSeason;
+    }
 }

@@ -8,8 +8,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public class XpPointsDto {
 
-  private final int placeInRound;
-  private final int placeInGroup;
-  private final int groupNumber;
-  private final int points;
+    private final int placeInRound;
+    private final int placeInGroup;
+    private final int groupNumber;
+    private final int points;
 }

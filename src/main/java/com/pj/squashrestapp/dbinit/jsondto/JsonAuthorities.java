@@ -7,5 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class JsonAuthorities {
 
-  private String authority;
+    private String authority;
 }
