@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -23,6 +24,8 @@ public class LeagueDto {
     private final String location;
     private final String time;
     private final Set<SeasonDto> seasons;
+    private List<PlayerDto> owners;
+    private List<PlayerDto> moderators;
 
     @Setter
     private byte[] leagueLogo;
@@ -36,6 +39,12 @@ public class LeagueDto {
         this.time = league.getTime();
 
         this.seasons = league.getSeasons().stream().map(SeasonDto::new).collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    public LeagueDto(final League league, final List<PlayerDto> owners, final List<PlayerDto> moderators) {
+        this(league);
+        this.owners = owners;
+        this.moderators = moderators;
     }
 
     @Override

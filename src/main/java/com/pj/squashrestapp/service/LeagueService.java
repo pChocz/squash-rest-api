@@ -28,6 +28,7 @@ import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
+import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.SetWinningType;
@@ -61,6 +62,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -175,7 +177,8 @@ public class LeagueService {
         roleForLeagueRepository.deleteAll(rolesForLeague);
 
         // league rules
-        final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAscIdAsc(leagueToRemove);
+        final List<LeagueRule> leagueRules =
+                leagueRulesRepository.findAllByLeagueOrderByOrderValueAscIdAsc(leagueToRemove);
         leagueRulesRepository.deleteAll(leagueRules);
 
         // logo
@@ -254,12 +257,25 @@ public class LeagueService {
                 }
             }
 
+            final LongSummaryStatistics summaryStatistics = season.getRounds().stream()
+                    .map(Round::getSplit)
+                    .map(s -> s.split("\\|"))
+                    .mapToLong(a -> a.length)
+                    .summaryStatistics();
+
+            final long groupsSum = summaryStatistics.getSum();
+            final long groupsCount = summaryStatistics.getCount();
+
             final float tieBreakMatchesPercents = (float) 100 * tieBreaks / matches;
             final BigDecimal tieBreakMatchesPercentsRounded = RoundingUtil.round(tieBreakMatchesPercents, 1);
 
-            final float playersAverage =
+            final float playersAveragePerRound =
                     (float) playersAttendicesMap.size() / season.getRounds().size();
-            final BigDecimal playersAverageRounded = RoundingUtil.round(playersAverage, 1);
+            final float playersAveragePerGroup = (float) playersAttendicesMap.size() / groupsSum;
+            final float groupsAveragePerRound = (float) groupsSum / groupsCount;
+            final BigDecimal playersAveragePerRoundRounded = RoundingUtil.round(playersAveragePerRound, 1);
+            final BigDecimal playersAveragePerGroupRounded = RoundingUtil.round(playersAveragePerGroup, 1);
+            final BigDecimal groupsAveragePerRoundRounded = RoundingUtil.round(groupsAveragePerRound, 1);
 
             perSeasonStatsList.add(PerSeasonStats.builder()
                     .seasonNumber(season.getNumber())
@@ -271,7 +287,9 @@ public class LeagueService {
                     .tieBreakMatches(tieBreaks)
                     .tieBreakMatchesPercents(tieBreakMatchesPercentsRounded)
                     .points(points)
-                    .playersAverage(playersAverageRounded)
+                    .playersAveragePerRound(playersAveragePerRoundRounded)
+                    .playersAveragePerGroup(playersAveragePerGroupRounded)
+                    .groupsAveragePerRound(groupsAveragePerRoundRounded)
                     .players(playersAttendicesMap.keySet().size())
                     .playersAttendicesMap(playersAttendicesMap)
                     .build());
@@ -322,7 +340,23 @@ public class LeagueService {
                 .findByUuid(leagueUuid)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.LEAGUE_NOT_FOUND));
 
-        final LeagueDto leagueDto = new LeagueDto(league);
+        final List<Player> allLeagueMembers = playerRepository.fetchForAuthorizationForLeague(leagueUuid);
+
+        final List<PlayerDto> leagueOwners = allLeagueMembers.stream()
+                .filter(p -> p.getRoles().stream()
+                        .anyMatch(r -> r.getLeagueRole() == LeagueRole.OWNER
+                                && r.getLeague().equals(league)))
+                .map(PlayerDto::new)
+                .collect(Collectors.toList());
+
+        final List<PlayerDto> leagueModerators = allLeagueMembers.stream()
+                .filter(p -> p.getRoles().stream()
+                        .anyMatch(r -> r.getLeagueRole() == LeagueRole.MODERATOR
+                                && r.getLeague().equals(league)))
+                .map(PlayerDto::new)
+                .collect(Collectors.toList());
+
+        final LeagueDto leagueDto = new LeagueDto(league, leagueOwners, leagueModerators);
 
         final LeagueLogo leagueLogo = league.getLeagueLogo();
         if (leagueLogo != null) {

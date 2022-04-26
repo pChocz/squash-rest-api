@@ -24,14 +24,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PerSeasonStats {
 
-    private int seasonNumber;
-    private String seasonNumberRoman;
-
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
     private LocalDate seasonStartDate;
 
+    private int seasonNumber;
+    private String seasonNumberRoman;
     private UUID seasonUuid;
     private int rounds;
     private int regularMatches;
@@ -40,6 +39,9 @@ public class PerSeasonStats {
     private int points;
     private int players;
     private BigDecimal playersAverage;
+    private BigDecimal playersAveragePerRound;
+    private BigDecimal playersAveragePerGroup;
+    private BigDecimal groupsAveragePerRound;
 
     @JsonIgnore
     private Multimap<UUID, UUID> playersAttendicesMap;
