@@ -2,6 +2,8 @@ package com.pj.squashrestapp.config.security.method;
 
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
+import com.pj.squashrestapp.repository.LeagueRulesRepository;
+import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
@@ -34,6 +36,8 @@ public class CustomMethodSecurityExpressionHandler extends DefaultMethodSecurity
         root.setRoundRepository(applicationContext.getBean(RoundRepository.class));
         root.setSeasonRepository(applicationContext.getBean(SeasonRepository.class));
         root.setBonusPointRepository(applicationContext.getBean(BonusPointRepository.class));
+        root.setLostBallRepository(applicationContext.getBean(LostBallRepository.class));
+        root.setLeagueRulesRepository(applicationContext.getBean(LeagueRulesRepository.class));
         root.setAdditionalMatchRepository(applicationContext.getBean(AdditionalMatchRepository.class));
         return root;
     }

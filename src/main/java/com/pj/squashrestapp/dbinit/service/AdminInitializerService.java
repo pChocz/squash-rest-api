@@ -263,6 +263,7 @@ public class AdminInitializerService {
             final LeagueRule leagueRule = new LeagueRule();
             leagueRule.setUuid(rule.getUuid());
             leagueRule.setOrderValue(rule.getOrderValue());
+            leagueRule.setType(rule.getType());
             leagueRule.setRule(rule.getRule());
             league.addRuleForLeague(leagueRule);
         }

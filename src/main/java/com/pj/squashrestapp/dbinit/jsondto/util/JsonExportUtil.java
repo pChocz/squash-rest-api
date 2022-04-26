@@ -71,6 +71,7 @@ public class JsonExportUtil {
             final JsonLeagueRule jsonLeagueRule = new JsonLeagueRule();
             jsonLeagueRule.setUuid(leagueRule.getUuid());
             jsonLeagueRule.setOrderValue(leagueRule.getOrderValue());
+            jsonLeagueRule.setType(leagueRule.getType());
             jsonLeagueRule.setRule(leagueRule.getRule());
             rules.add(jsonLeagueRule);
         }

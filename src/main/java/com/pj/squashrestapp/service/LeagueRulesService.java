@@ -1,7 +1,9 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.LeagueRuleDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRule;
+import com.pj.squashrestapp.model.LeagueRuleType;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.LeagueRulesRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /** */
 @Slf4j
@@ -22,12 +26,10 @@ public class LeagueRulesService {
     private final LeagueRepository leagueRepository;
 
     @Transactional
-    public void addNewLeagueRule(final UUID leagueUuid, final String rule) {
+    public void addNewLeagueRule(final UUID leagueUuid, final String rule, final LeagueRuleType type) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-
-        final LeagueRule leagueRule = new LeagueRule(rule);
+        final LeagueRule leagueRule = new LeagueRule(rule, type);
         league.addRuleForLeague(leagueRule);
-
         leagueRepository.save(league);
     }
 
@@ -36,9 +38,24 @@ public class LeagueRulesService {
         leagueRulesRepository.delete(leagueRule);
     }
 
-    public List<LeagueRule> extractRulesForLeague(final UUID leagueUuid) {
+    public List<LeagueRuleDto> extractRulesForLeague(final UUID leagueUuid) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-        final List<LeagueRule> rules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(league);
-        return rules;
+        return leagueRulesRepository
+                .findAllByLeagueOrderByOrderValueAscIdAsc(league)
+                .stream()
+                .map(LeagueRuleDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public void updateLeagueRule(
+            final UUID ruleUuid,
+            final Optional<String> rule,
+            final Optional<LeagueRuleType> type,
+            final Optional<Double> orderValue) {
+        final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow();
+        rule.ifPresent(leagueRule::setRule);
+        type.ifPresent(leagueRule::setType);
+        orderValue.ifPresent(leagueRule::setOrderValue);
+        leagueRulesRepository.save(leagueRule);
     }
 }

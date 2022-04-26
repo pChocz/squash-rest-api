@@ -16,7 +16,11 @@ import java.util.UUID;
 public interface LeagueRepository extends JpaRepository<League, Long> {
 
     @Override
-    @EntityGraph(attributePaths = {"seasons", "additionalMatches"})
+    @EntityGraph(
+            attributePaths = {
+                    "seasons",
+                    "additionalMatches"
+            })
     List<League> findAll();
 
     @Query("SELECT l FROM League l")

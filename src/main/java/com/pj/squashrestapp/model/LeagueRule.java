@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -35,7 +37,7 @@ public class LeagueRule {
     private Double orderValue;
 
     @Setter
-    @Column(name = "rule")
+    @Column(name = "rule", length = 1000)
     private String rule;
 
     @JsonIgnore
@@ -44,7 +46,13 @@ public class LeagueRule {
     @JoinColumn(name = "league_id")
     private League league;
 
-    public LeagueRule(final String rule) {
+    @Setter
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private LeagueRuleType type;
+
+    public LeagueRule(final String rule, final LeagueRuleType type) {
         this.rule = rule;
+        this.type = type;
     }
 }
