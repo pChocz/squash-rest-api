@@ -55,7 +55,11 @@ public class LeagueRulesService {
         final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow();
         rule.ifPresent(leagueRule::setRule);
         type.ifPresent(leagueRule::setType);
-        orderValue.ifPresent(leagueRule::setOrderValue);
+        if (orderValue.isPresent()) {
+            leagueRule.setOrderValue(orderValue.get());
+        } else {
+            leagueRule.setOrderValue(null);
+        }
         leagueRulesRepository.save(leagueRule);
     }
 }
