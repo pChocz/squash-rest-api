@@ -136,11 +136,14 @@ public class LeagueService {
 
         final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
         final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
+        final RoleForLeague ownerRole = new RoleForLeague(LeagueRole.OWNER);
         league.addRoleForLeague(playerRole);
         league.addRoleForLeague(moderatorRole);
+        league.addRoleForLeague(ownerRole);
 
         player.addRole(playerRole);
         player.addRole(moderatorRole);
+        player.addRole(ownerRole);
 
         playerRepository.save(player);
         leagueRepository.save(league);
@@ -172,7 +175,7 @@ public class LeagueService {
         roleForLeagueRepository.deleteAll(rolesForLeague);
 
         // league rules
-        final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAsc(leagueToRemove);
+        final List<LeagueRule> leagueRules = leagueRulesRepository.findAllByLeagueOrderByOrderValueAscIdAsc(leagueToRemove);
         leagueRulesRepository.deleteAll(leagueRules);
 
         // logo

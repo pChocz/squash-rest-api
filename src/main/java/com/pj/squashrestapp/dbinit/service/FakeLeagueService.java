@@ -106,8 +106,10 @@ public class FakeLeagueService {
         leagueLogo.setPicture(logoBytes);
         league.setLeagueLogo(leagueLogo);
 
+        final RoleForLeague ownerRole = new RoleForLeague(LeagueRole.OWNER);
         final RoleForLeague moderatorRole = new RoleForLeague(LeagueRole.MODERATOR);
         final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
+        league.addRoleForLeague(ownerRole);
         league.addRoleForLeague(moderatorRole);
         league.addRoleForLeague(playerRole);
         final Authority userAuthority = authorityRepository.findByType(AuthorityType.ROLE_USER);
@@ -116,7 +118,7 @@ public class FakeLeagueService {
                 "Creating {} players (including password hashing) and assigning roles/authorities...",
                 numberOfAllPlayers);
         final List<Player> players = FakePlayersCreator.create(numberOfAllPlayers, passwordEncoder);
-        FakePlayersRoleAssigner.assignRolesAndAuthorities(players, moderatorRole, playerRole, userAuthority);
+        FakePlayersRoleAssigner.assignRolesAndAuthorities(players, ownerRole, moderatorRole, playerRole, userAuthority);
 
         log.info("Creating {} complete seasons (incl. Bonus Points)...", numberOfCompletedSeasons);
         LocalDate seasonStartDate = startDate;
