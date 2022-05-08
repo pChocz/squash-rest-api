@@ -71,7 +71,7 @@ public class LeagueController {
 
     @DeleteMapping(value = "/{leagueUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'OWNER')")
     void deleteLeague(@PathVariable final UUID leagueUuid) {
         leagueService.removeLeague(leagueUuid);
         redisCacheService.clearAll();

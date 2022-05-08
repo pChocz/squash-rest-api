@@ -190,7 +190,6 @@ public class RedisCacheService {
 
     public void evictCacheForLostBall(final LostBall lostBall) {
         final String seasonUuid = lostBall.getSeason().getUuid().toString();
-        final String leagueUuid = lostBall.getSeason().getLeague().getUuid().toString();
 
         clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
     }
