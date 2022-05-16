@@ -457,4 +457,9 @@ public class PlayerService {
 
         playerRepository.save(player);
     }
+
+    public TokenPair adminLoginAsUser(final UUID playerUuid) {
+        final Player player = playerRepository.findByUuid(playerUuid);
+        return tokenCreateService.createTokensPairForPlayer(player);
+    }
 }

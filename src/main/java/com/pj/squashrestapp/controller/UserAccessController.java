@@ -240,6 +240,12 @@ public class UserAccessController {
         return tokenPair;
     }
 
+    @PostMapping(value = "/admin-login-as-user")
+    @PreAuthorize("isAdmin()")
+    TokenPair adminLoginAsUser(@RequestParam final UUID playerUuid) {
+        return playerService.adminLoginAsUser(playerUuid);
+    }
+
     @PostMapping("/confirm-registration")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void confirmRegistration(@RequestParam final UUID token) {
