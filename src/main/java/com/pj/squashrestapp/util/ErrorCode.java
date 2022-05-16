@@ -11,6 +11,7 @@ public class ErrorCode {
     public static final String ROUND_NOT_FOUND = "LEAGUE_NOT_FOUND";
     public static final String WRONG_DATA_FORMAT = "WRONG_DATA_FORMAT";
     public static final String NOT_A_PLAYER_OF_LEAGUE = "NOT_A_PLAYER_OF_LEAGUE";
+    public static final String NOT_A_PLAYER_OF_ROUND = "NOT_A_PLAYER_OF_ROUND";
     public static final String ALREADY_A_PLAYER_OF_LEAGUE = "ALREADY_A_PLAYER_OF_LEAGUE";
     public static final String INVALID_PASSWORD_RESET_TOKEN = "INVALID_PASSWORD_RESET_TOKEN";
     public static final String INVALID_MAGIC_LINK_TOKEN = "INVALID_MAGIC_LINK_TOKEN";

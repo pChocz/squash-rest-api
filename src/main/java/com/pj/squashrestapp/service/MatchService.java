@@ -1,26 +1,20 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
-import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import com.pj.squashrestapp.dto.matchresulthelper.WrongResultException;
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
-import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.ErrorCode;
-import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,7 +33,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MatchService {
 
-    private final RoundRepository roundRepository;
     private final MatchRepository matchRepository;
     private final AdditionalMatchRepository additionalMatchRepository;
     private final SetResultRepository setResultRepository;
@@ -49,32 +42,6 @@ public class MatchService {
     public MatchSimpleDto modifySingleScore(
             final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
         final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
-        final Round round = matchToModify.getRoundGroup().getRound();
-        final UUID roundUuid = round.getUuid();
-        final UUID leagueUuid = round.getSeason().getLeague().getUuid();
-
-        final UserDetailsImpl currentUser = GeneralUtil.extractSessionUser();
-        final UUID playerUuid = currentUser.getUuid();
-
-        if (currentUser.isAdmin() || currentUser.hasRoleForLeague(leagueUuid, LeagueRole.MODERATOR)) {
-            // full modify access for admins and league moderators
-
-        } else if (roundRepository.checkIfPlayerOfRound(roundUuid, playerUuid)) {
-            // limited modify access for current round players - only if in progress
-
-            if (isMatchInProgress(matchToModify)) {
-                // allow if match is in progress
-
-            } else {
-                log.error("No authorization to modify match that is finished\n{}", matchToModify);
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_IS_FINISHED);
-            }
-
-        } else {
-            log.error("No authorization to modify match in this round\n{}", matchToModify);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_MODIFY_ERROR_NOT_ALLOWED);
-        }
-
         final String initialMatchResult = matchToModify.toString();
 
         final SetResult setToModify = matchToModify.getSetResults().stream()
@@ -127,29 +94,8 @@ public class MatchService {
         return new MatchSimpleDto(matchToModify);
     }
 
-    private boolean isMatchInProgress(final Match matchToModify) {
-        final MatchStatus matchStatus = new MatchSimpleDto(matchToModify).getStatus();
-        return matchStatus != MatchStatus.FINISHED;
-    }
-
     private boolean setIsTiebreak(final Match match, final int setNumber) {
         return setNumber == match.getMatchFormatType().getMaxNumberOfSets();
-    }
-
-    private Integer computeWinnerScore(final Integer looserScore, final int setNumber) {
-        if (setNumber < 3) {
-            return computeWinnerScoreForRegularSet(looserScore);
-        } else {
-            return 9;
-        }
-    }
-
-    private Integer computeWinnerScoreForRegularSet(final Integer looserScore) {
-        if (looserScore < 10) {
-            return 11;
-        } else {
-            return 12;
-        }
     }
 
     public MatchesSimplePaginated getRoundMatchesPaginated(

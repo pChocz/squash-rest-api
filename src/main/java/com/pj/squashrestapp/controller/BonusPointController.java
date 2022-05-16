@@ -33,7 +33,7 @@ public class BonusPointController {
     private final BonusPointService bonusPointService;
 
     @PostMapping
-    @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
+    @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
     BonusPoint createNewBonusPoint(
             @RequestParam final UUID winnerUuid,
             @RequestParam final UUID looserUuid,

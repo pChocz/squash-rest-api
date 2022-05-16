@@ -33,7 +33,7 @@ public class LostBallsController {
     private final LostBallService lostBallService;
 
     @PostMapping
-    @PreAuthorize("hasRoleForSeason(#seasonUuid, 'PLAYER')")
+    @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
     LostBall createNewLostBall(
             @RequestParam final UUID playerUuid,
             @RequestParam final UUID seasonUuid,

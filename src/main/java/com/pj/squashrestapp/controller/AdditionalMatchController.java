@@ -37,9 +37,12 @@ public class AdditionalMatchController {
     @PostMapping
     @PreAuthorize(
             """
-          isOneOfThePlayers(#firstPlayerUuid, #secondPlayerUuid)
-           && hasRoleForLeague(#leagueUuid, 'PLAYER')
-          """)
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            ||
+            hasRoleForLeague(#leagueUuid, 'MODERATOR')
+            ||
+            (isOneOfThePlayers(#firstPlayerUuid, #secondPlayerUuid) && hasRoleForLeague(#leagueUuid, 'PLAYER'))
+            """)
     void createNewAdditionalMatchEmpty(
             @RequestParam final UUID firstPlayerUuid,
             @RequestParam final UUID secondPlayerUuid,
@@ -52,7 +55,7 @@ public class AdditionalMatchController {
     }
 
     @DeleteMapping("{matchUuid}")
-    @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
+    @PreAuthorize("hasRoleForAdditionalMatch(#matchUuid, 'MODERATOR')")
     void deleteAdditionalMatchByUuid(@PathVariable final UUID matchUuid) {
         additionalMatchService.deleteMatchByUuid(matchUuid);
     }
@@ -64,7 +67,14 @@ public class AdditionalMatchController {
     }
 
     @PutMapping(value = "/{matchUuid}")
-    @PreAuthorize("isPlayerOfAdditionalMatch(#matchUuid)")
+    @PreAuthorize(
+            """
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            ||
+            hasRoleForAdditionalMatch(#matchUuid, 'MODERATOR')
+            ||
+            (isPlayerOfAdditionalMatch(#matchUuid) && !isAdditionalMatchFinished(#matchUuid))
+            """)
     void updateAdditionalMatchSingleScore(
             @PathVariable final UUID matchUuid,
             @RequestParam final int setNumber,

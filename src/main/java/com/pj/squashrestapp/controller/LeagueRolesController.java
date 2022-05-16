@@ -28,8 +28,9 @@ public class LeagueRolesController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
-             isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            || 
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void assignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
@@ -42,8 +43,9 @@ public class LeagueRolesController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
-             isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            || 
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void unassignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
@@ -56,8 +58,9 @@ public class LeagueRolesController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
-             isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            ||
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void assignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,
@@ -70,8 +73,9 @@ public class LeagueRolesController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
-             isOwnerOfLeague(#leagueUuid)
-              || (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            hasRoleForLeague(#leagueUuid, 'OWNER')
+            ||
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
             """)
     void unassignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,

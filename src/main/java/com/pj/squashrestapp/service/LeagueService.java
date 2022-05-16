@@ -151,6 +151,7 @@ public class LeagueService {
         leagueRepository.save(league);
         roleForLeagueRepository.save(playerRole);
         roleForLeagueRepository.save(moderatorRole);
+        roleForLeagueRepository.save(ownerRole);
 
         return league.getUuid();
     }
@@ -189,6 +190,7 @@ public class LeagueService {
         // - additional matches
         // - round matches / roundgroups / rounds / seasons
         // - bonus points
+        // - lost balls
         // - trophies
         deepRemovalService.deepRemoveLeague(leagueUuid);
     }

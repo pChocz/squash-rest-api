@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -29,6 +30,14 @@ public class MatchController {
     private final MatchService matchService;
 
     @PutMapping(value = "/{matchUuid}")
+    @PreAuthorize(
+            """
+            hasRoleForMatch(#matchUuid, 'OWNER')
+            ||
+            hasRoleForMatch(#matchUuid, 'MODERATOR')
+            ||
+            (isPlayerOfRoundForMatch(#matchUuid) && !isMatchFinished(#matchUuid))
+            """)
     MatchSimpleDto updateMatchSingleScore(
             @PathVariable final UUID matchUuid,
             @RequestParam final int setNumber,
