@@ -33,10 +33,10 @@ public class MatchController {
     @PreAuthorize(
             """
             hasRoleForMatch(#matchUuid, 'OWNER')
-            ||
+            or
             hasRoleForMatch(#matchUuid, 'MODERATOR')
-            ||
-            (isPlayerOfRoundForMatch(#matchUuid) && !isMatchFinished(#matchUuid))
+            or
+            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchFinished(#matchUuid))
             """)
     MatchSimpleDto updateMatchSingleScore(
             @PathVariable final UUID matchUuid,

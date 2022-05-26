@@ -34,13 +34,14 @@ public class UserDetailsImpl implements UserDetails {
     private UUID uuid;
     private UUID passwordSessionUuid;
     private boolean accountNonLocked;
+    private boolean adminLogin;
 
     public UserDetailsImpl(final String username, final Collection<GrantedAuthority> authorities) {
         this.username = username;
         this.authorities = new HashSet<>(authorities);
     }
 
-    public UserDetailsImpl(final Player player) {
+    public UserDetailsImpl(final Player player, final boolean isAdminLogin) {
         this.username = player.getUsername();
         this.password = player.getPassword();
         this.authorities = extractAuthorities(player.getAuthorities());
@@ -49,6 +50,7 @@ public class UserDetailsImpl implements UserDetails {
         this.uuid = player.getUuid();
         this.passwordSessionUuid = player.getPasswordSessionUuid();
         this.accountNonLocked = player.isNonLocked();
+        this.adminLogin = isAdminLogin;
     }
 
     private Set<GrantedAuthority> extractAuthorities(final Set<Authority> authorities) {

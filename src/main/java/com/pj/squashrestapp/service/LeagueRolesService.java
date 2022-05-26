@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /** */
@@ -30,16 +31,16 @@ public class LeagueRolesService {
     private final LeagueRepository leagueRepository;
     private final RoleForLeagueRepository roleForLeagueRepository;
 
-    public void assignRoleByPlayerUuid(final UUID leagueUuid, final UUID playerUuid, final LeagueRole leagueRole) {
-        final Player player =
-                playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    public boolean assignRoleByPlayerUuid(final UUID leagueUuid, final UUID playerUuid, final LeagueRole leagueRole) {
+        final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
         assignRole(leagueUuid, leagueRole, player);
+        return true;
     }
 
-    public void unassignRoleByPlayerUuid(final UUID leagueUuid, final UUID playerUuid, final LeagueRole leagueRole) {
-        final Player player =
-                playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+    public boolean unassignRoleByPlayerUuid(final UUID leagueUuid, final UUID playerUuid, final LeagueRole leagueRole) {
+        final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
         unassignRole(leagueUuid, leagueRole, player);
+        return true;
     }
 
     private void unassignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
@@ -51,11 +52,15 @@ public class LeagueRolesService {
         roleForLeagueRepository.save(roleForLeague);
     }
 
-    public void assignRoleByPlayerUsername(
+    public boolean assignRoleByPlayerUsername(
             final UUID leagueUuid, final String playerUsername, final LeagueRole leagueRole) {
-        playerRepository
-                .fetchForAuthorizationByUsernameOrEmailUppercase(playerUsername.toUpperCase())
-                .ifPresent(player -> assignRole(leagueUuid, leagueRole, player));
+        final Optional<Player> player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(playerUsername.toUpperCase());
+        if (player.isPresent()) {
+            assignRole(leagueUuid, leagueRole, player.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private void assignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
@@ -67,11 +72,15 @@ public class LeagueRolesService {
         roleForLeagueRepository.save(roleForLeague);
     }
 
-    public void unassignRoleByPlayerUsername(
+    public boolean unassignRoleByPlayerUsername(
             final UUID leagueUuid, final String playerUsername, final LeagueRole leagueRole) {
-        playerRepository
-                .fetchForAuthorizationByUsernameOrEmailUppercase(playerUsername.toUpperCase())
-                .ifPresent(player -> unassignRole(leagueUuid, leagueRole, player));
+        final Optional<Player> player = playerRepository.fetchForAuthorizationByUsernameOrEmailUppercase(playerUsername.toUpperCase());
+        if (player.isPresent()) {
+            unassignRole(leagueUuid, leagueRole, player.get());
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Transactional

@@ -98,9 +98,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         player.incrementSuccessfulLoginAttempts();
         playerRepository.save(player);
 
-        final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player);
+        final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player, false);
 
-        res.addHeader(HEADER_STRING, TOKEN_PREFIX + tokensPair.getJwtAccessToken());
+        res.addHeader(HEADER_STRING, tokensPair.getJwtAccessToken());
         res.addHeader(HEADER_REFRESH_STRING, tokensPair.getRefreshToken().toString());
         res.addHeader(EXPOSE_HEADER_STRING, HEADER_STRING + ", " + HEADER_REFRESH_STRING);
     }

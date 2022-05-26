@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.config.exceptions.EmailAlreadyTakenException;
 import com.pj.squashrestapp.config.exceptions.EmailNotValidException;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
@@ -190,7 +191,7 @@ public class PlayerService {
     public PlayerDetailedDto getAboutMeInfo() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         final Player player = playerRepository
-                .fetchForAuthorizationByUsernameOrEmailUppercase(auth.getName().toUpperCase())
+                .fetchForAuthorizationByUuid(((UserDetailsImpl)auth.getPrincipal()).getUuid())
                 .orElseThrow();
         final PlayerDetailedDto userBasicInfo = new PlayerDetailedDto(player);
         return userBasicInfo;
@@ -253,8 +254,7 @@ public class PlayerService {
             final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
             refreshTokenRepository.deleteAll(playerRefreshTokens);
 
-            final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
-            return tokenPair;
+            return tokenCreateService.createTokensPairForPlayer(player, false);
 
         } else {
             log.warn("Attempt to change password but old password does not match");
@@ -277,8 +277,7 @@ public class PlayerService {
         magicLinkLoginTokenRepository.delete(magicLoginLinkToken);
 
         log.info("User {} has been successfully logged in using magic link.", player.getUsername());
-        final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
-        return tokenPair;
+        return tokenCreateService.createTokensPairForPlayer(player, false);
     }
 
     public TokenPair changeCurrentSessionPlayerPasswordAndGetNewTokens(final UUID token, final String newPassword) {
@@ -305,8 +304,7 @@ public class PlayerService {
         passwordResetTokenRepository.delete(passwordResetToken);
 
         log.info("Password for user {} has been succesfully changed.", player.getUsername());
-        final TokenPair tokenPair = tokenCreateService.createTokensPairForPlayer(player);
-        return tokenPair;
+        return tokenCreateService.createTokensPairForPlayer(player, false);
     }
 
     public void activateUserWithToken(final UUID token) {
@@ -460,6 +458,6 @@ public class PlayerService {
 
     public TokenPair adminLoginAsUser(final UUID playerUuid) {
         final Player player = playerRepository.findByUuid(playerUuid);
-        return tokenCreateService.createTokensPairForPlayer(player);
+        return tokenCreateService.createTokensPairForPlayer(player, true);
     }
 }

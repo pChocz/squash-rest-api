@@ -13,6 +13,7 @@ import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.util.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
@@ -75,7 +76,7 @@ public class RedisCacheService {
         if (season == null) {
             season = seasonRepository
                     .findSeasonByUuid(seasonUuid)
-                    .orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.SEASON_NOT_FOUND));
         }
         final League league = season.getLeague();
 

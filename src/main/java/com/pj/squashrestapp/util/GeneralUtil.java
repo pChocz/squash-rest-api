@@ -85,7 +85,9 @@ public class GeneralUtil {
 
         final Object userDetailsObject = authentication.getPrincipal();
         if (userDetailsObject instanceof UserDetailsImpl userDetails) {
-            return userDetails.getUsername();
+            return userDetails.isAdminLogin()
+                    ? "[ADMIN] " + userDetails.getUsername()
+                    : userDetails.getUsername();
         } else {
             return "ANONYMOUS";
         }

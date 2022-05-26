@@ -188,7 +188,7 @@ public class SeasonService {
         if (season == null) {
             season = seasonRepository
                     .findSeasonByUuid(seasonUuid)
-                    .orElseThrow(() -> new NoSuchElementException("Season does not exist!"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.SEASON_NOT_FOUND));
         }
 
         final ArrayListMultimap<String, Integer> xpPointsPerSplit = xpPointsService.buildAllAsIntegerMultimap();

@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 
 /**
  * Exception interceptors - this class defines what should specific exceptions return after request
- * is done (in term of both response status and message).
+ * is done (in terms of both response status and message).
  */
 @Slf4j
 @RestControllerAdvice
@@ -78,7 +78,7 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
     ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(
             final Exception ex, final HttpServletRequest request) {
 
-        final HttpStatus httpStatus = HttpStatus.BAD_REQUEST;
+        final HttpStatus httpStatus = HttpStatus.NOT_FOUND;
 
         return new ResponseEntity<>(
                 ErrorResponse.builder()

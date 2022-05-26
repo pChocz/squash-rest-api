@@ -25,63 +25,59 @@ public class LeagueRolesController {
     private final LeagueRolesService leagueRolesService;
 
     @PutMapping(value = "/by-uuid/{leagueUuid}/{playerUuid}/{role}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            || 
-            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            or
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') and #role.name() == 'PLAYER')
             """)
-    void assignLeagueRoleByPlayerUuid(
+    boolean assignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
             @PathVariable final UUID playerUuid,
             @PathVariable final LeagueRole role) {
-        leagueRolesService.assignRoleByPlayerUuid(leagueUuid, playerUuid, role);
+        return leagueRolesService.assignRoleByPlayerUuid(leagueUuid, playerUuid, role);
     }
 
     @DeleteMapping(value = "/by-uuid/{leagueUuid}/{playerUuid}/{role}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            || 
-            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            or
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') and #role.name() == 'PLAYER')
             """)
-    void unassignLeagueRoleByPlayerUuid(
+    boolean unassignLeagueRoleByPlayerUuid(
             @PathVariable final UUID leagueUuid,
             @PathVariable final UUID playerUuid,
             @PathVariable final LeagueRole role) {
-        leagueRolesService.unassignRoleByPlayerUuid(leagueUuid, playerUuid, role);
+        return leagueRolesService.unassignRoleByPlayerUuid(leagueUuid, playerUuid, role);
     }
 
     @PutMapping(value = "/by-username/{leagueUuid}/{playerUsername}/{role}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            ||
-            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            or
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') and #role.name() == 'PLAYER')
             """)
-    void assignLeagueRoleByPlayerName(
+    boolean assignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,
             @PathVariable final String playerUsername,
             @PathVariable final LeagueRole role) {
-        leagueRolesService.assignRoleByPlayerUsername(leagueUuid, playerUsername, role);
+        return leagueRolesService.assignRoleByPlayerUsername(leagueUuid, playerUsername, role);
     }
 
     @DeleteMapping(value = "/by-username/{leagueUuid}/{playerUsername}/{role}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            ||
-            (hasRoleForLeague(#leagueUuid, 'MODERATOR') && #role == 'PLAYER')
+            or
+            (hasRoleForLeague(#leagueUuid, 'MODERATOR') and #role.name() == 'PLAYER')
             """)
-    void unassignLeagueRoleByPlayerName(
+    boolean unassignLeagueRoleByPlayerName(
             @PathVariable final UUID leagueUuid,
             @PathVariable final String playerUsername,
             @PathVariable final LeagueRole role) {
-        leagueRolesService.unassignRoleByPlayerUsername(leagueUuid, playerUsername, role);
+        return leagueRolesService.unassignRoleByPlayerUsername(leagueUuid, playerUsername, role);
     }
 
     @PutMapping(value = "/join/{leagueUuid}")

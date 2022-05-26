@@ -2,6 +2,7 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
+import com.pj.squashrestapp.util.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -22,7 +23,7 @@ public class LeagueLogoService {
     public byte[] extractLeagueLogo(final UUID leagueUuid) {
         final byte[] leagueLogoBytes = leagueLogoRepository
                 .extractLogoBlobByLeagueUuid(leagueUuid)
-                .orElseThrow(() -> new NoSuchElementException("Logo does not exist!"));
+                .orElseThrow(() -> new NoSuchElementException(ErrorCode.LOGO_NOT_FOUND));
         return leagueLogoBytes;
     }
 }

@@ -21,7 +21,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .fetchForAuthorizationByUsernameOrEmailUppercase(usernameOrEmail.toUpperCase())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found!"));
 
-        final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);
-        return userDetailsImpl;
+        return new UserDetailsImpl(player, false);
     }
 }

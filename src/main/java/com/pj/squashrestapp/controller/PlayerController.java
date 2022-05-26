@@ -5,6 +5,7 @@ import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -129,7 +130,7 @@ public class PlayerController {
             return new PlayerDetailedDto(newPlayer);
 
         } else {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid data!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.WRONG_DATA_FORMAT);
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.SecretMethod;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.PlayerForLeagueDto;
@@ -39,6 +40,7 @@ public class LeagueController {
     private final LeagueService leagueService;
     private final RedisCacheService redisCacheService;
 
+    @SecretMethod
     @PostMapping
     UUID createLeague(
             @RequestParam final String leagueName,
@@ -77,6 +79,7 @@ public class LeagueController {
         redisCacheService.clearAll();
     }
 
+    @SecretMethod
     @PutMapping(value = "/owner/{leagueUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRoleForLeague(#leagueUuid, 'OWNER')")
@@ -90,6 +93,7 @@ public class LeagueController {
         redisCacheService.clearAll();
     }
 
+    @SecretMethod
     @PutMapping(value = "/moderator/{leagueUuid}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
@@ -126,7 +130,7 @@ public class LeagueController {
     }
 
     @GetMapping(value = "/players-for-league-moderator/{leagueUuid}")
-    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR')")
+    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'MODERATOR') or hasRoleForLeague(#leagueUuid, 'OWNER')")
     List<PlayerForLeagueDto> getPlayersForLeagueModeratorByLeagueUuid(@PathVariable final UUID leagueUuid) {
         final List<PlayerForLeagueDto> playersForLeague = leagueService.extractLeaguePlayersForLeague(leagueUuid);
         return playersForLeague;

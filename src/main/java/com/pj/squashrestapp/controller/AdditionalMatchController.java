@@ -38,10 +38,10 @@ public class AdditionalMatchController {
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            ||
+            or
             hasRoleForLeague(#leagueUuid, 'MODERATOR')
-            ||
-            (isOneOfThePlayers(#firstPlayerUuid, #secondPlayerUuid) && hasRoleForLeague(#leagueUuid, 'PLAYER'))
+            or
+            (isOneOfThePlayers(#firstPlayerUuid, #secondPlayerUuid) and hasRoleForLeague(#leagueUuid, 'PLAYER'))
             """)
     void createNewAdditionalMatchEmpty(
             @RequestParam final UUID firstPlayerUuid,
@@ -70,10 +70,10 @@ public class AdditionalMatchController {
     @PreAuthorize(
             """
             hasRoleForLeague(#leagueUuid, 'OWNER')
-            ||
+            or
             hasRoleForAdditionalMatch(#matchUuid, 'MODERATOR')
-            ||
-            (isPlayerOfAdditionalMatch(#matchUuid) && !isAdditionalMatchFinished(#matchUuid))
+            or
+            (isPlayerOfAdditionalMatch(#matchUuid) and !isAdditionalMatchFinished(#matchUuid))
             """)
     void updateAdditionalMatchSingleScore(
             @PathVariable final UUID matchUuid,

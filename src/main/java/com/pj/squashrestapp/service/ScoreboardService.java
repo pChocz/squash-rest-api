@@ -18,6 +18,7 @@ import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
+import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -130,7 +131,7 @@ public class ScoreboardService {
         if (round == null) {
             round = roundRepository
                     .findByUuid(roundUuid)
-                    .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.ROUND_NOT_FOUND));
         }
 
         final Season season = round.getSeason();
@@ -193,7 +194,7 @@ public class ScoreboardService {
         if (mostRecentRound == null) {
             mostRecentRound = roundRepository
                     .findByUuid(mostRecentRound.getUuid())
-                    .orElseThrow(() -> new NoSuchElementException("Round does not exist!"));
+                    .orElseThrow(() -> new NoSuchElementException(ErrorCode.ROUND_NOT_FOUND));
         }
 
         final RoundScoreboard roundScoreboard = new RoundScoreboard(mostRecentRound);

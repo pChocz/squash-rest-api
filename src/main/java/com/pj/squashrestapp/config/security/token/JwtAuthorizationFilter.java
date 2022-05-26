@@ -3,6 +3,7 @@ package com.pj.squashrestapp.config.security.token;
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.util.ErrorCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -82,11 +83,13 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .getBody();
 
             final String playerUuidAsString = claims.get("uid", String.class);
+            final String isAdminLoginAsString = claims.get("adl", String.class);
             final UUID playerUuid = UUID.fromString(playerUuidAsString);
+            final boolean isAdminLogin = "1".equalsIgnoreCase(isAdminLoginAsString);
 
             final Player player = playerRepository
                     .fetchForAuthorizationByUuid(playerUuid)
-                    .orElseThrow(() -> new RuntimeException("User with given UUID does not exist!"));
+                    .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_FOUND));
 
             log.debug(
                     "\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
@@ -95,7 +98,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     claims.getIssuedAt(),
                     claims.getExpiration());
 
-            final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player);
+            final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player, isAdminLogin);
 
             // checking if the account is activated
             if (!userDetailsImpl.isEnabled()) {

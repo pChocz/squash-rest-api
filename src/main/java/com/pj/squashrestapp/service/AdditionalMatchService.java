@@ -4,6 +4,7 @@ import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
+import com.pj.squashrestapp.dto.matchresulthelper.WrongResultException;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditionalSetResult;
@@ -13,11 +14,14 @@ import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.util.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -60,12 +64,12 @@ public class AdditionalMatchService {
 
         final Player player = playerRepository.findByUuid(playerUuid);
         if (player == null) {
-            throw new GeneralBadRequestException("Player not found!");
+            throw new GeneralBadRequestException(ErrorCode.USER_NOT_FOUND);
         }
 
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {
-            throw new GeneralBadRequestException("League not valid!");
+            throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
         }
 
         final List<AdditionalMatch> matches =
@@ -77,7 +81,7 @@ public class AdditionalMatchService {
             final UUID leagueUuid, final UUID[] playersUuids) {
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {
-            throw new GeneralBadRequestException("League not valid!");
+            throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
         }
         final List<AdditionalMatch> matches =
                 additionalMatchRepository.fetchForMultiplePlayersForLeague(playersUuids, league.get());
@@ -96,12 +100,12 @@ public class AdditionalMatchService {
         final Player firstPlayer = playerRepository.findByUuid(firstPlayerUuid);
         final Player secondPlayer = playerRepository.findByUuid(secondPlayerUuid);
         if (firstPlayer == null || secondPlayer == null) {
-            throw new GeneralBadRequestException("Players not valid!");
+            throw new GeneralBadRequestException(ErrorCode.USER_NOT_FOUND);
         }
 
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {
-            throw new GeneralBadRequestException("League not valid!");
+            throw new GeneralBadRequestException(ErrorCode.LEAGUE_NOT_FOUND);
         }
 
         final AdditionalMatch match = new AdditionalMatch(firstPlayer, secondPlayer, league.get());
@@ -126,7 +130,7 @@ public class AdditionalMatchService {
     public void deleteMatchByUuid(final UUID matchUuid) {
         final Optional<AdditionalMatch> matchOptional = additionalMatchRepository.findByUuid(matchUuid);
         if (matchOptional.isEmpty()) {
-            throw new GeneralBadRequestException("Additional match not found!");
+            throw new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND);
         }
         final AdditionalMatch match = matchOptional.get();
         redisCacheService.evictCacheForAdditionalMatch(match);
@@ -153,14 +157,18 @@ public class AdditionalMatchService {
         } else {
 
             final Integer winnerScore;
-            if (setNumber < matchToModify.getMatchFormatType().getMaxNumberOfSets()) {
-                winnerScore = SetScoreHelper.computeWinnerScore(
-                        looserScore,
-                        matchToModify.getRegularSetWinningPoints(),
-                        matchToModify.getRegularSetWinningType());
-            } else {
-                winnerScore = SetScoreHelper.computeWinnerScore(
-                        looserScore, matchToModify.getTiebreakWinningPoints(), matchToModify.getTiebreakWinningType());
+            try {
+                if (setNumber < matchToModify.getMatchFormatType().getMaxNumberOfSets()) {
+                    winnerScore = SetScoreHelper.computeWinnerScore(
+                            looserScore,
+                            matchToModify.getRegularSetWinningPoints(),
+                            matchToModify.getRegularSetWinningType());
+                } else {
+                    winnerScore = SetScoreHelper.computeWinnerScore(
+                            looserScore, matchToModify.getTiebreakWinningPoints(), matchToModify.getTiebreakWinningType());
+                }
+            } catch (final WrongResultException ex) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_MATCH_RESULT);
             }
 
             if (player.equals("FIRST")) {
@@ -178,7 +186,7 @@ public class AdditionalMatchService {
         additionalSetResultRepository.save(setToModify);
 
         log.info(
-                "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
+                "Successfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
                 initialMatchResult,
                 matchToModify);
     }
@@ -188,7 +196,7 @@ public class AdditionalMatchService {
         if (matchOptional.isPresent()) {
             return new AdditionalMatchDetailedDto(matchOptional.get());
         } else {
-            throw new GeneralBadRequestException("No such match!");
+            throw new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND);
         }
     }
 }

@@ -13,10 +13,8 @@ import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
-import com.pj.squashrestapp.util.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
@@ -142,11 +140,7 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
                 .getRoundGroup()
                 .getRound()
                 .getUuid();
-        final boolean isPlayerOfRound = roundRepository.checkIfPlayerOfRound(roundUuid, playerUuid);
-        if (!isPlayerOfRound) {
-            throw new AccessDeniedException(ErrorCode.NOT_A_PLAYER_OF_LEAGUE);
-        }
-        return true;
+        return roundRepository.checkIfPlayerOfRound(roundUuid, playerUuid);
     }
 
     public boolean hasRoleForLeagueRule(final UUID leagueRuleUuid, final LeagueRole role) {
@@ -182,15 +176,6 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
             return true;
         }
         return Set.of(firstPlayerUuid, secondPlayerUuid).contains(principal.getUuid());
-    }
-
-    public boolean isPlayerOfMatch(final UUID matchUuid) {
-        if (principal.isAdmin()) {
-            return true;
-        }
-        final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
-        final Set<UUID> playersUuids = Set.of(match.getFirstPlayer().getUuid(), match.getSecondPlayer().getUuid());
-        return playersUuids.contains(principal.getUuid());
     }
 
     public boolean isPlayerOfAdditionalMatch(final UUID matchUuid) {
