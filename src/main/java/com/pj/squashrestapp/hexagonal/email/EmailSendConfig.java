@@ -30,7 +30,7 @@ import java.util.Properties;
 @Configuration
 @EnableConfigurationProperties
 @ConfigurationProperties("email")
-class EmailSendConfig {
+public class EmailSendConfig {
 
     @Value(value = "${sender_email_adress:}")
     private String senderEmailAdress;
@@ -63,7 +63,7 @@ class EmailSendConfig {
         }
     }
 
-    void sendEmailWithHtmlContent(final String receiver, final String subject, final String htmlMessageContent) {
+    public boolean sendEmailWithHtmlContent(final String receiver, final String subject, final String htmlMessageContent) {
         final Properties properties = buildProperties();
         final Session session = buildSession(properties);
 
@@ -74,11 +74,13 @@ class EmailSendConfig {
             message.setSubject(subject);
             message.setContent(htmlMessageContent, "text/html; charset=UTF-8");
             Transport.send(message);
-            log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
+            log.info("[{}] email to [{}] has been sent successfully", subject, receiver);
+            return true;
 
         } catch (final MessagingException | UnsupportedEncodingException e) {
             log.error("[{}] email to [{}] has not been sent!", subject, receiver);
             log.error("Exception", e);
+            return false;
         }
     }
 

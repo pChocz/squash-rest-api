@@ -1,7 +1,13 @@
 package com.pj.squashrestapp.config.exceptions;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.Iterables;
 import com.pj.squashrestapp.config.ErrorResponse;
+import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
+import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.ErrorCode;
+import com.pj.squashrestapp.util.GeneralUtil;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -19,7 +25,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.NoSuchElementException;
+
+import static java.util.Arrays.asList;
 
 /**
  * Exception interceptors - this class defines what should specific exceptions return after request
@@ -28,7 +37,10 @@ import java.util.NoSuchElementException;
 @Slf4j
 @RestControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
+@RequiredArgsConstructor
 public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
+
+    private final EmailPrepareFacade emailPrepareFacade;
 
     /** https://mtyurt.net/post/spring-how-to-handle-ioexception-broken-pipe.html */
     @ExceptionHandler({
@@ -46,6 +58,9 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
 
         } else {
             final HttpStatus httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+
+            sendExceptionEmail(ex, request, httpStatus);
+
             return new ResponseEntity<>(
                     ErrorResponse.builder()
                             .timestamp(LocalDateTime.now())
@@ -165,6 +180,8 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
 
         final HttpStatus httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
 
+        sendExceptionEmail(ex, request, httpStatus);
+
         return new ResponseEntity<>(
                 ErrorResponse.builder()
                         .timestamp(LocalDateTime.now())
@@ -173,5 +190,29 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
                         .path(request.getRequestURI())
                         .build(),
                 httpStatus);
+    }
+
+    private void sendExceptionEmail(final Exception ex, final HttpServletRequest request, final HttpStatus httpStatus) {
+        final StringBuilder parameters = new StringBuilder();
+
+        for (final String key : request.getParameterMap().keySet()) {
+            final String[] valueArray = request.getParameterMap().get(key);
+            final String values = StringUtils.join(valueArray, ", ");
+            parameters.append(key).append(": ").append("[").append(values).append("], ");
+        }
+
+        final List<String> content = List.of(
+                "User: " + GeneralUtil.extractSessionUsername(),
+                "IP: " + AuthorizationUtil.extractRequestIpAddress1() + " | "
+                        + AuthorizationUtil.extractRequestIpAddress2() + " | "
+                        + AuthorizationUtil.extractRequestIpAddress3(),
+                "URL: " + request.getRequestURL(),
+                "Type: " + request.getMethod(),
+                "Code: " + httpStatus.value(),
+                "Params: " + parameters.substring(0, parameters.length() - 2),
+                ex.toString(),
+                Joiner.on("\n").join(Iterables.limit(asList(ex.getStackTrace()), 30)));
+
+        emailPrepareFacade.pushExceptionEmailToQueue(content);
     }
 }

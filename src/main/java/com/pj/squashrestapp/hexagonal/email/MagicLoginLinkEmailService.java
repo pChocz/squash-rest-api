@@ -22,7 +22,7 @@ class MagicLoginLinkEmailService {
     private final SendEmailService sendEmailService;
     private final AbstractResourceBasedMessageSource messageSource;
 
-    void sendEmail(final String email, final String name, final Locale locale, final String passwordResetLink) {
+    void pushEmailToQueue(final String email, final String name, final Locale locale, final String passwordResetLink) {
 
         final String preheader = messageSource.getMessage("message.magicLoginLink.preheader", null, locale);
         final String subject = messageSource.getMessage("message.magicLoginLink.subject", null, locale);
@@ -57,6 +57,6 @@ class MagicLoginLinkEmailService {
                 "devMessage",
                 messageSource.getMessage("message.util.dev", new Object[] {SQUASH_APP_HREF, MY_WEBSITE_HREF}, locale));
 
-        sendEmailService.sendEmailWithModel(email, subject, model, EMAIL_TEMPLATE);
+        sendEmailService.pushEmailWithModelToQueue(email, subject, model, EMAIL_TEMPLATE);
     }
 }

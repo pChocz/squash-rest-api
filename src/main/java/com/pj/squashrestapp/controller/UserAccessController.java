@@ -3,7 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.aspects.SecretMethod;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.TokenPair;
-import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
+import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.service.PlayerService;
 import com.pj.squashrestapp.service.TokenCreateService;
@@ -39,7 +39,14 @@ public class UserAccessController {
     private final PlayerService playerService;
     private final TokenCreateService tokenCreateService;
     private final TokenRemovalService tokenRemovalService;
-    private final SendEmailFacade sendEmailFacade;
+    private final EmailPrepareFacade emailPrepareFacade;
+
+
+    // TODO: Just for testing exception handling
+    @GetMapping(value = "/exception")
+    PlayerDetailedDto justThrowException() {
+        throw new NullPointerException("Just throwing an uncaught exception on purpose");
+    }
 
     @SecretMethod
     @PostMapping(value = "/check-password-strength")
@@ -92,7 +99,7 @@ public class UserAccessController {
 
             final String confirmationUrl = frontendUrl + "confirm-registration/" + token;
 
-            sendEmailFacade.sendAccountActivationEmail(
+            emailPrepareFacade.pushAccountActivationEmailToQueue(
                     newPlayer.getEmail(), newPlayer.getUsername(), new Locale(lang), confirmationUrl);
             return new PlayerDetailedDto(newPlayer);
         }
@@ -114,7 +121,7 @@ public class UserAccessController {
             final UUID token = UUID.randomUUID();
             playerService.createAndPersistEmailChangeToken(token, player, newEmail);
             final String emailChangeUrl = frontendUrl + "confirm-email-change/" + token;
-            sendEmailFacade.sendEmailChangeEmail(newEmail, player.getUsername(), new Locale(lang), emailChangeUrl);
+            emailPrepareFacade.pushEmailChangeEmailToQueue(newEmail, player.getUsername(), new Locale(lang), emailChangeUrl);
         }
     }
 
@@ -131,23 +138,15 @@ public class UserAccessController {
             final UUID token = UUID.randomUUID();
             playerService.createAndPersistPasswordResetToken(token, player);
             final String passwordResetUrl = frontendUrl + "reset-password/" + token;
-            sendEmailFacade.sendPasswordResetEmail(
+            emailPrepareFacade.pushPasswordResetEmailToQueue(
                     player.getEmail(), player.getUsername(), new Locale(lang), passwordResetUrl);
 
         } else {
 
-            // we are delaying execution to give indication
-            // to the user that some process is running.
-            try {
-                TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3 * 1000, 5 * 1000));
-            } catch (final InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-
             // we are only logging it internally. Information
             // that the account does not exist does not need
             // to be passed to the frontend.
-            log.error("Account does not exist. This information is not passed to the frontend");
+            log.error("Account [{}] does not exist. This information is not passed to the frontend", usernameOrEmail);
         }
     }
 
@@ -164,23 +163,15 @@ public class UserAccessController {
             final UUID token = UUID.randomUUID();
             playerService.createAndPersistMagicLoginLinkToken(token, player);
             final String magicLoginLinkUrl = frontendUrl + "login-with-magic-link/" + token;
-            sendEmailFacade.sendMagicLoginLinkEmail(
+            emailPrepareFacade.pushMagicLoginLinkEmailToQueue(
                     player.getEmail(), player.getUsername(), new Locale(lang), magicLoginLinkUrl);
 
         } else {
 
-            // we are delaying execution to give indication
-            // to the user that some process is running.
-            try {
-                TimeUnit.MILLISECONDS.sleep(ThreadLocalRandom.current().nextInt(3 * 1000, 5 * 1000));
-            } catch (final InterruptedException ie) {
-                Thread.currentThread().interrupt();
-            }
-
             // we are only logging it internally. Information
             // that the account does not exist does not need
             // to be passed to the frontend.
-            log.error("Account does not exist. This information is not passed to the frontend");
+            log.error("Account [{}] does not exist. This information is not passed to the frontend", email);
         }
     }
 

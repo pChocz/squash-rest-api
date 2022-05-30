@@ -1,19 +1,17 @@
 package com.pj.squashrestapp.hexagonal.email;
 
-import com.pj.squashrestapp.model.LeagueRole;
-import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 
 /** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SendEmailFacade {
+public class EmailPrepareFacade {
 
     private final AccountActivationEmailService accountActivationEmailService;
     private final PasswordResetEmailService passwordResetEmailService;
@@ -21,40 +19,39 @@ public class SendEmailFacade {
     private final MagicLoginLinkEmailService magicLoginLinkEmailService;
     private final PlainEmailService plainEmailService;
     private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
+    private final ExceptionEmailService exceptionEmailService;
 
-    private final PlayerRepository playerRepository;
-
-    public void sendAccountActivationEmail(
+    public void pushAccountActivationEmailToQueue(
             final String receiverEmail, final String receiverName, final Locale locale, final String activationLink) {
 
-        accountActivationEmailService.sendEmail(receiverEmail, receiverName, locale, activationLink);
+        accountActivationEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, activationLink);
     }
 
-    public void sendPasswordResetEmail(
+    public void pushPasswordResetEmailToQueue(
             final String receiverEmail,
             final String receiverName,
             final Locale locale,
             final String passwordResetLink) {
 
-        passwordResetEmailService.sendEmail(receiverEmail, receiverName, locale, passwordResetLink);
+        passwordResetEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, passwordResetLink);
     }
 
-    public void sendEmailChangeEmail(
+    public void pushEmailChangeEmailToQueue(
             final String receiverEmail, final String receiverName, final Locale locale, final String emailChangeLink) {
 
-        emailChangeEmailService.sendEmail(receiverEmail, receiverName, locale, emailChangeLink);
+        emailChangeEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, emailChangeLink);
     }
 
-    public void sendMagicLoginLinkEmail(
+    public void pushMagicLoginLinkEmailToQueue(
             final String receiverEmail,
             final String receiverName,
             final Locale locale,
             final String passwordResetLink) {
 
-        magicLoginLinkEmailService.sendEmail(receiverEmail, receiverName, locale, passwordResetLink);
+        magicLoginLinkEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, passwordResetLink);
     }
 
-    public void sendPlainEmail(
+    public void pushPlainEmailToQueue(
             final String receiverEmail,
             final String receiverName,
             final Locale locale,
@@ -62,14 +59,15 @@ public class SendEmailFacade {
             final String preheader,
             final String... contentLines) {
 
-        plainEmailService.sendEmail(receiverEmail, receiverName, locale, subject, preheader, contentLines);
+        plainEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, subject, preheader, contentLines);
     }
 
-    public void sendRecruiterLoggedInEmail() {
-        recruiterLoggedInEmailService.sendEmail();
+    public void pushRecruiterLoggedInEmailToQueue(final String ip) {
+        recruiterLoggedInEmailService.pushEmailToQueue(ip);
     }
 
-    private boolean isModeratorOfLeague(final Player player) {
-        return player.getRoles().stream().anyMatch(role -> role.getLeagueRole() == LeagueRole.MODERATOR);
+    public void pushExceptionEmailToQueue(final List<String> content) {
+        exceptionEmailService.pushEmailToQueue(content);
     }
+
 }

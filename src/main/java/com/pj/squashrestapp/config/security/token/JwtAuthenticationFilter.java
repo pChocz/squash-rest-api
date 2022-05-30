@@ -2,11 +2,10 @@ package com.pj.squashrestapp.config.security.token;
 
 import com.pj.squashrestapp.config.UserDetailsImpl;
 import com.pj.squashrestapp.dto.TokenPair;
-import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
+import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
-import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,7 +25,6 @@ import java.util.ArrayList;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPOSE_HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_REFRESH_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_STRING;
-import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
 
 /** */
 @Slf4j
@@ -36,7 +34,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final AuthenticationManager authenticationManager;
     private final TokenCreateService tokenCreateService;
     private final PlayerRepository playerRepository;
-    private final SendEmailFacade sendEmailFacade;
+    private final EmailPrepareFacade emailPrepareFacade;
 
     @Override
     public Authentication attemptAuthentication(final HttpServletRequest req, final HttpServletResponse res)
@@ -52,24 +50,10 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                 throw new WrongCredentialsFormatException("Wrong format of credentials received");
             }
 
-            final long startTime = System.nanoTime();
             final var authentication =
                     new UsernamePasswordAuthenticationToken(usernameOrEmail, password, new ArrayList<>());
-            final var auth = authenticationManager.authenticate(authentication);
-            final String username = getPrincipal(auth).getUsername();
-            final String userIpAddress = extractIpAddress(req);
-            if (userIpAddress == null) {
-                log.info("User [{}] has logged in", username);
-            } else {
-                log.info("User [{}] has logged in from IP [{}]", username, userIpAddress);
-            }
-            log.info("Authentication took {} s", GeneralUtil.getDurationSecondsRounded(startTime));
 
-            if (username.equalsIgnoreCase("RECRUITER")) {
-                sendEmailFacade.sendRecruiterLoggedInEmail();
-            }
-
-            return auth;
+            return authenticationManager.authenticate(authentication);
 
         } catch (final AuthenticationException e) {
             throw new WrongCredentialsFormatException(e.getMessage() + " | User: [" + usernameOrEmail + "]");
@@ -78,10 +62,6 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     private UserDetailsImpl getPrincipal(final Authentication auth) {
         return (UserDetailsImpl) auth.getPrincipal();
-    }
-
-    private String extractIpAddress(final HttpServletRequest req) {
-        return req == null ? null : req.getRemoteAddr();
     }
 
     @Override

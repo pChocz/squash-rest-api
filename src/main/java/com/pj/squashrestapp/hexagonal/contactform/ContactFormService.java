@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.hexagonal.contactform;
 
-import com.pj.squashrestapp.hexagonal.email.SendEmailFacade;
+import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import static com.pj.squashrestapp.util.GeneralUtil.ADMIN_UUID;
 class ContactFormService {
 
     private final PlayerRepository playerRepository;
-    private final SendEmailFacade sendEmailFacade;
+    private final EmailPrepareFacade emailPrepareFacade;
 
     void sendContactFormEmail(final String name, final String email, final String subject, final String message) {
 
@@ -33,7 +33,7 @@ class ContactFormService {
         final String[] content =
                 new String[] {"Name: " + name, "Email: " + email, "Subject: " + subject, "Message: " + message};
 
-        sendEmailFacade.sendPlainEmail(
+        emailPrepareFacade.pushPlainEmailToQueue(
                 admin.getEmail(),
                 admin.getUsername(),
                 new Locale("en"),

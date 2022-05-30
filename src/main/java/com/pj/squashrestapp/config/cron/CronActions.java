@@ -2,6 +2,7 @@ package com.pj.squashrestapp.config.cron;
 
 import com.pj.squashrestapp.controller.RedisCacheController;
 import com.pj.squashrestapp.controller.UserAccessController;
+import com.pj.squashrestapp.service.EmailQueueService;
 import com.pj.squashrestapp.util.AuthorizationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,6 +48,28 @@ public class CronActions {
 
     private final UserAccessController userAccessController;
     private final RedisCacheController redisCacheController;
+    private final EmailQueueService emailQueueService;
+
+
+    /**
+     * Removes obsolete emails.
+     * 01:02:00 UTC
+     */
+    @Scheduled(cron = "0 1 2 * * *", zone = UTC_ZONE)
+    @SchedulerLock(name = "EMAILS_REMOVE_LOCK")
+    public void removeEmails() {
+        emailQueueService.deleteOldEmails();
+    }
+
+    /**
+     * Sends all the emails.
+     * Every full minute.
+     */
+    @Scheduled(cron = "0 * * * * *", zone = UTC_ZONE)
+    @SchedulerLock(name = "EMAILS_SEND_LOCK", lockAtLeastFor = "PT30S")
+    public void sendEmails() {
+        emailQueueService.processUnsentEmails();
+    }
 
     /**
      * Permanently removes all expired temporary tokens from database.
