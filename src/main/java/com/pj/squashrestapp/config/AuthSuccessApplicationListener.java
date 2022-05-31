@@ -18,13 +18,10 @@ public class AuthSuccessApplicationListener implements ApplicationListener<Authe
     public void onApplicationEvent(final AuthenticationSuccessEvent appEvent) {
         final UserDetailsImpl principal = (UserDetailsImpl) appEvent.getAuthentication().getPrincipal();
         final String username = principal.getUsername();
+        final String ipAddress = AuthorizationUtil.extractRequestIpAddress();
+        log.info("{} has logged in from ip {}", username, ipAddress);
         if (username.equalsIgnoreCase("RECRUITER")) {
-            final String ip1 = AuthorizationUtil.extractRequestIpAddress1();
-            final String ip2 = AuthorizationUtil.extractRequestIpAddress2();
-            final String ip3 = AuthorizationUtil.extractRequestIpAddress3();
-            final String ips = ip1 + " | " + ip2 + " | " + ip3;
-            log.info("Recruiter login from ip: {}", ips);
-            emailPrepareFacade.pushRecruiterLoggedInEmailToQueue(ips);
+            emailPrepareFacade.pushRecruiterLoggedInEmailToQueue(ipAddress);
         }
     }
 }

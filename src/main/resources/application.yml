@@ -70,7 +70,8 @@ jwt:
 # #####
 # Email
 email:
-  sender_email_adress: _REPLACE_
+  admin_email_address: _REPLACE_
+  sender_email_address: _REPLACE_
   sender_name: _REPLACE_
   password: _REPLACE_
   smtp_host: _REPLACE_

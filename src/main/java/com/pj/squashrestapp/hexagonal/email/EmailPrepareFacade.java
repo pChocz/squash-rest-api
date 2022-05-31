@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /** */
 @Slf4j
@@ -66,7 +66,7 @@ public class EmailPrepareFacade {
         recruiterLoggedInEmailService.pushEmailToQueue(ip);
     }
 
-    public void pushExceptionEmailToQueue(final List<String> content) {
+    public void pushExceptionEmailToQueue(final Map<String, Object> content) {
         exceptionEmailService.pushEmailToQueue(content);
     }
 

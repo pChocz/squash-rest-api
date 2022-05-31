@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.hexagonal.email;
 
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +33,12 @@ import java.util.Properties;
 @ConfigurationProperties("email")
 public class EmailSendConfig {
 
-    @Value(value = "${sender_email_adress:}")
-    private String senderEmailAdress;
+    @Getter
+    @Value(value = "${admin_email_address:}")
+    private String adminEmailAddress;
+
+    @Value(value = "${sender_email_address:}")
+    private String senderEmailAddress;
 
     @Value(value = "${sender_name:}")
     private String senderName;
@@ -69,7 +74,7 @@ public class EmailSendConfig {
 
         try {
             final Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
+            message.setFrom(new InternetAddress(senderEmailAddress, senderName, "UTF8"));
             message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
             message.setSubject(subject);
             message.setContent(htmlMessageContent, "text/html; charset=UTF-8");
@@ -97,7 +102,7 @@ public class EmailSendConfig {
         return Session.getInstance(properties, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderEmailAdress, password);
+                return new PasswordAuthentication(senderEmailAddress, password);
             }
         });
     }
@@ -110,9 +115,9 @@ public class EmailSendConfig {
             final File... files)
             throws MessagingException, UnsupportedEncodingException {
         final Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(senderEmailAdress, senderName, "UTF8"));
+        message.setFrom(new InternetAddress(senderEmailAddress, senderName, "UTF8"));
         message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(receiver));
-        message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAdress));
+        message.addRecipients(Message.RecipientType.BCC, InternetAddress.parse(senderEmailAddress));
         message.setSubject(subject);
 
         final BodyPart messageBodyPart = new MimeBodyPart();

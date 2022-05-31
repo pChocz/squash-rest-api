@@ -1,7 +1,5 @@
 package com.pj.squashrestapp.config.exceptions;
 
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
 import com.pj.squashrestapp.config.ErrorResponse;
 import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.util.AuthorizationUtil;
@@ -25,10 +23,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
-
-import static java.util.Arrays.asList;
 
 /**
  * Exception interceptors - this class defines what should specific exceptions return after request
@@ -94,6 +93,8 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
             final Exception ex, final HttpServletRequest request) {
 
         final HttpStatus httpStatus = HttpStatus.NOT_FOUND;
+
+        sendExceptionEmail(ex, request, httpStatus);
 
         return new ResponseEntity<>(
                 ErrorResponse.builder()
@@ -193,26 +194,30 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
     }
 
     private void sendExceptionEmail(final Exception ex, final HttpServletRequest request, final HttpStatus httpStatus) {
-        final StringBuilder parameters = new StringBuilder();
-
+        final StringBuilder parametersBuilder = new StringBuilder();
         for (final String key : request.getParameterMap().keySet()) {
             final String[] valueArray = request.getParameterMap().get(key);
             final String values = StringUtils.join(valueArray, ", ");
-            parameters.append(key).append(": ").append("[").append(values).append("], ");
+            parametersBuilder.append(key).append(": ").append("[").append(values).append("], ");
         }
+        final String parameters = parametersBuilder.substring(0, parametersBuilder.length() - 2);
 
-        final List<String> content = List.of(
-                "User: " + GeneralUtil.extractSessionUsername(),
-                "IP: " + AuthorizationUtil.extractRequestIpAddress1() + " | "
-                        + AuthorizationUtil.extractRequestIpAddress2() + " | "
-                        + AuthorizationUtil.extractRequestIpAddress3(),
-                "URL: " + request.getRequestURL(),
-                "Type: " + request.getMethod(),
-                "Code: " + httpStatus.value(),
-                "Params: " + parameters.substring(0, parameters.length() - 2),
-                ex.toString(),
-                Joiner.on("\n").join(Iterables.limit(asList(ex.getStackTrace()), 30)));
+        List<String> stackTrace = Arrays
+                .stream(ex.getStackTrace())
+                .map(StackTraceElement::toString)
+                .toList();
 
-        emailPrepareFacade.pushExceptionEmailToQueue(content);
+        final Map<String, Object> model = new HashMap<>();
+        model.put("preheader", ex.getClass().getSimpleName());
+        model.put("exception", ex.toString());
+        model.put("user", GeneralUtil.extractSessionUsername());
+        model.put("ip", AuthorizationUtil.extractRequestIpAddress());
+        model.put("url", request.getRequestURL());
+        model.put("type", request.getMethod());
+        model.put("code", httpStatus.value());
+        model.put("params", parameters);
+        model.put("stackTrace", stackTrace);
+
+        emailPrepareFacade.pushExceptionEmailToQueue(model);
     }
 }

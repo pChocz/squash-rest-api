@@ -40,8 +40,9 @@ In order to launch it locally:
 --spring.datasource.username=__REPLACE__
 --spring.datasource.password=__REPLACE__
 --jwt.secret=__REPLACE__
---email.sender_email_adress=__REPLACE__
---email.sender_name="Squash app"
+--email.admin_email_address=__REPLACE__
+--email.sender_email_address=__REPLACE__
+--email.sender_name="Squashable"
 --email.password=__REPLACE__
 --email.smtp_host=__REPLACE__
 --email.smtp_port=587

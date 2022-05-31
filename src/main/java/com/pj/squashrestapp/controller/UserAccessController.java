@@ -45,7 +45,7 @@ public class UserAccessController {
     // TODO: Just for testing exception handling
     @GetMapping(value = "/exception")
     PlayerDetailedDto justThrowException() {
-        throw new NullPointerException("Just throwing an uncaught exception on purpose");
+        throw new RuntimeException("Just throwing an uncaught exception on purpose");
     }
 
     @SecretMethod

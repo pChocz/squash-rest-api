@@ -6,7 +6,12 @@
       "description": "JWT secret that is used for signing tokens."
     },
     {
-      "name": "email.sender_email_adress",
+      "name": "email.admin_email_address",
+      "type": "java.lang.String",
+      "description": "Email address used by the app to send exception-related messages."
+    },
+    {
+      "name": "email.sender_email_address",
       "type": "java.lang.String",
       "description": "Email address used by the app to send messages to users."
     },

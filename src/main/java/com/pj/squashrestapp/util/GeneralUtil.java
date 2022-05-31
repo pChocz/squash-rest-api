@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class GeneralUtil {
 
-    public static final UUID ADMIN_UUID = UUID.fromString("73992a9c-fea3-4a24-a95b-91e1e840c26a");
     public static final String DATE_FORMAT = "yyyy-MM-dd";
     public static final String TIME_FORMAT = "HH:mm:ss.SSS";
     public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
