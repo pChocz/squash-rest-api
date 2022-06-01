@@ -24,7 +24,6 @@ import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.model.VerificationToken;
 import com.pj.squashrestapp.repository.AuthorityRepository;
 import com.pj.squashrestapp.repository.EmailChangeTokenRepository;
-import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.MagicLinkLoginTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -66,10 +65,7 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE_ID;
 @RequiredArgsConstructor
 public class PlayerService {
 
-    private final LeagueRolesService leagueRolesService;
-
     private final PlayerRepository playerRepository;
-    private final LeagueRepository leagueRepository;
     private final AuthorityRepository authorityRepository;
     private final VerificationTokenRepository verificationTokenRepository;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
@@ -452,10 +448,8 @@ public class PlayerService {
     }
 
     public PlayerDetailedDto getPlayerDetailedInfo(final UUID playerUuid) {
-        final Player player =
-                playerRepository.fetchForAuthorizationByUuid(playerUuid).get();
-        final PlayerDetailedDto playerDetailedDto = new PlayerDetailedDto(player);
-        return playerDetailedDto;
+        final Player player = playerRepository.fetchForAuthorizationByUuid(playerUuid).orElseThrow();
+        return new PlayerDetailedDto(player);
     }
 
     public void changeEachIfPresent(

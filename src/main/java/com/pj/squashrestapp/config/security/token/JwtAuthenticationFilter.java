@@ -6,6 +6,7 @@ import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.service.TokenCreateService;
+import com.pj.squashrestapp.util.AuthorizationUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.pj.squashrestapp.config.security.token.TokenConstants.EXPOSE_HEADER_STRING;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.HEADER_REFRESH_STRING;
@@ -77,6 +80,18 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         player.setLastLoggedInDateTime(LocalDateTime.now());
         player.incrementSuccessfulLoginAttempts();
         playerRepository.save(player);
+
+        final String username = player.getUsername();
+        final String ipAddress = AuthorizationUtil.extractRequestIpAddress();
+        log.info("{} has logged in from ip {}", username, ipAddress);
+        if (username.equalsIgnoreCase("RECRUITER")) {
+            final Map<String, Object> model = new HashMap<>();
+            model.put("preheader", "Recruiter login");
+            model.put("info", "Recruiter has logged in!");
+            model.put("user", username);
+            model.put("ip", ipAddress);
+            emailPrepareFacade.pushUserActionInfoEmailToQueue(model);
+        }
 
         final TokenPair tokensPair = tokenCreateService.createTokensPairForPlayer(player, false);
 

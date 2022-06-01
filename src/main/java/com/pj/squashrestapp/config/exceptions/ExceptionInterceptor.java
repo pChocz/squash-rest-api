@@ -200,7 +200,9 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
             final String values = StringUtils.join(valueArray, ", ");
             parametersBuilder.append(key).append(": ").append("[").append(values).append("], ");
         }
-        final String parameters = parametersBuilder.substring(0, parametersBuilder.length() - 2);
+        final String parameters = parametersBuilder.length() > 2
+                ? parametersBuilder.substring(0, parametersBuilder.length() - 2)
+                : "NONE";
 
         List<String> stackTrace = Arrays
                 .stream(ex.getStackTrace())
