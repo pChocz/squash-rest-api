@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '2.6.5'
+    id 'org.springframework.boot' version '2.7.0'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'maven-publish'
     id 'java'
@@ -39,15 +39,15 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     /* Lombok */
-    compileOnly 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    testCompileOnly 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+    compileOnly 'org.projectlombok:lombok:1.18.24'
+    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     /* JWT */
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
-    runtimeOnly 'io.jsonwebtoken:jjwt-gson:0.11.2'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-gson:0.11.5'
 
     /* Other dependencies */
 
@@ -60,17 +60,17 @@ dependencies {
     implementation 'commons-validator:commons-validator:1.7'
 
     // Jackson / GSON / Guava / XML
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.2'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.2'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.3'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.3'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.google.guava:guava:31.1-jre'
     implementation 'org.simpleframework:simple-xml:2.7.1'
 
     // Shedlock
-    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.33.0'
-    implementation 'net.javacrumbs.shedlock:shedlock-provider-redis-spring:4.33.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-spring:4.34.0'
+    implementation 'net.javacrumbs.shedlock:shedlock-provider-redis-spring:4.34.0'
 
-    implementation 'org.postgresql:postgresql:42.3.3'
+    implementation 'org.postgresql:postgresql:42.3.4'
     implementation 'com.thedeanda:lorem:2.1'
     implementation 'com.sun.mail:javax.mail:1.6.2'
     implementation 'org.freemarker:freemarker:2.3.31'

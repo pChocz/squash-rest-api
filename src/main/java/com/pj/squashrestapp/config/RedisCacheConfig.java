@@ -1,5 +1,9 @@
 package com.pj.squashrestapp.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +44,18 @@ public class RedisCacheConfig {
      */
     @Bean
     RedisCacheConfiguration redisCacheConfiguration() {
+        // required after upgrading Spring Boot: 2.6.5 -> 2.7.0
+        ObjectMapper objectMapper = new ObjectMapper()
+                .registerModule(new JavaTimeModule())
+                .activateDefaultTyping(
+                        LaissezFaireSubTypeValidator.instance,
+                        ObjectMapper.DefaultTyping.NON_FINAL,
+                        JsonTypeInfo.As.PROPERTY);
+
         return RedisCacheConfiguration.defaultCacheConfig()
                 .entryTtl(DEFAULT_TTL)
-                .serializeValuesWith(SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
+                .serializeValuesWith(
+                        SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
     }
 
     /**
