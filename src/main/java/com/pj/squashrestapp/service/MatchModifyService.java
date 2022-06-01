@@ -56,7 +56,7 @@ public class MatchModifyService {
         additonalSetResultRepository.save(setToModify);
 
         log.info(
-                "Succesfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
+                "Successfully updated additional match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
     }
 
     private Pair<Integer, Integer> buildScores(
@@ -107,7 +107,7 @@ public class MatchModifyService {
         setToModify.setSecondPlayerScore(secondPlayerScore);
         setResultRepository.save(setToModify);
 
-        log.info("Succesfully updated round match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
+        log.info("Successfully updated round match!\n\t-> {}\t- earlier\n\t-> {}\t- now", initialMatchResult, match);
     }
 
     private Integer computeWinnerScoreForLeague(

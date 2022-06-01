@@ -60,7 +60,7 @@ public class EmailSendConfig {
         try {
             final Message message = prepareMessageWithAttachments(session, receiver, subject, content, files);
             Transport.send(message);
-            log.info("[{}] email to [{}] has been sent succesfully", subject, receiver);
+            log.info("[{}] email to [{}] has been sent successfully", subject, receiver);
 
         } catch (final MessagingException | UnsupportedEncodingException e) {
             log.error("[{}] email to [{}] has not been sent!", subject, receiver);

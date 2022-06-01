@@ -11,6 +11,7 @@ import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.AuthorityType;
 import com.pj.squashrestapp.model.EmailChangeToken;
@@ -29,6 +30,7 @@ import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
+import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.EmojiUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
@@ -43,7 +45,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
@@ -74,6 +78,7 @@ public class PlayerService {
     private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
     private final TokenCreateService tokenCreateService;
     private final PasswordEncoder passwordEncoder;
+    private final EmailPrepareFacade emailPrepareFacade;
 
     @SuppressWarnings("OverlyComplexMethod")
     public boolean isValidSignupData(final String username, final String email, final String password)
@@ -162,6 +167,13 @@ public class PlayerService {
         playerRepository.save(player);
         authorityRepository.save(userAuthority);
 
+        final Map<String, Object> model = new HashMap<>();
+        model.put("preheader", "New account");
+        model.put("info", "New account has just been created!");
+        model.put("user", player.getUsername() + " (" + player.getEmail() + ")");
+        model.put("ip", AuthorizationUtil.extractRequestIpAddress());
+        emailPrepareFacade.pushUserActionInfoEmailToQueue(model);
+
         return player;
     }
 
@@ -249,7 +261,7 @@ public class PlayerService {
             player.setPassword(hashedPassword);
             player.setPasswordSessionUuid(UUID.randomUUID());
             playerRepository.save(player);
-            log.info("Password for user {} has been succesfully changed.", player.getUsername());
+            log.info("Password for user {} has been successfully changed.", player.getUsername());
 
             final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
             refreshTokenRepository.deleteAll(playerRefreshTokens);
@@ -303,7 +315,7 @@ public class PlayerService {
         playerRepository.save(player);
         passwordResetTokenRepository.delete(passwordResetToken);
 
-        log.info("Password for user {} has been succesfully changed.", player.getUsername());
+        log.info("Password for user {} has been successfully changed.", player.getUsername());
         return tokenCreateService.createTokensPairForPlayer(player, false);
     }
 
@@ -321,7 +333,15 @@ public class PlayerService {
         player.setEnabled(true);
         playerRepository.save(player);
         verificationTokenRepository.delete(verificationToken);
-        log.info("User {} has been succesfully activated.", player.getUsername());
+
+        final Map<String, Object> model = new HashMap<>();
+        model.put("preheader", "Account registration confirmed");
+        model.put("info", "Account registration has just been confirmed!");
+        model.put("user", player.getUsername() + " (" + player.getEmail() + ")");
+        model.put("ip", AuthorizationUtil.extractRequestIpAddress());
+        emailPrepareFacade.pushUserActionInfoEmailToQueue(model);
+
+        log.info("User {} has been successfully activated.", player.getUsername());
     }
 
     public void invalidateAllTokens() {

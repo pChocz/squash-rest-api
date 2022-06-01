@@ -18,7 +18,7 @@ public class EmailPrepareFacade {
     private final EmailChangeEmailService emailChangeEmailService;
     private final MagicLoginLinkEmailService magicLoginLinkEmailService;
     private final PlainEmailService plainEmailService;
-    private final RecruiterLoggedInEmailService recruiterLoggedInEmailService;
+    private final UserActionInfoEmailService userActionInfoEmailService;
     private final ExceptionEmailService exceptionEmailService;
 
     public void pushAccountActivationEmailToQueue(
@@ -62,8 +62,8 @@ public class EmailPrepareFacade {
         plainEmailService.pushEmailToQueue(receiverEmail, receiverName, locale, subject, preheader, contentLines);
     }
 
-    public void pushRecruiterLoggedInEmailToQueue(final String ip) {
-        recruiterLoggedInEmailService.pushEmailToQueue(ip);
+    public void pushUserActionInfoEmailToQueue(final Map<String, Object> content) {
+        userActionInfoEmailService.pushEmailToQueue(content);
     }
 
     public void pushExceptionEmailToQueue(final Map<String, Object> content) {

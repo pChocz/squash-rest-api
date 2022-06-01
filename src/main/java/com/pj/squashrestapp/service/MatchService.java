@@ -87,7 +87,7 @@ public class MatchService {
         redisCacheService.evictCacheForRoundMatch(matchToModify);
 
         log.info(
-                "Succesfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
+                "Successfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
                 initialMatchResult,
                 matchToModify);
 

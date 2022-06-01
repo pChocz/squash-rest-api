@@ -119,13 +119,13 @@ public class PlayerController {
             @RequestParam final String password) {
 
         final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
-        final String lowerCaseEmailAdress = email.toLowerCase();
+        final String lowerCaseEmailAddress = email.toLowerCase();
 
         final boolean isValid =
-                playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+                playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAddress, password);
         if (isValid) {
             final Player newPlayer =
-                    playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+                    playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAddress, password);
             playerService.enableUser(newPlayer);
             return new PlayerDetailedDto(newPlayer);
 

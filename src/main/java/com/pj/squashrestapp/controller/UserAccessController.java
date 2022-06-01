@@ -26,8 +26,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Locale;
 import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 /** */
 @Slf4j
@@ -85,14 +83,14 @@ public class UserAccessController {
             @RequestParam(defaultValue = "en") final String lang) {
 
         final String correctlyCapitalizedUsername = GeneralUtil.buildProperUsername(username);
-        final String lowerCaseEmailAdress = email.toLowerCase();
+        final String lowerCaseEmailAddress = email.toLowerCase();
 
         final boolean isValid =
-                playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+                playerService.isValidSignupData(correctlyCapitalizedUsername, lowerCaseEmailAddress, password);
         if (isValid) {
 
             final Player newPlayer =
-                    playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAdress, password);
+                    playerService.registerNewUser(correctlyCapitalizedUsername, lowerCaseEmailAddress, password);
 
             final UUID token = UUID.randomUUID();
             playerService.createAndPersistVerificationToken(token, newPlayer);

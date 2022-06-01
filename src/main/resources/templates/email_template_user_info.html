@@ -32,11 +32,11 @@
     </div>
 </module>
 
-<h2>${exception}</h2>
+<h2>${info}</h2>
 
 <p>&nbsp;</p>
 
-<table align="left">
+<table>
     <tbody>
     <tr>
         <td><b>User:</b></td>
@@ -46,31 +46,8 @@
         <td><b>IP:</b></td>
         <td>${ip}</td>
     </tr>
-    <tr>
-        <td><b>URL:</b></td>
-        <td>${url}</td>
-    </tr>
-    <tr>
-        <td><b>Type:</b></td>
-        <td>${type}</td>
-    </tr>
-    <tr>
-        <td><b>Code:</b></td>
-        <td>${code}</td>
-    </tr>
-    <tr>
-        <td><b>Params:</b></td>
-        <td>${params}</td>
-    </tr>
     </tbody>
 </table>
-
-<p>&nbsp;</p>
-
-<h2>Trace</h2>
-<#list stackTrace as line>
-    <p>${line}</p>
-</#list>
 
 <p>&nbsp;</p>
 
