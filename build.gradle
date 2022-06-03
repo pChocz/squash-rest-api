@@ -64,7 +64,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.13.3'
     implementation 'com.google.code.gson:gson:2.9.0'
     implementation 'com.google.guava:guava:31.1-jre'
-    implementation 'org.simpleframework:simple-xml:2.7.1'
 
     // Shedlock
     implementation 'net.javacrumbs.shedlock:shedlock-spring:4.34.0'
