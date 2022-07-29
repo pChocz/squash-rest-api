@@ -1,0 +1,34 @@
+package com.pj.squashrestapp.controller;
+
+import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
+import com.pj.squashrestapp.service.SetResultsHistogramService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+/**
+ *
+ */
+@Slf4j
+@RestController
+@RequestMapping("/set-results-histogram")
+@RequiredArgsConstructor
+public class SetResultHistogramController {
+
+    private final SetResultsHistogramService setResultsHistogramService;
+
+    @GetMapping(value = "/{leagueUuid}")
+    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
+    ReadySetResultsHistogram histogramBatis(@PathVariable final UUID leagueUuid,
+                                            @RequestParam(required = false) final UUID[] seasonUuids) {
+        ReadySetResultsHistogram histogram = setResultsHistogramService.createHistogram(leagueUuid, seasonUuids);
+        return histogram;
+    }
+}

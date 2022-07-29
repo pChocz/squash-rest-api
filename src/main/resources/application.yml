@@ -61,6 +61,13 @@ spring-hibernate-query-utils:
     enabled: false
 
 
+# #######
+# MyBatis
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
 # #####
 # Token
 jwt:

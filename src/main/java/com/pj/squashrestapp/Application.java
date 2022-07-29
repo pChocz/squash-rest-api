@@ -1,5 +1,6 @@
 package com.pj.squashrestapp;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -17,6 +18,7 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE;
 @SuppressWarnings({"JavaDoc", "resource"})
 @EnableJpaRepositories(basePackages = "com.pj.squashrestapp.repository")
 @EnableMongoRepositories(basePackages = "com.pj.squashrestapp.mongologs")
+@MapperScan(basePackages = "com.pj.squashrestapp.mybatis")
 public class Application {
 
     public static void main(final String[] args) {
