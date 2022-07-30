@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.dto.setresultshistogram;
 
-import com.pj.squashrestapp.dto.LeagueDtoSimple;
+import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import lombok.Getter;
 
@@ -11,7 +11,7 @@ import java.util.TreeSet;
 @Getter
 public class ReadySetResultsHistogram {
 
-    private final LeagueDtoSimple league;
+    private final LeagueDto league;
     private final Set<ReadySetResultsPlayer> setResultsPlayers;
     private final Set<SetResultForHistogram> uniqueResults;
 

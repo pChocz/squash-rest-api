@@ -9,7 +9,6 @@ import java.util.UUID;
 
 public interface SetsHistogramMapper {
 
-    // todo: uwzględnić filtrowanie po sezonach
     @Select(
             """
                 select
@@ -33,6 +32,7 @@ public interface SetsHistogramMapper {
                          join players p1 on m.first_player_id = p1.id
                          join players p2 on m.second_player_id = p2.id
                 where l.uuid = #{leagueUuid}
+                  and (#{seasonNumbers}::int[] is null or s.number = ANY(#{seasonNumbers}::int[]))
                   and sr.first_player_score is not null
                   and sr.second_player_score is not null
                 group by
@@ -42,5 +42,5 @@ public interface SetsHistogramMapper {
                     looser_id
             """)
     List<SetResultsHistogramDataDto> getHistogramData(
-            @Param("leagueUuid") UUID leagueUuid, @Param("seasonUuids") UUID[] seasonUuids);
+            @Param("leagueUuid") UUID leagueUuid, @Param("seasonNumbers") int[] seasonNumbers);
 }

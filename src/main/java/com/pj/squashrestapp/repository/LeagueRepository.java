@@ -44,6 +44,13 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
 
     Optional<League> findByUuid(UUID uuid);
 
+    @Query("SELECT l FROM League l WHERE l.uuid = :uuid")
+    @EntityGraph(
+            attributePaths = {
+                    "seasons",
+            })
+    Optional<League> findByUuidWithSeasons(@Param("uuid") UUID uuid);
+
     @Query("SELECT l FROM League l WHERE l.uuid = :leagueUuid")
     @EntityGraph(
             attributePaths = {

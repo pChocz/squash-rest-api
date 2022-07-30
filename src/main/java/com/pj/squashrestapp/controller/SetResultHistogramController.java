@@ -27,8 +27,8 @@ public class SetResultHistogramController {
     @GetMapping(value = "/{leagueUuid}")
     @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
     ReadySetResultsHistogram histogramBatis(@PathVariable final UUID leagueUuid,
-                                            @RequestParam(required = false) final UUID[] seasonUuids) {
-        ReadySetResultsHistogram histogram = setResultsHistogramService.createHistogram(leagueUuid, seasonUuids);
+                                            @RequestParam(required = false) final int[] seasonNumbers) {
+        ReadySetResultsHistogram histogram = setResultsHistogramService.createHistogram(leagueUuid, seasonNumbers);
         return histogram;
     }
 }

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.dto.setresultshistogram;
 
-import com.pj.squashrestapp.dto.LeagueDtoSimple;
+import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,7 +16,7 @@ import java.util.TreeMap;
 @NoArgsConstructor
 public class SetResultsLeagueHistogramDto {
 
-    private LeagueDtoSimple league;
+    private LeagueDto league;
     private Map<PlayerDto, SetResultsPlayerHistogramDto> playerDtoSetResultsPlayerHistogramDtoMap;
 
     public void createOrUpdate(final PlayerDto player, final int firstResult, final int secondResult, final int count) {

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.dto.LeagueDtoSimple;
+import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
@@ -32,15 +32,15 @@ public class SetResultsHistogramService {
     private final LeagueRepository leagueRepository;
 
 
-    public ReadySetResultsHistogram createHistogram(final UUID leagueUuid, final UUID[] seasonUuids) {
-        final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramData(leagueUuid, seasonUuids);
+    public ReadySetResultsHistogram createHistogram(final UUID leagueUuid, final int[] seasonNumbers) {
+        final League league = leagueRepository.findByUuidWithSeasons(leagueUuid).orElseThrow();
+        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramData(leagueUuid, seasonNumbers);
         final Map<Long, PlayerDto> players = playerRepository.findByIds(getPlayersIds(results))
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
         final SetResultsLeagueHistogramDto setResultsLeagueHistogramDto = new SetResultsLeagueHistogramDto();
-        setResultsLeagueHistogramDto.setLeague(new LeagueDtoSimple(league));
+        setResultsLeagueHistogramDto.setLeague(new LeagueDto(league));
         setResultsLeagueHistogramDto.setPlayerDtoSetResultsPlayerHistogramDtoMap(new LinkedHashMap<>());
 
         for (SetResultsHistogramDataDto setResultsHistogramDataDto : results) {
