@@ -63,7 +63,7 @@ public class HeadToHeadScoreboardService {
 
         Map<Long, PlayerDto> playersMap = players.stream().collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
-        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramDataForTwoPlayers(firstPlayerUuid, secondPlayerUuid, true);
+        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramDataForTwoPlayers(players.get(0).getId(), players.get(1).getId(), includeAdditional);
         ReadySetResultsHistogram readySetResultsHistogram = setResultsHistogramService.buildHistogram(results, playersMap);
 
         final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches, readySetResultsHistogram);
