@@ -39,8 +39,14 @@ public class SetResultsHistogramService {
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
+        final ReadySetResultsHistogram histogram = buildHistogram(results, players);
+        histogram.setLeague(new LeagueDto(league));
+
+        return histogram;
+    }
+
+    public ReadySetResultsHistogram buildHistogram(final List<SetResultsHistogramDataDto> results, final Map<Long, PlayerDto> players) {
         final SetResultsLeagueHistogramDto setResultsLeagueHistogramDto = new SetResultsLeagueHistogramDto();
-        setResultsLeagueHistogramDto.setLeague(new LeagueDto(league));
         setResultsLeagueHistogramDto.setPlayerDtoSetResultsPlayerHistogramDtoMap(new LinkedHashMap<>());
 
         for (SetResultsHistogramDataDto setResultsHistogramDataDto : results) {
@@ -61,7 +67,6 @@ public class SetResultsHistogramService {
         }
 
         final ReadySetResultsHistogram histogram = new ReadySetResultsHistogram(setResultsLeagueHistogramDto);
-
         return histogram;
     }
 

@@ -2,6 +2,7 @@ package com.pj.squashrestapp.dto.setresultshistogram;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Comparator;
@@ -9,11 +10,14 @@ import java.util.Comparator;
 @Getter
 @Setter
 @EqualsAndHashCode
+@NoArgsConstructor
 public class SetResultForHistogram implements Comparable<SetResultForHistogram> {
 
     private int first;
     private int second;
     private String result;
+    private int greatest;
+    private int diff;
 
     public SetResultForHistogram(final int first, final int second) {
         this.first = first;

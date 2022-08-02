@@ -1,12 +1,19 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.RedisCacheConfig;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
+import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
+import com.pj.squashrestapp.dto.setresultshistogram.SetResultsHistogramDataDto;
+import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.mybatis.SetsHistogramMapper;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
+import com.pj.squashrestapp.repository.PlayerRepository;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -23,8 +30,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HeadToHeadScoreboardService {
 
+    private final SetsHistogramMapper setsHistogramMapper;
+    private final SetResultsHistogramService setResultsHistogramService;
     private final MatchRepository matchRepository;
     private final AdditionalMatchRepository additionalMatchRepository;
+    private final PlayerRepository playerRepository;
 
     @Cacheable(
             value = RedisCacheConfig.H2H_SCOREBOARD_CACHE,
@@ -49,7 +59,14 @@ public class HeadToHeadScoreboardService {
 
         allFinishedMatches.sort(Comparator.comparing(MatchDto::getDate).reversed());
 
-        final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches);
+        List<Player> players = playerRepository.findByUuids(List.of(firstPlayerUuid, secondPlayerUuid).toArray(UUID[]::new));
+
+        Map<Long, PlayerDto> playersMap = players.stream().collect(Collectors.toMap(Player::getId, PlayerDto::new));
+
+        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramDataForTwoPlayers(firstPlayerUuid, secondPlayerUuid, true);
+        ReadySetResultsHistogram readySetResultsHistogram = setResultsHistogramService.buildHistogram(results, playersMap);
+
+        final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches, readySetResultsHistogram);
         return scoreboard;
     }
 }

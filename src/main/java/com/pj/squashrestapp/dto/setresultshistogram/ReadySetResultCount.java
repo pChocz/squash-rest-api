@@ -2,12 +2,14 @@ package com.pj.squashrestapp.dto.setresultshistogram;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 @AllArgsConstructor
 public class ReadySetResultCount {
 
-    private final int first;
-    private final int second;
-    private final int count;
+    private int first;
+    private int second;
+    private int count;
 }

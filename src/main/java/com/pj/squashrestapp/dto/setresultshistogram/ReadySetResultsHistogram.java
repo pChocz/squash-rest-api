@@ -7,13 +7,17 @@ import lombok.Getter;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Setter
 @Getter
+@NoArgsConstructor
 public class ReadySetResultsHistogram {
 
-    private final LeagueDto league;
-    private final Set<ReadySetResultsPlayer> setResultsPlayers;
-    private final Set<SetResultForHistogram> uniqueResults;
+    private LeagueDto league;
+    private Set<ReadySetResultsPlayer> setResultsPlayers;
+    private Set<SetResultForHistogram> uniqueResults;
 
     public ReadySetResultsHistogram(final SetResultsLeagueHistogramDto dto) {
         this.league = dto.getLeague();

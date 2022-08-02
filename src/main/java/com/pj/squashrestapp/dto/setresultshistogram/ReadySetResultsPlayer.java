@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedMap;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ReadySetResultsPlayer implements Comparable<ReadySetResultsPlayer> {
 
-    private final PlayerDto player;
-    private final List<ReadySetResultCount> setResultCounts;
+    private PlayerDto player;
+    private List<ReadySetResultCount> setResultCounts;
 
     public ReadySetResultsPlayer(
             final PlayerDto player, final SortedMap<SetResultForHistogram, Integer> resultToCountMap) {

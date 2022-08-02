@@ -4,6 +4,7 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.SetDto;
 import com.pj.squashrestapp.dto.scoreboard.PlayersStatsScoreboardRow;
+import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,10 +29,12 @@ public class HeadToHeadScoreboard {
     private HeadToHeadScoreboardRow looser;
     private Collection<MatchDto> matches;
     private List<HeadToHeadChartRow> chartRows;
+    private ReadySetResultsHistogram setResultsHistogram;
 
-    public HeadToHeadScoreboard(final Collection<MatchDto> matches) {
+    public HeadToHeadScoreboard(final Collection<MatchDto> matches, final ReadySetResultsHistogram setResultsHistogram) {
         this.matches = matches;
         this.numberOfMatches = matches.size();
+        this.setResultsHistogram = setResultsHistogram;
 
         if (numberOfMatches == 0) {
             winner = null;
