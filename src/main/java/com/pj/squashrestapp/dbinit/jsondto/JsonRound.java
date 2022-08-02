@@ -15,6 +15,7 @@ public class JsonRound {
 
     private UUID uuid;
     private int number;
+    private boolean finished;
 
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
     private LocalDate date;

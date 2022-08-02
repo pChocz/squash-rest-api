@@ -6,6 +6,7 @@ import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
+import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.experimental.UtilityClass;
 
@@ -28,31 +29,31 @@ public class FakeMatch {
         match.setType(type);
         match.setSeasonNumber(seasonNumber);
 
-        switch (league.getMatchFormatType()) {
+        switch (match.getMatchFormatType()) {
             case ONE_GAME -> {
                 match.addSetResult(FakeSetResult.createAdditional(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
             }
             case BEST_OF_3 -> {
                 match.addSetResult(FakeSetResult.createAdditional(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.createAdditional(
-                        2, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        2, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedAdditionalMatch(match, 2)) {
                     match.addSetResult(FakeSetResult.createNullSetAdditional(3));
                 } else {
                     match.addSetResult(FakeSetResult.createAdditional(
-                            3, league.getTiebreakWinningType(), league.getTiebreakWinningPoints()));
+                            3, match.getTiebreakWinningType(), match.getTiebreakWinningPoints()));
                 }
             }
             case BEST_OF_5 -> {
                 match.addSetResult(FakeSetResult.createAdditional(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.createAdditional(
-                        2, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        2, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.createAdditional(
-                        3, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        3, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedAdditionalMatch(match, 3)) {
                     match.addSetResult(FakeSetResult.createNullSetAdditional(4));
@@ -61,7 +62,7 @@ public class FakeMatch {
                 }
 
                 match.addSetResult(FakeSetResult.createAdditional(
-                        4, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        4, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedAdditionalMatch(match, 3)) {
                     match.addSetResult(FakeSetResult.createNullSetAdditional(5));
@@ -70,41 +71,41 @@ public class FakeMatch {
 
                 // otherwise it means that it's draw after 4 sets
                 match.addSetResult(FakeSetResult.createAdditional(
-                        5, league.getTiebreakWinningType(), league.getTiebreakWinningPoints()));
+                        5, match.getTiebreakWinningType(), match.getTiebreakWinningPoints()));
             }
         }
 
         return match;
     }
 
-    public Match create(final League league, final Player firstPlayer, final Player secondPlayer) {
-        final Match match = new Match(firstPlayer, secondPlayer, league);
+    public Match create(final Season season, final Player firstPlayer, final Player secondPlayer) {
+        final Match match = new Match(firstPlayer, secondPlayer, season);
 
-        switch (league.getMatchFormatType()) {
+        switch (match.getMatchFormatType()) {
             case ONE_GAME -> {
                 match.addSetResult(FakeSetResult.create(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
             }
             case BEST_OF_3 -> {
                 match.addSetResult(FakeSetResult.create(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.create(
-                        2, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        2, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedMatch(match, 2)) {
                     match.addSetResult(FakeSetResult.createNullSet(3));
                 } else {
                     match.addSetResult(FakeSetResult.create(
-                            3, league.getTiebreakWinningType(), league.getTiebreakWinningPoints()));
+                            3, match.getTiebreakWinningType(), match.getTiebreakWinningPoints()));
                 }
             }
             case BEST_OF_5 -> {
                 match.addSetResult(FakeSetResult.create(
-                        1, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        1, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.create(
-                        2, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        2, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
                 match.addSetResult(FakeSetResult.create(
-                        3, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        3, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedMatch(match, 3)) {
                     match.addSetResult(FakeSetResult.createNullSet(4));
@@ -113,7 +114,7 @@ public class FakeMatch {
                 }
 
                 match.addSetResult(FakeSetResult.create(
-                        4, league.getRegularSetWinningType(), league.getRegularSetWinningPoints()));
+                        4, match.getRegularSetWinningType(), match.getRegularSetWinningPoints()));
 
                 if (isFinishedMatch(match, 3)) {
                     match.addSetResult(FakeSetResult.createNullSet(5));
@@ -122,7 +123,7 @@ public class FakeMatch {
 
                 // otherwise it means that it's draw after 4 sets
                 match.addSetResult(
-                        FakeSetResult.create(5, league.getTiebreakWinningType(), league.getTiebreakWinningPoints()));
+                        FakeSetResult.create(5, match.getTiebreakWinningType(), match.getTiebreakWinningPoints()));
             }
         }
 

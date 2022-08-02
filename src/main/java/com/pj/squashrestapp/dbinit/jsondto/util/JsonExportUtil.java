@@ -88,9 +88,13 @@ public class JsonExportUtil {
             jsonAdditionalMatch.setDate(additionalMatch.getDate());
             jsonAdditionalMatch.setType(additionalMatch.getType());
             jsonAdditionalMatch.setSeasonNumber(additionalMatch.getSeasonNumber());
-            jsonAdditionalMatch.setFirstPlayer(additionalMatch.getFirstPlayer().getUuid());
-            jsonAdditionalMatch.setSecondPlayer(
-                    additionalMatch.getSecondPlayer().getUuid());
+            jsonAdditionalMatch.setFirstPlayerUuid(additionalMatch.getFirstPlayer().getUuid());
+            jsonAdditionalMatch.setSecondPlayerUuid(additionalMatch.getSecondPlayer().getUuid());
+            jsonAdditionalMatch.setMatchFormatType(additionalMatch.getMatchFormatType());
+            jsonAdditionalMatch.setRegularSetWinningType(additionalMatch.getRegularSetWinningType());
+            jsonAdditionalMatch.setTiebreakWinningType(additionalMatch.getTiebreakWinningType());
+            jsonAdditionalMatch.setRegularSetWinningPoints(additionalMatch.getRegularSetWinningPoints());
+            jsonAdditionalMatch.setTiebreakWinningPoints(additionalMatch.getTiebreakWinningPoints());
             jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
 
             additionalMatches.add(jsonAdditionalMatch);
@@ -134,13 +138,11 @@ public class JsonExportUtil {
     private ArrayList<JsonSetResult> buildSetResultsJson(final AdditionalMatch match) {
         final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
         for (final AdditionalSetResult setResult : match.getSetResultsOrdered()) {
-            if (isNotNull(setResult)) {
-                final JsonSetResult jsonSetResult = new JsonSetResult();
-                jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
-                jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
-
-                jsonSetResults.add(jsonSetResult);
-            }
+            final JsonSetResult jsonSetResult = new JsonSetResult();
+            jsonSetResult.setNumber(setResult.getNumber());
+            jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
+            jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
+            jsonSetResults.add(jsonSetResult);
         }
         return jsonSetResults;
     }
@@ -151,6 +153,13 @@ public class JsonExportUtil {
         jsonSeason.setUuid(season.getUuid());
         jsonSeason.setDescription(season.getDescription());
         jsonSeason.setNumber(season.getNumber());
+        jsonSeason.setMatchFormatType(season.getMatchFormatType());
+        jsonSeason.setRegularSetWinningType(season.getRegularSetWinningType());
+        jsonSeason.setTiebreakWinningType(season.getTiebreakWinningType());
+        jsonSeason.setRegularSetWinningPoints(season.getRegularSetWinningPoints());
+        jsonSeason.setTiebreakWinningPoints(season.getTiebreakWinningPoints());
+        jsonSeason.setNumberOfRounds(season.getNumberOfRounds());
+        jsonSeason.setRoundsToBeDeducted(season.getRoundsToBeDeducted());
         jsonSeason.setXpPointsType(season.getXpPointsType());
         jsonSeason.setStartDate(season.getStartDate());
         jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
@@ -205,6 +214,7 @@ public class JsonExportUtil {
         final JsonRound jsonRound = new JsonRound();
         jsonRound.setUuid(round.getUuid());
         jsonRound.setDate(round.getDate());
+        jsonRound.setFinished(round.isFinished());
         jsonRound.setNumber(round.getNumber());
         jsonRound.setGroups(buildRoundGroupsJson(round));
 
@@ -242,8 +252,14 @@ public class JsonExportUtil {
         final ArrayList<JsonMatch> jsonMatches = new ArrayList<>();
         for (final Match match : roundGroup.getMatchesOrdered()) {
             final JsonMatch jsonMatch = new JsonMatch();
-            jsonMatch.setFirstPlayer(match.getFirstPlayer().getUuid());
-            jsonMatch.setSecondPlayer(match.getSecondPlayer().getUuid());
+            jsonMatch.setNumber(match.getNumber());
+            jsonMatch.setFirstPlayerUuid(match.getFirstPlayer().getUuid());
+            jsonMatch.setSecondPlayerUuid(match.getSecondPlayer().getUuid());
+            jsonMatch.setMatchFormatType(match.getMatchFormatType());
+            jsonMatch.setRegularSetWinningType(match.getRegularSetWinningType());
+            jsonMatch.setTiebreakWinningType(match.getTiebreakWinningType());
+            jsonMatch.setRegularSetWinningPoints(match.getRegularSetWinningPoints());
+            jsonMatch.setTiebreakWinningPoints(match.getTiebreakWinningPoints());
             jsonMatch.setSets(buildSetResultsJson(match));
             jsonMatches.add(jsonMatch);
         }
@@ -253,18 +269,13 @@ public class JsonExportUtil {
     private ArrayList<JsonSetResult> buildSetResultsJson(final Match match) {
         final ArrayList<JsonSetResult> jsonSetResults = new ArrayList<>();
         for (final SetResult setResult : match.getSetResultsOrdered()) {
-            if (isNotNull(setResult)) {
-                final JsonSetResult jsonSetResult = new JsonSetResult();
-                jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
-                jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
-
-                jsonSetResults.add(jsonSetResult);
-            }
+            final JsonSetResult jsonSetResult = new JsonSetResult();
+            jsonSetResult.setNumber(setResult.getNumber());
+            jsonSetResult.setFirstPlayerResult(setResult.getFirstPlayerScore());
+            jsonSetResult.setSecondPlayerResult(setResult.getSecondPlayerScore());
+            jsonSetResults.add(jsonSetResult);
         }
         return jsonSetResults;
     }
 
-    private boolean isNotNull(final SetResult setResult) {
-        return setResult.getFirstPlayerScore() != null && setResult.getSecondPlayerScore() != null;
-    }
 }

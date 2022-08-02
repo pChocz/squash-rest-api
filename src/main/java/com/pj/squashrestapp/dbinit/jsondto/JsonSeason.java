@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +25,20 @@ public class JsonSeason {
 
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
     private LocalDate startDate;
+
+    private MatchFormatType matchFormatType;
+
+    private SetWinningType regularSetWinningType;
+
+    private SetWinningType tiebreakWinningType;
+
+    private int regularSetWinningPoints;
+
+    private int tiebreakWinningPoints;
+
+    private int numberOfRounds;
+
+    private int roundsToBeDeducted;
 
     private ArrayList<JsonBonusPoint> bonusPoints;
 

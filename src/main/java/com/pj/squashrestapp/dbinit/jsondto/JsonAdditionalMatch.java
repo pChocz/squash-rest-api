@@ -1,9 +1,9 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
 import com.pj.squashrestapp.model.AdditionalMatchType;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +16,10 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JsonAdditionalMatch {
 
+    private UUID firstPlayerUuid;
+
+    private UUID secondPlayerUuid;
+
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
     private LocalDate date;
 
@@ -23,13 +27,15 @@ public class JsonAdditionalMatch {
 
     private int seasonNumber;
 
-    @JsonProperty("p1")
-    @SerializedName("p1")
-    private UUID firstPlayer;
+    private MatchFormatType matchFormatType;
 
-    @JsonProperty("p2")
-    @SerializedName("p2")
-    private UUID secondPlayer;
+    private SetWinningType regularSetWinningType;
+
+    private SetWinningType tiebreakWinningType;
+
+    private int regularSetWinningPoints;
+
+    private int tiebreakWinningPoints;
 
     private ArrayList<JsonSetResult> sets;
 }

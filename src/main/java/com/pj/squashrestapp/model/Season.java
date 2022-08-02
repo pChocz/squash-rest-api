@@ -3,6 +3,8 @@ package com.pj.squashrestapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -92,6 +94,26 @@ public class Season implements Identifiable, Comparable<Season> {
     private Set<LostBall> lostBalls = new HashSet<>();
 
     @Setter
+    @Enumerated(EnumType.STRING)
+    private MatchFormatType matchFormatType;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private SetWinningType regularSetWinningType;
+
+    @Setter
+    @Enumerated(EnumType.STRING)
+    private SetWinningType tiebreakWinningType;
+
+    @Setter
+    @Column(name = "regular_set_winning_points")
+    private int regularSetWinningPoints;
+
+    @Setter
+    @Column(name = "tie_break_winning_points")
+    private int tiebreakWinningPoints;
+
+    @Setter
     @Column(name = "number_of_rounds")
     private int numberOfRounds;
 
@@ -105,10 +127,17 @@ public class Season implements Identifiable, Comparable<Season> {
     @JoinColumn(name = "league_id")
     private League league;
 
-    public Season(final int number, final LocalDate startDate, final String xpPointsType) {
+    public Season(final int number, final LocalDate startDate, final String xpPointsType, final League league) {
         this.number = number;
         this.startDate = startDate;
         this.xpPointsType = xpPointsType;
+        this.matchFormatType = league.getMatchFormatType();
+        this.regularSetWinningType = league.getRegularSetWinningType();
+        this.tiebreakWinningType = league.getTiebreakWinningType();
+        this.regularSetWinningPoints = league.getRegularSetWinningPoints();
+        this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
+        this.numberOfRounds = league.getNumberOfRoundsPerSeason();
+        this.roundsToBeDeducted = league.getRoundsToBeDeducted();
     }
 
     public void addRound(final Round round) {

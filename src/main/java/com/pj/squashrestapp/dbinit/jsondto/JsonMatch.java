@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.gson.annotations.SerializedName;
+import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.SetWinningType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,13 +12,21 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JsonMatch {
 
-    @JsonProperty("p1")
-    @SerializedName("p1")
-    private UUID firstPlayer;
+    private int number;
 
-    @JsonProperty("p2")
-    @SerializedName("p2")
-    private UUID secondPlayer;
+    private UUID firstPlayerUuid;
+
+    private UUID secondPlayerUuid;
+
+    private MatchFormatType matchFormatType;
+
+    private SetWinningType regularSetWinningType;
+
+    private SetWinningType tiebreakWinningType;
+
+    private int regularSetWinningPoints;
+
+    private int tiebreakWinningPoints;
 
     private ArrayList<JsonSetResult> sets;
 }

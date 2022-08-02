@@ -272,27 +272,16 @@ public class AdminInitializerService {
             final AdditionalMatch additionalMatch =
                     JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players, league);
 
-            for (int i = 0; i < jsonAdditionalMatch.getSets().size(); i++) {
-                final int setNumber = i + 1;
-                final JsonSetResult jsonSetResult =
-                        jsonAdditionalMatch.getSets().get(i);
-                final AdditionalSetResult setResult =
-                        JsonImportUtil.constructAdditionalSetResult(setNumber, jsonSetResult);
+            for (final JsonSetResult jsonSetResult : jsonAdditionalMatch.getSets()) {
+                final AdditionalSetResult setResult = JsonImportUtil.constructAdditionalSetResult(jsonSetResult);
                 additionalMatch.addSetResult(setResult);
-            }
-
-            // todo: check if working!
-            final int numberOfSets = additionalMatch.getMatchFormatType().getMaxNumberOfSets();
-            while (additionalMatch.getSetResults().size() < numberOfSets) {
-                final int currentSetNumber = additionalMatch.getSetResults().size() + 1;
-                additionalMatch.addSetResult(JsonImportUtil.constructEmptyAdditionalSetResult(currentSetNumber));
             }
 
             league.addAdditionalMatch(additionalMatch);
         }
 
         for (final JsonSeason jsonSeason : jsonLeague.getSeasons()) {
-            final Season season = JsonImportUtil.constructSeason(jsonSeason, league);
+            final Season season = JsonImportUtil.constructSeason(jsonSeason);
 
             for (final JsonBonusPoint jsonBonusPoint : jsonSeason.getBonusPoints()) {
                 final BonusPoint bonusPoint = JsonImportUtil.constructBonusPoints(jsonBonusPoint, players);
@@ -310,24 +299,12 @@ public class AdminInitializerService {
                 for (final JsonRoundGroup jsonRoundGroup : jsonRound.getGroups()) {
                     final RoundGroup roundGroup = JsonImportUtil.constructRoundGroup(jsonRoundGroup);
 
-                    int matchNumber = 1;
                     for (final JsonMatch jsonMatch : jsonRoundGroup.getMatches()) {
-                        final Match match = JsonImportUtil.constructMatch(jsonMatch, players, league);
-                        match.setNumber(matchNumber++);
+                        final Match match = JsonImportUtil.constructMatch(jsonMatch, players);
 
-                        for (int i = 0; i < jsonMatch.getSets().size(); i++) {
-                            final int setNumber = i + 1;
-                            final JsonSetResult jsonSetResult =
-                                    jsonMatch.getSets().get(i);
-                            final SetResult setResult = JsonImportUtil.constructSetResult(setNumber, jsonSetResult);
+                        for (final JsonSetResult jsonSetResult : jsonMatch.getSets()) {
+                            final SetResult setResult = JsonImportUtil.constructSetResult(jsonSetResult);
                             match.addSetResult(setResult);
-                        }
-
-                        // todo: check if working!
-                        final int numberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
-                        while (match.getSetResults().size() < numberOfSets) {
-                            final int currentSetNumber = match.getSetResults().size() + 1;
-                            match.addSetResult(JsonImportUtil.constructEmptySetResult(currentSetNumber));
                         }
 
                         roundGroup.addMatch(match);

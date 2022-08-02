@@ -39,9 +39,7 @@ public class FakeSeasonService {
             final int maxNumberOfAttendingPlayers,
             final String xpPointsType) {
 
-        final Season season = new Season(seasonNumber, seasonStartDate, xpPointsType);
-        season.setNumberOfRounds(league.getNumberOfRoundsPerSeason());
-        season.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
+        final Season season = new Season(seasonNumber, seasonStartDate, xpPointsType, league);
 
         LocalDate roundDate = seasonStartDate;
         for (int roundNumber = 1; roundNumber <= numberOfRounds; roundNumber++) {
@@ -60,7 +58,7 @@ public class FakeSeasonService {
             // seasonNumber, league);
             //      final List<Player> roundPlayers = new ArrayList<>(attendingPlayersGrouped.values());
 
-            final Round round = FakeRound.create(league, roundNumber, roundDate, attendingPlayersGrouped);
+            final Round round = FakeRound.create(season, roundNumber, roundDate, attendingPlayersGrouped);
             season.addRound(round);
 
             final List<BonusPoint> bonusPoints = FakeBonusPoints.create(roundPlayers, round.getDate(), 0, 2, 1, 2);

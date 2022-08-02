@@ -106,14 +106,14 @@ public class Match implements Identifiable, Comparable<Match> {
     @JoinColumn(name = "round_group_id")
     private RoundGroup roundGroup;
 
-    public Match(final Player firstPlayer, final Player secondPlayer, final League league) {
+    public Match(final Player firstPlayer, final Player secondPlayer, final Season season) {
         this.firstPlayer = firstPlayer;
         this.secondPlayer = secondPlayer;
-        this.matchFormatType = league.getMatchFormatType();
-        this.regularSetWinningType = league.getRegularSetWinningType();
-        this.regularSetWinningPoints = league.getRegularSetWinningPoints();
-        this.tiebreakWinningType = league.getTiebreakWinningType();
-        this.tiebreakWinningPoints = league.getTiebreakWinningPoints();
+        this.matchFormatType = season.getMatchFormatType();
+        this.regularSetWinningType = season.getRegularSetWinningType();
+        this.regularSetWinningPoints = season.getRegularSetWinningPoints();
+        this.tiebreakWinningType = season.getTiebreakWinningType();
+        this.tiebreakWinningPoints = season.getTiebreakWinningPoints();
     }
 
     public void addSetResult(final SetResult setResult) {
