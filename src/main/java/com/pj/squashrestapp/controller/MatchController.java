@@ -3,11 +3,13 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /**
@@ -56,10 +59,12 @@ public class MatchController {
             @PathVariable final UUID leagueUuid,
             @PathVariable final UUID[] playersUuids,
             @RequestParam(required = false) final UUID seasonUuid,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateTo,
             @RequestParam(required = false) final Integer groupNumber) {
 
         final MatchesSimplePaginated matchesPaginated =
-                matchService.getRoundMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+                matchService.getRoundMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber, dateFrom, dateTo);
         return matchesPaginated;
     }
 
@@ -71,10 +76,12 @@ public class MatchController {
                     final Pageable pageable,
             @PathVariable final UUID leagueUuid,
             @PathVariable final UUID[] playersUuids,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateTo,
             @RequestParam(required = false) final UUID seasonUuid) {
 
         final MatchesSimplePaginated matchesPaginated =
-                matchService.getAdditionalMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid);
+                matchService.getAdditionalMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, dateFrom, dateTo);
         return matchesPaginated;
     }
 }

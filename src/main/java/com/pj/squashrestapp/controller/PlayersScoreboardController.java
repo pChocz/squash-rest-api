@@ -6,12 +6,14 @@ import com.pj.squashrestapp.service.PlayersScoreboardService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 /** */
@@ -29,13 +31,15 @@ public class PlayersScoreboardController {
             @PathVariable final UUID[] playersUuids,
             @RequestParam(required = false) final UUID seasonUuid,
             @RequestParam(required = false) final Integer groupNumber,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateFrom,
+            @RequestParam(required = false) @DateTimeFormat(pattern = GeneralUtil.DATE_FORMAT) final LocalDate dateTo,
             @RequestParam final boolean includeAdditionalMatches) {
 
         final Scoreboard scoreboard = (playersUuids.length == 1)
                 ? playersScoreboardService.buildSingle(
-                        leagueUuid, playersUuids[0], seasonUuid, groupNumber, includeAdditionalMatches)
+                        leagueUuid, playersUuids[0], seasonUuid, groupNumber, dateFrom, dateTo, includeAdditionalMatches)
                 : playersScoreboardService.buildMultipleAllAgainstAll(
-                        leagueUuid, playersUuids, seasonUuid, groupNumber, includeAdditionalMatches);
+                        leagueUuid, playersUuids, seasonUuid, groupNumber, dateFrom, dateTo, includeAdditionalMatches);
 
         return scoreboard;
     }

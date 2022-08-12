@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -48,10 +49,12 @@ public class PlayersScoreboardService {
             final UUID playerUuid,
             final UUID seasonUuid,
             final Integer groupNumber,
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
             final boolean includeAdditionalMatches) {
 
         final List<Match> matches = matchRepository.fetchForOnePlayerForLeagueForSeasonForGroupNumber(
-                leagueUuid, playerUuid, seasonUuid, groupNumber);
+                leagueUuid, playerUuid, seasonUuid, dateFrom, dateTo, groupNumber);
 
         final List<MatchDto> roundMatchesDtos = matches.stream()
                 .map(MatchSimpleDto::new)
@@ -67,7 +70,7 @@ public class PlayersScoreboardService {
 
             final List<AdditionalMatch> additionalMatches =
                     additionalMatchRepository.fetchForSinglePlayerForLeagueForSeasonNumber(
-                            leagueUuid, playerUuid, seasonNumber);
+                            leagueUuid, playerUuid, dateFrom, dateTo, seasonNumber);
 
             final List<MatchDto> additionalMatchesDtos = additionalMatches.stream()
                     .map(AdditionalMatchSimpleDto::new)
@@ -88,10 +91,12 @@ public class PlayersScoreboardService {
             final UUID[] playersUuids,
             final UUID seasonUuid,
             final Integer groupNumber,
+            final LocalDate dateFrom,
+            final LocalDate dateTo,
             final boolean includeAdditionalMatches) {
 
         final List<Match> roundMatches = matchRepository.fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(
-                leagueUuid, playersUuids, seasonUuid, groupNumber);
+                leagueUuid, playersUuids, seasonUuid, dateFrom, dateTo, groupNumber);
 
         final List<MatchDto> roundMatchesDtos = roundMatches.stream()
                 .map(MatchSimpleDto::new)
@@ -108,7 +113,7 @@ public class PlayersScoreboardService {
 
             final List<AdditionalMatch> additionalMatches =
                     additionalMatchRepository.fetchForSeveralPlayersForLeagueForSeasonNumber(
-                            leagueUuid, playersUuids, seasonNumber);
+                            leagueUuid, playersUuids, dateFrom, dateTo, seasonNumber);
 
             final List<MatchDto> additionalMatchesDtos = additionalMatches.stream()
                     .map(AdditionalMatchSimpleDto::new)

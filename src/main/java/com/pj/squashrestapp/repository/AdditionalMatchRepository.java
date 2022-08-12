@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -82,6 +83,8 @@ public interface AdditionalMatchRepository
             JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND (COALESCE(null, :dateFrom) is null or m.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or m.date <= :dateTo)
                 AND p1.uuid IN :playersUuids
                 AND p2.uuid IN :playersUuids
           """)
@@ -89,6 +92,8 @@ public interface AdditionalMatchRepository
     List<AdditionalMatch> fetchForSeveralPlayersForLeagueForSeasonNumber(
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playersUuids") UUID[] playersUuids,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
             @Param("seasonNumber") Integer seasonNumber);
 
     @Query(
@@ -99,12 +104,16 @@ public interface AdditionalMatchRepository
             JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND (COALESCE(null, :dateFrom) is null or m.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or m.date <= :dateTo)
                 AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
           """)
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults"})
     List<AdditionalMatch> fetchForSinglePlayerForLeagueForSeasonNumber(
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playerUuid") UUID playerUuid,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
             @Param("seasonNumber") Integer seasonNumber);
 
     @Query(
@@ -115,6 +124,8 @@ public interface AdditionalMatchRepository
             JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND (COALESCE(null, :dateFrom) is null or m.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or m.date <= :dateTo)
                 AND p1.uuid IN :playersUuids
                 AND p2.uuid IN :playersUuids
           """)
@@ -122,7 +133,9 @@ public interface AdditionalMatchRepository
             Pageable pageable,
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playersUuids") UUID[] playersUuids,
-            @Param("seasonNumber") Integer seasonNumber);
+            @Param("seasonNumber") Integer seasonNumber,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
 
     @Query(
             """
@@ -132,13 +145,17 @@ public interface AdditionalMatchRepository
             JOIN m.secondPlayer p2
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonNumber) is null or m.seasonNumber = :seasonNumber)
+                AND (COALESCE(null, :dateFrom) is null or m.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or m.date <= :dateTo)
                 AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
                 """)
     Page<Long> findIdsSingle(
             Pageable pageable,
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playerUuid") UUID playerUuid,
-            @Param("seasonNumber") Integer seasonNumber);
+            @Param("seasonNumber") Integer seasonNumber,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
 
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "league"})
     List<AdditionalMatch> findByIdIn(List<Long> matchIds);

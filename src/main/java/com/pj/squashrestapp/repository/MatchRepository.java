@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -66,6 +67,8 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
                 AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+                AND (COALESCE(null, :dateFrom) is null or r.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or r.date <= :dateTo)
                 AND p1.uuid IN :playersUuids
                 AND p2.uuid IN :playersUuids
           """)
@@ -74,6 +77,8 @@ public interface MatchRepository
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playersUuids") UUID[] playersUuids,
             @Param("seasonUuid") UUID seasonUuid,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
             @Param("groupNumber") Integer groupNumber);
 
     @Query(
@@ -118,6 +123,8 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
                 AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+                AND (COALESCE(null, :dateFrom) is null or r.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or r.date <= :dateTo)
                 AND (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           """)
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season"})
@@ -125,6 +132,8 @@ public interface MatchRepository
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playerUuid") UUID playerUuid,
             @Param("seasonUuid") UUID seasonUuid,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo,
             @Param("groupNumber") Integer groupNumber);
 
     @Query(
@@ -139,6 +148,8 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
                 AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+                AND (COALESCE(null, :dateFrom) is null or r.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or r.date <= :dateTo)
                 AND p1.uuid IN :playersUuids
                 AND p2.uuid IN :playersUuids
           """)
@@ -147,7 +158,9 @@ public interface MatchRepository
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playersUuids") UUID[] playersUuids,
             @Param("seasonUuid") UUID seasonUuid,
-            @Param("groupNumber") Integer groupNumber);
+            @Param("groupNumber") Integer groupNumber,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
 
     @Query(
             """
@@ -161,6 +174,8 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND (COALESCE(null, :seasonUuid) is null or s.uuid = :seasonUuid)
                 AND (COALESCE(null, :groupNumber) is null or rg.number = :groupNumber)
+                AND (COALESCE(null, :dateFrom) is null or r.date >= :dateFrom)
+                AND (COALESCE(null, :dateTo) is null or r.date <= :dateTo)
                 AND (p1.uuid = :playerUuid or p2.uuid = :playerUuid)
           """)
     Page<Long> findIdsSingle(
@@ -168,7 +183,9 @@ public interface MatchRepository
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playerUuid") UUID playerUuid,
             @Param("seasonUuid") UUID seasonUuid,
-            @Param("groupNumber") Integer groupNumber);
+            @Param("groupNumber") Integer groupNumber,
+            @Param("dateFrom") LocalDate dateFrom,
+            @Param("dateTo") LocalDate dateTo);
 
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
     List<Match> findByIdIn(List<Long> matchIds);

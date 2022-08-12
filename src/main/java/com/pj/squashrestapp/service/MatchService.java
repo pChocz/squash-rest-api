@@ -23,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -103,11 +104,13 @@ public class MatchService {
             final UUID leagueUuid,
             final UUID[] playersUuids,
             final UUID seasonUuid,
-            final Integer groupNumber) {
+            final Integer groupNumber,
+            final LocalDate dateFrom,
+            final LocalDate dateTo) {
 
         final Page<Long> roundMatchesIds = (playersUuids.length == 1)
-                ? matchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber)
-                : matchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber);
+                ? matchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonUuid, groupNumber, dateFrom, dateTo)
+                : matchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonUuid, groupNumber, dateFrom, dateTo);
 
         final List<Match> roundMatches = matchRepository.findByIdIn(roundMatchesIds.getContent());
 
@@ -119,15 +122,17 @@ public class MatchService {
     }
 
     public MatchesSimplePaginated getAdditionalMatchesPaginated(
-            final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids, final UUID seasonUuid) {
+            final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids, final UUID seasonUuid,
+            final LocalDate dateFrom,
+            final LocalDate dateTo) {
 
         final Integer seasonNumber = seasonUuid == null
                 ? null
                 : seasonRepository.findByUuid(seasonUuid).get().getNumber();
 
         final Page<Long> additionalMatchesIds = (playersUuids.length == 1)
-                ? additionalMatchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonNumber)
-                : additionalMatchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonNumber);
+                ? additionalMatchRepository.findIdsSingle(pageable, leagueUuid, playersUuids[0], seasonNumber, dateFrom, dateTo)
+                : additionalMatchRepository.findIdsMultiple(pageable, leagueUuid, playersUuids, seasonNumber, dateFrom, dateTo);
 
         final List<AdditionalMatch> additionalMatches =
                 additionalMatchRepository.findByIdIn(additionalMatchesIds.getContent());
