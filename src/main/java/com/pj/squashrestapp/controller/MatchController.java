@@ -53,7 +53,7 @@ public class MatchController {
     @GetMapping(value = "/for-league-for-players/{leagueUuid}/{playersUuids}")
     MatchesSimplePaginated getMatchesPageable(
             @PageableDefault(
-                            sort = {"id", "number"},
+                            sort = {"r.date", "number"},
                             direction = Sort.Direction.DESC)
                     final Pageable pageable,
             @PathVariable final UUID leagueUuid,
@@ -71,7 +71,7 @@ public class MatchController {
     @GetMapping(value = "/for-league-for-players-additional/{leagueUuid}/{playersUuids}")
     MatchesSimplePaginated getAdditionalMatchesPageable(
             @PageableDefault(
-                            sort = {"id", "date"},
+                            sort = {"date", "id"},
                             direction = Sort.Direction.DESC)
                     final Pageable pageable,
             @PathVariable final UUID leagueUuid,
