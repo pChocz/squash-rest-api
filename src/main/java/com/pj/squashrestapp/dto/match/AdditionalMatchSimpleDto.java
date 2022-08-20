@@ -32,6 +32,7 @@ public class AdditionalMatchSimpleDto implements MatchDto {
     private final AdditionalMatchType type;
     private final List<SetDto> sets;
     private final MatchStatus status;
+    private String footageLink;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -63,6 +64,7 @@ public class AdditionalMatchSimpleDto implements MatchDto {
         this.regularSetWinningPoints = match.getRegularSetWinningPoints();
         this.tieBreakWinningType = match.getTiebreakWinningType();
         this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
+        this.footageLink = match.getFootageLink();
 
         this.sets = new ArrayList<>();
         for (final AdditionalSetResult setResult : match.getSetResults()) {

@@ -80,6 +80,7 @@ public class JsonImportUtil {
         match.setTiebreakWinningType(jsonMatch.getTiebreakWinningType());
         match.setRegularSetWinningPoints(jsonMatch.getRegularSetWinningPoints());
         match.setTiebreakWinningPoints(jsonMatch.getTiebreakWinningPoints());
+        match.setFootageLink(jsonMatch.getFootageLink());
         return match;
     }
 
@@ -105,6 +106,7 @@ public class JsonImportUtil {
         match.setDate(jsonMatch.getDate());
         match.setType(jsonMatch.getType());
         match.setSeasonNumber(jsonMatch.getSeasonNumber());
+        match.setFootageLink(jsonMatch.getFootageLink());
         return match;
     }
 

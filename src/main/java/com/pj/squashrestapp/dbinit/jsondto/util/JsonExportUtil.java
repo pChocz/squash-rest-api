@@ -95,6 +95,7 @@ public class JsonExportUtil {
             jsonAdditionalMatch.setTiebreakWinningType(additionalMatch.getTiebreakWinningType());
             jsonAdditionalMatch.setRegularSetWinningPoints(additionalMatch.getRegularSetWinningPoints());
             jsonAdditionalMatch.setTiebreakWinningPoints(additionalMatch.getTiebreakWinningPoints());
+            jsonAdditionalMatch.setFootageLink(additionalMatch.getFootageLink());
             jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
 
             additionalMatches.add(jsonAdditionalMatch);
@@ -260,6 +261,7 @@ public class JsonExportUtil {
             jsonMatch.setTiebreakWinningType(match.getTiebreakWinningType());
             jsonMatch.setRegularSetWinningPoints(match.getRegularSetWinningPoints());
             jsonMatch.setTiebreakWinningPoints(match.getTiebreakWinningPoints());
+            jsonMatch.setFootageLink(match.getFootageLink());
             jsonMatch.setSets(buildSetResultsJson(match));
             jsonMatches.add(jsonMatch);
         }

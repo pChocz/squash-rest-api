@@ -37,5 +37,7 @@ public class JsonAdditionalMatch {
 
     private int tiebreakWinningPoints;
 
+    private String footageLink;
+
     private ArrayList<JsonSetResult> sets;
 }

@@ -37,6 +37,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
     private String leagueName;
     private AdditionalMatchType type;
     private int seasonNumber;
+    private String footageLink;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -76,6 +77,7 @@ public class AdditionalMatchDetailedDto implements MatchDto {
         this.regularSetWinningPoints = match.getRegularSetWinningPoints();
         this.tieBreakWinningType = match.getTiebreakWinningType();
         this.tieBreakWinningPoints = match.getTiebreakWinningPoints();
+        this.footageLink = match.getFootageLink();
 
         this.sets = new ArrayList<>();
         for (final AdditionalSetResult setResult : match.getSetResults()) {

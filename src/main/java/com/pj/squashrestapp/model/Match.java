@@ -97,6 +97,10 @@ public class Match implements Identifiable, Comparable<Match> {
     private int tiebreakWinningPoints;
 
     @Setter
+    @Column(name = "footage_link")
+    private String footageLink;
+
+    @Setter
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<SetResult> setResults = new TreeSet<SetResult>();
 

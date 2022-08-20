@@ -32,6 +32,6 @@ public interface MatchDto {
     int getTieBreakWinningPoints();
 
     MatchStatus getStatus();
-
     boolean checkFinished();
+    String getFootageLink();
 }
