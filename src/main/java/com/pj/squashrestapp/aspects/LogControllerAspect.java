@@ -247,6 +247,12 @@ public class LogControllerAspect {
                     } else if (arg == null) {
                         return "null";
 
+                    } else if (arg instanceof int[] argArray) {
+                        return Arrays.toString(argArray);
+
+                    } else if (arg instanceof long[] argArray) {
+                        return Arrays.toString(argArray);
+
                     } else {
                         return arg.toString();
                     }
