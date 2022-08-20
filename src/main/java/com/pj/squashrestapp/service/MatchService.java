@@ -122,7 +122,10 @@ public class MatchService {
     }
 
     public MatchesSimplePaginated getAdditionalMatchesPaginated(
-            final Pageable pageable, final UUID leagueUuid, final UUID[] playersUuids, final UUID seasonUuid,
+            final Pageable pageable,
+            final UUID leagueUuid,
+            final UUID[] playersUuids,
+            final UUID seasonUuid,
             final LocalDate dateFrom,
             final LocalDate dateTo) {
 

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.pj.squashrestapp.model.MatchFormatType;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.RomanUtil;
 import lombok.Getter;
@@ -31,6 +33,12 @@ public class SeasonDto implements Comparable<SeasonDto> {
     private String xpPointsType;
     private int allRounds;
     private int countedRounds;
+    private MatchFormatType matchFormatType;
+    private SetWinningType regularSetWinningType;
+    private SetWinningType tiebreakWinningType;
+    private int regularSetWinningPoints;
+    private int tiebreakWinningPoints;
+
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
@@ -48,6 +56,11 @@ public class SeasonDto implements Comparable<SeasonDto> {
         this.seasonStartDate = season.getStartDate();
         this.allRounds = season.getNumberOfRounds();
         this.countedRounds = season.getNumberOfRounds() - season.getRoundsToBeDeducted();
+        this.matchFormatType = season.getMatchFormatType();
+        this.regularSetWinningType = season.getRegularSetWinningType();
+        this.tiebreakWinningType = season.getTiebreakWinningType();
+        this.regularSetWinningPoints = season.getRegularSetWinningPoints();
+        this.tiebreakWinningPoints = season.getTiebreakWinningPoints();
     }
 
     @Override
