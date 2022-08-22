@@ -14,18 +14,32 @@ public class OpponentMatchResultDistribution {
 
     private PlayerDto opponent;
     private int matchesWon;
-    private Set<MatchResultCount> matchResultCountList;
+    private int matchesLost;
+    private double matchesRatio;
+    private Set<MatchResultCount> matchesResultCountList;
 
     public OpponentMatchResultDistribution(final PlayerDto opponent,
-                                           final Set<MatchResultCount> matchResultCountList) {
+                                           final Set<MatchResultCount> matchesResultCountList) {
         this.opponent = opponent;
-        this.matchResultCountList = matchResultCountList;
+        this.matchesResultCountList = matchesResultCountList;
     }
 
     public int getMatchesWon() {
-        return matchResultCountList
+        return matchesResultCountList
                 .stream()
                 .mapToInt(MatchResultCount::getMatchesWon)
                 .sum();
     }
+
+    public int getMatchesLost() {
+        return matchesResultCountList
+                .stream()
+                .mapToInt(MatchResultCount::getMatchesLost)
+                .sum();
+    }
+
+    public double getMatchesRatio() {
+        return (double) getMatchesWon() / (getMatchesWon() + getMatchesLost());
+    }
+
 }

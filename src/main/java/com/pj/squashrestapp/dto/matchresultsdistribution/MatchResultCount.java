@@ -9,16 +9,17 @@ import java.util.Comparator;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class MatchResultCount implements Comparable<MatchResultCount> {
 
+    @EqualsAndHashCode.Include
     private MatchResult matchResult;
     private int matchesWon;
+    private int matchesLost;
 
-    public MatchResultCount(final MatchResult matchResult, final int matchesWon) {
+    public MatchResultCount(final MatchResult matchResult) {
         this.matchResult = matchResult;
-        this.matchesWon = matchesWon;
     }
 
     @Override

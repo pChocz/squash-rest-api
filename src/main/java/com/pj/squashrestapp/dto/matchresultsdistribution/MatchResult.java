@@ -9,11 +9,13 @@ import java.util.Comparator;
 
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 public class MatchResult implements Comparable<MatchResult> {
 
+    @EqualsAndHashCode.Include
     private int won;
+    @EqualsAndHashCode.Include
     private int lost;
     private String result;
     private int diff;

@@ -15,6 +15,7 @@ import java.util.List;
 public class LeagueMatchResultDistribution {
 
     private LeagueDto league;
+    private int allMatches;
     private List<PlayerMatchResultDistribution> playerMatchResultDistributionList;
 
 }

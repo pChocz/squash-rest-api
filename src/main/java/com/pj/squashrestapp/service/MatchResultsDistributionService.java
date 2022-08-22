@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public class MatchResultsDistributionService {
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
-        List<PlayerMatchResultDistribution> playerMatchResultDistributionList = new ArrayList<>();
+        final List<PlayerMatchResultDistribution> playerMatchResultDistributionList = new ArrayList<>();
 
         for (Map.Entry<Long, PlayerDto> winnerEntry : players.entrySet()) {
             final Long winnerId = winnerEntry.getKey();
@@ -56,20 +57,20 @@ public class MatchResultsDistributionService {
             for (Map.Entry<Long, PlayerDto> looserEntry : players.entrySet()) {
                 final Long looserId = looserEntry.getKey();
                 final PlayerDto looser = looserEntry.getValue();
-                final List<MatchResultDistributionDataDto> matchResultDistributionDataDtos = results
-                        .stream()
-                        .filter(v -> (v.getWinnerId().equals(winnerId) && v.getLooserId().equals(looserId)))
-                        .toList();
-                if (matchResultDistributionDataDtos.isEmpty()) {
+                if (winnerId.equals(looserId)) {
                     continue;
                 }
-                Set<MatchResultCount> matchResultCountList = new TreeSet<>();
-                for (final MatchResultDistributionDataDto dto : matchResultDistributionDataDtos) {
-                    final MatchResult matchResult = new MatchResult(dto.getGamesWon(), dto.getGamesLost());
-                    matchResultCountList.add(new MatchResultCount(matchResult, dto.getCount()));
-                }
+                final List<MatchResultDistributionDataDto> matchesDataDto = results
+                        .stream()
+                        .filter(v -> (Set.of(v.getWinnerId(), v.getLooserId()).equals(Set.of(winnerId, looserId))))
+                        .toList();
 
-                final OpponentMatchResultDistribution opponentMatchResultDistribution = new OpponentMatchResultDistribution(looser, matchResultCountList);
+                if (matchesDataDto.isEmpty()) {
+                    continue;
+                }
+                Set<MatchResultCount> matchesResultCountSet = buildMatchResultCountSet(matchesDataDto, winnerId);
+
+                final OpponentMatchResultDistribution opponentMatchResultDistribution = new OpponentMatchResultDistribution(looser, matchesResultCountSet);
                 opponentMatchResultDistributionList.add(opponentMatchResultDistribution);
             }
 
@@ -77,8 +78,39 @@ public class MatchResultsDistributionService {
             playerMatchResultDistributionList.add(playerMatchResultDistribution);
         }
 
+        int allMatches = playerMatchResultDistributionList
+                .stream()
+                .mapToInt(PlayerMatchResultDistribution::getMatchesWon)
+                .sum();
+
         Collections.sort(playerMatchResultDistributionList);
-        return new LeagueMatchResultDistribution(new LeagueDto(league), playerMatchResultDistributionList);
+        return new LeagueMatchResultDistribution(new LeagueDto(league), allMatches, playerMatchResultDistributionList);
+    }
+
+    private Set<MatchResultCount> buildMatchResultCountSet(final List<MatchResultDistributionDataDto> matchesDataDto,
+                                                           final Long winnerId) {
+        final Set<MatchResultCount> matchResultCounts = matchesDataDto
+                .stream()
+                .map(dto -> new MatchResult(dto.getGamesWon(), dto.getGamesLost()))
+                .map(matchResult -> new MatchResultCount(matchResult))
+                .collect(Collectors.toSet());
+
+        for (final MatchResultDistributionDataDto dto : matchesDataDto) {
+            final Optional<MatchResultCount> optionalMatchResultCount = matchResultCounts
+                    .stream()
+                    .filter(v -> v.getMatchResult().getWon() == dto.getGamesWon() && v.getMatchResult().getLost() == dto.getGamesLost())
+                    .findFirst();
+            if (optionalMatchResultCount.isPresent()) {
+                final MatchResultCount matchResultCount = optionalMatchResultCount.get();
+                if (dto.getWinnerId().equals(winnerId)) {
+                    matchResultCount.setMatchesWon(dto.getCount());
+                } else {
+                    matchResultCount.setMatchesLost(dto.getCount());
+                }
+            }
+        }
+
+        return matchResultCounts;
     }
 
     private List<Long> getPlayersIds(final List<MatchResultDistributionDataDto> results) {

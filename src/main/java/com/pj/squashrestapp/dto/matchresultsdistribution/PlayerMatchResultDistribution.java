@@ -15,6 +15,8 @@ public class PlayerMatchResultDistribution implements Comparable<PlayerMatchResu
 
     private PlayerDto player;
     private int matchesWon;
+    private int matchesLost;
+    private double matchesRatio;
     private List<OpponentMatchResultDistribution> opponentMatchResultDistributionList;
 
     public PlayerMatchResultDistribution(final PlayerDto player,
@@ -30,11 +32,21 @@ public class PlayerMatchResultDistribution implements Comparable<PlayerMatchResu
                 .sum();
     }
 
+    public int getMatchesLost() {
+        return opponentMatchResultDistributionList
+                .stream()
+                .mapToInt(OpponentMatchResultDistribution::getMatchesLost)
+                .sum();
+    }
+
+    public double getMatchesRatio() {
+        return (double) getMatchesWon() / (getMatchesWon() + getMatchesLost());
+    }
+
     @Override
     public int compareTo(final PlayerMatchResultDistribution that) {
         return Comparator
-                .comparingInt(PlayerMatchResultDistribution::getMatchesWon)
-                .reversed()
+                .comparing(v -> ((PlayerMatchResultDistribution)v).getPlayer().getUsername())
                 .compare(this, that);
     }
 
