@@ -32,9 +32,9 @@ public class SetResultsHistogramService {
     private final LeagueRepository leagueRepository;
 
 
-    public ReadySetResultsHistogram createHistogram(final UUID leagueUuid, final int[] seasonNumbers) {
+    public ReadySetResultsHistogram createHistogram(final UUID leagueUuid, final int[] seasonNumbers, final boolean includeAdditional) {
         final League league = leagueRepository.findByUuidWithSeasons(leagueUuid).orElseThrow();
-        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramData(leagueUuid, seasonNumbers);
+        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramData(leagueUuid, seasonNumbers, includeAdditional);
         final Map<Long, PlayerDto> players = playerRepository.findByIds(getPlayersIds(results))
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));

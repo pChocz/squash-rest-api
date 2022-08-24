@@ -26,9 +26,10 @@ public class MatchResultDistributionController {
 
     @GetMapping(value = "/{leagueUuid}")
     @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
-    LeagueMatchResultDistribution histogramBatis(@PathVariable final UUID leagueUuid,
-                                                 @RequestParam(required = false) final int[] seasonNumbers) {
-        final LeagueMatchResultDistribution matchResultsDistribution = matchResultsDistributionService.createDistribution(leagueUuid, seasonNumbers);
+    LeagueMatchResultDistribution extractLeagueMatchesDistributionStats(@PathVariable final UUID leagueUuid,
+                                                                        @RequestParam(required = false) final int[] seasonNumbers,
+                                                                        @RequestParam(defaultValue = "false") final boolean includeAdditional) {
+        final LeagueMatchResultDistribution matchResultsDistribution = matchResultsDistributionService.createDistribution(leagueUuid, seasonNumbers, includeAdditional);
         return matchResultsDistribution;
     }
 }

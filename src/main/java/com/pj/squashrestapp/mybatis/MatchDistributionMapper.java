@@ -39,7 +39,8 @@ public interface MatchDistributionMapper {
                         p1.id as player_one_id,
                         p2.id as player_two_id,
                         sr.first_player_score as player_one_result,
-                        sr.second_player_score as player_two_result
+                        sr.second_player_score as player_two_result,
+                        true as includeRow
                     from set_results sr
                         join matches m on sr.match_id = m.id
                         join round_groups rg on rg.id = m.round_group_id
@@ -52,7 +53,29 @@ public interface MatchDistributionMapper {
                       and (#{seasonNumbers}::int[] is null or s.number = ANY(#{seasonNumbers}::int[]))
                       and sr.first_player_score is not null
                       and sr.second_player_score is not null
+                      
+                    union all
+                    
+                    select
+                        m.id as match_id,
+                        m.match_format_type as match_format_type,
+                        p1.id as player_one_id,
+                        p2.id as player_two_id,
+                        sr.first_player_score as player_one_result,
+                        sr.second_player_score as player_two_result,
+                        #{includeAdditional} as includeRow
+                    from additional_set_results sr
+                        join additional_matches m on sr.match_id = m.id
+                        join leagues l on l.id = m.league_id
+                        join players p1 on m.first_player_id = p1.id
+                        join players p2 on m.second_player_id = p2.id
+                    where l.uuid = #{leagueUuid}
+                      and (#{seasonNumbers}::int[] is null or m.season_number = ANY(#{seasonNumbers}::int[]))
+                      and sr.first_player_score is not null
+                      and sr.second_player_score is not null
+                      
                     ) as t
+                where t.includeRow = true
                 group by
                     t.match_id,
                     t.match_format_type,
@@ -65,5 +88,7 @@ public interface MatchDistributionMapper {
                 games_lost
             """)
     List<MatchResultDistributionDataDto> getDistributionData(
-            @Param("leagueUuid") UUID leagueUuid, @Param("seasonNumbers") int[] seasonNumbers);
+            @Param("leagueUuid") UUID leagueUuid,
+            @Param("seasonNumbers") int[] seasonNumbers,
+            @Param("includeAdditional") boolean includeAdditional);
 }

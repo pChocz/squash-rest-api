@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,9 +38,9 @@ public class MatchResultsDistributionService {
     private final LeagueRepository leagueRepository;
 
 
-    public LeagueMatchResultDistribution createDistribution(final UUID leagueUuid, final int[] seasonNumbers) {
+    public LeagueMatchResultDistribution createDistribution(final UUID leagueUuid, final int[] seasonNumbers, final boolean includeAdditional) {
         final League league = leagueRepository.findByUuidWithSeasons(leagueUuid).orElseThrow();
-        final List<MatchResultDistributionDataDto> results = matchDistributionMapper.getDistributionData(leagueUuid, seasonNumbers);
+        final List<MatchResultDistributionDataDto> results = matchDistributionMapper.getDistributionData(leagueUuid, seasonNumbers, includeAdditional);
         final Map<Long, PlayerDto> players = playerRepository.findByIds(getPlayersIds(results))
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));
@@ -92,7 +91,7 @@ public class MatchResultsDistributionService {
         final Set<MatchResultCount> matchResultCounts = matchesDataDto
                 .stream()
                 .map(dto -> new MatchResult(dto.getGamesWon(), dto.getGamesLost()))
-                .map(matchResult -> new MatchResultCount(matchResult))
+                .map(MatchResultCount::new)
                 .collect(Collectors.toSet());
 
         for (final MatchResultDistributionDataDto dto : matchesDataDto) {
