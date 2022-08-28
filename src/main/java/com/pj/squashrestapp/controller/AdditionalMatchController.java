@@ -69,7 +69,7 @@ public class AdditionalMatchController {
     @PutMapping(value = "/{matchUuid}")
     @PreAuthorize(
             """
-            hasRoleForLeague(#leagueUuid, 'OWNER')
+            hasRoleForAdditionalMatch(#matchUuid, 'OWNER')
             or
             hasRoleForAdditionalMatch(#matchUuid, 'MODERATOR')
             or
@@ -81,6 +81,13 @@ public class AdditionalMatchController {
             @RequestParam final String player,
             @RequestParam final Integer newScore) {
         additionalMatchService.modifySingleScore(matchUuid, setNumber, player, newScore);
+    }
+
+    @PreAuthorize("hasRoleForMatch(#matchUuid, 'OWNER')")
+    @PutMapping(value = "/add-or-replace-footage/{matchUuid}")
+    void addOrReplaceFootage(@PathVariable final UUID matchUuid,
+                             @RequestParam final String footageLink) {
+        additionalMatchService.addOrReplaceFootage(matchUuid, footageLink);
     }
 
     @GetMapping("/all-for-league/{leagueUuid}")

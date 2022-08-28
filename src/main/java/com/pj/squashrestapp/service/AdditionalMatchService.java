@@ -199,4 +199,13 @@ public class AdditionalMatchService {
             throw new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND);
         }
     }
+
+    public void addOrReplaceFootage(final UUID matchUuid, final String footageLink) {
+        final AdditionalMatch match = additionalMatchRepository
+                .findByUuid(matchUuid)
+                .orElseThrow(() -> new RuntimeException(ErrorCode.MATCH_NOT_FOUND));
+        match.setFootageLink(footageLink);
+        redisCacheService.evictCacheForAdditionalMatch(match);
+        additionalMatchRepository.save(match);
+    }
 }

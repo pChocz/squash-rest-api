@@ -139,6 +139,18 @@ public interface AdditionalMatchRepository
 
     @Query(
             """
+          SELECT m FROM AdditionalMatch m
+            JOIN m.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE l.uuid = :leagueUuid
+                AND m.footageLink is not null
+          """)
+    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "league"})
+    List<AdditionalMatch> fetchMatchesWithFootageForLeague(@Param("leagueUuid") UUID leagueUuid);
+
+    @Query(
+            """
           SELECT m.id FROM AdditionalMatch m
             JOIN m.league l
             JOIN m.firstPlayer p1

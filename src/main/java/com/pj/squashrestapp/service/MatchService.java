@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
@@ -24,9 +25,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** */
 @Slf4j
@@ -39,6 +42,18 @@ public class MatchService {
     private final SetResultRepository setResultRepository;
     private final SeasonRepository seasonRepository;
     private final RedisCacheService redisCacheService;
+
+    public List<MatchDto> matchesWithFootageForLeague(final UUID leagueUuid) {
+        final List<Match> matches = matchRepository.fetchMatchesWithFootageForLeague(leagueUuid);
+        final List<AdditionalMatch> additionalMatches = additionalMatchRepository.fetchMatchesWithFootageForLeague(leagueUuid);
+        final List<MatchDto> matchesDtos = Stream
+                .concat(
+                        matches.stream().map(MatchDetailedDto::new),
+                        additionalMatches.stream().map(AdditionalMatchDetailedDto::new))
+                .sorted(Comparator.comparing(MatchDto::getDate).reversed())
+                .collect(Collectors.toList());
+        return matchesDtos;
+    }
 
     public MatchSimpleDto modifySingleScore(
             final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
@@ -146,5 +161,15 @@ public class MatchService {
         final MatchesSimplePaginated matchesDtoPage =
                 new MatchesSimplePaginated(additionalMatchesIds, additionalMatchesDtos);
         return matchesDtoPage;
+    }
+
+    public MatchSimpleDto addOrReplaceFootage(final UUID matchUuid, final String footageLink) {
+        final Match match = matchRepository
+                .findMatchByUuid(matchUuid)
+                .orElseThrow(() -> new RuntimeException(ErrorCode.MATCH_NOT_FOUND));
+        match.setFootageLink(footageLink);
+        matchRepository.save(match);
+        redisCacheService.evictCacheForRoundMatch(match);
+        return new MatchSimpleDto(match);
     }
 }

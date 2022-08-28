@@ -138,6 +138,21 @@ public interface MatchRepository
 
     @Query(
             """
+          SELECT m FROM Match m
+            JOIN m.roundGroup rg
+            JOIN rg.round r
+            JOIN r.season s
+            JOIN s.league l
+            JOIN m.firstPlayer p1
+            JOIN m.secondPlayer p2
+              WHERE l.uuid = :leagueUuid
+                AND m.footageLink is not null
+          """)
+    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
+    List<Match> fetchMatchesWithFootageForLeague(@Param("leagueUuid") UUID leagueUuid);
+
+    @Query(
+            """
           SELECT m.id FROM Match m
             JOIN m.roundGroup rg
             JOIN rg.round r

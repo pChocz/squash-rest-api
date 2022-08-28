@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -48,6 +50,14 @@ public class MatchController {
             @RequestParam final Integer newScore) {
         final MatchSimpleDto editedMatch = matchService.modifySingleScore(matchUuid, setNumber, player, newScore);
         return editedMatch;
+    }
+
+    @PutMapping(value = "/add-or-replace-footage/{matchUuid}")
+    @PreAuthorize("hasRoleForMatch(#matchUuid, 'OWNER')")
+    MatchSimpleDto addOrReplaceFootage(@PathVariable final UUID matchUuid,
+                             @RequestParam final String footageLink) {
+        final MatchSimpleDto match = matchService.addOrReplaceFootage(matchUuid, footageLink);
+        return match;
     }
 
     @GetMapping(value = "/for-league-for-players/{leagueUuid}/{playersUuids}")
@@ -84,4 +94,12 @@ public class MatchController {
                 matchService.getAdditionalMatchesPaginated(pageable, leagueUuid, playersUuids, seasonUuid, dateFrom, dateTo);
         return matchesPaginated;
     }
+
+    @GetMapping(value = "/with-footage/{leagueUuid}")
+    @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
+    List<MatchDto> getMatchesWithFootage(@PathVariable final UUID leagueUuid) {
+        final List<MatchDto> matches = matchService.matchesWithFootageForLeague(leagueUuid);
+        return matches;
+    }
+
 }
