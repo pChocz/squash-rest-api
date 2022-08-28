@@ -1,7 +1,9 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDto;
+import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.dto.TrophiesWonForLeague;
 import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
@@ -25,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** */
 @Slf4j
@@ -35,24 +38,31 @@ public class LeagueTrophiesService {
     private final TrophiesForLeagueRepository trophiesForLeagueRepository;
     private final PlayerRepository playerRepository;
     private final LeagueRepository leagueRepository;
+    private final LeagueService leagueService;
 
     @Transactional
     public List<SeasonTrophies> extractTrophiesForPlayerForLeague(final PlayerDto playerDto, final UUID leagueUuid) {
         final List<TrophyForLeague> trophiesForPlayer =
                 trophiesForLeagueRepository.findAllByPlayerUuidAndLeagueUuid(playerDto.getUuid(), leagueUuid);
-
-        final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(trophiesForPlayer);
+        final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
+        final List<Integer> seasonNumbers = leagueGeneralInfo.getSeasons()
+                .stream()
+                .map(SeasonDto::getSeasonNumber)
+                .toList();
+        final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(trophiesForPlayer, seasonNumbers);
 
         return leagueTrophiesPerSeason;
     }
 
-    private List<SeasonTrophies> buildSeasonTrophies(List<TrophyForLeague> trophiesForPlayer) {
+    private List<SeasonTrophies> buildSeasonTrophies(List<TrophyForLeague> trophiesForPlayer, final List<Integer> seasonNumbers) {
         final List<SeasonTrophies> leagueTrophiesPerSeason = new ArrayList<>();
-        final List<Integer> listOfSeasonNumbers = trophiesForPlayer.stream()
-                .map(TrophyForLeague::getSeasonNumber)
+        final List<Integer> listOfSeasonNumbers = Stream
+                .concat(
+                        trophiesForPlayer.stream().map(TrophyForLeague::getSeasonNumber),
+                        seasonNumbers.stream())
                 .distinct()
                 .sorted(Comparator.reverseOrder())
-                .collect(Collectors.toList());
+                .toList();
 
         for (final int seasonNumber : listOfSeasonNumbers) {
             final List<TrophyForLeague> seasonTrophies = trophiesForPlayer.stream()
@@ -139,8 +149,12 @@ public class LeagueTrophiesService {
 
     public List<SeasonTrophies> extractTrophiesForAllSeasonsForLeague(final UUID leagueUuid) {
         final List<TrophyForLeague> allTrophiesForLeague = trophiesForLeagueRepository.findByLeagueUuid(leagueUuid);
-
-        final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(allTrophiesForLeague);
+        final LeagueDto leagueGeneralInfo = leagueService.buildGeneralInfoForLeague(leagueUuid);
+        final List<Integer> seasonNumbers = leagueGeneralInfo.getSeasons()
+                .stream()
+                .map(SeasonDto::getSeasonNumber)
+                .toList();
+        final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(allTrophiesForLeague, seasonNumbers);
 
         return leagueTrophiesPerSeason;
     }
