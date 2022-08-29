@@ -83,7 +83,7 @@ public class AdditionalMatchController {
         additionalMatchService.modifySingleScore(matchUuid, setNumber, player, newScore);
     }
 
-    @PreAuthorize("hasRoleForMatch(#matchUuid, 'OWNER')")
+    @PreAuthorize("hasRoleForAdditionalMatch(#matchUuid, 'OWNER')")
     @PutMapping(value = "/add-or-replace-footage/{matchUuid}")
     void addOrReplaceFootage(@PathVariable final UUID matchUuid,
                              @RequestParam final String footageLink) {
