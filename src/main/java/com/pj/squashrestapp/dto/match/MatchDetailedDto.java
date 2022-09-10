@@ -11,6 +11,7 @@ import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
@@ -19,6 +20,7 @@ import com.pj.squashrestapp.model.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,6 +43,7 @@ public class MatchDetailedDto implements MatchDto {
     private UUID seasonUuid;
     private int seasonNumber;
     private String leagueName;
+    private UUID leagueUuid;
     private List<SetDto> sets;
     private MatchStatus status;
     private String footageLink;
@@ -65,6 +68,9 @@ public class MatchDetailedDto implements MatchDto {
     @JsonIgnore
     private int tieBreakWinningPoints;
 
+    @Setter
+    private List<MatchScore> matchScores;
+
     public MatchDetailedDto(final Match match) {
         final RoundGroup roundGroup = match.getRoundGroup();
         final Round round = roundGroup.getRound();
@@ -80,6 +86,7 @@ public class MatchDetailedDto implements MatchDto {
         this.seasonUuid = season.getUuid();
         this.seasonNumber = season.getNumber();
         this.leagueName = season.getLeague().getName();
+        this.leagueUuid = season.getLeague().getUuid();
 
         this.matchFormatType = match.getMatchFormatType();
         this.regularSetWinningType = match.getRegularSetWinningType();

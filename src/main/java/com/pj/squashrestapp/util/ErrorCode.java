@@ -10,6 +10,7 @@ public class ErrorCode {
     public static final String SEASON_NOT_FOUND = "SEASON_NOT_FOUND";
     public static final String ROUND_NOT_FOUND = "ROUND_NOT_FOUND";
     public static final String MATCH_NOT_FOUND = "MATCH_NOT_FOUND";
+    public static final String NO_EXISTING_MATCH_SCORE = "NO_EXISTING_MATCH_SCORE";
     public static final String LOGO_NOT_FOUND = "LOGO_NOT_FOUND";
     public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
 
@@ -24,6 +25,8 @@ public class ErrorCode {
     public static final String ALREADY_A_PLAYER_OF_LEAGUE = "ALREADY_A_PLAYER_OF_LEAGUE";
     public static final String ROUND_DUPLICATE_ERROR = "ROUND_DUPLICATE_ERROR";
     public static final String SEASON_DUPLICATE_ERROR = "SEASON_DUPLICATE_ERROR";
+    public static final String INVALID_MATCH_SCORE = "INVALID_MATCH_SCORE";
+    public static final String MATCH_SCORE_NOT_EMPTY = "MATCH_SCORE_NOT_EMPTY";
 
     // EXPIRED
     public static final String EXPIRED_REFRESH_TOKEN = "EXPIRED_REFRESH_TOKEN";

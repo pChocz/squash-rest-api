@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** Tests for {@link SetScoreHelper} class. */
 @DisplayName("Set Score Test")
-class SetScoreHelperTest {
+class SetMatchScoreHelperTest {
 
     @Test
     @DisplayName("Assert - ADV_OF_2_OR_1_AT_THE_END")

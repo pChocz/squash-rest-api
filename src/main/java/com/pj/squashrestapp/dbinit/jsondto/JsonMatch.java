@@ -30,4 +30,5 @@ public class JsonMatch {
 
     private String footageLink;
     private ArrayList<JsonSetResult> sets;
+    private ArrayList<JsonMatchScore> matchScores;
 }

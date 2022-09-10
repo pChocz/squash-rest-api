@@ -11,6 +11,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
+import com.pj.squashrestapp.dbinit.jsondto.JsonMatchScore;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayerCredentials;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRefreshToken;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
@@ -31,6 +32,7 @@ import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
 import com.pj.squashrestapp.model.RoleForLeague;
@@ -305,6 +307,11 @@ public class AdminInitializerService {
                         for (final JsonSetResult jsonSetResult : jsonMatch.getSets()) {
                             final SetResult setResult = JsonImportUtil.constructSetResult(jsonSetResult);
                             match.addSetResult(setResult);
+                        }
+
+                        for (final JsonMatchScore jsonMatchScore : jsonMatch.getMatchScores()) {
+                            final MatchScore matchScore = JsonImportUtil.constructMatchScore(jsonMatchScore);
+                            match.addScore(matchScore);
                         }
 
                         roundGroup.addMatch(match);

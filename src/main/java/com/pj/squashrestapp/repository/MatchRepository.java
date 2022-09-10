@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchScore;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -30,6 +31,26 @@ public interface MatchRepository
               WHERE m.uuid = :matchUuid
           """)
     UUID retrieveLeagueUuidOfMatch(@Param("matchUuid") UUID matchUuid);
+
+    @Query(
+            """
+          SELECT ms FROM MatchScore ms
+            JOIN ms.match m
+              WHERE m.uuid = :matchUuid
+            ORDER BY ms.zonedDateTime
+          """)
+    List<MatchScore> retrieveMatchScoreForMatch(@Param("matchUuid") UUID matchUuid);
+
+    @Query("SELECT m FROM Match m WHERE m.uuid = :matchUuid")
+    @EntityGraph(
+            attributePaths = {
+                "firstPlayer",
+                "secondPlayer",
+                "setResults",
+                "roundGroup.round.season.league",
+                "scores"
+            })
+    Optional<Match> findMatchByUuidWithScoreSheet(@Param("matchUuid") UUID matchUuid);
 
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
     Optional<Match> findMatchByUuid(UUID uuid);

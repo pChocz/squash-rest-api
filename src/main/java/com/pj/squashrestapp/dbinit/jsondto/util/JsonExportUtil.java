@@ -7,6 +7,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueRule;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
+import com.pj.squashrestapp.dbinit.jsondto.JsonMatchScore;
 import com.pj.squashrestapp.dbinit.jsondto.JsonPlayer;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
@@ -19,6 +20,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.Season;
@@ -263,6 +265,7 @@ public class JsonExportUtil {
             jsonMatch.setTiebreakWinningPoints(match.getTiebreakWinningPoints());
             jsonMatch.setFootageLink(match.getFootageLink());
             jsonMatch.setSets(buildSetResultsJson(match));
+            jsonMatch.setMatchScores(buildMatchScoresJson(match));
             jsonMatches.add(jsonMatch);
         }
         return jsonMatches;
@@ -278,6 +281,31 @@ public class JsonExportUtil {
             jsonSetResults.add(jsonSetResult);
         }
         return jsonSetResults;
+    }
+
+    private ArrayList<JsonMatchScore> buildMatchScoresJson(final Match match) {
+        final ArrayList<JsonMatchScore> jsonMatchScores = new ArrayList<>();
+        for (final MatchScore matchScore : match.getMatchScoresOrdered()) {
+            final JsonMatchScore jsonMatchScore = new JsonMatchScore();
+            jsonMatchScore.setGameNumber(matchScore.getGameNumber());
+            jsonMatchScore.setZonedDateTime(matchScore.getZonedDateTime());
+            jsonMatchScore.setScoreEventType(matchScore.getScoreEventType());
+            jsonMatchScore.setAppealDecision(matchScore.getAppealDecision());
+            jsonMatchScore.setServeSide(matchScore.getServeSide());
+            jsonMatchScore.setServePlayer(matchScore.getServePlayer());
+            jsonMatchScore.setNextSuggestedServePlayer(matchScore.getNextSuggestedServePlayer());
+            jsonMatchScore.setFirstPlayerScore(matchScore.getFirstPlayerScore());
+            jsonMatchScore.setSecondPlayerScore(matchScore.getSecondPlayerScore());
+            jsonMatchScore.setFirstPlayerGamesWon(matchScore.getFirstPlayerGamesWon());
+            jsonMatchScore.setSecondPlayerGamesWon(matchScore.getSecondPlayerGamesWon());
+            jsonMatchScore.setCanScore(matchScore.isCanScore());
+            jsonMatchScore.setCanStartGame(matchScore.isCanStartGame());
+            jsonMatchScore.setCanEndGame(matchScore.isCanEndGame());
+            jsonMatchScore.setCanEndMatch(matchScore.isCanEndMatch());
+            jsonMatchScore.setMatchFinished(matchScore.isMatchFinished());
+            jsonMatchScores.add(jsonMatchScore);
+        }
+        return jsonMatchScores;
     }
 
 }

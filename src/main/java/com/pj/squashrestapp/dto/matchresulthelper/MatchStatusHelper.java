@@ -14,7 +14,6 @@ import java.util.List;
 public class MatchStatusHelper {
 
     public MatchStatus checkStatus(final MatchDto match) {
-
         final int numberOfSets = match.getSets().size();
         final int maxNumberOfSets = match.getMatchFormatType().getMaxNumberOfSets();
 
@@ -23,7 +22,13 @@ public class MatchStatusHelper {
             return MatchStatus.ERROR;
         }
 
-        final List<SetStatus> setStatuses = match.getSets().stream()
+        final List<SetStatus> setStatuses = getSetStatuses(match);
+        return verifySetStatuses(setStatuses);
+    }
+
+    public static List<SetStatus> getSetStatuses(final MatchDto match) {
+        final int numberOfSets = match.getSets().size();
+        return match.getSets().stream()
                 .map(setDto -> {
                     if (setDto.getSetNumber() < numberOfSets) {
                         // regular set
@@ -36,8 +41,6 @@ public class MatchStatusHelper {
                     }
                 })
                 .toList();
-
-        return verifySetStatuses(setStatuses);
     }
 
     private static MatchStatus verifySetStatuses(final List<SetStatus> setStatuses) {

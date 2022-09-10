@@ -55,6 +55,7 @@ public interface LeagueRepository extends JpaRepository<League, Long> {
     @EntityGraph(
             attributePaths = {
                 "seasons.rounds.roundGroups.matches.setResults",
+                "seasons.rounds.roundGroups.matches.scores",
                 "seasons.rounds.roundGroups.matches.firstPlayer",
                 "seasons.rounds.roundGroups.matches.secondPlayer"
             })

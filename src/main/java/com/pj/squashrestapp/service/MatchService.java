@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
@@ -57,8 +58,12 @@ public class MatchService {
 
     public MatchSimpleDto modifySingleScore(
             final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
-        final Match matchToModify = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
+        final Match matchToModify = matchRepository.findMatchByUuidWithScoreSheet(matchUuid).orElseThrow();
         final String initialMatchResult = matchToModify.toString();
+
+        if (!matchToModify.getScores().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_SCORE_NOT_EMPTY);
+        }
 
         final SetResult setToModify = matchToModify.getSetResults().stream()
                 .filter(set -> set.getNumber() == setNumber)
@@ -166,7 +171,7 @@ public class MatchService {
     public MatchSimpleDto addOrReplaceFootage(final UUID matchUuid, final String footageLink) {
         final Match match = matchRepository
                 .findMatchByUuid(matchUuid)
-                .orElseThrow(() -> new RuntimeException(ErrorCode.MATCH_NOT_FOUND));
+                .orElseThrow(() -> new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND));
         match.setFootageLink(footageLink);
         matchRepository.save(match);
         redisCacheService.evictCacheForRoundMatch(match);

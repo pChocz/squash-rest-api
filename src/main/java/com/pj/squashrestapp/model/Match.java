@@ -23,6 +23,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -102,7 +103,11 @@ public class Match implements Identifiable, Comparable<Match> {
 
     @Setter
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private Set<SetResult> setResults = new TreeSet<SetResult>();
+    private Set<MatchScore> scores = new TreeSet<>();
+
+    @Setter
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private Set<SetResult> setResults = new TreeSet<>();
 
     @JsonIgnore
     @Setter
@@ -125,6 +130,18 @@ public class Match implements Identifiable, Comparable<Match> {
         setResult.setMatch(this);
     }
 
+    public void addScore(final MatchScore matchScore) {
+        this.scores.add(matchScore);
+        matchScore.setMatch(this);
+    }
+
+    public Optional<MatchScore> getLastScore() {
+        final int count = this.getScores().size();
+        return count == 0
+                ? Optional.empty()
+                : this.getScores().stream().sorted().skip(count - 1).findFirst();
+    }
+
     @Override
     public String toString() {
         return "[" + getUuid() + "] " + firstPlayer + " vs. " + secondPlayer + " : " + setResultsOrderedNonNull();
@@ -140,6 +157,12 @@ public class Match implements Identifiable, Comparable<Match> {
     public List<SetResult> getSetResultsOrdered() {
         return setResults.stream()
                 .sorted(Comparator.comparingInt(SetResult::getNumber))
+                .collect(Collectors.toList());
+    }
+
+    public List<MatchScore> getMatchScoresOrdered() {
+        return scores.stream()
+                .sorted(Comparator.comparing(MatchScore::getZonedDateTime))
                 .collect(Collectors.toList());
     }
 

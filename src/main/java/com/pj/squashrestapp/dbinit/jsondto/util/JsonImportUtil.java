@@ -6,6 +6,7 @@ import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeagueTrophy;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLostBall;
 import com.pj.squashrestapp.dbinit.jsondto.JsonMatch;
+import com.pj.squashrestapp.dbinit.jsondto.JsonMatchScore;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRoundGroup;
 import com.pj.squashrestapp.dbinit.jsondto.JsonSeason;
@@ -17,6 +18,7 @@ import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueLogo;
 import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
@@ -116,6 +118,27 @@ public class JsonImportUtil {
         setResult.setFirstPlayerScore(jsonSetResult.getFirstPlayerResult());
         setResult.setSecondPlayerScore(jsonSetResult.getSecondPlayerResult());
         return setResult;
+    }
+
+    public MatchScore constructMatchScore(final JsonMatchScore jsonMatchScore) {
+        final MatchScore matchScore = new MatchScore();
+        matchScore.setGameNumber(jsonMatchScore.getGameNumber());
+        matchScore.setZonedDateTime(jsonMatchScore.getZonedDateTime());
+        matchScore.setScoreEventType(jsonMatchScore.getScoreEventType());
+        matchScore.setAppealDecision(jsonMatchScore.getAppealDecision());
+        matchScore.setServeSide(jsonMatchScore.getServeSide());
+        matchScore.setServePlayer(jsonMatchScore.getServePlayer());
+        matchScore.setNextSuggestedServePlayer(jsonMatchScore.getNextSuggestedServePlayer());
+        matchScore.setFirstPlayerScore(jsonMatchScore.getFirstPlayerScore());
+        matchScore.setSecondPlayerScore(jsonMatchScore.getSecondPlayerScore());
+        matchScore.setFirstPlayerGamesWon(jsonMatchScore.getFirstPlayerGamesWon());
+        matchScore.setSecondPlayerGamesWon(jsonMatchScore.getSecondPlayerGamesWon());
+        matchScore.setCanScore(jsonMatchScore.isCanScore());
+        matchScore.setCanStartGame(jsonMatchScore.isCanStartGame());
+        matchScore.setCanEndGame(jsonMatchScore.isCanEndGame());
+        matchScore.setCanEndMatch(jsonMatchScore.isCanEndMatch());
+        matchScore.setMatchFinished(jsonMatchScore.isMatchFinished());
+        return matchScore;
     }
 
     public AdditionalSetResult constructAdditionalSetResult(final JsonSetResult jsonSetResult) {
