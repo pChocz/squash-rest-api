@@ -66,6 +66,7 @@ spring-hibernate-query-utils:
 mybatis:
   configuration:
     map-underscore-to-camel-case: true
+  mapper-locations: classpath*:**/mapper/*Mapper.xml
 
 
 # #####

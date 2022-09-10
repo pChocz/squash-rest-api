@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
-import com.pj.squashrestapp.service.SetResultsHistogramService;
+import com.pj.squashrestapp.service.GameDistributionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,14 +22,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SetResultHistogramController {
 
-    private final SetResultsHistogramService setResultsHistogramService;
+    private final GameDistributionService gameDistributionService;
 
     @GetMapping(value = "/{leagueUuid}")
     @PreAuthorize("hasRoleForLeague(#leagueUuid, 'PLAYER')")
     ReadySetResultsHistogram extractLeagueSetsDistributionStats(@PathVariable final UUID leagueUuid,
                                                                 @RequestParam(required = false) final int[] seasonNumbers,
                                                                 @RequestParam(defaultValue = "false") final boolean includeAdditional) {
-        ReadySetResultsHistogram histogram = setResultsHistogramService.createHistogram(leagueUuid, seasonNumbers, includeAdditional);
+        ReadySetResultsHistogram histogram = gameDistributionService.create(leagueUuid, seasonNumbers, includeAdditional);
         return histogram;
     }
 }

@@ -9,7 +9,7 @@ import com.pj.squashrestapp.dto.scoreboard.headtohead.HeadToHeadScoreboard;
 import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
 import com.pj.squashrestapp.dto.setresultshistogram.SetResultsHistogramDataDto;
 import com.pj.squashrestapp.model.Player;
-import com.pj.squashrestapp.mybatis.SetsHistogramMapper;
+import com.pj.squashrestapp.mybatis.GameDistributionMapper;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
@@ -30,8 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HeadToHeadScoreboardService {
 
-    private final SetsHistogramMapper setsHistogramMapper;
-    private final SetResultsHistogramService setResultsHistogramService;
+    private final GameDistributionMapper gameDistributionMapper;
+    private final GameDistributionService gameDistributionService;
     private final MatchRepository matchRepository;
     private final AdditionalMatchRepository additionalMatchRepository;
     private final PlayerRepository playerRepository;
@@ -63,8 +63,8 @@ public class HeadToHeadScoreboardService {
 
         Map<Long, PlayerDto> playersMap = players.stream().collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
-        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramDataForTwoPlayers(players.get(0).getId(), players.get(1).getId(), includeAdditional);
-        ReadySetResultsHistogram readySetResultsHistogram = setResultsHistogramService.buildHistogram(results, playersMap);
+        final List<SetResultsHistogramDataDto> results = gameDistributionMapper.getDistributionDataForTwoPlayers(players.get(0).getId(), players.get(1).getId(), includeAdditional);
+        ReadySetResultsHistogram readySetResultsHistogram = gameDistributionService.buildDistribution(results, playersMap);
 
         final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches, readySetResultsHistogram);
         return scoreboard;

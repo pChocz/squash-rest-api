@@ -7,7 +7,7 @@ import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.dto.setresultshistogram.ReadySetResultsHistogram;
 import com.pj.squashrestapp.dto.setresultshistogram.SetResultsHistogramDataDto;
 import com.pj.squashrestapp.dto.setresultshistogram.SetResultsLeagueHistogramDto;
-import com.pj.squashrestapp.mybatis.SetsHistogramMapper;
+import com.pj.squashrestapp.mybatis.GameDistributionMapper;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,27 +25,27 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SetResultsHistogramService {
+public class GameDistributionService {
 
-    private final SetsHistogramMapper setsHistogramMapper;
+    private final GameDistributionMapper gameDistributionMapper;
     private final PlayerRepository playerRepository;
     private final LeagueRepository leagueRepository;
 
 
-    public ReadySetResultsHistogram createHistogram(final UUID leagueUuid, final int[] seasonNumbers, final boolean includeAdditional) {
+    public ReadySetResultsHistogram create(final UUID leagueUuid, final int[] seasonNumbers, final boolean includeAdditional) {
         final League league = leagueRepository.findByUuidWithSeasons(leagueUuid).orElseThrow();
-        final List<SetResultsHistogramDataDto> results = setsHistogramMapper.getHistogramData(leagueUuid, seasonNumbers, includeAdditional);
+        final List<SetResultsHistogramDataDto> results = gameDistributionMapper.getDistributionDataForLeague(leagueUuid, seasonNumbers, includeAdditional);
         final Map<Long, PlayerDto> players = playerRepository.findByIds(getPlayersIds(results))
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));
 
-        final ReadySetResultsHistogram histogram = buildHistogram(results, players);
+        final ReadySetResultsHistogram histogram = buildDistribution(results, players);
         histogram.setLeague(new LeagueDto(league));
 
         return histogram;
     }
 
-    public ReadySetResultsHistogram buildHistogram(final List<SetResultsHistogramDataDto> results, final Map<Long, PlayerDto> players) {
+    public ReadySetResultsHistogram buildDistribution(final List<SetResultsHistogramDataDto> results, final Map<Long, PlayerDto> players) {
         final SetResultsLeagueHistogramDto setResultsLeagueHistogramDto = new SetResultsLeagueHistogramDto();
         setResultsLeagueHistogramDto.setPlayerDtoSetResultsPlayerHistogramDtoMap(new LinkedHashMap<>());
 

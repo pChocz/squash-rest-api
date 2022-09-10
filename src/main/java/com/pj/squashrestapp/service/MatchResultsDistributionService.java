@@ -40,7 +40,7 @@ public class MatchResultsDistributionService {
 
     public LeagueMatchResultDistribution createDistribution(final UUID leagueUuid, final int[] seasonNumbers, final boolean includeAdditional) {
         final League league = leagueRepository.findByUuidWithSeasons(leagueUuid).orElseThrow();
-        final List<MatchResultDistributionDataDto> results = matchDistributionMapper.getDistributionData(leagueUuid, seasonNumbers, includeAdditional);
+        final List<MatchResultDistributionDataDto> results = matchDistributionMapper.getDistributionDataForLeague(leagueUuid, seasonNumbers, includeAdditional);
         final Map<Long, PlayerDto> players = playerRepository.findByIds(getPlayersIds(results))
                 .stream()
                 .collect(Collectors.toMap(Player::getId, PlayerDto::new));

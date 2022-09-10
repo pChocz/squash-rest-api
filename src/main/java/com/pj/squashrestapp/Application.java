@@ -15,7 +15,7 @@ import static com.pj.squashrestapp.util.GeneralUtil.UTC_ZONE;
 /** Entry Point for the entire application. */
 @EnableScheduling
 @SpringBootApplication
-@SuppressWarnings({"JavaDoc", "resource"})
+@SuppressWarnings({"JavaDoc"})
 @EnableJpaRepositories(basePackages = "com.pj.squashrestapp.repository")
 @EnableMongoRepositories(basePackages = "com.pj.squashrestapp.mongologs")
 @MapperScan(basePackages = "com.pj.squashrestapp.mybatis")
