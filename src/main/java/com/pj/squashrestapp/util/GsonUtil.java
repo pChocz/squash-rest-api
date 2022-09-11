@@ -6,17 +6,18 @@ import lombok.experimental.UtilityClass;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /** */
 @UtilityClass
 public class GsonUtil {
 
     /**
-     * Registers type adapter that deals with LocalDate format specified by {@link
-     * GeneralUtil#DATE_FORMAT},
+     * Registers type adapters that deal with Date/Time:
      *
-     * <p>as well as type adapter that deals with LocalDateTime format specified by {@link
-     * GeneralUtil#DATE_TIME_FORMAT}
+     * - LocalDate format specified by {@link GeneralUtil#DATE_FORMAT},
+     * - LocalDateTime format specified by {@link GeneralUtil#DATE_TIME_FORMAT}
+     * - ZonedDateTime format specified by {@link GeneralUtil#DATE_TIME_ISO_FORMAT}
      *
      * @return Gson object that can be used for serialization
      */
@@ -24,6 +25,7 @@ public class GsonUtil {
         return new GsonBuilder()
                 .registerTypeAdapter(LocalDate.class, new GsonLocalDate())
                 .registerTypeAdapter(LocalDateTime.class, new GsonLocalDateTime())
+                .registerTypeAdapter(ZonedDateTime.class, new GsonZonedDateTime())
                 .setPrettyPrinting()
                 .create();
     }

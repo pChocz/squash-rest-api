@@ -30,5 +30,14 @@ public class JsonMatch {
 
     private String footageLink;
     private ArrayList<JsonSetResult> sets;
+
+    // todo: can be safely deleted later
+    public ArrayList<JsonMatchScore> getMatchScores() {
+        if (matchScores == null) {
+            matchScores = new ArrayList<>();
+        }
+        return matchScores;
+    }
+
     private ArrayList<JsonMatchScore> matchScores;
 }
