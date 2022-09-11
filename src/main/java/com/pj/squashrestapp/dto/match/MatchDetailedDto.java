@@ -99,8 +99,8 @@ public class MatchDetailedDto implements MatchDto {
         for (final SetResult setResult : match.getSetResults()) {
             this.sets.add(new SetDto(setResult, matchFormatType));
         }
+        this.matchScores = match.getMatchScoresOrdered();
         this.sets.sort(Comparator.comparingInt(SetDto::getSetNumber));
-
         this.status = MatchStatusHelper.checkStatus(this);
         this.winner = status == MatchStatus.FINISHED ? MatchStatusHelper.getWinner(this) : null;
     }

@@ -2,6 +2,7 @@ package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
@@ -41,6 +42,7 @@ import static com.pj.squashrestapp.model.ServeSide.RIGHT_SIDE;
 @Getter
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class MatchScore implements Identifiable, Comparable<MatchScore> {
 
     @JsonIgnore

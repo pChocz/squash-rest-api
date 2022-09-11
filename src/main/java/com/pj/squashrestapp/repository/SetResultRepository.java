@@ -51,6 +51,7 @@ public interface SetResultRepository
             attributePaths = {
                 "match.firstPlayer",
                 "match.secondPlayer",
+                "match.scores"
             })
     List<SetResult> fetchByLeagueUuid(@Param("leagueUuid") UUID leagueUuid);
 
@@ -63,7 +64,13 @@ public interface SetResultRepository
             JOIN FETCH r.season s
               WHERE s.uuid = :seasonUuid
           """)
-    @EntityGraph(attributePaths = {"match.firstPlayer", "match.secondPlayer", "match.roundGroup.round.season.league"})
+    @EntityGraph(
+            attributePaths = {
+                    "match.firstPlayer",
+                    "match.secondPlayer",
+                    "match.roundGroup.round.season.league",
+                    "match.scores"
+            })
     List<SetResult> fetchBySeasonUuid(@Param("seasonUuid") UUID seasonUuid);
 
     @Query(
@@ -79,7 +86,8 @@ public interface SetResultRepository
                 "match.firstPlayer",
                 "match.secondPlayer",
                 "match.roundGroup.round.season",
-                "match.roundGroup.round.season.league"
+                "match.roundGroup.round.season.league",
+                    "match.scores",
             })
     List<SetResult> fetchByRoundUuid(@Param("roundUuid") UUID roundUuid);
 
@@ -95,7 +103,8 @@ public interface SetResultRepository
                 "match.firstPlayer",
                 "match.secondPlayer",
                 "match.roundGroup.round.season",
-                "match.roundGroup.round.season.league"
+                "match.roundGroup.round.season.league",
+                    "match.scores",
             })
     List<SetResult> fetchByRoundGroupsIds(@Param("ids") List<Long> ids);
 

@@ -52,7 +52,14 @@ public interface MatchRepository
             })
     Optional<Match> findMatchByUuidWithScoreSheet(@Param("matchUuid") UUID matchUuid);
 
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season.league",
+                    "scores"
+            })
     Optional<Match> findMatchByUuid(UUID uuid);
 
     @Query(
@@ -73,6 +80,7 @@ public interface MatchRepository
                 "secondPlayer",
                 "setResults",
                 "roundGroup.round.season.league",
+                "scores"
             })
     List<Match> fetchHeadToHead(@Param("playersUuids") UUID[] playersUuids);
 
@@ -93,7 +101,14 @@ public interface MatchRepository
                 AND p1.uuid IN :playersUuids
                 AND p2.uuid IN :playersUuids
           """)
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season",
+                    "scores"
+            })
     List<Match> fetchForSeveralPlayersForLeagueForSeasonForGroupNumber(
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playersUuids") UUID[] playersUuids,
@@ -114,7 +129,14 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           """)
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season",
+                    "scores"
+            })
     List<Match> fetchByOnePlayerAgainstOthersAndLeagueId(
             @Param("leagueUuid") UUID leagueUuid, @Param("playerUuid") UUID playerUuid);
 
@@ -129,7 +151,14 @@ public interface MatchRepository
             JOIN m.secondPlayer p2
                 WHERE (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           """)
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season.league",
+                    "scores"
+            })
     List<Match> fetchByOnePlayerAgainstAllForAllLeagues(@Param("playerUuid") UUID playerUuid);
 
     @Query(
@@ -148,7 +177,14 @@ public interface MatchRepository
                 AND (COALESCE(null, :dateTo) is null or r.date <= :dateTo)
                 AND (p1.uuid = :playerUuid OR p2.uuid = :playerUuid)
           """)
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season",
+                    "scores"
+            })
     List<Match> fetchForOnePlayerForLeagueForSeasonForGroupNumber(
             @Param("leagueUuid") UUID leagueUuid,
             @Param("playerUuid") UUID playerUuid,
@@ -169,7 +205,13 @@ public interface MatchRepository
               WHERE l.uuid = :leagueUuid
                 AND m.footageLink is not null
           """)
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
+    @EntityGraph(attributePaths = {
+            "firstPlayer",
+            "secondPlayer",
+            "setResults",
+            "roundGroup.round.season.league",
+            "scores"
+    })
     List<Match> fetchMatchesWithFootageForLeague(@Param("leagueUuid") UUID leagueUuid);
 
     @Query(
@@ -223,7 +265,14 @@ public interface MatchRepository
             @Param("dateFrom") LocalDate dateFrom,
             @Param("dateTo") LocalDate dateTo);
 
-    @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "roundGroup.round.season.league"})
+    @EntityGraph(
+            attributePaths = {
+                    "firstPlayer",
+                    "secondPlayer",
+                    "setResults",
+                    "roundGroup.round.season.league",
+                    "scores"
+            })
     List<Match> findByIdIn(List<Long> matchIds);
 
     @Override

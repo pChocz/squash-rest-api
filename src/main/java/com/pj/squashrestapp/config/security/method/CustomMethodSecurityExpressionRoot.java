@@ -6,6 +6,8 @@ import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.LeagueRole;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.MatchScore;
+import com.pj.squashrestapp.model.ScoreEventType;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.LeagueRulesRepository;
@@ -19,6 +21,7 @@ import org.springframework.security.access.expression.SecurityExpressionRoot;
 import org.springframework.security.access.expression.method.MethodSecurityExpressionOperations;
 import org.springframework.security.core.Authentication;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -115,6 +118,13 @@ public class CustomMethodSecurityExpressionRoot extends SecurityExpressionRoot
     public boolean isMatchFinished(final UUID matchUuid) {
         final Match match = matchRepository.findMatchByUuid(matchUuid).orElseThrow();
         return new MatchSimpleDto(match).checkFinished();
+    }
+
+    public boolean isMatchScoreFinished(final UUID matchUuid) {
+        final Match match = matchRepository.findMatchByUuidWithScoreSheet(matchUuid).orElseThrow();
+        final Optional<MatchScore> lastRallyMatchScore = match.getLastScore();
+        return lastRallyMatchScore.isPresent()
+                && lastRallyMatchScore.get().getScoreEventType() == ScoreEventType.MATCH_ENDS;
     }
 
     public boolean isAdditionalMatchFinished(final UUID matchUuid) {

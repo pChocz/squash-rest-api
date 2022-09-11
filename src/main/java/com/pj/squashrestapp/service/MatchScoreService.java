@@ -5,7 +5,6 @@ import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.dto.matchresulthelper.SetStatus;
-import com.pj.squashrestapp.model.AppealDecision;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.ScoreEventType;
@@ -19,11 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -244,7 +239,7 @@ public class MatchScoreService {
     private MatchDetailedDto persistMatch(final Match match) {
         final Match savedMatch = matchRepository.save(match);
         log.info("AFTER:  " + savedMatch);
-        return buildMatchDtoWithScores(savedMatch);
+        return new MatchDetailedDto(savedMatch);
     }
 
     private void modifyMatchResultIfNeeded(final MatchScore matchScore, final Match match, final MatchScore scoreToRemove) {
@@ -324,16 +319,7 @@ public class MatchScoreService {
                 .findMatchByUuidWithScoreSheet(matchUuid)
                 .orElseThrow(() -> new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND));
 
-        return buildMatchDtoWithScores(match);
-    }
-
-    private MatchDetailedDto buildMatchDtoWithScores(final Match match) {
-        final MatchDetailedDto matchDto = new MatchDetailedDto(match);
-        matchDto.setMatchScores(new ArrayList<>());
-        for (final MatchScore matchScore : match.getScores().stream().sorted().toList()) {
-            matchDto.getMatchScores().add(matchScore);
-        }
-        return matchDto;
+        return new MatchDetailedDto(match);
     }
 
 }

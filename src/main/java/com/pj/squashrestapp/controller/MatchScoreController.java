@@ -34,7 +34,7 @@ public class MatchScoreController {
             or
             hasRoleForMatch(#matchUuid, 'MODERATOR')
             or
-            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchFinished(#matchUuid))
+            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchScoreFinished(#matchUuid))
             """)
     MatchDetailedDto appendNew(
             @PathVariable final UUID matchUuid,
@@ -50,7 +50,7 @@ public class MatchScoreController {
             or
             hasRoleForMatch(#matchUuid, 'MODERATOR')
             or
-            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchFinished(#matchUuid))
+            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchScoreFinished(#matchUuid))
             """)
     MatchDetailedDto revertLast(@PathVariable final UUID matchUuid) {
         final MatchDetailedDto matchWithScores = matchScoreService.revertLastScore(matchUuid);
@@ -64,7 +64,7 @@ public class MatchScoreController {
             or
             hasRoleForMatch(#matchUuid, 'MODERATOR')
             or
-            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchFinished(#matchUuid))
+            (isPlayerOfRoundForMatch(#matchUuid) and !isMatchScoreFinished(#matchUuid))
             """)
     MatchDetailedDto clearAll(@PathVariable final UUID matchUuid) {
         final MatchDetailedDto matchWithScores = matchScoreService.clearAll(matchUuid);
@@ -72,14 +72,6 @@ public class MatchScoreController {
     }
 
     @GetMapping(value = "/{matchUuid}")
-    @PreAuthorize(
-            """
-            hasRoleForMatch(#matchUuid, 'OWNER')
-            or
-            hasRoleForMatch(#matchUuid, 'MODERATOR')
-            or
-            isPlayerOfRoundForMatch(#matchUuid)
-            """)
     MatchDetailedDto getMatchWithScores(@PathVariable final UUID matchUuid) {
         final MatchDetailedDto matchWithScores = matchScoreService.getMatchWithScores(matchUuid);
         return matchWithScores;
