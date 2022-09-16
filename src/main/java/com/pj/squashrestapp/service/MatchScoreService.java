@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.dto.matchresulthelper.SetStatus;
 import com.pj.squashrestapp.model.Match;
@@ -58,7 +59,7 @@ public class MatchScoreService {
         matchScore.setMatchFinished(matchSimpleDto.checkFinished());
 
         if (scoreEventType == ScoreEventType.MATCH_BEGINS) {
-            if (match.getScores().isEmpty()) {
+            if (match.getScores().isEmpty() && matchSimpleDto.getStatus() == MatchStatus.EMPTY) {
                 matchScore.setCanScore(false);
                 matchScore.setCanStartGame(true);
                 matchScore.setCanEndGame(false);
