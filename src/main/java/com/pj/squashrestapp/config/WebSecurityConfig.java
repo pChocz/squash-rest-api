@@ -51,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // set up of endpoints permissions
         httpSecurity
                 .authorizeRequests()
-                // allowing not authenticated players view scoreboard for rounds and seasons
+                // allowing not authenticated players view scoreboard for rounds, seasons and match scores
                 .antMatchers(HttpMethod.GET, "/scoreboards/seasons/*")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/seasons/adjacent/*")
@@ -65,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/league-logos/round/*")
                 .permitAll()
                 .antMatchers(HttpMethod.GET, "/league-logos/*")
+                .permitAll()
+                .antMatchers(HttpMethod.GET, "/match-score/*")
                 .permitAll()
                 // allowing to initialize the database
                 .antMatchers(HttpMethod.POST, "/init/json")
