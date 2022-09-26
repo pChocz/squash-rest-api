@@ -1,10 +1,12 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.dto.match.MatchDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.match.MatchesSimplePaginated;
 import com.pj.squashrestapp.service.MatchService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.websocket.UpdateWebsocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +35,7 @@ import java.util.UUID;
 public class MatchController {
 
     private final MatchService matchService;
+    private final UpdateWebsocketService updateWebsocketService;
 
     @PutMapping(value = "/{matchUuid}")
     @PreAuthorize(
@@ -43,12 +46,13 @@ public class MatchController {
             or
             (isPlayerOfRoundForMatch(#matchUuid) and !isMatchFinished(#matchUuid))
             """)
-    MatchSimpleDto updateMatchSingleScore(
+    MatchDetailedDto updateMatchSingleScore(
             @PathVariable final UUID matchUuid,
             @RequestParam final int setNumber,
             @RequestParam final String player,
             @RequestParam final Integer newScore) {
-        final MatchSimpleDto editedMatch = matchService.modifySingleScore(matchUuid, setNumber, player, newScore);
+        final MatchDetailedDto editedMatch = matchService.modifySingleScore(matchUuid, setNumber, player, newScore);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(editedMatch.getRoundUuid());
         return editedMatch;
     }
 

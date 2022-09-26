@@ -49,6 +49,10 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
     runtimeOnly 'io.jsonwebtoken:jjwt-gson:0.11.5'
 
+    /* Websocket */
+    implementation 'org.springframework:spring-messaging:5.3.23'
+    implementation 'org.springframework:spring-websocket:5.3.23'
+
     /* Other dependencies */
 
     // MyBatis

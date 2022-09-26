@@ -102,13 +102,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/frontend-logs")
                 .permitAll()
+                // allow websocket connections for all
+                .antMatchers("/ws/**", "/wss/**")
+                .permitAll()
                 .anyRequest()
                 .authenticated();
 
         // authentication and authorization filters
         httpSecurity
-                .addFilter(new JwtAuthenticationFilter(
-                        authenticationManager(), tokenCreateService, playerRepository, emailPrepareFacade))
+                .addFilter(new JwtAuthenticationFilter(authenticationManager(), tokenCreateService, playerRepository, emailPrepareFacade))
                 .addFilter(new JwtAuthorizationFilter(authenticationManager(), secretKeyHolder, playerRepository));
 
         // this disables session creation on Spring Security

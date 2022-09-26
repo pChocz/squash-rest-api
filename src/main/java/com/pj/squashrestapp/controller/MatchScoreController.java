@@ -3,6 +3,7 @@ package com.pj.squashrestapp.controller;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.service.MatchScoreService;
+import com.pj.squashrestapp.websocket.UpdateWebsocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,6 +27,7 @@ import java.util.UUID;
 public class MatchScoreController {
 
     private final MatchScoreService matchScoreService;
+    private final UpdateWebsocketService updateWebsocketService;
 
     @PostMapping(value = "/{matchUuid}")
     @PreAuthorize(
@@ -40,6 +42,8 @@ public class MatchScoreController {
             @PathVariable final UUID matchUuid,
             @RequestBody final MatchScore matchScore) {
         final MatchDetailedDto matchWithScores = matchScoreService.appendNewScore(matchUuid, matchScore);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(matchWithScores.getRoundUuid());
+        updateWebsocketService.calculateAndBroadcastMatchScoreUpdate(matchUuid);
         return matchWithScores;
     }
 
@@ -54,6 +58,8 @@ public class MatchScoreController {
             """)
     MatchDetailedDto revertLast(@PathVariable final UUID matchUuid) {
         final MatchDetailedDto matchWithScores = matchScoreService.revertLastScore(matchUuid);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(matchWithScores.getRoundUuid());
+        updateWebsocketService.calculateAndBroadcastMatchScoreUpdate(matchUuid);
         return matchWithScores;
     }
 
@@ -68,6 +74,8 @@ public class MatchScoreController {
             """)
     MatchDetailedDto clearAll(@PathVariable final UUID matchUuid) {
         final MatchDetailedDto matchWithScores = matchScoreService.clearAll(matchUuid);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(matchWithScores.getRoundUuid());
+        updateWebsocketService.calculateAndBroadcastMatchScoreUpdate(matchUuid);
         return matchWithScores;
     }
 

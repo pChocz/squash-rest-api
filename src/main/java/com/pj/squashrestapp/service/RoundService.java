@@ -159,10 +159,11 @@ public class RoundService {
         return match;
     }
 
-    public void updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
+    public Round updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
         final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
         round.setFinished(finishedState);
         roundRepository.save(round);
+        return round;
     }
 
     public UUID extractLeagueUuid(final UUID roundUuid) {

@@ -4,6 +4,7 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.service.RedisCacheService;
 import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.websocket.UpdateWebsocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
@@ -33,6 +34,7 @@ public class RoundController {
 
     private final RedisCacheService redisCacheService;
     private final RoundService roundService;
+    private final UpdateWebsocketService updateWebsocketService;
 
     @PostMapping
     @PreAuthorize("hasRoleForSeason(#seasonUuid, 'MODERATOR')")
@@ -54,13 +56,16 @@ public class RoundController {
         redisCacheService.evictCacheForRoundMatches(roundUuid);
         redisCacheService.evictCacheForRound(roundUuid);
         roundService.recreateRound(roundUuid, playersUuids);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(roundUuid);
     }
 
     @PutMapping(value = "{roundUuid}/{finishedState}")
     @PreAuthorize("hasRoleForRound(#roundUuid, 'MODERATOR')")
     void updateRoundFinishedState(@PathVariable final UUID roundUuid, @PathVariable final boolean finishedState) {
         redisCacheService.evictCacheForRound(roundUuid);
-        roundService.updateRoundFinishedState(roundUuid, finishedState);
+        final Round round = roundService.updateRoundFinishedState(roundUuid, finishedState);
+        updateWebsocketService.calculateAndBroadcastRoundUpdate(round.getUuid());
+        updateWebsocketService.calculateAndBroadcastSeasonUpdate(round.getSeason().getUuid());
     }
 
     @GetMapping(value = "league-uuid/{roundUuid}")
@@ -70,9 +75,7 @@ public class RoundController {
 
     @GetMapping(value = "/adjacent/{roundUuid}")
     Pair<Optional<UUID>, Optional<UUID>> getAdjacentRoundsUuids(@PathVariable final UUID roundUuid) {
-        final Pair<Optional<UUID>, Optional<UUID>> adjacentRoundsUuids =
-                roundService.extractAdjacentRoundsUuids(roundUuid);
-        return adjacentRoundsUuids;
+        return roundService.extractAdjacentRoundsUuids(roundUuid);
     }
 
     @DeleteMapping(value = "/{roundUuid}")

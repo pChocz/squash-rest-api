@@ -56,7 +56,7 @@ public class MatchService {
         return matchesDtos;
     }
 
-    public MatchSimpleDto modifySingleScore(
+    public MatchDetailedDto modifySingleScore(
             final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
         final Match matchToModify = matchRepository.findMatchByUuidWithScoreSheet(matchUuid).orElseThrow();
         final String initialMatchResult = matchToModify.toString();
@@ -112,7 +112,7 @@ public class MatchService {
                 initialMatchResult,
                 matchToModify);
 
-        return new MatchSimpleDto(matchToModify);
+        return new MatchDetailedDto(matchToModify);
     }
 
     private boolean setIsTiebreak(final Match match, final int setNumber) {
