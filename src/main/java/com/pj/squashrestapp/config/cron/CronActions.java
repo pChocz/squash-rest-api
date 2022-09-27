@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 
 import java.util.List;
 import java.util.UUID;
@@ -50,16 +49,6 @@ public class CronActions {
     private final UserAccessController userAccessController;
     private final RedisCacheController redisCacheController;
     private final EmailQueueService emailQueueService;
-    private final WebSocketMessageBrokerStats webSocketMessageBrokerStats;
-
-    /**
-     * Just logs the websocket connections information.
-     * Every full minute.
-     */
-    @Scheduled(cron = "0 * * * * *", zone = UTC_ZONE)
-    public void websocketStats() {
-        log.info(webSocketMessageBrokerStats.getWebSocketSessionStatsInfo());
-    }
 
     /**
      * Removes obsolete emails.
