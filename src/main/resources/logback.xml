@@ -16,7 +16,7 @@
 
   <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG">
     <append>true</append>
-    <immediateFlush>false</immediateFlush>
+    <immediateFlush>true</immediateFlush>
     <encoder>
       <charset>UTF-8</charset>
       <outputPatternAsHeader>true</outputPatternAsHeader>
