@@ -28,7 +28,11 @@ import java.util.stream.Collectors;
 @Entity
 @Table(
         name = "round_groups",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"round_id", "number"})})
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "ROUND_AND_GROUP_NUMBER_CONSTRAINT",
+                    columnNames = {"round_id", "number"})
+        })
 @Getter
 @NoArgsConstructor
 public class RoundGroup implements Identifiable, Comparable<RoundGroup> {

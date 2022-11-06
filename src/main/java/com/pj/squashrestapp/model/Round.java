@@ -32,7 +32,11 @@ import java.util.stream.Stream;
 @Entity
 @Table(
         name = "rounds",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"season_id", "number"})})
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "SEASON_AND_ROUND_NUMBER_CONSTRAINT",
+                    columnNames = {"season_id", "number"})
+        })
 @Getter
 @NoArgsConstructor
 public class Round implements Identifiable, Comparable<Round> {

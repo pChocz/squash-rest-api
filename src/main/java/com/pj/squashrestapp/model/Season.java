@@ -5,6 +5,9 @@ import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+
+import com.pj.squashrestapp.model.enums.MatchFormatType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,7 +36,11 @@ import java.util.stream.Collectors;
 @Entity
 @Table(
         name = "seasons",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"league_id", "number"})})
+        uniqueConstraints = {
+            @UniqueConstraint(
+                    name = "LEAGUE_AND_SEASON_NUMBER_CONSTRAINT",
+                    columnNames = {"league_id", "number"})
+        })
 @Getter
 @NoArgsConstructor
 public class Season implements Identifiable, Comparable<Season> {
