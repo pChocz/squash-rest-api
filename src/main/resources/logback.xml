@@ -16,6 +16,7 @@
 
   <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG">
     <append>true</append>
+    <immediateFlush>false</immediateFlush>
     <encoder>
       <charset>UTF-8</charset>
       <outputPatternAsHeader>true</outputPatternAsHeader>
@@ -26,8 +27,8 @@
       <level>${LOG-THRESHOLD}</level>
     </filter>
     <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-      <fileNamePattern>logs/out.%d{yyyy-MM-dd}.log</fileNamePattern>
-      <maxHistory>60</maxHistory>
+      <fileNamePattern>logs/out.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+      <maxHistory>365</maxHistory>
       <totalSizeCap>1GB</totalSizeCap>
     </rollingPolicy>
   </appender>
