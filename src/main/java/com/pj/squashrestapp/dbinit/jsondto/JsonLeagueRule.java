@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.pj.squashrestapp.model.LeagueRuleType;
+import com.pj.squashrestapp.model.enums.LeagueRuleType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

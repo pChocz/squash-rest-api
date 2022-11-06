@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dbinit.jsondto;
 
-import com.pj.squashrestapp.model.MatchFormatType;
-import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

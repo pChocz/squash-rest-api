@@ -24,14 +24,14 @@ import com.pj.squashrestapp.dbinit.jsondto.util.JsonImportUtil;
 import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.Authority;
-import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.enums.AuthorityType;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.EmailChangeToken;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.LostBall;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RefreshToken;
@@ -93,7 +93,7 @@ public class AdminInitializerService {
 
             persistStandardAuthorities();
 
-            final JsonAll jsonAll = GsonUtil.gsonWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
+            final JsonAll jsonAll = GsonUtil.gsonPrettyWithDateAndDateTime().fromJson(initAllJsonContent, JsonAll.class);
             persistXpPointsFromJson(jsonAll.getXpPoints());
             persistLeaguesInitializeOnly(jsonAll.getLeagues());
             persistCredentials(jsonAll.getCredentials());

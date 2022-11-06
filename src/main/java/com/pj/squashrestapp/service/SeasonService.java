@@ -26,6 +26,7 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -270,6 +271,7 @@ public class SeasonService {
 
         try {
             seasonRepository.save(season);
+            log.info("Created: {}", JacksonUtil.objectToJson(new SeasonDto(season)));
             return season;
 
         } catch (final DataIntegrityViolationException ex) {
@@ -280,6 +282,7 @@ public class SeasonService {
     public void updateSeason(
             final UUID seasonUuid, final Optional<String> description, final Optional<String> xpPointsType) {
         final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
+        final String seasonBefore = JacksonUtil.objectToJson(new SeasonDto(season));
         description.ifPresent(season::setDescription);
         if (xpPointsType.isPresent()) {
             List<String> seasonSplits = seasonRepository.extractRoundSplitsForSeason(seasonUuid).stream()
@@ -296,6 +299,9 @@ public class SeasonService {
             }
         }
         seasonRepository.save(season);
+        log.info("Season updated [{}]", seasonUuid);
+        log.info("BEFORE: {}", seasonBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new SeasonDto(season)));
     }
 
     public void deleteSeason(final UUID seasonUuid) {

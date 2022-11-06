@@ -20,7 +20,7 @@ import java.util.UUID;
 public interface TrophiesForLeagueRepository
         extends JpaRepository<TrophyForLeague, Long>, SearchableByLeagueUuid, SearchableBySeasonUuid, BulkDeletable {
 
-    @EntityGraph(attributePaths = {"player"})
+    @EntityGraph(attributePaths = {"league", "player"})
     List<TrophyForLeague> findByLeagueUuid(UUID leagueUuid);
 
     @EntityGraph(attributePaths = {"player"})
@@ -28,6 +28,7 @@ public interface TrophiesForLeagueRepository
 
     Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophy(League league, int seasonNumber, Trophy trophy);
 
+    @EntityGraph(attributePaths = {"league", "player"})
     Optional<TrophyForLeague> findByLeagueAndSeasonNumberAndTrophyAndPlayer(
             League league, int seasonNumber, Trophy trophy, Player player);
 

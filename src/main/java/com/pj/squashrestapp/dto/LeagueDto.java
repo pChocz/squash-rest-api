@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;

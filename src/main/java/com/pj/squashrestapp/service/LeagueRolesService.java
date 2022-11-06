@@ -3,13 +3,14 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.util.ErrorCode;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -46,10 +47,15 @@ public class LeagueRolesService {
     private void unassignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
+        final String playerBefore = JacksonUtil.objectToJson(new PlayerDetailedDto(player));
 
         player.removeRole(roleForLeague);
         playerRepository.save(player);
         roleForLeagueRepository.save(roleForLeague);
+
+        log.info("Player left league [{}]", leagueUuid);
+        log.info("BEFORE: {}", playerBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDetailedDto(player)));
     }
 
     public boolean assignRoleByPlayerUsername(
@@ -64,12 +70,17 @@ public class LeagueRolesService {
     }
 
     private void assignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
+        final String playerBefore = JacksonUtil.objectToJson(new PlayerDetailedDto(player));
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
 
         player.addRole(roleForLeague);
         playerRepository.save(player);
         roleForLeagueRepository.save(roleForLeague);
+
+        log.info("Player joined league [{}]", leagueUuid);
+        log.info("BEFORE: {}", playerBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDetailedDto(player)));
     }
 
     public boolean unassignRoleByPlayerUsername(

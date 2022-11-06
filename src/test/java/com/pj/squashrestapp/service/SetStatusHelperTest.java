@@ -10,9 +10,9 @@ import static com.pj.squashrestapp.dto.matchresulthelper.SetStatus.ERROR;
 import static com.pj.squashrestapp.dto.matchresulthelper.SetStatus.FIRST_PLAYER_WINS;
 import static com.pj.squashrestapp.dto.matchresulthelper.SetStatus.IN_PROGRESS;
 import static com.pj.squashrestapp.dto.matchresulthelper.SetStatus.SECOND_PLAYER_WINS;
-import static com.pj.squashrestapp.model.SetWinningType.ADV_OF_2_ABSOLUTE;
-import static com.pj.squashrestapp.model.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
-import static com.pj.squashrestapp.model.SetWinningType.WINNING_POINTS_ABSOLUTE;
+import static com.pj.squashrestapp.model.enums.SetWinningType.ADV_OF_2_ABSOLUTE;
+import static com.pj.squashrestapp.model.enums.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
+import static com.pj.squashrestapp.model.enums.SetWinningType.WINNING_POINTS_ABSOLUTE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

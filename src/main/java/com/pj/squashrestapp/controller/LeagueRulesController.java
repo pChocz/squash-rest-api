@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.LeagueRuleDto;
-import com.pj.squashrestapp.model.LeagueRuleType;
+import com.pj.squashrestapp.model.enums.LeagueRuleType;
 import com.pj.squashrestapp.service.LeagueRulesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

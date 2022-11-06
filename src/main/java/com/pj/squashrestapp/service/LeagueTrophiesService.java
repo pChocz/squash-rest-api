@@ -7,12 +7,15 @@ import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.dto.TrophiesWonForLeague;
 import com.pj.squashrestapp.dto.Trophy;
 import com.pj.squashrestapp.dto.leaguestats.SeasonTrophies;
+import com.pj.squashrestapp.dto.leaguestats.TrophyDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -129,6 +132,7 @@ public class LeagueTrophiesService {
 
         league.addTrophyForLeague(newTrophyForLeague);
         trophiesForLeagueRepository.save(newTrophyForLeague);
+        log.info("Created: {}", JacksonUtil.objectToJson(new TrophyDto(newTrophyForLeague)));
 
         return newTrophyForLeague;
     }
@@ -142,6 +146,7 @@ public class LeagueTrophiesService {
                         league, seasonNumber, trophy, player);
         if (trophyForLeague.isPresent()) {
             trophiesForLeagueRepository.delete(trophyForLeague.get());
+            log.info("Deleted: {}", JacksonUtil.objectToJson(new TrophyDto(trophyForLeague.get())));
         } else {
             throw new NoSuchElementException("Trophy not found!");
         }
@@ -155,7 +160,6 @@ public class LeagueTrophiesService {
                 .map(SeasonDto::getSeasonNumber)
                 .toList();
         final List<SeasonTrophies> leagueTrophiesPerSeason = buildSeasonTrophies(allTrophiesForLeague, seasonNumbers);
-
         return leagueTrophiesPerSeason;
     }
 

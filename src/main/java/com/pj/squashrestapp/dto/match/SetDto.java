@@ -2,7 +2,7 @@ package com.pj.squashrestapp.dto.match;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.AdditionalSetResult;
-import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.SetResult;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

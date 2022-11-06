@@ -3,6 +3,8 @@ package com.pj.squashrestapp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

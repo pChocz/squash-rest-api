@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.controller;
 
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
-import com.pj.squashrestapp.model.AdditionalMatchType;
+import com.pj.squashrestapp.model.enums.AdditionalMatchType;
 import com.pj.squashrestapp.service.AdditionalMatchService;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.RequiredArgsConstructor;

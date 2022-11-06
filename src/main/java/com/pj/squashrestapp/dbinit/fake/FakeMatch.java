@@ -1,10 +1,10 @@
 package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.AdditionalMatch;
-import com.pj.squashrestapp.model.AdditionalMatchType;
+import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.enums.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.League;
-import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;

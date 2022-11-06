@@ -3,7 +3,7 @@ package com.pj.squashrestapp.config;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.pj.squashrestapp.model.Authority;
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.RoleForLeague;
 import lombok.Getter;

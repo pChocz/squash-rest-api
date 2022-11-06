@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.enums.LeagueRuleType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

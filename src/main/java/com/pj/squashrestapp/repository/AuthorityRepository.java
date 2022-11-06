@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.repository;
 
 import com.pj.squashrestapp.model.Authority;
-import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.enums.AuthorityType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

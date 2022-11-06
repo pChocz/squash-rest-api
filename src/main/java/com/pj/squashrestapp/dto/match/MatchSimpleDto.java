@@ -10,11 +10,11 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.Match;
-import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 

@@ -10,6 +10,7 @@ import com.pj.squashrestapp.dto.setresultshistogram.SetResultsLeagueHistogramDto
 import com.pj.squashrestapp.mybatis.GameDistributionMapper;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,7 +42,6 @@ public class GameDistributionService {
 
         final ReadySetResultsHistogram histogram = buildDistribution(results, players);
         histogram.setLeague(new LeagueDto(league));
-
         return histogram;
     }
 
@@ -66,8 +66,7 @@ public class GameDistributionService {
                     setResultsHistogramDataDto.getCount());
         }
 
-        final ReadySetResultsHistogram histogram = new ReadySetResultsHistogram(setResultsLeagueHistogramDto);
-        return histogram;
+        return new ReadySetResultsHistogram(setResultsLeagueHistogramDto);
     }
 
     private List<Long> getPlayersIds(final List<SetResultsHistogramDataDto> results) {

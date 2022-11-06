@@ -1,7 +1,7 @@
 package com.pj.squashrestapp.dto;
 
 import com.pj.squashrestapp.model.LeagueRule;
-import com.pj.squashrestapp.model.LeagueRuleType;
+import com.pj.squashrestapp.model.enums.LeagueRuleType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

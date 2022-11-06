@@ -1,6 +1,9 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.enums.AdditionalMatchType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -88,6 +91,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
     @Column(name = "footage_link")
     private String footageLink;
 
+    @JsonIgnore
     @Setter
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private Set<AdditionalSetResult> setResults = new TreeSet<>();
@@ -134,24 +138,6 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
     @Override
     public int compareTo(final AdditionalMatch that) {
         return Comparator.comparing(AdditionalMatch::getDate).compare(this, that);
-    }
-
-    public String detailedInfo() {
-        return "["
-                + uuid
-                + "] "
-                + firstPlayer
-                + " vs. "
-                + secondPlayer
-                + " : "
-                + setResultsOrderedNonNull()
-                + " (S: "
-                + seasonNumber
-                + " | T: "
-                + type
-                + " | "
-                + date
-                + ")";
     }
 
     public int getNumberOfSets() {

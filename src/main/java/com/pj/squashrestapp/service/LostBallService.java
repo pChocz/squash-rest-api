@@ -2,12 +2,15 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.LostBallsAggregatedForLeague;
 import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LostBallsDto;
 import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -60,17 +63,17 @@ public class LostBallService {
 
         season.addLostBall(lostBall);
         lostBallRepository.save(lostBall);
+        log.info("Created: {}", JacksonUtil.objectToJson(new LostBallsDto(lostBall)));
 
         redisCacheService.evictCacheForLostBall(lostBall);
-        log.info("Adding: {}", lostBall);
         return lostBall;
     }
 
     @Transactional
     public void deleteLostBall(final UUID uuid) {
         final LostBall lostBall = lostBallRepository.findByUuid(uuid).orElseThrow();
-        log.info("Removing: {}", lostBall);
-        redisCacheService.evictCacheForLostBall(lostBall);
         lostBallRepository.delete(lostBall);
+        log.info("Deleted: {}", JacksonUtil.objectToJson(new LostBallsDto(lostBall)));
+        redisCacheService.evictCacheForLostBall(lostBall);
     }
 }

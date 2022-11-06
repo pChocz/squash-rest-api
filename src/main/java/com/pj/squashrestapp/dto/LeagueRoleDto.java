@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.dto;
 
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.RoleForLeague;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

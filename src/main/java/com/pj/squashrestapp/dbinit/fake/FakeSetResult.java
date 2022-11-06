@@ -2,7 +2,7 @@ package com.pj.squashrestapp.dbinit.fake;
 
 import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.SetResult;
-import com.pj.squashrestapp.model.SetWinningType;
+import com.pj.squashrestapp.model.enums.SetWinningType;
 import lombok.experimental.UtilityClass;
 
 /** */

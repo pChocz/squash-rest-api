@@ -81,6 +81,7 @@ public class LogControllerAspect {
      * @return unmodified return object from the controller method
      * @throws Throwable rethrows exception after logging it, so it can be passed to the client
      */
+      @Around("serviceMethodsPointcut()")
     //  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
     //  @Around("repositoryMethodsPointcut()")
     public Object logAllServiceAndRepositoryMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
@@ -95,6 +96,7 @@ public class LogControllerAspect {
 
         Object result = null;
         try {
+            log.info("ENTER\t{}.{}", className, methodName);
             result = proceedingJoinPoint.proceed();
             stopWatch.stop();
             return result;
@@ -105,7 +107,7 @@ public class LogControllerAspect {
 
         } finally {
             log.info(
-                    "DEBUG\t{}\t{}ms\t{}.{}",
+                    "EXIT\t{}\t{}ms\t{}.{}",
                     hibernateQueryInterceptor.getQueryCount(),
                     stopWatch.getTotalTimeMillis(),
                     className,
@@ -149,7 +151,7 @@ public class LogControllerAspect {
                     stopWatch.getTotalTimeMillis(),
                     className,
                     methodName,
-                    Arrays.deepToString(args));
+                    customArrayDeepToString(args));
         }
     }
 
@@ -181,7 +183,9 @@ public class LogControllerAspect {
                         ? "PUT"
                         : method.getAnnotation(PostMapping.class) != null
                                 ? "POST"
-                                : method.getAnnotation(DeleteMapping.class) != null ? "DELETE" : null;
+                                : method.getAnnotation(DeleteMapping.class) != null
+                                        ? "DELETE"
+                                        : null;
 
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();

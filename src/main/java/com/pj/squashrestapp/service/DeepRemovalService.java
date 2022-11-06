@@ -1,6 +1,9 @@
 package com.pj.squashrestapp.service;
 
 import com.google.common.collect.Lists;
+import com.pj.squashrestapp.dto.LeagueDto;
+import com.pj.squashrestapp.dto.LeagueDtoSimple;
+import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
@@ -10,6 +13,7 @@ import com.pj.squashrestapp.repository.BulkDeletable;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.LostBallRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
+import com.pj.squashrestapp.repository.MatchScoreRepository;
 import com.pj.squashrestapp.repository.RoundGroupRepository;
 import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SearchableByLeagueUuid;
@@ -17,6 +21,7 @@ import com.pj.squashrestapp.repository.SearchableBySeasonUuid;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -43,6 +48,7 @@ public class DeepRemovalService {
     private final AdditionalSetResultRepository additionalSetResultRepository;
     private final AdditionalMatchRepository additionalMatchRepository;
     // round match
+    private final MatchScoreRepository matchScoreRepository;
     private final SetResultRepository setResultRepository;
     private final MatchRepository matchRepository;
     private final RoundGroupRepository roundGroupRepository;
@@ -60,6 +66,7 @@ public class DeepRemovalService {
         leagueRemoveRepos().forEach(repository -> deleteAllByLeagueUuid(repository, leagueUuid));
         final League league = leagueRepository.findByUuidRaw(leagueUuid);
         leagueRepository.delete(league);
+        log.info("Deleted: {}", JacksonUtil.objectToJson(new LeagueDtoSimple(league)));
     }
 
     @Transactional
@@ -67,6 +74,7 @@ public class DeepRemovalService {
         seasonRemoveRepos().forEach(repository -> deleteAllBySeasonUuid(repository, seasonUuid));
         final Season season = seasonRepository.findByUuid(seasonUuid).get();
         seasonRepository.delete(season);
+        log.info("Deleted: {}", JacksonUtil.objectToJson(new SeasonDto(season)));
     }
 
     /**
@@ -81,6 +89,7 @@ public class DeepRemovalService {
                 bonusPointRepository,
                 lostBallRepository,
                 trophiesForLeagueRepository,
+                matchScoreRepository,
                 setResultRepository,
                 matchRepository,
                 roundGroupRepository,
@@ -100,6 +109,7 @@ public class DeepRemovalService {
                 bonusPointRepository,
                 lostBallRepository,
                 trophiesForLeagueRepository,
+                matchScoreRepository,
                 setResultRepository,
                 matchRepository,
                 roundGroupRepository,

@@ -48,7 +48,7 @@ public class InitializerController {
         final String jsonContent = IOUtils.toString(initFakeLeagues.getInputStream(), StandardCharsets.UTF_8);
         final Type listOfMyClassObject = new TypeToken<ArrayList<JsonFakeLeagueParams>>() {}.getType();
         final List<JsonFakeLeagueParams> fakeLeagueParams =
-                GsonUtil.gsonWithDateAndDateTime().fromJson(jsonContent, listOfMyClassObject);
+                GsonUtil.gsonPrettyWithDateAndDateTime().fromJson(jsonContent, listOfMyClassObject);
 
         fakeLeagueService.buildLeagues(fakeLeagueParams);
     }

@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -66,10 +68,12 @@ public class Player {
 
     @Setter
     @Column(name = "registration_date_time")
+    @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
     private LocalDateTime registrationDateTime;
 
     @Setter
     @Column(name = "last_logged_in_date_time")
+    @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
     private LocalDateTime lastLoggedInDateTime;
 
     @Setter

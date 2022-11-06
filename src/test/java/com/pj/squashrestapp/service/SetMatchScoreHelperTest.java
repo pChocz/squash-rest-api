@@ -4,9 +4,9 @@ import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static com.pj.squashrestapp.model.SetWinningType.ADV_OF_2_ABSOLUTE;
-import static com.pj.squashrestapp.model.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
-import static com.pj.squashrestapp.model.SetWinningType.WINNING_POINTS_ABSOLUTE;
+import static com.pj.squashrestapp.model.enums.SetWinningType.ADV_OF_2_ABSOLUTE;
+import static com.pj.squashrestapp.model.enums.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
+import static com.pj.squashrestapp.model.enums.SetWinningType.WINNING_POINTS_ABSOLUTE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

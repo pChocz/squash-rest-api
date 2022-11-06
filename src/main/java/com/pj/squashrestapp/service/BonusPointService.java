@@ -2,12 +2,15 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForLeague;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.BonusPointsDto;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -66,17 +69,17 @@ public class BonusPointService {
 
         season.addBonusPoint(bonusPoint);
         bonusPointRepository.save(bonusPoint);
+        log.info("Created: {}", JacksonUtil.objectToJson(new BonusPointsDto(bonusPoint)));
 
         redisCacheService.evictCacheForBonusPoint(bonusPoint);
-        log.info("Adding: {}", bonusPoint);
         return bonusPoint;
     }
 
     @Transactional
     public void deleteBonusPoint(final UUID uuid) {
         final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
-        log.info("Removing: {}", bonusPoint);
-        redisCacheService.evictCacheForBonusPoint(bonusPoint);
         bonusPointRepository.delete(bonusPoint);
+        log.info("Deleted: {}", JacksonUtil.objectToJson(new BonusPointsDto(bonusPoint)));
+        redisCacheService.evictCacheForBonusPoint(bonusPoint);
     }
 }

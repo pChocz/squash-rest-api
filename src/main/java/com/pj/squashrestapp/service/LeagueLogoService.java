@@ -21,9 +21,8 @@ public class LeagueLogoService {
 
     @Cacheable(value = RedisCacheConfig.LEAGUE_LOGOS_CACHE, key = "#leagueUuid")
     public byte[] extractLeagueLogo(final UUID leagueUuid) {
-        final byte[] leagueLogoBytes = leagueLogoRepository
+        return leagueLogoRepository
                 .extractLogoBlobByLeagueUuid(leagueUuid)
                 .orElseThrow(() -> new NoSuchElementException(ErrorCode.LOGO_NOT_FOUND));
-        return leagueLogoBytes;
     }
 }

@@ -1,6 +1,6 @@
 package com.pj.squashrestapp.controller;
 
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.service.LeagueRolesService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

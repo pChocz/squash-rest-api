@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model;
+package com.pj.squashrestapp.model.enums;
 
 public enum AdditionalMatchType {
     CUP,

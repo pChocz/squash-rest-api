@@ -1,5 +1,7 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.dto.RoundDto;
+import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.Player;
@@ -13,6 +15,8 @@ import com.pj.squashrestapp.repository.RoundRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -44,6 +48,7 @@ public class RoundService {
     public void deleteRound(final UUID roundUuid) {
         final Round roundToDelete = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
         roundRepository.delete(roundToDelete);
+        log.info("Deleted: {}", JacksonUtil.objectToJson(new RoundDto(roundToDelete)));
     }
 
     @Transactional
@@ -62,6 +67,7 @@ public class RoundService {
 
         try {
             roundRepository.save(round);
+            log.info("Created: {}", JacksonUtil.objectToJson(new RoundDto(round)));
             return round;
 
         } catch (final DataIntegrityViolationException ex) {
@@ -161,8 +167,12 @@ public class RoundService {
 
     public Round updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
         final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
+        final String roundBefore = JacksonUtil.objectToJson(new RoundDto(round));
         round.setFinished(finishedState);
         roundRepository.save(round);
+        log.info("Round updated: [{}]", roundUuid);
+        log.info("BEFORE: {}", roundBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new RoundDto(round)));
         return round;
     }
 
@@ -173,6 +183,7 @@ public class RoundService {
     @Transactional
     public void recreateRound(final UUID roundUuid, final List<UUID[]> playersUuids) {
         final Round round = roundRepository.findByUuidWithSeasonLeague(roundUuid);
+        final String roundBefore = JacksonUtil.objectToJson(new RoundDto(round));
         final Season season = round.getSeason();
         final int setsPerMatch = season.getMatchFormatType().getMaxNumberOfSets();
 
@@ -199,6 +210,9 @@ public class RoundService {
             round.addRoundGroup(roundGroup);
             roundGroupRepository.save(roundGroup);
         }
+        log.info("Recreated round [{}]", roundUuid);
+        log.info("BEFORE: {}", roundBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new RoundDto(round)));
     }
 
     public Pair<Optional<UUID>, Optional<UUID>> extractAdjacentRoundsUuids(UUID roundUuid) {

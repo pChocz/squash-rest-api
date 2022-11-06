@@ -3,7 +3,7 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
-import com.pj.squashrestapp.model.MatchFormatType;
+import com.pj.squashrestapp.model.enums.MatchFormatType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -11,8 +11,8 @@ import static com.pj.squashrestapp.dto.matchresulthelper.MatchStatus.EMPTY;
 import static com.pj.squashrestapp.dto.matchresulthelper.MatchStatus.ERROR;
 import static com.pj.squashrestapp.dto.matchresulthelper.MatchStatus.FINISHED;
 import static com.pj.squashrestapp.dto.matchresulthelper.MatchStatus.IN_PROGRESS;
-import static com.pj.squashrestapp.model.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
-import static com.pj.squashrestapp.model.SetWinningType.WINNING_POINTS_ABSOLUTE;
+import static com.pj.squashrestapp.model.enums.SetWinningType.ADV_OF_2_OR_1_AT_THE_END;
+import static com.pj.squashrestapp.model.enums.SetWinningType.WINNING_POINTS_ABSOLUTE;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

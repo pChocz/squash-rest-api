@@ -11,11 +11,12 @@ import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.TokenPair;
+import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Authority;
-import com.pj.squashrestapp.model.AuthorityType;
+import com.pj.squashrestapp.model.enums.AuthorityType;
 import com.pj.squashrestapp.model.EmailChangeToken;
-import com.pj.squashrestapp.model.LeagueRole;
+import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.MagicLoginLinkToken;
 import com.pj.squashrestapp.model.PasswordResetToken;
 import com.pj.squashrestapp.model.Player;
@@ -32,6 +33,7 @@ import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.EmojiUtil;
 import com.pj.squashrestapp.util.ErrorCode;
+import com.pj.squashrestapp.util.JacksonUtil;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import lombok.RequiredArgsConstructor;
@@ -161,6 +163,7 @@ public class PlayerService {
         player.setSuccessfulLoginAttempts(0L);
         player.setWantsEmails(false);
         playerRepository.save(player);
+        log.info("Created: {}", JacksonUtil.objectToJson(new PlayerDto(player)));
         authorityRepository.save(userAuthority);
 
         final Map<String, Object> model = new HashMap<>();
@@ -257,7 +260,7 @@ public class PlayerService {
             player.setPassword(hashedPassword);
             player.setPasswordSessionUuid(UUID.randomUUID());
             playerRepository.save(player);
-            log.info("Password for user {} has been successfully changed.", player.getUsername());
+            log.info("Password for user [{}] has been successfully changed.", player.getUsername());
 
             final List<RefreshToken> playerRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
             refreshTokenRepository.deleteAll(playerRefreshTokens);
@@ -441,9 +444,12 @@ public class PlayerService {
 
     private void changeEmojiForPlayer(final String newEmoji, final Player player) {
         if (EmojiUtil.EMOJIS.contains(newEmoji)) {
+            final String playerBefore = JacksonUtil.objectToJson(new PlayerDto(player));
             player.setEmoji(newEmoji);
             playerRepository.save(player);
-            log.info("Emoji {} changed for player {}", newEmoji, player.getUsername());
+            log.info("Emoji changed for player [{}]", player.getUuid());
+            log.info("BEFORE: {}", playerBefore);
+            log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDto(player)));
         }
     }
 

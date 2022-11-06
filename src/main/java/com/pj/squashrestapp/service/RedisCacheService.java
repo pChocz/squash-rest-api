@@ -59,7 +59,7 @@ public class RedisCacheService {
                 cache.evictIfPresent(key);
                 log.info("Evicted cache | {}::{}", cacheName, key);
             } else {
-                log.info("Cache does not exist | {}::{}", cacheName, key);
+                log.debug("Cache does not exist | {}::{}", cacheName, key);
             }
         }
     }

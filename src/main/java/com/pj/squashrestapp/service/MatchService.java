@@ -17,6 +17,8 @@ import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.ErrorCode;
+import com.pj.squashrestapp.util.GsonUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -59,7 +61,7 @@ public class MatchService {
     public MatchDetailedDto modifySingleScore(
             final UUID matchUuid, final int setNumber, final String player, final Integer looserScore) {
         final Match matchToModify = matchRepository.findMatchByUuidWithScoreSheet(matchUuid).orElseThrow();
-        final String initialMatchResult = matchToModify.toString();
+        final String initialMatchResult = JacksonUtil.objectToJson(new MatchSimpleDto(matchToModify));
 
         if (!matchToModify.getScores().isEmpty()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, ErrorCode.MATCH_SCORE_NOT_EMPTY);
@@ -104,14 +106,11 @@ public class MatchService {
         }
 
         setResultRepository.save(setToModify);
+        log.info("Result updated for match [{}]", matchUuid);
+        log.info("BEFORE: {}", initialMatchResult);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new MatchSimpleDto(matchToModify)));
 
         redisCacheService.evictCacheForRoundMatch(matchToModify);
-
-        log.info(
-                "Successfully updated the match!\n\t-> {}\t- earlier\n\t-> {}\t- now",
-                initialMatchResult,
-                matchToModify);
-
         return new MatchDetailedDto(matchToModify);
     }
 
@@ -172,8 +171,12 @@ public class MatchService {
         final Match match = matchRepository
                 .findMatchByUuid(matchUuid)
                 .orElseThrow(() -> new GeneralBadRequestException(ErrorCode.MATCH_NOT_FOUND));
+        final String matchBefore = JacksonUtil.objectToJson(new MatchSimpleDto(match));
         match.setFootageLink(footageLink);
         matchRepository.save(match);
+        log.info("Footage updated for match: [{}]",  matchUuid);
+        log.info("BEFORE: {}", matchBefore);
+        log.info("AFTER: {}", JacksonUtil.objectToJson(new MatchSimpleDto(match)));
         redisCacheService.evictCacheForRoundMatch(match);
         return new MatchSimpleDto(match);
     }

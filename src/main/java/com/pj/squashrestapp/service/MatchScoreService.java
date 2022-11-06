@@ -9,11 +9,12 @@ import com.pj.squashrestapp.dto.matchresulthelper.SetStatus;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.ScoreEventType;
-import com.pj.squashrestapp.model.ServePlayer;
+import com.pj.squashrestapp.model.enums.ServePlayer;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -167,7 +168,7 @@ public class MatchScoreService {
     private MatchDetailedDto applyMatchScore(final MatchScore matchScore,
                                              final Match match,
                                              final List<SetStatus> fdsfsfdsfs) {
-        log.info("BEFORE: " + match);
+        log.info("BEFORE: {}" + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
 
         final SetResult setResult;
         if (matchScore.getScoreEventType() == ScoreEventType.MATCH_BEGINS
@@ -239,7 +240,7 @@ public class MatchScoreService {
 
     private MatchDetailedDto persistMatch(final Match match) {
         final Match savedMatch = matchRepository.save(match);
-        log.info("AFTER:  " + savedMatch);
+        log.info("AFTER:  " + JacksonUtil.objectToJson(new MatchDetailedDto(savedMatch)));
         return new MatchDetailedDto(savedMatch);
     }
 
@@ -277,7 +278,7 @@ public class MatchScoreService {
             throw new GeneralBadRequestException(ErrorCode.NO_EXISTING_MATCH_SCORE);
         }
 
-        log.info("BEFORE: " + match);
+        log.info("BEFORE: " + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
 
         match.getScores().remove(scoreToRemove.get());
         match.getLastScore().ifPresent(matchScore -> modifyMatchResultIfNeeded(matchScore, match, scoreToRemove.get()));
@@ -297,7 +298,7 @@ public class MatchScoreService {
             throw new GeneralBadRequestException(ErrorCode.NO_EXISTING_MATCH_SCORE);
         }
 
-        log.info("BEFORE: " + match);
+        log.info("BEFORE: " + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
 
         Iterator<MatchScore> matchScoreIterator = match.getScores().iterator();
         while (matchScoreIterator.hasNext()) {

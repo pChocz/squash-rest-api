@@ -10,6 +10,7 @@ import com.pj.squashrestapp.model.XpPointsForRoundGroup;
 import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -107,6 +108,7 @@ public class XpPointsService {
 
         final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, split, points);
         xpPointsRepository.save(xpPointsForRound);
+        log.info("Created: {}", JacksonUtil.objectToJson(xpPointsForRound));
     }
 
     private int[][] preparePointsArray(final int[] split, final String[] pointsAsString) {
@@ -133,6 +135,7 @@ public class XpPointsService {
         final Optional<XpPointsForRound> xpPoints = xpPointsRepository.findByTypeAndSplit(type, splitAsString);
         if (xpPoints.isPresent()) {
             xpPointsRepository.delete(xpPoints.get());
+            log.info("Deleted: {}", JacksonUtil.objectToJson(xpPoints.get()));
         } else {
             throw new GeneralBadRequestException(
                     "Xp Points for type [" + type + "] and split [" + splitAsString + "] does not exist!");

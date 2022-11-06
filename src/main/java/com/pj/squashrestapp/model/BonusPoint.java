@@ -57,7 +57,6 @@ public class BonusPoint {
     private int points;
 
     public BonusPoint(final Player winner, final Player looser, final int points, final LocalDate date) {
-
         this.winner = winner;
         this.looser = looser;
         this.points = points;

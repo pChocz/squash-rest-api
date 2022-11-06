@@ -14,6 +14,8 @@ import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import java.util.Map;
+
+import com.pj.squashrestapp.util.JacksonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -67,6 +69,7 @@ public class HeadToHeadScoreboardService {
         ReadySetResultsHistogram readySetResultsHistogram = gameDistributionService.buildDistribution(results, playersMap);
 
         final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches, readySetResultsHistogram);
+        log.info("H2H scoreboard: {}", JacksonUtil.objectToJson(scoreboard));
         return scoreboard;
     }
 }

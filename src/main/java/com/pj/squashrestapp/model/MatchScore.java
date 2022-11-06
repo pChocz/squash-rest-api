@@ -6,6 +6,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+import com.pj.squashrestapp.model.enums.AppealDecision;
+import com.pj.squashrestapp.model.enums.ServePlayer;
+import com.pj.squashrestapp.model.enums.ServeSide;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,17 +28,17 @@ import javax.persistence.Table;
 import java.time.ZonedDateTime;
 import java.util.Comparator;
 
-import static com.pj.squashrestapp.model.AppealDecision.NO_LET;
-import static com.pj.squashrestapp.model.AppealDecision.STROKE;
-import static com.pj.squashrestapp.model.AppealDecision.YES_LET;
+import static com.pj.squashrestapp.model.enums.AppealDecision.NO_LET;
+import static com.pj.squashrestapp.model.enums.AppealDecision.STROKE;
+import static com.pj.squashrestapp.model.enums.AppealDecision.YES_LET;
 import static com.pj.squashrestapp.model.ScoreEventType.FIRST_PLAYER_CALLS_LET;
 import static com.pj.squashrestapp.model.ScoreEventType.FIRST_PLAYER_SCORES;
 import static com.pj.squashrestapp.model.ScoreEventType.SECOND_PLAYER_CALLS_LET;
 import static com.pj.squashrestapp.model.ScoreEventType.SECOND_PLAYER_SCORES;
-import static com.pj.squashrestapp.model.ServePlayer.FIRST_PLAYER;
-import static com.pj.squashrestapp.model.ServePlayer.SECOND_PLAYER;
-import static com.pj.squashrestapp.model.ServeSide.LEFT_SIDE;
-import static com.pj.squashrestapp.model.ServeSide.RIGHT_SIDE;
+import static com.pj.squashrestapp.model.enums.ServePlayer.FIRST_PLAYER;
+import static com.pj.squashrestapp.model.enums.ServePlayer.SECOND_PLAYER;
+import static com.pj.squashrestapp.model.enums.ServeSide.LEFT_SIDE;
+import static com.pj.squashrestapp.model.enums.ServeSide.RIGHT_SIDE;
 
 @Entity
 @Table(name = "match_scores")
