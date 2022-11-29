@@ -19,9 +19,7 @@ public class GsonLocalDateTime implements JsonSerializer<LocalDateTime>, JsonDes
             JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext)
             throws JsonParseException {
         String ldtString = jsonElement.getAsString();
-        return ldtString.length() == 23
-                ? LocalDateTime.parse(ldtString, DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT))
-                : LocalDateTime.parse(ldtString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return LocalDateTime.parse(ldtString, DateTimeFormatter.ofPattern(GeneralUtil.DATE_TIME_FORMAT));
     }
 
     @Override
