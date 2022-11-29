@@ -15,8 +15,8 @@ spring:
   jpa:
     database: _REPLACE_
     hibernate:
-      ddl-auto: create       # in case when schema recreation is necessary
-#      ddl-auto: update       # in case when it is not
+#      ddl-auto: create       # in case when schema recreation is necessary
+      ddl-auto: update       # in case when it is not
     open-in-view: false
     properties:
       hibernate:
