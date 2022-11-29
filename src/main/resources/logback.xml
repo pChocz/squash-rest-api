@@ -5,7 +5,7 @@
 
   <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
     <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+<!--      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>-->
     </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>${LOG-THRESHOLD}</level>
