@@ -2,11 +2,14 @@ package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pj.squashrestapp.dto.Trophy;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,11 +27,15 @@ import javax.persistence.Table;
 @Table(name = "trophies_for_leagues")
 @Getter
 @NoArgsConstructor
-public class TrophyForLeague {
+public class TrophyForLeague implements Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @JsonIgnore
     @Setter

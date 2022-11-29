@@ -180,6 +180,7 @@ public class JsonImportUtil {
         trophyForLeague.setSeasonNumber(jsonLeagueTrophy.getSeasonNumber());
         trophyForLeague.setPlayer(player);
         trophyForLeague.setTrophy(jsonLeagueTrophy.getTrophy());
+        trophyForLeague.setAudit(jsonLeagueTrophy.getAudit());
 
         return trophyForLeague;
     }
@@ -191,6 +192,7 @@ public class JsonImportUtil {
         bonusPoint.setWinner(getCorrespondingPlayer(players, jsonBonusPoint.getWinner()));
         bonusPoint.setLooser(getCorrespondingPlayer(players, jsonBonusPoint.getLooser()));
         bonusPoint.setPoints(jsonBonusPoint.getPoints());
+        bonusPoint.setAudit(jsonBonusPoint.getAudit());
         return bonusPoint;
     }
 
@@ -200,6 +202,7 @@ public class JsonImportUtil {
         lostBall.setDate(jsonLostBall.getDate());
         lostBall.setCount(jsonLostBall.getCount());
         lostBall.setPlayer(getCorrespondingPlayer(players, jsonLostBall.getPlayer()));
+        lostBall.setAudit(jsonLostBall.getAudit());
         return lostBall;
     }
 

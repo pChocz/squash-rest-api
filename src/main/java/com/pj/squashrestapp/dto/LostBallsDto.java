@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.model.LostBall;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
@@ -26,11 +27,14 @@ public final class LostBallsDto {
 
     final int count;
 
+    final Audit audit;
+
     public LostBallsDto(final LostBall lostBall) {
         this.player = new PlayerDto(lostBall.getPlayer());
         this.uuid = lostBall.getUuid();
         this.date = lostBall.getDate();
         this.count = lostBall.getCount();
+        this.audit = lostBall.getAudit();
     }
 
     @Override

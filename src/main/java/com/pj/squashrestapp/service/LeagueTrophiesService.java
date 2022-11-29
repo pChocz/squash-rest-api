@@ -128,6 +128,7 @@ public class LeagueTrophiesService {
 
         final Player player = playerRepository.findByUuid(playerUuid);
         final TrophyForLeague newTrophyForLeague = new TrophyForLeague(seasonNumber, player, trophy);
+        newTrophyForLeague.createAudit();
 
         league.addTrophyForLeague(newTrophyForLeague);
         trophiesForLeagueRepository.save(newTrophyForLeague);

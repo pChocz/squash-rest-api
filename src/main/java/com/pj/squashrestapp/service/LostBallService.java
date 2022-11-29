@@ -62,6 +62,7 @@ public class LostBallService {
         lostBall.setPlayer(player);
         lostBall.setDate(date);
         lostBall.setCount(count);
+        lostBall.createAudit();
 
         season.addLostBall(lostBall);
         lostBallRepository.save(lostBall);

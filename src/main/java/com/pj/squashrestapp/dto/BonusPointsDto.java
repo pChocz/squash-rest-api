@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.model.BonusPoint;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 
@@ -26,6 +27,7 @@ public final class BonusPointsDto {
     final LocalDate date;
 
     final int points;
+    final Audit audit;
 
     public BonusPointsDto(final BonusPoint bonusPoint) {
         this.winner = new PlayerDto(bonusPoint.getWinner());
@@ -33,6 +35,7 @@ public final class BonusPointsDto {
         this.uuid = bonusPoint.getUuid();
         this.date = bonusPoint.getDate();
         this.points = bonusPoint.getPoints();
+        this.audit = bonusPoint.getAudit();
     }
 
     @Override

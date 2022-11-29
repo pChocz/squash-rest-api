@@ -134,6 +134,7 @@ public class JsonExportUtil {
             trophy.setSeasonNumber(trophyForLeague.getSeasonNumber());
             trophy.setPlayerUuid(trophyForLeague.getPlayer().getUuid());
             trophy.setTrophy(trophyForLeague.getTrophy());
+            trophy.setAudit(trophyForLeague.getAudit());
             trophies.add(trophy);
         }
 
@@ -187,6 +188,7 @@ public class JsonExportUtil {
             jsonBonusPoint.setDate(bonusPoint.getDate());
             jsonBonusPoint.setUuid(bonusPoint.getUuid());
             jsonBonusPoint.setPoints(bonusPoint.getPoints());
+            jsonBonusPoint.setAudit(bonusPoint.getAudit());
 
             jsonBonusPoints.add(jsonBonusPoint);
         }
@@ -201,6 +203,7 @@ public class JsonExportUtil {
             jsonLostBall.setPlayer(lostBall.getPlayer().getUuid());
             jsonLostBall.setDate(lostBall.getDate());
             jsonLostBall.setCount(lostBall.getCount());
+            jsonLostBall.setAudit(lostBall.getAudit());
 
             jsonLostBalls.add(jsonLostBall);
         }

@@ -67,6 +67,7 @@ public class BonusPointService {
         bonusPoint.setLooser(looser);
         bonusPoint.setDate(date);
         bonusPoint.setPoints(points);
+        bonusPoint.createAudit();
 
         season.addBonusPoint(bonusPoint);
         bonusPointRepository.save(bonusPoint);
