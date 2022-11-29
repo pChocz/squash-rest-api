@@ -240,13 +240,13 @@ public class LogControllerAspect {
                     v("username", username),
                     kv("ipAddress", AuthorizationUtil.extractRequestIpAddress()),
                     kv("queries", queryCount),
-                    kv("timeMillis", totalTimeMillis),
-                    v("result", result == null
-                            ? "NO_RESULT"
-                            : logResultIgnore
-                                ? "IGNORED"
-                                : result
-                    )
+                    kv("timeMillis", totalTimeMillis)
+//                    v("result", result == null
+//                            ? "NO_RESULT"
+//                            : logResultIgnore
+//                                ? "IGNORED"
+//                                : result
+//                    )
             );
         }
     }
