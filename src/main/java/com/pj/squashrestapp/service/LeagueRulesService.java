@@ -33,6 +33,7 @@ public class LeagueRulesService {
     public void addNewLeagueRule(final UUID leagueUuid, final String rule, final LeagueRuleType type) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final LeagueRule leagueRule = new LeagueRule(rule, type);
+        leagueRule.createAudit();
         league.addRuleForLeague(leagueRule);
         leagueRepository.save(league);
         LogUtil.logCreate(new LeagueRuleDto(leagueRule));
@@ -67,6 +68,7 @@ public class LeagueRulesService {
         } else {
             leagueRule.setOrderValue(null);
         }
+        leagueRule.updateAudit();
         leagueRulesRepository.save(leagueRule);
         LogUtil.logModify(leagueRuleInitialJson, new LeagueRuleDto(leagueRule));
     }

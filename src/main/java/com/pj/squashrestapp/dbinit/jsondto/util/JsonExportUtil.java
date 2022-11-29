@@ -56,8 +56,7 @@ public class JsonExportUtil {
         jsonLeague.setTiebreakWinningType(league.getTiebreakWinningType());
         jsonLeague.setNumberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason());
         jsonLeague.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
-        jsonLeague.setLogoBase64(
-                Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
+        jsonLeague.setLogoBase64(Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
         jsonLeague.setRules(buildRules(league.getRules()));
         jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
         jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints, lostBalls));
@@ -75,6 +74,7 @@ public class JsonExportUtil {
             jsonLeagueRule.setOrderValue(leagueRule.getOrderValue());
             jsonLeagueRule.setType(leagueRule.getType());
             jsonLeagueRule.setRule(leagueRule.getRule());
+            jsonLeagueRule.setAudit(leagueRule.getAudit());
             rules.add(jsonLeagueRule);
         }
 
@@ -99,6 +99,7 @@ public class JsonExportUtil {
             jsonAdditionalMatch.setRegularSetWinningPoints(additionalMatch.getRegularSetWinningPoints());
             jsonAdditionalMatch.setTiebreakWinningPoints(additionalMatch.getTiebreakWinningPoints());
             jsonAdditionalMatch.setFootageLink(additionalMatch.getFootageLink());
+            jsonAdditionalMatch.setAudit(additionalMatch.getAudit());
             jsonAdditionalMatch.setSets(buildSetResultsJson(additionalMatch));
 
             additionalMatches.add(jsonAdditionalMatch);
@@ -221,6 +222,7 @@ public class JsonExportUtil {
         jsonRound.setFinished(round.isFinished());
         jsonRound.setNumber(round.getNumber());
         jsonRound.setGroups(buildRoundGroupsJson(round));
+        jsonRound.setAudit(round.getAudit());
 
         return jsonRound;
     }
@@ -268,6 +270,7 @@ public class JsonExportUtil {
             jsonMatch.setFootageLink(match.getFootageLink());
             jsonMatch.setSets(buildSetResultsJson(match));
             jsonMatch.setMatchScores(buildMatchScoresJson(match));
+            jsonMatch.setAudit(match.getAudit());
             jsonMatches.add(jsonMatch);
         }
         return jsonMatches;

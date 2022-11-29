@@ -106,7 +106,8 @@ public class MatchService {
             }
         }
 
-        setResultRepository.save(setToModify);
+        matchToModify.updateAudit();
+        matchRepository.save(matchToModify);
         LogUtil.logModify(initialMatchResult, new MatchSimpleDto(matchToModify));
 
         redisCacheService.evictCacheForRoundMatch(matchToModify);

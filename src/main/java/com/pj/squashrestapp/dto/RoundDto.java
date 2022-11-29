@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.Round;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,7 @@ public class RoundDto {
     private LocalDate roundDate;
 
     private boolean finished;
+    private Audit audit;
 
     public RoundDto(final Round round) {
         this.roundUuid = round.getUuid();
@@ -40,6 +42,7 @@ public class RoundDto {
         this.roundDate = round.getDate();
         this.seasonNumber = round.getSeason().getNumber();
         this.split = round.getSplit();
+        this.audit = round.getAudit();
     }
 
     public RoundDto(final RoundScoreboard roundScoreboard) {

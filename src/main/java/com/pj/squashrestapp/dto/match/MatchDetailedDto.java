@@ -10,6 +10,7 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.Match;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.MatchScore;
 import com.pj.squashrestapp.model.Round;
@@ -53,6 +54,8 @@ public class MatchDetailedDto implements MatchDto {
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
     private LocalDate date;
 
+    private Audit audit;
+
     @JsonIgnore
     private MatchFormatType matchFormatType;
 
@@ -81,6 +84,7 @@ public class MatchDetailedDto implements MatchDto {
         this.secondPlayer = new PlayerDto(match.getSecondPlayer());
         this.roundGroupNumber = roundGroup.getNumber();
         this.date = round.getDate();
+        this.audit = match.getAudit();
         this.roundUuid = round.getUuid();
         this.roundNumber = round.getNumber();
         this.seasonUuid = season.getUuid();

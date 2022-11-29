@@ -238,6 +238,7 @@ public class MatchScoreService {
     }
 
     private MatchDetailedDto persistMatch(final Match match, final Object matchBefore) {
+        match.updateAudit();
         final Match savedMatch = matchRepository.save(match);
         LogUtil.logModify(matchBefore, new MatchDetailedDto(savedMatch));
         return new MatchDetailedDto(savedMatch);

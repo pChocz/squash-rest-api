@@ -125,6 +125,7 @@ public class AdditionalMatchService {
             match.addSetResult(setResult);
         }
 
+        match.createAudit();
         league.get().addAdditionalMatch(match);
         redisCacheService.evictCacheForAdditionalMatch(match);
         LogUtil.logCreate(new AdditionalMatchSimpleDto(match));
@@ -185,8 +186,8 @@ public class AdditionalMatchService {
         }
 
         redisCacheService.evictCacheForAdditionalMatch(matchToModify);
-
-        additionalSetResultRepository.save(setToModify);
+        matchToModify.updateAudit();
+        additionalMatchRepository.save(matchToModify);
         LogUtil.logModify(initialMatchResult, new AdditionalMatchSimpleDto(matchToModify));
     }
 

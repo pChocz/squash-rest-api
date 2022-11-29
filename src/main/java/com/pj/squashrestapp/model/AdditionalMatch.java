@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.enums.AdditionalMatchType;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.enums.SetWinningType;
@@ -10,6 +12,7 @@ import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,11 +38,15 @@ import java.util.stream.Collectors;
 @Table(name = "additional_matches")
 @Getter
 @NoArgsConstructor
-public class AdditionalMatch implements Comparable<AdditionalMatch> {
+public class AdditionalMatch implements Comparable<AdditionalMatch>, Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @Setter
     @Column(name = "uuid", nullable = false)

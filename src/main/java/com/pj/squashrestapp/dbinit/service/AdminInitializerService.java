@@ -267,6 +267,7 @@ public class AdminInitializerService {
             leagueRule.setOrderValue(rule.getOrderValue());
             leagueRule.setType(rule.getType());
             leagueRule.setRule(rule.getRule());
+            leagueRule.setAudit(rule.getAudit());
             league.addRuleForLeague(leagueRule);
         }
 

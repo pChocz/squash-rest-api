@@ -10,6 +10,7 @@ import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.model.AdditionalMatch;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.model.enums.AdditionalMatchType;
 import com.pj.squashrestapp.model.AdditionalSetResult;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
@@ -63,8 +64,11 @@ public class AdditionalMatchDetailedDto implements MatchDto {
 
     private MatchStatus status;
 
+    private Audit audit;
+
     public AdditionalMatchDetailedDto(final AdditionalMatch match) {
         this.matchUuid = match.getUuid();
+        this.audit = match.getAudit();
         this.firstPlayer = new PlayerDto(match.getFirstPlayer());
         this.secondPlayer = new PlayerDto(match.getSecondPlayer());
         this.leagueUuid = match.getLeague().getUuid();

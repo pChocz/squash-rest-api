@@ -61,6 +61,7 @@ public class JsonImportUtil {
         round.setDate(jsonRound.getDate());
         round.setUuid(jsonRound.getUuid());
         round.setFinished(jsonRound.isFinished());
+        round.setAudit(jsonRound.getAudit());
         return round;
     }
 
@@ -84,6 +85,7 @@ public class JsonImportUtil {
         match.setRegularSetWinningPoints(jsonMatch.getRegularSetWinningPoints());
         match.setTiebreakWinningPoints(jsonMatch.getTiebreakWinningPoints());
         match.setFootageLink(jsonMatch.getFootageLink());
+        match.setAudit(jsonMatch.getAudit());
         return match;
     }
 
@@ -110,6 +112,7 @@ public class JsonImportUtil {
         match.setType(jsonMatch.getType());
         match.setSeasonNumber(jsonMatch.getSeasonNumber());
         match.setFootageLink(jsonMatch.getFootageLink());
+        match.setAudit(jsonMatch.getAudit());
         return match;
     }
 

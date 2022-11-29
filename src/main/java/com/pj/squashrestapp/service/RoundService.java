@@ -66,6 +66,7 @@ public class RoundService {
         season.addRound(round);
 
         try {
+            round.createAudit();
             roundRepository.save(round);
             LogUtil.logCreate(new RoundScoreboard(round));
             return round;
@@ -153,6 +154,7 @@ public class RoundService {
 
         final Match match = new Match(firstPlayer, secondPlayer, season);
         match.setNumber(number);
+        match.createAudit();
 
         for (int i = 1; i <= setsPerMatch; i++) {
             final SetResult setResult = new SetResult();
@@ -169,6 +171,7 @@ public class RoundService {
         final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
         final Object roundBefore = JacksonUtil.deepCopy(new RoundDto(round));
         round.setFinished(finishedState);
+        round.updateAudit();
         roundRepository.save(round);
         LogUtil.logModify(roundBefore, new RoundDto(round));
         return round;
@@ -192,6 +195,7 @@ public class RoundService {
 
         round.setSplit(GeneralUtil.integerListToString(countPerRound));
         round.setFinished(false);
+        round.updateAudit();
 
         // deleting old round groups
         final Iterator<RoundGroup> iterator = round.getRoundGroups().iterator();

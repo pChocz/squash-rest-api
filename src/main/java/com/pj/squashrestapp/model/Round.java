@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import lombok.Getter;
@@ -9,6 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -41,7 +44,7 @@ import java.util.stream.Stream;
         })
 @Getter
 @NoArgsConstructor
-public class Round implements Identifiable, Comparable<Round> {
+public class Round implements Identifiable, Comparable<Round>, Auditable {
 
     public static final EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {};
 
@@ -65,6 +68,10 @@ public class Round implements Identifiable, Comparable<Round> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @Setter
     @Column(name = "uuid", nullable = false)
