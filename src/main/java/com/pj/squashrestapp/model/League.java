@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,12 +35,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "leagues")
-@Getter
+@Table(
+        name = "leagues",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_name",
+                        columnNames = {"name"}
+                )
+        })
+        @Getter
 @NoArgsConstructor
 public class League implements Identifiable {
 
-    public static EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {};
+    public static final EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {};
 
     @OneToMany(mappedBy = "league", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private final List<RoleForLeague> rolesForLeague = new ArrayList<>();
@@ -55,7 +64,7 @@ public class League implements Identifiable {
     private UUID uuid = UUID.randomUUID();
 
     @Setter
-    @Column(name = "name", unique = true)
+    @Column(name = "name")
     private String name;
 
     @Setter
@@ -101,7 +110,7 @@ public class League implements Identifiable {
     @JsonIgnore
     @Setter
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name = "league_logo_id")
+    @JoinColumn(name = "league_logo_id", foreignKey = @ForeignKey(name = "fk_league_logo"))
     private LeagueLogo leagueLogo;
 
     @Setter

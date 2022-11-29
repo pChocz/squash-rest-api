@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.LogResultIgnore;
 import com.pj.squashrestapp.dbinit.jsondto.JsonAll;
 import com.pj.squashrestapp.dbinit.jsondto.JsonLeague;
 import com.pj.squashrestapp.dbinit.jsondto.JsonRound;
@@ -32,6 +33,7 @@ public class BackupController {
         return new ResponseEntity<>(roundJson, HttpStatus.OK);
     }
 
+    @LogResultIgnore
     @GetMapping("/leagues/{leagueUuid}")
     @PreAuthorize("isAdmin()")
     ResponseEntity<JsonLeague> backupSingleLeague(@PathVariable final UUID leagueUuid) {
@@ -39,6 +41,7 @@ public class BackupController {
         return new ResponseEntity<>(leagueJson, HttpStatus.OK);
     }
 
+    @LogResultIgnore
     @GetMapping("/all")
     @PreAuthorize("isAdmin()")
     ResponseEntity<JsonAll> backupAll() {

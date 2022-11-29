@@ -4,10 +4,8 @@
   <property name="LOG-THRESHOLD" value="INFO"/>
 
   <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
-    <encoder>
-      <charset>UTF-8</charset>
-      <outputPatternAsHeader>true</outputPatternAsHeader>
-      <pattern>${PATTERN}</pattern>
+    <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+      <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
     </encoder>
     <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
       <level>${LOG-THRESHOLD}</level>

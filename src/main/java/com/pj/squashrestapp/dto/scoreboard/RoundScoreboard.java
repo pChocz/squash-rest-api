@@ -63,13 +63,17 @@ public class RoundScoreboard {
         this.roundGroupScoreboards = new ArrayList<>();
         this.playersPerGroup = new ArrayList<>();
         this.finishedState = round.isFinished();
+        for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
+            this.addRoundGroupNew(roundGroup);
+        }
     }
 
-    public void addRoundGroupNew(final RoundGroup roundGroup) {
+    private void addRoundGroupNew(final RoundGroup roundGroup) {
         final List<MatchDetailedDto> matches = MatchExtractorUtil.extractAllMatches(roundGroup);
         final RoundGroupScoreboard scoreboard = new RoundGroupScoreboard(matches);
         roundGroupScoreboards.add(scoreboard);
         playersPerGroup.add(scoreboard.getScoreboardRows().size());
+        numberOfAllMatches += matches.size();
     }
 
     public void assignPointsAndPlaces(final List<Integer> xpPoints) {
@@ -81,7 +85,6 @@ public class RoundScoreboard {
                 scoreboardRow.setPlaceInGroup(j++);
                 scoreboardRow.setXpEarned(xpPoints.get(i++));
             }
-            this.numberOfAllMatches += scoreboard.getMatches().size();
             this.numberOfFinishedMatches += scoreboard.getMatches().stream()
                     .filter(MatchDetailedDto::checkFinished)
                     .count();

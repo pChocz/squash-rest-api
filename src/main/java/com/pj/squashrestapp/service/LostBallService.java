@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.pj.squashrestapp.dto.LostBallsAggregatedForLeague;
 import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.LostBallsDto;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.model.LostBall;
 import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.Season;
@@ -11,6 +12,7 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.GsonUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -63,7 +65,7 @@ public class LostBallService {
 
         season.addLostBall(lostBall);
         lostBallRepository.save(lostBall);
-        log.info("Created: {}", JacksonUtil.objectToJson(new LostBallsDto(lostBall)));
+        LogUtil.logCreate(new LostBallsDto(lostBall));
 
         redisCacheService.evictCacheForLostBall(lostBall);
         return lostBall;
@@ -73,7 +75,7 @@ public class LostBallService {
     public void deleteLostBall(final UUID uuid) {
         final LostBall lostBall = lostBallRepository.findByUuid(uuid).orElseThrow();
         lostBallRepository.delete(lostBall);
-        log.info("Deleted: {}", JacksonUtil.objectToJson(new LostBallsDto(lostBall)));
+        LogUtil.logDelete(new LostBallsDto(lostBall));
         redisCacheService.evictCacheForLostBall(lostBall);
     }
 }

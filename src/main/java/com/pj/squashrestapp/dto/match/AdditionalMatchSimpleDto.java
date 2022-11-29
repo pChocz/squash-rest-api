@@ -16,6 +16,7 @@ import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.enums.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -24,35 +25,36 @@ import java.util.List;
 
 /** */
 @Getter
+@NoArgsConstructor
 public class AdditionalMatchSimpleDto implements MatchDto {
 
-    private final PlayerDto firstPlayer;
-    private final PlayerDto secondPlayer;
-    private final PlayerDto winner;
-    private final AdditionalMatchType type;
-    private final List<SetDto> sets;
-    private final MatchStatus status;
+    private PlayerDto firstPlayer;
+    private PlayerDto secondPlayer;
+    private PlayerDto winner;
+    private AdditionalMatchType type;
+    private List<SetDto> sets;
+    private MatchStatus status;
     private String footageLink;
 
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
-    private final LocalDate date;
+    private LocalDate date;
 
     @JsonIgnore
-    private final MatchFormatType matchFormatType;
+    private MatchFormatType matchFormatType;
 
     @JsonIgnore
-    private final SetWinningType regularSetWinningType;
+    private SetWinningType regularSetWinningType;
 
     @JsonIgnore
-    private final int regularSetWinningPoints;
+    private int regularSetWinningPoints;
 
     @JsonIgnore
-    private final SetWinningType tieBreakWinningType;
+    private SetWinningType tieBreakWinningType;
 
     @JsonIgnore
-    private final int tieBreakWinningPoints;
+    private int tieBreakWinningPoints;
 
     public AdditionalMatchSimpleDto(final AdditionalMatch match) {
         this.firstPlayer = new PlayerDto(match.getFirstPlayer());

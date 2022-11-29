@@ -5,6 +5,7 @@ import com.google.common.collect.Iterables;
 import com.pj.squashrestapp.mongologs.LogEntry;
 import com.pj.squashrestapp.mongologs.LogEntryRepository;
 import com.pj.squashrestapp.mongologs.LogType;
+import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import lombok.RequiredArgsConstructor;
@@ -31,8 +32,11 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+import static net.logstash.logback.argument.StructuredArguments.v;
 
 /** */
+@SuppressWarnings("PlaceholderCountMatchesArgumentCount")
 @Slf4j
 @Aspect
 @Component
@@ -73,17 +77,13 @@ public class LogControllerAspect {
     }
 
     /**
-     * Logging aspect that matches all non-void repository and service methods.
-     *
-     * ONLY FOR DEBUG PURPOSES!!
+     * Logging aspect that matches all service methods.
      *
      * @param proceedingJoinPoint Spring method execution join point
      * @return unmodified return object from the controller method
      * @throws Throwable rethrows exception after logging it, so it can be passed to the client
      */
-      @Around("serviceMethodsPointcut()")
-    //  @Around("utilMethodsPointcut() || repositoryMethodsPointcut() || serviceMethodsPointcut()")
-    //  @Around("repositoryMethodsPointcut()")
+    @Around("serviceMethodsPointcut()")
     public Object logAllServiceAndRepositoryMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
         final String className = methodSignature.getDeclaringType().getSimpleName();
@@ -94,9 +94,13 @@ public class LogControllerAspect {
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        Object result = null;
+        Object result;
         try {
-            log.info("ENTER\t{}.{}", className, methodName);
+            log.info(
+                    "Entering service method {}.{}",
+                    v("className", className),
+                    v("methodName", methodName)
+            );
             result = proceedingJoinPoint.proceed();
             stopWatch.stop();
             return result;
@@ -107,11 +111,12 @@ public class LogControllerAspect {
 
         } finally {
             log.info(
-                    "EXIT\t{}\t{}ms\t{}.{}",
-                    hibernateQueryInterceptor.getQueryCount(),
-                    stopWatch.getTotalTimeMillis(),
-                    className,
-                    methodName);
+                    "Exiting service method {}.{} | {} | {}",
+                    v("className", className),
+                    v("methodName", methodName),
+                    kv("queries", hibernateQueryInterceptor.getQueryCount()),
+                    kv("timeMillis", stopWatch.getTotalTimeMillis())
+            );
         }
     }
 
@@ -146,12 +151,12 @@ public class LogControllerAspect {
 
         } finally {
             log.info(
-                    "REDIS-EVICT   {}  {}ms  {}.{}{}",
-                    username,
-                    stopWatch.getTotalTimeMillis(),
-                    className,
-                    methodName,
-                    customArrayDeepToString(args));
+                    "REDIS-EVICT {}.{}({}) | {}",
+                    v("className", className),
+                    v("methodName", methodName),
+                    v("arguments", customArrayDeepToString(args)),
+                    kv("timeMillis", stopWatch.getTotalTimeMillis())
+            );
         }
     }
 
@@ -165,8 +170,7 @@ public class LogControllerAspect {
      * @throws Throwable rethrows exception after logging it, so it can be passed to the client
      */
     @Around("controllerMethodsPointcut() || controllerDbInitMethodsPointcut()")
-    public Object logAllControllerAndRepositoriesMethods(final ProceedingJoinPoint proceedingJoinPoint)
-            throws Throwable {
+    public Object logAllControllerMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         final String username = GeneralUtil.extractSessionUsername();
         final Object[] args = proceedingJoinPoint.getArgs();
 
@@ -175,6 +179,7 @@ public class LogControllerAspect {
         final String className = methodSignature.getDeclaringType().getSimpleName();
         final String methodName = methodSignature.getName();
         final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
+        final boolean logResultIgnore = method.getAnnotation(LogResultIgnore.class) != null;
         final String arguments = isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : customArrayDeepToString(args);
 
         final String requestMapping = method.getAnnotation(GetMapping.class) != null
@@ -203,10 +208,10 @@ public class LogControllerAspect {
         }
 
         hibernateQueryInterceptor.startQueryCount();
-        Object result;
+        Object result = null;
         try {
             result = proceedingJoinPoint.proceed();
-            logEntry.setMessage(className + "." + methodName + arguments);
+            logEntry.setMessage(className + "." + methodName + "(" + arguments + ")");
             return result;
 
         } catch (final Throwable throwable) {
@@ -214,7 +219,7 @@ public class LogControllerAspect {
             logEntry.setIsException(true);
             logEntry.setMessage(className + "." + methodName + arguments
                     + "\n" + throwable.getMessage()
-                    + "\n" + Joiner.on("\n").join(Iterables.limit(asList(throwable.getStackTrace()), 10)));
+                    + "\n" + Joiner.on("\n").join(Iterables.limit(asList(throwable.getStackTrace()), 20)));
             throw throwable;
 
         } finally {
@@ -227,40 +232,51 @@ public class LogControllerAspect {
             logEntryRepository.save(logEntry);
 
             log.info(
-                    "REST-REQUEST  {}  {}  {}ms  {}.{}{}",
-                    queryCount,
-                    username,
-                    totalTimeMillis,
-                    className,
-                    methodName,
-                    arguments);
+                    "REST-REQUEST {} | {}.{}({}) | {} | {} | {} | {}",
+                    v("requestMapping", requestMapping),
+                    v("className", className),
+                    v("methodName", methodName),
+                    v("arguments", arguments),
+                    v("username", username),
+                    kv("ipAddress", AuthorizationUtil.extractRequestIpAddress()),
+                    kv("queries", queryCount),
+                    kv("timeMillis", totalTimeMillis),
+                    v("result", result == null
+                            ? "NO_RESULT"
+                            : logResultIgnore
+                                ? "IGNORED"
+                                : result
+                    )
+            );
         }
     }
 
     @SuppressWarnings("unchecked")
     private String customArrayDeepToString(Object[] args) {
-        return Arrays.stream(args)
-                .map(arg -> {
-                    if (arg instanceof List list && !list.isEmpty() && list.get(0) instanceof UUID[]) {
-                        return ((List<UUID[]>) arg)
-                                .stream().map(Arrays::deepToString).collect(Collectors.joining(", ", "[", "]"));
+        return args.length == 0
+                ? null
+                : Arrays.stream(args)
+                        .map(arg -> {
+                            if (arg instanceof List list && !list.isEmpty() && list.get(0) instanceof UUID[]) {
+                                return ((List<UUID[]>) arg)
+                                        .stream().map(Arrays::deepToString).collect(Collectors.joining(", ", "[", "]"));
 
-                    } else if (arg instanceof Object[] argArray) {
-                        return Arrays.deepToString(argArray);
+                            } else if (arg instanceof Object[] argArray) {
+                                return Arrays.deepToString(argArray);
 
-                    } else if (arg == null) {
-                        return "null";
+                            } else if (arg == null) {
+                                return "null";
 
-                    } else if (arg instanceof int[] argArray) {
-                        return Arrays.toString(argArray);
+                            } else if (arg instanceof int[] argArray) {
+                                return Arrays.toString(argArray);
 
-                    } else if (arg instanceof long[] argArray) {
-                        return Arrays.toString(argArray);
+                            } else if (arg instanceof long[] argArray) {
+                                return Arrays.toString(argArray);
 
-                    } else {
-                        return arg.toString();
-                    }
-                })
-                .collect(Collectors.joining(", ", "(", ")"));
+                            } else {
+                                return arg.toString();
+                            }
+                        })
+                        .collect(Collectors.joining(", "));
     }
 }

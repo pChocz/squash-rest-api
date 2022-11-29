@@ -107,9 +107,6 @@ public class ScoreboardService {
             for (final Round round : season.getRounds()) {
                 if (round.isFinished()) {
                     RoundScoreboard roundScoreboard = new RoundScoreboard(round);
-                    for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
-                        roundScoreboard.addRoundGroupNew(roundGroup);
-                    }
                     final String split = round.getSplit();
                     final String type = season.getXpPointsType();
                     final List<Integer> xpPoints = xpPointsPerSplit.get(split + '|' + type);
@@ -137,10 +134,6 @@ public class ScoreboardService {
         final Season season = round.getSeason();
 
         final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
-        for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
-            roundScoreboard.addRoundGroupNew(roundGroup);
-        }
-
         final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
         final String split = GeneralUtil.integerListToString(playersPerGroup);
         final String type = season.getXpPointsType();
@@ -198,10 +191,6 @@ public class ScoreboardService {
         }
 
         final RoundScoreboard roundScoreboard = new RoundScoreboard(mostRecentRound);
-        for (final RoundGroup roundGroup : mostRecentRound.getRoundGroupsOrdered()) {
-            roundScoreboard.addRoundGroupNew(roundGroup);
-        }
-
         final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
         final String split = GeneralUtil.integerListToString(playersPerGroup);
         final String type = mostRecentRound.getSeason().getXpPointsType();

@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,17 +34,18 @@ import java.util.stream.Stream;
 @Table(
         name = "rounds",
         uniqueConstraints = {
-            @UniqueConstraint(
-                    name = "SEASON_AND_ROUND_NUMBER_CONSTRAINT",
-                    columnNames = {"season_id", "number"})
+                @UniqueConstraint(
+                        name = "uk_season_and_round_number",
+                        columnNames = {"season_id", "number"}
+                )
         })
 @Getter
 @NoArgsConstructor
 public class Round implements Identifiable, Comparable<Round> {
 
-    public static EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {};
+    public static final EntityVisitor<Round, Season> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Round.class) {};
 
-    public static EntityVisitor<Round, Season> ENTITY_VISITOR = new EntityVisitor<>(Round.class) {
+    public static final EntityVisitor<Round, Season> ENTITY_VISITOR = new EntityVisitor<>(Round.class) {
         @Override
         public Season getParent(final Round visitingObject) {
             return visitingObject.getSeason();
@@ -56,7 +58,7 @@ public class Round implements Identifiable, Comparable<Round> {
 
         @Override
         public void setChildren(final Season parent) {
-            parent.setRounds(new TreeSet<Round>());
+            parent.setRounds(new TreeSet<>());
         }
     };
 
@@ -83,7 +85,7 @@ public class Round implements Identifiable, Comparable<Round> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "season_id", referencedColumnName = "id")
+    @JoinColumn(name = "season_id", foreignKey = @ForeignKey(name = "fk_round_season"))
     private Season season;
 
     @Setter

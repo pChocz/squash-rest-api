@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -59,12 +60,12 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "first_player_id")
+    @JoinColumn(name = "first_player_id", foreignKey = @ForeignKey(name = "fk_additional_match_first_player"))
     private Player firstPlayer;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "second_player_id")
+    @JoinColumn(name = "second_player_id", foreignKey = @ForeignKey(name = "fk_additional_match_second_player"))
     private Player secondPlayer;
 
     @Setter
@@ -99,7 +100,7 @@ public class AdditionalMatch implements Comparable<AdditionalMatch> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", foreignKey = @ForeignKey(name = "fk_additional_match_league"))
     private League league;
 
     public AdditionalMatch(final Player firstPlayer, final Player secondPlayer, final League league) {

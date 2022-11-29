@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,7 @@ public class TrophyForLeague {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", foreignKey = @ForeignKey(name = "fk_trophy_for_league_league"))
     private League league;
 
     @Setter
@@ -41,7 +42,7 @@ public class TrophyForLeague {
 
     @Setter
     @OneToOne(targetEntity = Player.class, fetch = FetchType.EAGER)
-    @JoinColumn(name = "player_id")
+    @JoinColumn(name = "player_id", foreignKey = @ForeignKey(name = "fk_trophy_for_league_player"))
     private Player player;
 
     @Setter

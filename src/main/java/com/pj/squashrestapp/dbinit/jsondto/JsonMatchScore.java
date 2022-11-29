@@ -2,14 +2,14 @@ package com.pj.squashrestapp.dbinit.jsondto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pj.squashrestapp.model.enums.AppealDecision;
-import com.pj.squashrestapp.model.ScoreEventType;
+import com.pj.squashrestapp.model.enums.ScoreEventType;
 import com.pj.squashrestapp.model.enums.ServePlayer;
 import com.pj.squashrestapp.model.enums.ServeSide;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class JsonMatchScore {
 
     private Integer gameNumber;
 
-    @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
-    private ZonedDateTime zonedDateTime;
+    @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+    private LocalDateTime dateTime;
 
     private ScoreEventType scoreEventType;
 

@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.dto.LeagueRuleDto;
+import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.LeagueRule;
 import com.pj.squashrestapp.model.enums.LeagueRuleType;
@@ -8,6 +9,7 @@ import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.LeagueRulesRepository;
 import com.pj.squashrestapp.util.GsonUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,13 +35,13 @@ public class LeagueRulesService {
         final LeagueRule leagueRule = new LeagueRule(rule, type);
         league.addRuleForLeague(leagueRule);
         leagueRepository.save(league);
-        log.info("Created: {}", JacksonUtil.objectToJson(new LeagueRuleDto(leagueRule)));
+        LogUtil.logCreate(new LeagueRuleDto(leagueRule));
     }
 
     public void deleteRule(final UUID ruleUuid) {
         final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow();
         leagueRulesRepository.delete(leagueRule);
-        log.info("Deleted: {}", JacksonUtil.objectToJson(new LeagueRuleDto(leagueRule)));
+        LogUtil.logDelete(new LeagueRuleDto(leagueRule));
     }
 
     public List<LeagueRuleDto> extractRulesForLeague(final UUID leagueUuid) {
@@ -57,7 +59,7 @@ public class LeagueRulesService {
             final Optional<LeagueRuleType> type,
             final Optional<Double> orderValue) {
         final LeagueRule leagueRule = leagueRulesRepository.findByUuid(ruleUuid).orElseThrow();
-        final String leagueRuleInitialJson = JacksonUtil.objectToJson(new LeagueRuleDto(leagueRule));
+        final Object leagueRuleInitialJson = JacksonUtil.deepCopy(new LeagueRuleDto(leagueRule));
         rule.ifPresent(leagueRule::setRule);
         type.ifPresent(leagueRule::setType);
         if (orderValue.isPresent()) {
@@ -66,8 +68,6 @@ public class LeagueRulesService {
             leagueRule.setOrderValue(null);
         }
         leagueRulesRepository.save(leagueRule);
-        log.info("League rule updated [{}]", leagueRule.getUuid());
-        log.info("BEFORE: {}", leagueRuleInitialJson);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new LeagueRuleDto(leagueRule)));
+        LogUtil.logModify(leagueRuleInitialJson, new LeagueRuleDto(leagueRule));
     }
 }

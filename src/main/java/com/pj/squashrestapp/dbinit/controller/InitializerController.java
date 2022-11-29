@@ -95,7 +95,7 @@ public class InitializerController {
         final String info = "Encoding: ["
                 + encodingTimeMillis
                 + " ms] "
-                + "\tMatching: ["
+                + "  Matching: ["
                 + matchingTimeMillis
                 + " ms] - "
                 + matches

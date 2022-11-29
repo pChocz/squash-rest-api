@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ import java.util.TreeSet;
 @NoArgsConstructor
 public class XpPointsForPlace implements Identifiable, Comparable<XpPointsForPlace> {
 
-    public static EntityVisitor<XpPointsForPlace, XpPointsForRoundGroup> ENTITY_VISITOR =
+    public static final EntityVisitor<XpPointsForPlace, XpPointsForRoundGroup> ENTITY_VISITOR =
             new EntityVisitor<>(XpPointsForPlace.class) {
                 @Override
                 public XpPointsForRoundGroup getParent(final XpPointsForPlace visitingObject) {
@@ -40,7 +41,7 @@ public class XpPointsForPlace implements Identifiable, Comparable<XpPointsForPla
 
                 @Override
                 public void setChildren(final XpPointsForRoundGroup parent) {
-                    parent.setXpPointsForPlaces(new TreeSet<XpPointsForPlace>());
+                    parent.setXpPointsForPlaces(new TreeSet<>());
                 }
             };
 
@@ -63,7 +64,7 @@ public class XpPointsForPlace implements Identifiable, Comparable<XpPointsForPla
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "xp_points_for_round_group_id")
+    @JoinColumn(name = "xp_points_for_round_group_id", foreignKey = @ForeignKey(name = "fk_xp_points_place_round_group"))
     private XpPointsForRoundGroup xpPointsForRoundGroup;
 
     public XpPointsForPlace(

@@ -10,6 +10,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,7 @@ import java.util.TreeSet;
 @NoArgsConstructor
 public class SetResult implements Identifiable, Comparable<SetResult> {
 
-    public static EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
+    public static final EntityVisitor<SetResult, Match> ENTITY_VISITOR = new EntityVisitor<>(SetResult.class) {
         @Override
         public Match getParent(final SetResult visitingObject) {
             return visitingObject.getMatch();
@@ -39,7 +40,7 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
 
         @Override
         public void setChildren(final Match parent) {
-            parent.setSetResults(new TreeSet<SetResult>());
+            parent.setSetResults(new TreeSet<>());
         }
     };
 
@@ -62,7 +63,7 @@ public class SetResult implements Identifiable, Comparable<SetResult> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "match_id")
+    @JoinColumn(name = "match_id", foreignKey = @ForeignKey(name = "fk_set_result_match"))
     private Match match;
 
     public SetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {

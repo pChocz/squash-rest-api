@@ -23,6 +23,7 @@ import java.util.UUID;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.ACCESS_TOKEN_EXPIRATION_TIME_DAYS;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.REFRESH_TOKEN_EXPIRATION_TIME_DAYS;
 import static com.pj.squashrestapp.config.security.token.TokenConstants.TOKEN_PREFIX;
+import static net.logstash.logback.argument.StructuredArguments.v;
 
 /** */
 @Slf4j
@@ -90,8 +91,16 @@ public class TokenCreateService {
             jwtBuilder = jwtBuilder.claim("adl", "1");
         }
 
-        return jwtBuilder
+        final String compactJwt = jwtBuilder
                 .signWith(secretKeyHolder.getSecretKey())
                 .compact();
+
+        log.info(
+                "JWT token created for player {}",
+                v("player", player.getUsername()),
+                v("token", compactJwt)
+        );
+
+        return compactJwt;
     }
 }

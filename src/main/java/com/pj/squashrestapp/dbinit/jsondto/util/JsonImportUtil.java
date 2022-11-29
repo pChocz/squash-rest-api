@@ -74,6 +74,7 @@ public class JsonImportUtil {
         final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayerUuid());
         final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayerUuid());
         final Match match = new Match();
+        match.setUuid(jsonMatch.getUuid() == null ? UUID.randomUUID() : jsonMatch.getUuid());
         match.setNumber(jsonMatch.getNumber());
         match.setFirstPlayer(firstPlayer);
         match.setSecondPlayer(secondPlayer);
@@ -93,11 +94,11 @@ public class JsonImportUtil {
                 .orElse(null);
     }
 
-    public AdditionalMatch constructAdditionalMatch(
-            final JsonAdditionalMatch jsonMatch, final List<Player> players, final League league) {
+    public AdditionalMatch constructAdditionalMatch(final JsonAdditionalMatch jsonMatch, final List<Player> players) {
         final Player firstPlayer = getCorrespondingPlayer(players, jsonMatch.getFirstPlayerUuid());
         final Player secondPlayer = getCorrespondingPlayer(players, jsonMatch.getSecondPlayerUuid());
         final AdditionalMatch match = new AdditionalMatch();
+        match.setUuid(jsonMatch.getUuid() == null ? UUID.randomUUID() : jsonMatch.getUuid());
         match.setFirstPlayer(firstPlayer);
         match.setSecondPlayer(secondPlayer);
         match.setMatchFormatType(jsonMatch.getMatchFormatType());
@@ -123,7 +124,7 @@ public class JsonImportUtil {
     public MatchScore constructMatchScore(final JsonMatchScore jsonMatchScore) {
         final MatchScore matchScore = new MatchScore();
         matchScore.setGameNumber(jsonMatchScore.getGameNumber());
-        matchScore.setZonedDateTime(jsonMatchScore.getZonedDateTime());
+        matchScore.setDateTime(jsonMatchScore.getDateTime());
         matchScore.setScoreEventType(jsonMatchScore.getScoreEventType());
         matchScore.setAppealDecision(jsonMatchScore.getAppealDecision());
         matchScore.setServeSide(jsonMatchScore.getServeSide());

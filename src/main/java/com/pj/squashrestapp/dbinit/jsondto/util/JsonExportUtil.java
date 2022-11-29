@@ -87,6 +87,7 @@ public class JsonExportUtil {
 
         for (final AdditionalMatch additionalMatch : additionalMatchesForLeague) {
             final JsonAdditionalMatch jsonAdditionalMatch = new JsonAdditionalMatch();
+            jsonAdditionalMatch.setUuid(additionalMatch.getUuid());
             jsonAdditionalMatch.setDate(additionalMatch.getDate());
             jsonAdditionalMatch.setType(additionalMatch.getType());
             jsonAdditionalMatch.setSeasonNumber(additionalMatch.getSeasonNumber());
@@ -255,6 +256,7 @@ public class JsonExportUtil {
         final ArrayList<JsonMatch> jsonMatches = new ArrayList<>();
         for (final Match match : roundGroup.getMatchesOrdered()) {
             final JsonMatch jsonMatch = new JsonMatch();
+            jsonMatch.setUuid(match.getUuid());
             jsonMatch.setNumber(match.getNumber());
             jsonMatch.setFirstPlayerUuid(match.getFirstPlayer().getUuid());
             jsonMatch.setSecondPlayerUuid(match.getSecondPlayer().getUuid());
@@ -288,7 +290,7 @@ public class JsonExportUtil {
         for (final MatchScore matchScore : match.getMatchScoresOrdered()) {
             final JsonMatchScore jsonMatchScore = new JsonMatchScore();
             jsonMatchScore.setGameNumber(matchScore.getGameNumber());
-            jsonMatchScore.setZonedDateTime(matchScore.getZonedDateTime());
+            jsonMatchScore.setDateTime(matchScore.getDateTime());
             jsonMatchScore.setScoreEventType(matchScore.getScoreEventType());
             jsonMatchScore.setAppealDecision(matchScore.getAppealDecision());
             jsonMatchScore.setServeSide(matchScore.getServeSide());

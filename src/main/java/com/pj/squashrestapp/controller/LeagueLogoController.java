@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.LogResultIgnore;
 import com.pj.squashrestapp.service.LeagueLogoService;
 import com.pj.squashrestapp.service.RoundService;
 import com.pj.squashrestapp.service.SeasonService;
@@ -24,6 +25,7 @@ public class LeagueLogoController {
     private final RoundService roundService;
     private final SeasonService seasonService;
 
+    @LogResultIgnore
     @GetMapping(value = "/season/{seasonUuid}")
     String getLeagueLogoBySeasonUuid(@PathVariable final UUID seasonUuid) {
         final UUID leagueUuid = seasonService.extractLeagueUuid(seasonUuid);
@@ -31,6 +33,7 @@ public class LeagueLogoController {
         return Base64Utils.encodeToString(leagueLogoBytes);
     }
 
+    @LogResultIgnore
     @GetMapping(value = "/round/{roundUuid}")
     String getLeagueLogoByRoundUuid(@PathVariable final UUID roundUuid) {
         final UUID leagueUuid = roundService.extractLeagueUuid(roundUuid);
@@ -38,6 +41,7 @@ public class LeagueLogoController {
         return Base64Utils.encodeToString(leagueLogoBytes);
     }
 
+    @LogResultIgnore
     @GetMapping(value = "/{leagueUuid}")
     String getLeagueLogo(@PathVariable final UUID leagueUuid) {
         final byte[] leagueLogoBytes = leagueLogoService.extractLeagueLogo(leagueUuid);

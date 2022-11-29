@@ -11,6 +11,7 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -47,15 +48,13 @@ public class LeagueRolesService {
     private void unassignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
-        final String playerBefore = JacksonUtil.objectToJson(new PlayerDetailedDto(player));
+        final Object playerBefore = JacksonUtil.deepCopy(new PlayerDetailedDto(player));
 
         player.removeRole(roleForLeague);
         playerRepository.save(player);
         roleForLeagueRepository.save(roleForLeague);
 
-        log.info("Player left league [{}]", leagueUuid);
-        log.info("BEFORE: {}", playerBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDetailedDto(player)));
+        LogUtil.logModify(playerBefore, new PlayerDetailedDto(player));
     }
 
     public boolean assignRoleByPlayerUsername(
@@ -70,7 +69,7 @@ public class LeagueRolesService {
     }
 
     private void assignRole(UUID leagueUuid, LeagueRole leagueRole, Player player) {
-        final String playerBefore = JacksonUtil.objectToJson(new PlayerDetailedDto(player));
+        final Object playerBefore = JacksonUtil.deepCopy(new PlayerDetailedDto(player));
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
 
@@ -78,9 +77,7 @@ public class LeagueRolesService {
         playerRepository.save(player);
         roleForLeagueRepository.save(roleForLeague);
 
-        log.info("Player joined league [{}]", leagueUuid);
-        log.info("BEFORE: {}", playerBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDetailedDto(player)));
+        LogUtil.logModify(playerBefore, new PlayerDetailedDto(player));
     }
 
     public boolean unassignRoleByPlayerUsername(

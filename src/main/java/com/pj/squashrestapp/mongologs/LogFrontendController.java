@@ -24,8 +24,6 @@ public class LogFrontendController {
     @PostMapping
     void post(@RequestParam final String message) {
         final String username = GeneralUtil.extractSessionUsername();
-        log.info("FRONTEND-LOG  |  {}  |  {}", username, message);
-
         final LogEntry logEntry = new LogEntry();
         logEntry.setTimestamp(Date.from(Instant.now(Clock.systemUTC())));
         logEntry.setUsername(username);

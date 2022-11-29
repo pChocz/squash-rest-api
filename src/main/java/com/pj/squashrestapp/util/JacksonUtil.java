@@ -12,11 +12,11 @@ public class JacksonUtil {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper()
             .registerModule(new JavaTimeModule());
 
-    public static String objectToJson(final Object object) {
+    public static <T> Object deepCopy(final T object) {
         try {
-            return OBJECT_MAPPER.writeValueAsString(object);
+            return OBJECT_MAPPER.readValue(OBJECT_MAPPER.writeValueAsString(object), object.getClass());
         } catch (JsonProcessingException e) {
-            return "CANNOT_MAP_TO_JSON: JsonProcessingException";
+            return "DEEP_COPY_ERROR";
         }
     }
 }

@@ -91,13 +91,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                     .fetchForAuthorizationByUuid(playerUuid)
                     .orElseThrow(() -> new RuntimeException(ErrorCode.USER_NOT_FOUND));
 
-            log.debug(
-                    "\nToken Info:\n\t UUID:\t\t {}\n\t user:\t\t {}\n\t issued:\t {}\n\t expires:\t {}",
-                    player.getUuid(),
-                    player.getUsername(),
-                    claims.getIssuedAt(),
-                    claims.getExpiration());
-
             final UserDetailsImpl userDetailsImpl = new UserDetailsImpl(player, isAdminLogin);
 
             // checking if the account is activated

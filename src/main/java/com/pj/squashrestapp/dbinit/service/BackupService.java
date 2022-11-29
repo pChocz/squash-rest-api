@@ -111,7 +111,7 @@ public class BackupService {
         return jsonXpPointsForRoundAll;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<JsonLeague> allLeagues() {
         final List<UUID> allLeaguesUuids = leagueRepository.findUuids();
         log.info("Backing up {} leagues", allLeaguesUuids.size());
@@ -121,16 +121,15 @@ public class BackupService {
         return jsonLeagues;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public JsonLeague leagueToJson(final UUID leagueUuid) {
-        final String leagueName =
-                leagueRepository.findByUuid(leagueUuid).orElseThrow().getName();
-        log.info("\tBacking up league -> {}", leagueName);
+        final String leagueName = leagueRepository.findByUuid(leagueUuid).orElseThrow().getName();
+        log.info("Backing up league -> {}", leagueName);
         final League league = leagueRepository.findByUuidForBackup(leagueUuid).orElseThrow();
         final List<BonusPoint> bonusPoints = bonusPointRepository.findByLeagueUuid(league.getUuid());
         final List<LostBall> lostBalls = lostBallRepository.findByLeagueUuid(league.getUuid());
         final JsonLeague leagueJson = JsonExportUtil.buildLeagueJson(league, bonusPoints, lostBalls);
-        log.info("\tFinished backing up league -> {}", league.getName());
+        log.info("Finished backing up league -> {}", league.getName());
         return leagueJson;
     }
 

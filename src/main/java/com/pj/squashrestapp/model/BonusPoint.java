@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,7 +36,7 @@ public class BonusPoint {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "season_id")
+    @JoinColumn(name = "season_id", foreignKey = @ForeignKey(name = "fk_bonus_point_season"))
     private Season season;
 
     @Setter
@@ -44,12 +45,12 @@ public class BonusPoint {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "winner_id")
+    @JoinColumn(name = "winner_id", foreignKey = @ForeignKey(name = "fk_bonus_point_winner"))
     private Player winner;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "looser_id")
+    @JoinColumn(name = "looser_id", foreignKey = @ForeignKey(name = "fk_bonus_point_looser"))
     private Player looser;
 
     @Setter

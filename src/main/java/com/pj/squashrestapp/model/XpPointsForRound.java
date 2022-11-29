@@ -27,7 +27,7 @@ import java.util.TreeSet;
 @NoArgsConstructor
 public class XpPointsForRound implements Identifiable, Comparable<XpPointsForRound> {
 
-    public static EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL =
+    public static final EntityVisitor<XpPointsForRound, Round> ENTITY_VISITOR_FINAL =
             new EntityVisitor<>(XpPointsForRound.class) {};
 
     @Id

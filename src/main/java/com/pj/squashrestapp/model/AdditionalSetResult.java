@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -41,7 +42,7 @@ public class AdditionalSetResult implements Comparable<AdditionalSetResult> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "match_id")
+    @JoinColumn(name = "match_id", foreignKey = @ForeignKey(name = "fk_set_result_additional_match"))
     private AdditionalMatch match;
 
     public AdditionalSetResult(final int number, final Integer firstPlayerScore, final Integer secondPlayerScore) {

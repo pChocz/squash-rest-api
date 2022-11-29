@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -29,17 +30,18 @@ import java.util.stream.Collectors;
 @Table(
         name = "round_groups",
         uniqueConstraints = {
-            @UniqueConstraint(
-                    name = "ROUND_AND_GROUP_NUMBER_CONSTRAINT",
-                    columnNames = {"round_id", "number"})
+                @UniqueConstraint(
+                        name = "uk_round_and_group_number",
+                        columnNames = {"round_id", "number"}
+                )
         })
 @Getter
 @NoArgsConstructor
 public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
-    public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(RoundGroup.class) {};
+    public static final EntityVisitor<RoundGroup, Round> ENTITY_VISITOR_FINAL = new EntityVisitor<>(RoundGroup.class) {};
 
-    public static EntityVisitor<RoundGroup, Round> ENTITY_VISITOR = new EntityVisitor<>(RoundGroup.class) {
+    public static final EntityVisitor<RoundGroup, Round> ENTITY_VISITOR = new EntityVisitor<>(RoundGroup.class) {
         @Override
         public Round getParent(final RoundGroup visitingObject) {
             return visitingObject.getRound();
@@ -52,7 +54,7 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
 
         @Override
         public void setChildren(final Round parent) {
-            parent.setRoundGroups(new TreeSet<RoundGroup>());
+            parent.setRoundGroups(new TreeSet<>());
         }
     };
 
@@ -71,7 +73,7 @@ public class RoundGroup implements Identifiable, Comparable<RoundGroup> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "round_id")
+    @JoinColumn(name = "round_id", foreignKey = @ForeignKey(name = "fk_round_group_round"))
     private Round round;
 
     public RoundGroup(final int number) {

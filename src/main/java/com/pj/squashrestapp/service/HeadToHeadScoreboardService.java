@@ -69,7 +69,6 @@ public class HeadToHeadScoreboardService {
         ReadySetResultsHistogram readySetResultsHistogram = gameDistributionService.buildDistribution(results, playersMap);
 
         final HeadToHeadScoreboard scoreboard = new HeadToHeadScoreboard(allFinishedMatches, readySetResultsHistogram);
-        log.info("H2H scoreboard: {}", JacksonUtil.objectToJson(scoreboard));
         return scoreboard;
     }
 }

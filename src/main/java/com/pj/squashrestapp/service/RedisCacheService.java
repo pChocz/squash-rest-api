@@ -46,7 +46,7 @@ public class RedisCacheService {
             Cache cache = cacheManager.getCache(cacheName);
             if (cache != null) {
                 cache.invalidate();
-                log.info("Invalidated cache | {}", cacheName);
+                log.info("Evicted cache | {}", cacheName);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.LogResultIgnore;
 import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
@@ -79,6 +80,7 @@ public class PlayerController {
         return allPlayers;
     }
 
+    @LogResultIgnore
     @GetMapping(value = "/me")
     PlayerDetailedDto getAboutMe() {
         final PlayerDetailedDto aboutMeInfo = playerService.getAboutMeInfo();

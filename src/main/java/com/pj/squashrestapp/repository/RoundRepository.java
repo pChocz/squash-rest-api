@@ -22,7 +22,13 @@ public interface RoundRepository
     Round findByUuidWithSeasonAndLeague(@Param("uuid") UUID uuid);
 
     @Query("SELECT r FROM Round r WHERE r.uuid = :uuid")
-    @EntityGraph(attributePaths = {"season.league", "roundGroups"})
+    @EntityGraph(attributePaths = {
+            "season.league",
+            "roundGroups.matches.firstPlayer",
+            "roundGroups.matches.secondPlayer",
+            "roundGroups.matches.setResults",
+            "roundGroups.matches.scores"
+    })
     Round findByUuidWithSeasonLeague(@Param("uuid") UUID uuid);
 
     Optional<Round> findBySeasonLeagueUuidAndSeasonNumberAndNumber(UUID leagueUuid, int seasonNumber, int number);

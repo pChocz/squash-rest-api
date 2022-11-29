@@ -5,8 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import com.pj.squashrestapp.model.enums.AppealDecision;
+import com.pj.squashrestapp.model.enums.ScoreEventType;
 import com.pj.squashrestapp.model.enums.ServePlayer;
 import com.pj.squashrestapp.model.enums.ServeSide;
 import com.pj.squashrestapp.util.GeneralUtil;
@@ -19,22 +24,23 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import static com.pj.squashrestapp.model.enums.AppealDecision.NO_LET;
 import static com.pj.squashrestapp.model.enums.AppealDecision.STROKE;
 import static com.pj.squashrestapp.model.enums.AppealDecision.YES_LET;
-import static com.pj.squashrestapp.model.ScoreEventType.FIRST_PLAYER_CALLS_LET;
-import static com.pj.squashrestapp.model.ScoreEventType.FIRST_PLAYER_SCORES;
-import static com.pj.squashrestapp.model.ScoreEventType.SECOND_PLAYER_CALLS_LET;
-import static com.pj.squashrestapp.model.ScoreEventType.SECOND_PLAYER_SCORES;
+import static com.pj.squashrestapp.model.enums.ScoreEventType.FIRST_PLAYER_CALLS_LET;
+import static com.pj.squashrestapp.model.enums.ScoreEventType.FIRST_PLAYER_SCORES;
+import static com.pj.squashrestapp.model.enums.ScoreEventType.SECOND_PLAYER_CALLS_LET;
+import static com.pj.squashrestapp.model.enums.ScoreEventType.SECOND_PLAYER_SCORES;
 import static com.pj.squashrestapp.model.enums.ServePlayer.FIRST_PLAYER;
 import static com.pj.squashrestapp.model.enums.ServePlayer.SECOND_PLAYER;
 import static com.pj.squashrestapp.model.enums.ServeSide.LEFT_SIDE;
@@ -56,7 +62,7 @@ public class MatchScore implements Identifiable, Comparable<MatchScore> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "match_id")
+    @JoinColumn(name = "match_id", foreignKey = @ForeignKey(name = "fk_match_score_match"))
     private Match match;
 
     @Setter
@@ -64,9 +70,11 @@ public class MatchScore implements Identifiable, Comparable<MatchScore> {
     private Integer gameNumber;
 
     @Setter
-    @Column(name = "zoned_date_time")
-    @JsonFormat(pattern = GeneralUtil.DATE_TIME_ISO_FORMAT)
-    private ZonedDateTime zonedDateTime;
+    @Column(name = "date_time")
+    @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime dateTime;
 
     @Setter
     @Column(name = "score_event_type")
@@ -169,7 +177,7 @@ public class MatchScore implements Identifiable, Comparable<MatchScore> {
     @Override
     public int compareTo(final MatchScore that) {
         return Comparator
-                .comparing(MatchScore::getZonedDateTime)
+                .comparing(MatchScore::getDateTime)
                 .compare(this, that);
     }
 }

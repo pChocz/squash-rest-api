@@ -8,19 +8,20 @@ import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.dto.matchresulthelper.SetStatus;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.MatchScore;
-import com.pj.squashrestapp.model.ScoreEventType;
+import com.pj.squashrestapp.model.enums.ScoreEventType;
 import com.pj.squashrestapp.model.enums.ServePlayer;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.repository.MatchRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
-import java.time.ZonedDateTime;
+import java.time.LocalDateTime;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -39,7 +40,7 @@ public class MatchScoreService {
     @Transactional
     public MatchDetailedDto appendNewScore(final UUID matchUuid, final MatchScore matchScore) {
         validateCompleteness(matchScore);
-        matchScore.setZonedDateTime(ZonedDateTime.now(GeneralUtil.UTC_ZONE_ID));
+        matchScore.setDateTime(LocalDateTime.now(GeneralUtil.UTC_ZONE_ID));
 
         final Match match = matchRepository
                 .findMatchByUuidWithScoreSheet(matchUuid)
@@ -65,7 +66,7 @@ public class MatchScoreService {
                 matchScore.setCanStartGame(true);
                 matchScore.setCanEndGame(false);
                 matchScore.setCanEndMatch(false);
-                return applyMatchScore(matchScore, match, gameStatuses);
+                return applyMatchScore(matchScore, match);
             } else {
                 throw new GeneralBadRequestException(ErrorCode.INVALID_MATCH_SCORE);
             }
@@ -88,7 +89,7 @@ public class MatchScoreService {
                 matchScore.setCanStartGame(false);
                 matchScore.setCanEndGame(false);
                 matchScore.setCanEndMatch(false);
-                return applyMatchScore(matchScore, match, gameStatuses);
+                return applyMatchScore(matchScore, match);
             } else {
                 throw new GeneralBadRequestException(ErrorCode.INVALID_MATCH_SCORE);
             }
@@ -97,7 +98,7 @@ public class MatchScoreService {
             if (lastScore.isPresent() && lastScore.get().isCanScore()) {
                 matchScore.setCanStartGame(false);
                 matchScore.setCanEndMatch(false);
-                return applyMatchScore(matchScore, match, gameStatuses);
+                return applyMatchScore(matchScore, match);
             } else {
                 throw new GeneralBadRequestException(ErrorCode.INVALID_MATCH_SCORE);
             }
@@ -108,7 +109,7 @@ public class MatchScoreService {
                 matchScore.setCanStartGame(!matchSimpleDto.checkFinished());
                 matchScore.setCanEndGame(false);
                 matchScore.setCanEndMatch(matchSimpleDto.checkFinished());
-                return applyMatchScore(matchScore, match, gameStatuses);
+                return applyMatchScore(matchScore, match);
             } else {
                 throw new GeneralBadRequestException(ErrorCode.INVALID_MATCH_SCORE);
             }
@@ -119,7 +120,7 @@ public class MatchScoreService {
                 matchScore.setCanStartGame(false);
                 matchScore.setCanEndGame(false);
                 matchScore.setCanEndMatch(false);
-                return applyMatchScore(matchScore, match, gameStatuses);
+                return applyMatchScore(matchScore, match);
             } else {
                 throw new GeneralBadRequestException(ErrorCode.INVALID_MATCH_SCORE);
             }
@@ -165,10 +166,8 @@ public class MatchScoreService {
         }
     }
 
-    private MatchDetailedDto applyMatchScore(final MatchScore matchScore,
-                                             final Match match,
-                                             final List<SetStatus> fdsfsfdsfs) {
-        log.info("BEFORE: {}" + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
+    private MatchDetailedDto applyMatchScore(final MatchScore matchScore, final Match match) {
+        final Object matchBefore = JacksonUtil.deepCopy(new MatchDetailedDto(match));
 
         final SetResult setResult;
         if (matchScore.getScoreEventType() == ScoreEventType.MATCH_BEGINS
@@ -235,12 +234,12 @@ public class MatchScoreService {
 
         redisCacheService.evictCacheForRoundMatch(match);
 
-        return persistMatch(match);
+        return persistMatch(match, matchBefore);
     }
 
-    private MatchDetailedDto persistMatch(final Match match) {
+    private MatchDetailedDto persistMatch(final Match match, final Object matchBefore) {
         final Match savedMatch = matchRepository.save(match);
-        log.info("AFTER:  " + JacksonUtil.objectToJson(new MatchDetailedDto(savedMatch)));
+        LogUtil.logModify(matchBefore, new MatchDetailedDto(savedMatch));
         return new MatchDetailedDto(savedMatch);
     }
 
@@ -278,14 +277,14 @@ public class MatchScoreService {
             throw new GeneralBadRequestException(ErrorCode.NO_EXISTING_MATCH_SCORE);
         }
 
-        log.info("BEFORE: " + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
+        final Object matchBefore = JacksonUtil.deepCopy(new MatchDetailedDto(match));
 
         match.getScores().remove(scoreToRemove.get());
         match.getLastScore().ifPresent(matchScore -> modifyMatchResultIfNeeded(matchScore, match, scoreToRemove.get()));
 
         redisCacheService.evictCacheForRoundMatch(match);
 
-        return persistMatch(match);
+        return persistMatch(match, matchBefore);
     }
 
     @Transactional
@@ -298,7 +297,7 @@ public class MatchScoreService {
             throw new GeneralBadRequestException(ErrorCode.NO_EXISTING_MATCH_SCORE);
         }
 
-        log.info("BEFORE: " + JacksonUtil.objectToJson(new MatchDetailedDto(match)));
+        final Object matchBefore = JacksonUtil.deepCopy(new MatchDetailedDto(match));
 
         Iterator<MatchScore> matchScoreIterator = match.getScores().iterator();
         while (matchScoreIterator.hasNext()) {
@@ -313,7 +312,7 @@ public class MatchScoreService {
 
         redisCacheService.evictCacheForRoundMatch(match);
 
-        return persistMatch(match);
+        return persistMatch(match, matchBefore);
     }
 
     public MatchDetailedDto getMatchWithScores(final UUID matchUuid) {

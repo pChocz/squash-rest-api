@@ -23,7 +23,13 @@ public interface LeagueLogoRepository extends JpaRepository<LeagueLogo, Long> {
             })
     List<LeagueLogo> findAll();
 
-    Optional<LeagueLogo> findByLeague(League league);
+    @Query(
+            """
+          SELECT ll FROM League l
+            JOIN l.leagueLogo ll
+              WHERE l = :league
+          """)
+    Optional<LeagueLogo> findByLeague(@Param("league") League league);
 
     @Query(
             """

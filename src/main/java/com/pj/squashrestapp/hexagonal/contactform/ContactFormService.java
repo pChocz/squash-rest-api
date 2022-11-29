@@ -19,13 +19,6 @@ class ContactFormService {
     private final EmailSendConfig emailSendConfig;
 
     void sendContactFormEmail(final String name, final String email, final String subject, final String message) {
-
-        log.info("Contact form has been used");
-        log.info("Name:    {}", name);
-        log.info("Email:   {}", email);
-        log.info("Subject: {}", subject);
-        log.info("Message: \n{}", message);
-
         final String adminEmail = emailSendConfig.getAdminEmailAddress();
 
         final String[] content =

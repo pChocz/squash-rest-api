@@ -55,8 +55,8 @@ import com.pj.squashrestapp.util.GsonUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -271,8 +271,7 @@ public class AdminInitializerService {
         }
 
         for (final JsonAdditionalMatch jsonAdditionalMatch : jsonLeague.getAdditionalMatches()) {
-            final AdditionalMatch additionalMatch =
-                    JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players, league);
+            final AdditionalMatch additionalMatch = JsonImportUtil.constructAdditionalMatch(jsonAdditionalMatch, players);
 
             for (final JsonSetResult jsonSetResult : jsonAdditionalMatch.getSets()) {
                 final AdditionalSetResult setResult = JsonImportUtil.constructAdditionalSetResult(jsonSetResult);

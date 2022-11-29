@@ -3,6 +3,7 @@ package com.pj.squashrestapp.service;
 import com.google.common.collect.ArrayListMultimap;
 import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.dto.BonusPointsAggregatedForSeason;
+import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.LostBallsAggregatedForSeason;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.SeasonDto;
@@ -27,6 +28,7 @@ import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -93,10 +95,6 @@ public class SeasonService {
             seasonScoreboardDto.getSeasonStars().values().removeIf(star -> star.getType() == Type.UBER);
 
             final RoundScoreboard roundScoreboard = new RoundScoreboard(round);
-            for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
-                roundScoreboard.addRoundGroupNew(roundGroup);
-            }
-
             final List<Integer> playersPerGroup = roundScoreboard.getPlayersPerGroup();
             final String split = GeneralUtil.integerListToString(playersPerGroup);
             final List<Integer> xpPoints = xpPointsPerSplit.get(split + "|" + season.getXpPointsType());
@@ -231,7 +229,7 @@ public class SeasonService {
         }
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public SeasonDto extractSeasonDtoByUuid(final UUID seasonUuid) {
         final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
         final SeasonDto seasonDto = new SeasonDto(season);
@@ -271,7 +269,7 @@ public class SeasonService {
 
         try {
             seasonRepository.save(season);
-            log.info("Created: {}", JacksonUtil.objectToJson(new SeasonDto(season)));
+            LogUtil.logCreate(new SeasonDto(season));
             return season;
 
         } catch (final DataIntegrityViolationException ex) {
@@ -282,7 +280,7 @@ public class SeasonService {
     public void updateSeason(
             final UUID seasonUuid, final Optional<String> description, final Optional<String> xpPointsType) {
         final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
-        final String seasonBefore = JacksonUtil.objectToJson(new SeasonDto(season));
+        final Object seasonBefore = JacksonUtil.deepCopy(new SeasonDto(season));
         description.ifPresent(season::setDescription);
         if (xpPointsType.isPresent()) {
             List<String> seasonSplits = seasonRepository.extractRoundSplitsForSeason(seasonUuid).stream()
@@ -299,9 +297,7 @@ public class SeasonService {
             }
         }
         seasonRepository.save(season);
-        log.info("Season updated [{}]", seasonUuid);
-        log.info("BEFORE: {}", seasonBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new SeasonDto(season)));
+        LogUtil.logModify(seasonBefore, new SeasonDto(season));
     }
 
     public void deleteSeason(final UUID seasonUuid) {

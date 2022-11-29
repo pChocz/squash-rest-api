@@ -11,6 +11,7 @@ import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.GsonUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -69,8 +70,7 @@ public class BonusPointService {
 
         season.addBonusPoint(bonusPoint);
         bonusPointRepository.save(bonusPoint);
-        log.info("Created: {}", JacksonUtil.objectToJson(new BonusPointsDto(bonusPoint)));
-
+        LogUtil.logCreate(new BonusPointsDto(bonusPoint));
         redisCacheService.evictCacheForBonusPoint(bonusPoint);
         return bonusPoint;
     }
@@ -79,7 +79,7 @@ public class BonusPointService {
     public void deleteBonusPoint(final UUID uuid) {
         final BonusPoint bonusPoint = bonusPointRepository.findByUuid(uuid).orElseThrow();
         bonusPointRepository.delete(bonusPoint);
-        log.info("Deleted: {}", JacksonUtil.objectToJson(new BonusPointsDto(bonusPoint)));
+        LogUtil.logCreate(new BonusPointsDto(bonusPoint));
         redisCacheService.evictCacheForBonusPoint(bonusPoint);
     }
 }

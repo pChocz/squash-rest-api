@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,7 +33,10 @@ public class RoleForLeague {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             joinColumns = @JoinColumn(name = "roles_for_leagues_id"),
-            inverseJoinColumns = @JoinColumn(name = "player_id"))
+            inverseJoinColumns = @JoinColumn(name = "player_id"),
+            foreignKey = @ForeignKey(name = "fk_role_for_league_player"),
+            inverseForeignKey = @ForeignKey(name = "fk_player_role_for_league")
+    )
     private final Set<Player> players = new HashSet<>();
 
     @Id
@@ -42,7 +46,7 @@ public class RoleForLeague {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", foreignKey = @ForeignKey(name = "fk_role_for_league_league"))
     private League league;
 
     @Setter

@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -38,9 +39,9 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class Match implements Identifiable, Comparable<Match> {
 
-    public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Match.class) {};
+    public static final EntityVisitor<Match, RoundGroup> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Match.class) {};
 
-    public static EntityVisitor<Match, RoundGroup> ENTITY_VISITOR = new EntityVisitor<>(Match.class) {
+    public static final EntityVisitor<Match, RoundGroup> ENTITY_VISITOR = new EntityVisitor<>(Match.class) {
         @Override
         public RoundGroup getParent(final Match visitingObject) {
             return visitingObject.getRoundGroup();
@@ -53,7 +54,7 @@ public class Match implements Identifiable, Comparable<Match> {
 
         @Override
         public void setChildren(final RoundGroup parent) {
-            parent.setMatches(new TreeSet<Match>());
+            parent.setMatches(new TreeSet<>());
         }
     };
 
@@ -71,12 +72,12 @@ public class Match implements Identifiable, Comparable<Match> {
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "first_player_id")
+    @JoinColumn(name = "first_player_id", foreignKey = @ForeignKey(name = "fk_match_first_player"))
     private Player firstPlayer;
 
     @Setter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "second_player_id")
+    @JoinColumn(name = "second_player_id", foreignKey = @ForeignKey(name = "fk_match_second_player"))
     private Player secondPlayer;
 
     @Setter
@@ -114,7 +115,7 @@ public class Match implements Identifiable, Comparable<Match> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "round_group_id")
+    @JoinColumn(name = "round_group_id", foreignKey = @ForeignKey(name = "fk_match_round_group"))
     private RoundGroup roundGroup;
 
     public Match(final Player firstPlayer, final Player secondPlayer, final Season season) {
@@ -164,7 +165,7 @@ public class Match implements Identifiable, Comparable<Match> {
 
     public List<MatchScore> getMatchScoresOrdered() {
         return scores.stream()
-                .sorted(Comparator.comparing(MatchScore::getZonedDateTime))
+                .sorted(Comparator.comparing(MatchScore::getDateTime))
                 .collect(Collectors.toList());
     }
 

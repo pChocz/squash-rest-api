@@ -16,13 +16,24 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "players")
+@Table(
+        name = "players",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_email",
+                        columnNames = {"email"}),
+                @UniqueConstraint(
+                        name = "uk_username",
+                        columnNames = {"username"}
+                )
+        })
 @Getter
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -46,7 +57,7 @@ public class Player {
     private UUID uuid = UUID.randomUUID();
 
     @Setter
-    @Column(name = "username", unique = true)
+    @Column(name = "username")
     private String username;
 
     @Setter
@@ -89,7 +100,7 @@ public class Player {
     private String locale;
 
     @Setter
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     private String email;
 
     @Setter

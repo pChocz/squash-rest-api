@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -28,7 +29,12 @@ public class Authority {
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(joinColumns = @JoinColumn(name = "authorities_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "authorities_id"),
+            inverseJoinColumns = @JoinColumn(name = "player_id"),
+            foreignKey = @ForeignKey(name = "fk_authority_player"),
+            inverseForeignKey = @ForeignKey(name = "fk_player_authority")
+    )
     private final Set<Player> players = new HashSet<>();
 
     @Id

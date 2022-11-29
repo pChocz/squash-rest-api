@@ -16,6 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class JsonAdditionalMatch {
 
+    private UUID uuid;
+
     private UUID firstPlayerUuid;
 
     private UUID secondPlayerUuid;

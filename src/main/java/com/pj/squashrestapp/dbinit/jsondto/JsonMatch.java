@@ -14,6 +14,8 @@ public class JsonMatch {
 
     private int number;
 
+    private UUID uuid;
+
     private UUID firstPlayerUuid;
 
     private UUID secondPlayerUuid;

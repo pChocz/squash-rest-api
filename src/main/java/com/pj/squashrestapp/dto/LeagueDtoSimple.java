@@ -1,12 +1,19 @@
 package com.pj.squashrestapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.enums.SetWinningType;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,24 +27,27 @@ import java.util.UUID;
 @Slf4j
 @Getter
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 public class LeagueDtoSimple {
 
     @EqualsAndHashCode.Include
-    private final UUID leagueUuid;
+    private UUID leagueUuid;
 
-    private final String leagueName;
-    private final MatchFormatType matchFormatType;
-    private final String name;
-    private final String location;
-    private final String time;
-    private final SetWinningType regularSetWinningType;
-    private final SetWinningType tiebreakWinningType;
-    private final int regularSetWinningPoints;
-    private final int tiebreakWinningPoints;
-    private final int numberOfRoundsPerSeason;
-    private final int roundsToBeDeducted;
+    private String leagueName;
+    private MatchFormatType matchFormatType;
+    private String name;
+    private String location;
+    private String time;
+    private SetWinningType regularSetWinningType;
+    private SetWinningType tiebreakWinningType;
+    private int regularSetWinningPoints;
+    private int tiebreakWinningPoints;
+    private int numberOfRoundsPerSeason;
+    private int roundsToBeDeducted;
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonFormat(pattern = GeneralUtil.DATE_TIME_FORMAT)
-    private final LocalDateTime dateOfCreation;
+    private LocalDateTime dateOfCreation;
 
     public LeagueDtoSimple(final League league) {
         this.leagueUuid = league.getUuid();

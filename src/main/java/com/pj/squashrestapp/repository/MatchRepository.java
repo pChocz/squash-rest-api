@@ -37,7 +37,7 @@ public interface MatchRepository
           SELECT ms FROM MatchScore ms
             JOIN ms.match m
               WHERE m.uuid = :matchUuid
-            ORDER BY ms.zonedDateTime
+            ORDER BY ms.dateTime
           """)
     List<MatchScore> retrieveMatchScoreForMatch(@Param("matchUuid") UUID matchUuid);
 

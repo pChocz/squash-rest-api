@@ -14,15 +14,14 @@ import com.pj.squashrestapp.model.TrophyForLeague;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.TrophiesForLeagueRepository;
-import com.pj.squashrestapp.util.GsonUtil;
-import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -43,7 +42,7 @@ public class LeagueTrophiesService {
     private final LeagueRepository leagueRepository;
     private final LeagueService leagueService;
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<SeasonTrophies> extractTrophiesForPlayerForLeague(final PlayerDto playerDto, final UUID leagueUuid) {
         final List<TrophyForLeague> trophiesForPlayer =
                 trophiesForLeagueRepository.findAllByPlayerUuidAndLeagueUuid(playerDto.getUuid(), leagueUuid);
@@ -77,7 +76,7 @@ public class LeagueTrophiesService {
         return leagueTrophiesPerSeason;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<TrophiesWonForLeague> extractTrophiesForPlayer(final UUID playerUuid) {
         final Player player = playerRepository.findByUuid(playerUuid);
         final PlayerDto playerDto = new PlayerDto(player);
@@ -132,7 +131,7 @@ public class LeagueTrophiesService {
 
         league.addTrophyForLeague(newTrophyForLeague);
         trophiesForLeagueRepository.save(newTrophyForLeague);
-        log.info("Created: {}", JacksonUtil.objectToJson(new TrophyDto(newTrophyForLeague)));
+        LogUtil.logCreate(new TrophyDto(newTrophyForLeague));
 
         return newTrophyForLeague;
     }
@@ -146,7 +145,7 @@ public class LeagueTrophiesService {
                         league, seasonNumber, trophy, player);
         if (trophyForLeague.isPresent()) {
             trophiesForLeagueRepository.delete(trophyForLeague.get());
-            log.info("Deleted: {}", JacksonUtil.objectToJson(new TrophyDto(trophyForLeague.get())));
+            LogUtil.logCreate(new TrophyDto(trophyForLeague.get()));
         } else {
             throw new NoSuchElementException("Trophy not found!");
         }

@@ -11,6 +11,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -42,10 +43,10 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
 
                 @Override
                 public void setChildren(final XpPointsForRound parent) {
-                    parent.setXpPointsForRoundGroups(new TreeSet<XpPointsForRoundGroup>());
+                    parent.setXpPointsForRoundGroups(new TreeSet<>());
                 }
             };
-    public static EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR_FINAL =
+    public static final EntityVisitor<XpPointsForRoundGroup, XpPointsForRound> ENTITY_VISITOR_FINAL =
             new EntityVisitor<>(XpPointsForRoundGroup.class) {};
 
     @Id
@@ -67,7 +68,7 @@ public class XpPointsForRoundGroup implements Identifiable, Comparable<XpPointsF
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "xp_points_for_round_id", referencedColumnName = "id")
+    @JoinColumn(name = "xp_points_for_round_id", foreignKey = @ForeignKey(name = "fk_xp_points_round_group_round"))
     private XpPointsForRound xpPointsForRound;
 
     public XpPointsForRoundGroup(

@@ -16,6 +16,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,17 +38,18 @@ import java.util.stream.Collectors;
 @Table(
         name = "seasons",
         uniqueConstraints = {
-            @UniqueConstraint(
-                    name = "LEAGUE_AND_SEASON_NUMBER_CONSTRAINT",
-                    columnNames = {"league_id", "number"})
+                @UniqueConstraint(
+                        name = "uk_league_and_season_number",
+                        columnNames = {"league_id", "number"}
+                )
         })
 @Getter
 @NoArgsConstructor
 public class Season implements Identifiable, Comparable<Season> {
 
-    public static EntityVisitor<Season, League> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Season.class) {};
+    public static final EntityVisitor<Season, League> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Season.class) {};
 
-    public static EntityVisitor<Season, League> ENTITY_VISITOR = new EntityVisitor<>(Season.class) {
+    public static final EntityVisitor<Season, League> ENTITY_VISITOR = new EntityVisitor<>(Season.class) {
         @Override
         public League getParent(final Season visitingObject) {
             return visitingObject.getLeague();
@@ -60,7 +62,7 @@ public class Season implements Identifiable, Comparable<Season> {
 
         @Override
         public void setChildren(final League parent) {
-            parent.setSeasons(new TreeSet<Season>());
+            parent.setSeasons(new TreeSet<>());
         }
     };
 
@@ -131,7 +133,7 @@ public class Season implements Identifiable, Comparable<Season> {
     @JsonIgnore
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "league_id")
+    @JoinColumn(name = "league_id", foreignKey = @ForeignKey(name = "fk_season_league"))
     private League league;
 
     public Season(final int number, final LocalDate startDate, final String xpPointsType, final League league) {

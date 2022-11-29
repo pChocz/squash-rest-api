@@ -25,19 +25,19 @@ public class UpdateWebsocketService {
     private final MatchScoreService matchScoreService;
 
     public void calculateAndBroadcastSeasonUpdate(final UUID seasonUuid) {
-        log.info("Websocket - broadcasting season update -> " + seasonUuid);
+        log.info("Websocket - broadcasting season update -> {}", seasonUuid);
         final SeasonScoreboardDto seasonScoreboard = seasonService.overalScoreboard(seasonUuid);
         messagingTemplate.convertAndSend("/season-scoreboard/" + seasonUuid, seasonScoreboard);
     }
 
     public void calculateAndBroadcastRoundUpdate(final UUID roundUuid) {
-        log.info("Websocket - broadcasting round update -> " + roundUuid);
+        log.info("Websocket - broadcasting round update -> {}", roundUuid);
         final RoundScoreboard roundScoreboard = scoreboardService.buildScoreboardForRound(roundUuid);
         messagingTemplate.convertAndSend("/round-scoreboard/" + roundUuid, roundScoreboard);
     }
 
     public void calculateAndBroadcastMatchScoreUpdate(final UUID matchUuid) {
-        log.info("Websocket - broadcasting match update -> " + matchUuid);
+        log.info("Websocket - broadcasting match update -> {}", matchUuid);
         final MatchDetailedDto match = matchScoreService.getMatchWithScores(matchUuid);
         messagingTemplate.convertAndSend("/match-score/" + matchUuid, match);
     }

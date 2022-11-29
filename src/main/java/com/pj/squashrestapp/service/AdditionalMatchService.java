@@ -16,8 +16,8 @@ import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.util.ErrorCode;
-import com.pj.squashrestapp.util.GsonUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -127,7 +127,7 @@ public class AdditionalMatchService {
 
         league.get().addAdditionalMatch(match);
         redisCacheService.evictCacheForAdditionalMatch(match);
-        log.info("Created: {}", JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(match)));
+        LogUtil.logCreate(new AdditionalMatchSimpleDto(match));
     }
 
     public void deleteMatchByUuid(final UUID matchUuid) {
@@ -138,7 +138,7 @@ public class AdditionalMatchService {
         final AdditionalMatch match = matchOptional.get();
         redisCacheService.evictCacheForAdditionalMatch(match);
         additionalMatchRepository.delete(match);
-        log.info("Deleted: {}", JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(match)));
+        LogUtil.logCreate(new AdditionalMatchSimpleDto(match));
     }
 
     public void modifySingleScore(
@@ -146,7 +146,7 @@ public class AdditionalMatchService {
         final AdditionalMatch matchToModify =
                 additionalMatchRepository.findByUuid(matchUuid).orElseThrow();
 
-        final String initialMatchResult = JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(matchToModify));
+        final Object initialMatchResult = JacksonUtil.deepCopy(new AdditionalMatchSimpleDto(matchToModify));
 
         final AdditionalSetResult setToModify = matchToModify.getSetResults().stream()
                 .filter(set -> set.getNumber() == setNumber)
@@ -187,9 +187,7 @@ public class AdditionalMatchService {
         redisCacheService.evictCacheForAdditionalMatch(matchToModify);
 
         additionalSetResultRepository.save(setToModify);
-        log.info("Result updated for match [{}]", matchUuid);
-        log.info("BEFORE: {}", initialMatchResult);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(matchToModify)));
+        LogUtil.logModify(initialMatchResult, new AdditionalMatchSimpleDto(matchToModify));
     }
 
     public AdditionalMatchDetailedDto getSingleMatch(final UUID matchUuid) {
@@ -205,12 +203,10 @@ public class AdditionalMatchService {
         final AdditionalMatch match = additionalMatchRepository
                 .findByUuid(matchUuid)
                 .orElseThrow(() -> new RuntimeException(ErrorCode.MATCH_NOT_FOUND));
-        final String matchBefore = JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(match));
+        final Object matchBefore = JacksonUtil.deepCopy(new AdditionalMatchSimpleDto(match));
         match.setFootageLink(footageLink);
         redisCacheService.evictCacheForAdditionalMatch(match);
         additionalMatchRepository.save(match);
-        log.info("Footage updated for match: [{}]", matchUuid);
-        log.info("BEFORE: {}", matchBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new AdditionalMatchSimpleDto(match)));
+        LogUtil.logModify(matchBefore, new AdditionalMatchSimpleDto(match));
     }
 }

@@ -34,6 +34,7 @@ import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.EmojiUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import com.pj.squashrestapp.util.PasswordStrengthValidator;
 import com.pj.squashrestapp.util.UsernameValidator;
 import lombok.RequiredArgsConstructor;
@@ -163,8 +164,8 @@ public class PlayerService {
         player.setSuccessfulLoginAttempts(0L);
         player.setWantsEmails(false);
         playerRepository.save(player);
-        log.info("Created: {}", JacksonUtil.objectToJson(new PlayerDto(player)));
         authorityRepository.save(userAuthority);
+        LogUtil.logCreate(new PlayerDto(player));
 
         final Map<String, Object> model = new HashMap<>();
         model.put("preheader", "New account");
@@ -444,12 +445,10 @@ public class PlayerService {
 
     private void changeEmojiForPlayer(final String newEmoji, final Player player) {
         if (EmojiUtil.EMOJIS.contains(newEmoji)) {
-            final String playerBefore = JacksonUtil.objectToJson(new PlayerDto(player));
+            final Object playerBefore = JacksonUtil.deepCopy(new PlayerDto(player));
             player.setEmoji(newEmoji);
             playerRepository.save(player);
-            log.info("Emoji changed for player [{}]", player.getUuid());
-            log.info("BEFORE: {}", playerBefore);
-            log.info("AFTER: {}", JacksonUtil.objectToJson(new PlayerDto(player)));
+            LogUtil.logModify(playerBefore, new PlayerDto(player));
         }
     }
 

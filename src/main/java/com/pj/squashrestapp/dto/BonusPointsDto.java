@@ -1,6 +1,10 @@
 package com.pj.squashrestapp.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.model.BonusPoint;
 import com.pj.squashrestapp.util.GeneralUtil;
 import lombok.Getter;
@@ -17,6 +21,8 @@ public final class BonusPointsDto {
     final UUID uuid;
 
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     final LocalDate date;
 
     final int points;

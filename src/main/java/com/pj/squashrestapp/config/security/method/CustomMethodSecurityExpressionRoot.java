@@ -7,7 +7,7 @@ import com.pj.squashrestapp.model.AdditionalMatch;
 import com.pj.squashrestapp.model.Match;
 import com.pj.squashrestapp.model.enums.LeagueRole;
 import com.pj.squashrestapp.model.MatchScore;
-import com.pj.squashrestapp.model.ScoreEventType;
+import com.pj.squashrestapp.model.enums.ScoreEventType;
 import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.BonusPointRepository;
 import com.pj.squashrestapp.repository.LeagueRulesRepository;

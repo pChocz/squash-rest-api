@@ -39,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
+import static net.logstash.logback.argument.StructuredArguments.v;
+
 /** */
 @Slf4j
 @Service
@@ -188,7 +190,12 @@ public class FakeLeagueService {
         }
         trophiesForLeagueRepository.saveAll(league.getTrophiesForLeague());
 
-        log.info(extractLeagueDetails(league));
+        log.info("Fake league has been created",
+                v("league", league.getName()),
+                v("seasons", extractNumberOfSeasons(league)),
+                v("rounds", extractNumberOfRounds(league)),
+                v("matches", extractNumberOfMatches(league))
+        );
     }
 
     private int extractNumberOfEntities(final League league, final List<Player> players) {
@@ -198,20 +205,6 @@ public class FakeLeagueService {
                 + extractNumberOfMatches(league)
                 + extractNumberOfSets(league)
                 + players.size();
-    }
-
-    private String extractLeagueDetails(final League league) {
-        final int numberOfSeasons = extractNumberOfSeasons(league);
-        final int numberOfRounds = extractNumberOfRounds(league);
-        final int numberOfMatches = extractNumberOfMatches(league);
-
-        return new StringBuilder()
-                .append("\n\t Details of league " + league.getName() + "\n")
-                .append("\t\t League ID:\t " + league.getId() + "\n")
-                .append("\t\t Seasons:\t " + numberOfSeasons + "\n")
-                .append("\t\t Rounds:\t " + numberOfRounds + "\n")
-                .append("\t\t Matches:\t " + numberOfMatches + "\n")
-                .toString();
     }
 
     private int extractNumberOfSeasons(final League league) {

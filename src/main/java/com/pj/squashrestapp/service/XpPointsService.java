@@ -11,6 +11,7 @@ import com.pj.squashrestapp.repository.XpPointsRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+
+import static net.logstash.logback.argument.StructuredArguments.v;
 
 /** */
 @Slf4j
@@ -108,7 +111,7 @@ public class XpPointsService {
 
         final XpPointsForRound xpPointsForRound = new XpPointsForRound(type, split, points);
         xpPointsRepository.save(xpPointsForRound);
-        log.info("Created: {}", JacksonUtil.objectToJson(xpPointsForRound));
+        LogUtil.logCreate(xpPointsForRound);
     }
 
     private int[][] preparePointsArray(final int[] split, final String[] pointsAsString) {
@@ -135,7 +138,7 @@ public class XpPointsService {
         final Optional<XpPointsForRound> xpPoints = xpPointsRepository.findByTypeAndSplit(type, splitAsString);
         if (xpPoints.isPresent()) {
             xpPointsRepository.delete(xpPoints.get());
-            log.info("Deleted: {}", JacksonUtil.objectToJson(xpPoints.get()));
+            LogUtil.logDelete(xpPoints.get());
         } else {
             throw new GeneralBadRequestException(
                     "Xp Points for type [" + type + "] and split [" + splitAsString + "] does not exist!");

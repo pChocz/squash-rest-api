@@ -1,4 +1,4 @@
-package com.pj.squashrestapp.model;
+package com.pj.squashrestapp.model.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

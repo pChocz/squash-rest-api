@@ -3,7 +3,7 @@
 server:
   port: 8082
   tomcat:
-    max-swallow-size: 200MB
+    max-swallow-size: 300MB
 
 
 # ###### ##########
@@ -15,7 +15,8 @@ spring:
   jpa:
     database: _REPLACE_
     hibernate:
-      ddl-auto: update
+      ddl-auto: create       # in case when schema recreation is necessary
+#      ddl-auto: update       # in case when it is not
     open-in-view: false
     properties:
       hibernate:

@@ -42,6 +42,7 @@ import com.pj.squashrestapp.repository.SetResultRepository;
 import com.pj.squashrestapp.util.EntityGraphBuildUtil;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.JacksonUtil;
+import com.pj.squashrestapp.util.LogUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RomanUtil;
 import com.pj.squashrestapp.util.RoundingUtil;
@@ -155,7 +156,8 @@ public class LeagueService {
         roleForLeagueRepository.save(moderatorRole);
         roleForLeagueRepository.save(ownerRole);
 
-        log.info("Created: {}", JacksonUtil.objectToJson(new LeagueDto(league)));
+        LogUtil.logCreate(new LeagueDto(league));
+        LogUtil.logCreate(leagueLogo);
 
         return league.getUuid();
     }
@@ -341,7 +343,7 @@ public class LeagueService {
         return playerLeagueXpOveralList;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public LeagueDto buildGeneralInfoForLeague(final UUID leagueUuid) {
         final League league = leagueRepository
                 .findByUuid(leagueUuid)
@@ -363,14 +365,7 @@ public class LeagueService {
                 .map(PlayerDto::new)
                 .collect(Collectors.toList());
 
-        final LeagueDto leagueDto = new LeagueDto(league, leagueOwners, leagueModerators);
-
-        final LeagueLogo leagueLogo = league.getLeagueLogo();
-        if (leagueLogo != null) {
-            leagueDto.setLeagueLogo(leagueLogo.getPicture());
-        }
-
-        return leagueDto;
+        return new LeagueDto(league, leagueOwners, leagueModerators);
     }
 
     public List<LeagueDto> buildGeneralInfoForAllLeagues() {
@@ -526,23 +521,15 @@ public class LeagueService {
             Optional<String> location,
             Optional<String> time) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-        final String leagueBefore = JacksonUtil.objectToJson(new LeagueDtoSimple(league));
+        final Object leagueBefore = JacksonUtil.deepCopy(new LeagueDtoSimple(league));
 
         if (logoBase64.isPresent()) {
-            final Optional<byte[]> logoByte = leagueLogoRepository.extractLogoBlobByLeagueUuid(leagueUuid);
-            final String oldLogoBase64 = Base64.getEncoder().encodeToString(logoByte.get());
-            final byte[] logoBytes = Base64.getDecoder().decode(logoBase64.get());
-
-            final LeagueLogo leagueLogo = new LeagueLogo();
-            leagueLogo.setPicture(logoBytes);
-
-            league.setLeagueLogo(leagueLogo);
-            leagueLogo.setLeague(league);
-
+            final Optional<LeagueLogo> leagueLogoOptional = leagueLogoRepository.findByLeague(league);
+            final LeagueLogo leagueLogo = leagueLogoOptional.get();
+            final Object leagueLogoBefore = JacksonUtil.deepCopy(leagueLogo);
+            leagueLogo.setPicture(Base64.getDecoder().decode(logoBase64.get()));
             leagueLogoRepository.save(leagueLogo);
-            log.info("League logo updated for league [{}]", leagueUuid);
-            log.info("BEFORE: {}", oldLogoBase64);
-            log.info("AFTER: {}", logoBase64.get());
+            LogUtil.logModify(leagueLogoBefore, leagueLogo);
         }
 
         leagueName.ifPresent(league::setName);
@@ -550,21 +537,17 @@ public class LeagueService {
         time.ifPresent(league::setTime);
 
         leagueRepository.save(league);
-        log.info("League updated [{}]", leagueUuid);
-        log.info("BEFORE: {}", leagueBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new LeagueDtoSimple(league)));
+        LogUtil.logModify(leagueBefore, new LeagueDtoSimple(league));
     }
 
     public void updateLeagueAsModerator(UUID leagueUuid, Optional<String> location, Optional<String> time) {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-        final String leagueBefore = JacksonUtil.objectToJson(new LeagueDtoSimple(league));
+        final Object leagueBefore = JacksonUtil.deepCopy(new LeagueDtoSimple(league));
 
         location.ifPresent(league::setLocation);
         time.ifPresent(league::setTime);
 
         leagueRepository.save(league);
-        log.info("League updated [{}]", leagueUuid);
-        log.info("BEFORE: {}", leagueBefore);
-        log.info("AFTER: {}", JacksonUtil.objectToJson(new LeagueDtoSimple(league)));
+        LogUtil.logModify(leagueBefore, new LeagueDtoSimple(league));
     }
 }

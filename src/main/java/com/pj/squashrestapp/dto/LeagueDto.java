@@ -3,7 +3,6 @@ package com.pj.squashrestapp.dto;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
@@ -26,9 +25,6 @@ public class LeagueDto {
     private final Set<SeasonDto> seasons;
     private List<PlayerDto> owners;
     private List<PlayerDto> moderators;
-
-    @Setter
-    private byte[] leagueLogo;
 
     public LeagueDto(final League league) {
         this.leagueUuid = league.getUuid();

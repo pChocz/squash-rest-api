@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.aspects.LogResultIgnore;
 import com.pj.squashrestapp.aspects.SecretMethod;
 import com.pj.squashrestapp.dto.LeagueDto;
 import com.pj.squashrestapp.dto.PlayerDto;
@@ -117,6 +118,7 @@ public class LeagueController {
         return allLeaguesGeneralInfo;
     }
 
+    @LogResultIgnore
     @GetMapping(value = "/all-logos")
     Map<UUID, byte[]> getAllLeaguesLogosMap() {
         final Map<UUID, byte[]> allLeaguesLogos = leagueService.extractAllLogos();

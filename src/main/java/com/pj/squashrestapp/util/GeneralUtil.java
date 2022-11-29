@@ -20,9 +20,7 @@ import java.util.stream.Collectors;
 public class GeneralUtil {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd";
-    public static final String TIME_FORMAT = "HH:mm:ss.SSS";
-    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    public static final String DETAILED_DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     public static final String DATE_TIME_ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX";
     public static final TimeZone UTC_ZONE = TimeZone.getTimeZone("UTC");
     public static final ZoneId UTC_ZONE_ID = UTC_ZONE.toZoneId();
@@ -99,9 +97,11 @@ public class GeneralUtil {
     }
 
     public UUID extractSessionUserUuid() {
-        final UserDetailsImpl userDetails = (UserDetailsImpl)
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return userDetails.getUuid();
+        final Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userDetails instanceof UserDetailsImpl userDetailsImpl) {
+            return userDetailsImpl.getUuid();
+        }
+        return new UUID(0L, 0L);
     }
 
     public double getDurationSecondsRounded(final long startTime) {
