@@ -52,6 +52,7 @@ public class JsonImportUtil {
         season.setTiebreakWinningType(jsonSeason.getTiebreakWinningType());
         season.setRegularSetWinningPoints(jsonSeason.getRegularSetWinningPoints());
         season.setTiebreakWinningPoints(jsonSeason.getTiebreakWinningPoints());
+        season.setAudit(jsonSeason.getAudit());
         return season;
     }
 
@@ -142,6 +143,7 @@ public class JsonImportUtil {
         matchScore.setCanEndGame(jsonMatchScore.isCanEndGame());
         matchScore.setCanEndMatch(jsonMatchScore.isCanEndMatch());
         matchScore.setMatchFinished(jsonMatchScore.isMatchFinished());
+        matchScore.setAudit(jsonMatchScore.getAudit());
         return matchScore;
     }
 
@@ -221,6 +223,7 @@ public class JsonImportUtil {
         league.setRoundsToBeDeducted(jsonLeague.getRoundsToBeDeducted());
         league.setLeagueLogo(constructLeagueLogo(jsonLeague));
         league.setUuid(jsonLeague.getUuid());
+        league.setAudit(jsonLeague.getAudit());
         return league;
     }
 
@@ -228,6 +231,7 @@ public class JsonImportUtil {
         final LeagueLogo leagueLogo = new LeagueLogo();
         final byte[] logoBytes = Base64.getDecoder().decode(jsonLeague.getLogoBase64());
         leagueLogo.setPicture(logoBytes);
+        leagueLogo.setAudit(jsonLeague.getLogoAudit());
         return leagueLogo;
     }
 }

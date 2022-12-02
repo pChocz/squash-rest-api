@@ -1,8 +1,12 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+
+import javax.persistence.Embedded;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
@@ -45,7 +49,7 @@ import java.util.stream.Collectors;
         })
 @Getter
 @NoArgsConstructor
-public class Season implements Identifiable, Comparable<Season> {
+public class Season implements Identifiable, Comparable<Season>, Auditable {
 
     public static final EntityVisitor<Season, League> ENTITY_VISITOR_FINAL = new EntityVisitor<>(Season.class) {};
 
@@ -69,6 +73,10 @@ public class Season implements Identifiable, Comparable<Season> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @Setter
     @Column(name = "uuid", nullable = false)

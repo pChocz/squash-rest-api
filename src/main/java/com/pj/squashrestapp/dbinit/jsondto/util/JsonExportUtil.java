@@ -57,10 +57,12 @@ public class JsonExportUtil {
         jsonLeague.setNumberOfRoundsPerSeason(league.getNumberOfRoundsPerSeason());
         jsonLeague.setRoundsToBeDeducted(league.getRoundsToBeDeducted());
         jsonLeague.setLogoBase64(Base64.getEncoder().encodeToString(league.getLeagueLogo().getPicture()));
+        jsonLeague.setLogoAudit(league.getLeagueLogo().getAudit());
         jsonLeague.setRules(buildRules(league.getRules()));
         jsonLeague.setAdditionalMatches(buildAdditionalMatches(league.getAdditionalMatches()));
         jsonLeague.setSeasons(buildSeasonsJson(league.getSeasonsOrdered(), bonusPoints, lostBalls));
         jsonLeague.setTrophies(buildTrophiesList(league.getTrophiesForLeague()));
+        jsonLeague.setAudit(league.getAudit());
 
         return jsonLeague;
     }
@@ -171,6 +173,7 @@ public class JsonExportUtil {
         jsonSeason.setBonusPoints(buildBonusPoints(bonusPointsForSeason));
         jsonSeason.setLostBalls(buildLostBalls(lostBallsForSeason));
         jsonSeason.setRounds(buildRoundsJson(season.getRoundsOrdered()));
+        jsonSeason.setAudit(season.getAudit());
 
         return jsonSeason;
     }
@@ -311,6 +314,7 @@ public class JsonExportUtil {
             jsonMatchScore.setCanEndGame(matchScore.isCanEndGame());
             jsonMatchScore.setCanEndMatch(matchScore.isCanEndMatch());
             jsonMatchScore.setMatchFinished(matchScore.isMatchFinished());
+            jsonMatchScore.setAudit(matchScore.getAudit());
             jsonMatchScores.add(jsonMatchScore);
         }
         return jsonMatchScores;

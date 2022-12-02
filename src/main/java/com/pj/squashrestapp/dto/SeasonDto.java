@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.enums.SetWinningType;
@@ -38,8 +39,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
     private SetWinningType tiebreakWinningType;
     private int regularSetWinningPoints;
     private int tiebreakWinningPoints;
-
-
+    private Audit audit;
     @JsonSerialize(using = LocalDateSerializer.class)
     @JsonDeserialize(using = LocalDateDeserializer.class)
     @JsonFormat(pattern = GeneralUtil.DATE_FORMAT)
@@ -61,6 +61,7 @@ public class SeasonDto implements Comparable<SeasonDto> {
         this.tiebreakWinningType = season.getTiebreakWinningType();
         this.regularSetWinningPoints = season.getRegularSetWinningPoints();
         this.tiebreakWinningPoints = season.getTiebreakWinningPoints();
+        this.audit = season.getAudit();
     }
 
     @Override

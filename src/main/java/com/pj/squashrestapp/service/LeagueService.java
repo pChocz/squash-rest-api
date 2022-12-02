@@ -126,6 +126,7 @@ public class LeagueService {
         league.setRegularSetWinningPoints(regularSetWinningPoints);
         league.setTiebreakWinningType(tiebreakWinningType);
         league.setTiebreakWinningPoints(tiebreakWinningPoints);
+        league.createAudit();
         if (leagueWhen != null) {
             league.setTime(leagueWhen);
         }
@@ -137,6 +138,7 @@ public class LeagueService {
 
         final LeagueLogo leagueLogo = new LeagueLogo();
         leagueLogo.setPicture(logoBytes);
+        leagueLogo.createAudit();
         league.setLeagueLogo(leagueLogo);
 
         final RoleForLeague playerRole = new RoleForLeague(LeagueRole.PLAYER);
@@ -528,6 +530,7 @@ public class LeagueService {
             final LeagueLogo leagueLogo = leagueLogoOptional.get();
             final Object leagueLogoBefore = JacksonUtil.deepCopy(leagueLogo);
             leagueLogo.setPicture(Base64.getDecoder().decode(logoBase64.get()));
+            leagueLogo.updateAudit();
             leagueLogoRepository.save(leagueLogo);
             LogUtil.logModify(leagueLogoBefore, leagueLogo);
         }
@@ -536,6 +539,7 @@ public class LeagueService {
         location.ifPresent(league::setLocation);
         time.ifPresent(league::setTime);
 
+        league.updateAudit();
         leagueRepository.save(league);
         LogUtil.logModify(leagueBefore, new LeagueDtoSimple(league));
     }
@@ -547,6 +551,7 @@ public class LeagueService {
         location.ifPresent(league::setLocation);
         time.ifPresent(league::setTime);
 
+        league.updateAudit();
         leagueRepository.save(league);
         LogUtil.logModify(leagueBefore, new LeagueDtoSimple(league));
     }

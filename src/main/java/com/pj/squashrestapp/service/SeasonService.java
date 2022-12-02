@@ -268,6 +268,7 @@ public class SeasonService {
         league.addSeason(season);
 
         try {
+            season.createAudit();
             seasonRepository.save(season);
             LogUtil.logCreate(new SeasonDto(season));
             return season;
@@ -296,6 +297,7 @@ public class SeasonService {
                 season.setXpPointsType(xpPointsType.get());
             }
         }
+        season.updateAudit();
         seasonRepository.save(season);
         LogUtil.logModify(seasonBefore, new SeasonDto(season));
     }

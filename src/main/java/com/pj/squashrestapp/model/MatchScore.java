@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import com.pj.squashrestapp.model.enums.AppealDecision;
 import com.pj.squashrestapp.model.enums.ScoreEventType;
@@ -20,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -52,12 +55,16 @@ import static com.pj.squashrestapp.model.enums.ServeSide.RIGHT_SIDE;
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class MatchScore implements Identifiable, Comparable<MatchScore> {
+public class MatchScore implements Identifiable, Comparable<MatchScore>, Auditable {
 
     @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @JsonIgnore
     @Setter

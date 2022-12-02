@@ -1,6 +1,8 @@
 package com.pj.squashrestapp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pj.squashrestapp.model.audit.Audit;
+import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
 import com.pj.squashrestapp.model.enums.MatchFormatType;
@@ -11,6 +13,7 @@ import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -45,7 +48,7 @@ import java.util.stream.Collectors;
         })
         @Getter
 @NoArgsConstructor
-public class League implements Identifiable {
+public class League implements Identifiable, Auditable {
 
     public static final EntityVisitor<League, Identifiable> ENTITY_VISITOR_FINAL = new EntityVisitor<>(League.class) {};
 
@@ -62,6 +65,10 @@ public class League implements Identifiable {
     @Setter
     @Column(name = "uuid", nullable = false)
     private UUID uuid = UUID.randomUUID();
+
+    @Setter
+    @Embedded
+    private Audit audit = new Audit();
 
     @Setter
     @Column(name = "name")

@@ -230,6 +230,7 @@ public class MatchScoreService {
             matchScore.setSecondPlayerScore(setResult.getSecondPlayerScore());
         }
 
+        matchScore.createAudit();
         match.addScore(matchScore);
 
         redisCacheService.evictCacheForRoundMatch(match);
