@@ -9,6 +9,8 @@ server:
 # ###### ##########
 # Spring Properties
 spring:
+  profiles:
+    active: _REPLACE_         #   DEV or PROD   (logback-spring file contains 2 profiles)
   jackson:
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false

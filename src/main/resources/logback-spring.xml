@@ -1,0 +1,89 @@
+<configuration>
+
+    <property name="PATTERN" value="%d{HH:mm:ss.SSS} | %5p | %-30.30logger{30} | %msg%n"/>
+    <property name="LOG-THRESHOLD" value="INFO"/>
+
+    <!--
+        DEV profile uses 3 appenders:
+        - CONSOLE               with standard encoder       logging to the console
+        - OUT-LOG               with standard encoder       logging to the out.log file
+        - OUT-LOG-JSON-PRETTY   with JSON Logstash encoder  logging pretty json entries to the out.log.json file
+
+        PROD profile uses 1 appender only:
+        - CONSOLE-JSON-INLINE   with JSON Logstash encoder  logging minified (inline) json entries to the console
+          which is sufficient as on the production system logs are forwarded to the fluentd service by the docker
+
+
+        NOTE: All appenders share the same PATTERN and LOG-THRESHOLD values which are declared above
+     -->
+
+    <springProfile name="DEV">
+
+        <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
+            <encoder>
+                <charset>UTF-8</charset>
+                <outputPatternAsHeader>true</outputPatternAsHeader>
+                <pattern>${PATTERN}</pattern>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>${LOG-THRESHOLD}</level>
+            </filter>
+        </appender>
+
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG">
+            <append>true</append>
+            <immediateFlush>true</immediateFlush>
+            <encoder>
+                <charset>UTF-8</charset>
+                <outputPatternAsHeader>true</outputPatternAsHeader>
+                <pattern>${PATTERN}</pattern>
+            </encoder>
+            <file>logs/out.log</file>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>${LOG-THRESHOLD}</level>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/history/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <maxHistory>365</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+
+        <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG-JSON-PRETTY">
+            <append>true</append>
+            <immediateFlush>true</immediateFlush>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+            </encoder>
+            <file>logs/out.json.log</file>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>${LOG-THRESHOLD}</level>
+            </filter>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>logs/history/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.json.log</fileNamePattern>
+                <maxHistory>365</maxHistory>
+                <totalSizeCap>1GB</totalSizeCap>
+            </rollingPolicy>
+        </appender>
+
+        <root level="ALL">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="OUT-LOG"/>
+            <appender-ref ref="OUT-LOG-JSON-PRETTY"/>
+        </root>
+    </springProfile>
+
+    <springProfile name="PROD">
+        <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE-JSON-INLINE">
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>${LOG-THRESHOLD}</level>
+            </filter>
+        </appender>
+
+        <root level="ALL">
+            <appender-ref ref="CONSOLE-JSON-INLINE"/>
+        </root>
+    </springProfile>
+
+</configuration>
