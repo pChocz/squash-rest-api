@@ -18,7 +18,6 @@
      -->
 
     <springProfile name="DEV">
-
         <appender class="ch.qos.logback.core.ConsoleAppender" name="CONSOLE">
             <encoder>
                 <charset>UTF-8</charset>
@@ -29,7 +28,6 @@
                 <level>${LOG-THRESHOLD}</level>
             </filter>
         </appender>
-
         <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG">
             <append>true</append>
             <immediateFlush>true</immediateFlush>
@@ -43,12 +41,11 @@
                 <level>${LOG-THRESHOLD}</level>
             </filter>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>logs/history/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.log</fileNamePattern>
+                <fileNamePattern>logs/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.log</fileNamePattern>
                 <maxHistory>365</maxHistory>
                 <totalSizeCap>1GB</totalSizeCap>
             </rollingPolicy>
         </appender>
-
         <appender class="ch.qos.logback.core.rolling.RollingFileAppender" name="OUT-LOG-JSON-PRETTY">
             <append>true</append>
             <immediateFlush>true</immediateFlush>
@@ -60,12 +57,11 @@
                 <level>${LOG-THRESHOLD}</level>
             </filter>
             <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>logs/history/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.json.log</fileNamePattern>
+                <fileNamePattern>logs/%d{yyyy-MM}/out.%d{yyyy-MM-dd}.json.log</fileNamePattern>
                 <maxHistory>365</maxHistory>
                 <totalSizeCap>1GB</totalSizeCap>
             </rollingPolicy>
         </appender>
-
         <root level="ALL">
             <appender-ref ref="CONSOLE"/>
             <appender-ref ref="OUT-LOG"/>
@@ -80,7 +76,6 @@
                 <level>${LOG-THRESHOLD}</level>
             </filter>
         </appender>
-
         <root level="ALL">
             <appender-ref ref="CONSOLE-JSON-INLINE"/>
         </root>
