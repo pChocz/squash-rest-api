@@ -2,6 +2,7 @@ package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
+import com.pj.squashrestapp.dto.AdditionalMatchesPerSeasonDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
@@ -51,15 +52,26 @@ public class AdditionalMatchService {
                 : matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
     }
 
-    @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "#leagueUuid")
-    public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeague(final UUID leagueUuid) {
+    @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "{#leagueUuid, #seasonNumber}")
+    public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeagueForSeasonNumber(final UUID leagueUuid, final Integer seasonNumber) {
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {
             throw new GeneralBadRequestException("League not valid!");
         }
         final List<AdditionalMatch> matches =
-                additionalMatchRepository.findAllByLeagueOrderByDateDescIdDesc(league.get());
+                additionalMatchRepository.findAllByLeagueAndSeasonNumberOrderByDateDescIdDesc(league.get(), seasonNumber);
         return buildDtoList(matches);
+    }
+
+    public List<AdditionalMatchesPerSeasonDto> getMatchesCountPerSeasonForLeague(final UUID leagueUuid) {
+        return additionalMatchRepository
+                .findAllByLeagueUuid(leagueUuid)
+                .stream()
+                .collect(Collectors.groupingBy(AdditionalMatch::getSeasonNumber, Collectors.counting()))
+                .entrySet()
+                .stream()
+                .map(entry -> new AdditionalMatchesPerSeasonDto(entry.getKey(), entry.getValue()))
+                .toList();
     }
 
     public List<AdditionalMatchDetailedDto> getAdditionalMatchesForSinglePlayer(

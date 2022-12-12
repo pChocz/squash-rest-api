@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.controller;
 
+import com.pj.squashrestapp.dto.AdditionalMatchesPerSeasonDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.model.enums.AdditionalMatchType;
 import com.pj.squashrestapp.service.AdditionalMatchService;
@@ -90,11 +91,20 @@ public class AdditionalMatchController {
         additionalMatchService.addOrReplaceFootage(matchUuid, footageLink);
     }
 
-    @GetMapping("/all-for-league/{leagueUuid}")
-    ResponseEntity<?> getAdditionalMatchesForLeague(@PathVariable final UUID leagueUuid) {
+    @GetMapping("/for-league-for-season-number/{leagueUuid}/{seasonNumber}")
+    ResponseEntity<?> getAdditionalMatchesForLeagueForSeasonNumber(
+            @PathVariable final UUID leagueUuid,
+            @PathVariable final Integer seasonNumber) {
         final List<AdditionalMatchDetailedDto> additionalMatchesForLeague =
-                additionalMatchService.getAdditionalMatchesForLeague(leagueUuid);
+                additionalMatchService.getAdditionalMatchesForLeagueForSeasonNumber(leagueUuid, seasonNumber);
         return new ResponseEntity<>(additionalMatchesForLeague, HttpStatus.OK);
+    }
+
+    @GetMapping("/matches-count-per-season-for-league/{leagueUuid}")
+    ResponseEntity<?> getMatchesCountPerSeasonForLeague(@PathVariable final UUID leagueUuid) {
+        final List<AdditionalMatchesPerSeasonDto> matchesPerSeasonForLeague =
+                additionalMatchService.getMatchesCountPerSeasonForLeague(leagueUuid);
+        return new ResponseEntity<>(matchesPerSeasonForLeague, HttpStatus.OK);
     }
 
     @GetMapping("/single-player/{leagueUuid}/{playerUuid}")

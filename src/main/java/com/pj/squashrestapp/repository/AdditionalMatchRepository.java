@@ -173,7 +173,9 @@ public interface AdditionalMatchRepository
     List<AdditionalMatch> findByIdIn(List<Long> matchIds);
 
     @EntityGraph(attributePaths = {"firstPlayer", "secondPlayer", "setResults", "league"})
-    List<AdditionalMatch> findAllByLeagueOrderByDateDescIdDesc(League league);
+    List<AdditionalMatch> findAllByLeagueAndSeasonNumberOrderByDateDescIdDesc(League league, final Integer seasonNumber);
+
+    List<AdditionalMatch> findAllByLeagueUuid(UUID leagueUuid);
 
     @Override
     @Query(
