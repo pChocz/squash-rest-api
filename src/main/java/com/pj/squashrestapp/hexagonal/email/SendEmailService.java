@@ -31,7 +31,9 @@ class SendEmailService {
 
         try {
             final Template template = freemarkerConfiguration.getTemplate(templateString);
-            final String content = FreeMarkerTemplateUtils.processTemplateIntoString(template, model);
+            final String content = FreeMarkerTemplateUtils
+                    .processTemplateIntoString(template, model)
+                    .replaceAll("\\s+"," ");
 
             final Email emailToSend = new Email();
             emailToSend.setSent(false);
