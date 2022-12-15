@@ -35,6 +35,9 @@ public interface SeasonRepository extends JpaRepository<Season, Long>, Searchabl
 
     Optional<Season> findByLeagueAndNumber(League league, int number);
 
+    @EntityGraph(attributePaths = {"league"})
+    List<Season> findByLeagueUuid(UUID uuid);
+
     @EntityGraph(attributePaths = {"rounds", "league"})
     Optional<Season> findSeasonByUuid(UUID uuid);
 

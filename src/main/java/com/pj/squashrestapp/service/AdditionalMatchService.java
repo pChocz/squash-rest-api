@@ -1,8 +1,8 @@
 package com.pj.squashrestapp.service;
 
-import com.pj.squashrestapp.config.RedisCacheConfig;
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.AdditionalMatchesPerSeasonDto;
+import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchDetailedDto;
 import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.dto.matchresulthelper.SetScoreHelper;
@@ -16,12 +16,12 @@ import com.pj.squashrestapp.repository.AdditionalMatchRepository;
 import com.pj.squashrestapp.repository.AdditionalSetResultRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
+import com.pj.squashrestapp.repository.SeasonRepository;
 import com.pj.squashrestapp.util.ErrorCode;
 import com.pj.squashrestapp.util.JacksonUtil;
 import com.pj.squashrestapp.util.LogUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +29,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,6 +44,7 @@ public class AdditionalMatchService {
 
     private final RedisCacheService redisCacheService;
     private final AdditionalMatchRepository additionalMatchRepository;
+    private final SeasonRepository seasonRepository;
     private final AdditionalSetResultRepository additionalSetResultRepository;
     private final PlayerRepository playerRepository;
     private final LeagueRepository leagueRepository;
@@ -52,7 +55,6 @@ public class AdditionalMatchService {
                 : matches.stream().map(AdditionalMatchDetailedDto::new).collect(Collectors.toList());
     }
 
-    @Cacheable(value = RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, key = "{#leagueUuid, #seasonNumber}")
     public List<AdditionalMatchDetailedDto> getAdditionalMatchesForLeagueForSeasonNumber(final UUID leagueUuid, final Integer seasonNumber) {
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {
@@ -64,14 +66,28 @@ public class AdditionalMatchService {
     }
 
     public List<AdditionalMatchesPerSeasonDto> getMatchesCountPerSeasonForLeague(final UUID leagueUuid) {
-        return additionalMatchRepository
+        final List<SeasonDto> seasons = seasonRepository
+                .findByLeagueUuid(leagueUuid)
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .map(SeasonDto::new)
+                .toList();
+
+        final Map<Integer, Long> additionalMatchesCount = additionalMatchRepository
                 .findAllByLeagueUuid(leagueUuid)
                 .stream()
-                .collect(Collectors.groupingBy(AdditionalMatch::getSeasonNumber, Collectors.counting()))
-                .entrySet()
-                .stream()
-                .map(entry -> new AdditionalMatchesPerSeasonDto(entry.getKey(), entry.getValue()))
-                .toList();
+                .collect(Collectors.groupingBy(AdditionalMatch::getSeasonNumber, Collectors.counting()));
+
+        final List<AdditionalMatchesPerSeasonDto> dto = new ArrayList<>();
+        for (final SeasonDto season : seasons) {
+            final Long count = additionalMatchesCount.get(season.getSeasonNumber());
+            final AdditionalMatchesPerSeasonDto additionalMatchesPerSeasonDto = new AdditionalMatchesPerSeasonDto(
+                    season,
+                    count == null ? 0 : count
+            );
+            dto.add(additionalMatchesPerSeasonDto);
+        }
+        return dto;
     }
 
     public List<AdditionalMatchDetailedDto> getAdditionalMatchesForSinglePlayer(

@@ -33,7 +33,6 @@ public class RedisCacheConfig {
     public static final String PLAYER_ALL_LEAGUES_SCOREBOARD_CACHE = "player_all_leagues_scoreboard";
     public static final String PLAYER_LEAGUE_SCOREBOARD_CACHE = "player_league_scoreboard";
     public static final String PLAYER_LEAGUE_ROUNDS_CACHE = "player_league_rounds";
-    public static final String LEAGUE_ADDITIONAL_MATCHES_CACHE = "league_additional_matches";
 
     private static final Duration DEFAULT_TTL = Duration.ofHours(24);
     private static final Duration EXTENDED_TTL = Duration.ofDays(7);

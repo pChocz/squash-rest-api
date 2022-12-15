@@ -143,7 +143,6 @@ public class RedisCacheService {
         final String p1Uuid = match.getFirstPlayer().getUuid().toString();
         final String p2Uuid = match.getSecondPlayer().getUuid().toString();
 
-        clearSingle(RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
         clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
         clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
 
@@ -226,7 +225,6 @@ public class RedisCacheService {
         clearSingle(RedisCacheConfig.SEASON_SCOREBOARD_CACHE, seasonUuid);
         clearSingle(RedisCacheConfig.LEAGUE_DETAILED_STATS_CACHE, leagueUuid);
         clearSingle(RedisCacheConfig.LEAGUE_OVERALL_STATS_CACHE, leagueUuid);
-        clearSingle(RedisCacheConfig.LEAGUE_ADDITIONAL_MATCHES_CACHE, leagueUuid);
         clearSingle(RedisCacheConfig.LEAGUE_ALL_SEASONS_SCOREBOARDS, leagueUuid);
         clearSingle(RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, leagueUuid);
     }

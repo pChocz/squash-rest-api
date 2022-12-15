@@ -11,6 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdditionalMatchesPerSeasonDto {
-    private Integer seasonNumber;
-    private Long numberOfMatches;
+    private SeasonDto season;
+    private Long numberOfAdditionalMatches;
 }
