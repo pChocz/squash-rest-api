@@ -56,6 +56,21 @@ public class MatchSimpleDto implements MatchDto {
     @JsonIgnore
     private int tieBreakWinningPoints;
 
+    public MatchSimpleDto(final MatchDetailedDto matchDetailedDto) {
+        this.firstPlayer = matchDetailedDto.getFirstPlayer();
+        this.secondPlayer = matchDetailedDto.getSecondPlayer();
+        this.winner = matchDetailedDto.getWinner();
+        this.sets = matchDetailedDto.getSets();
+        this.status = matchDetailedDto.getStatus();
+        this.footageLink = matchDetailedDto.getFootageLink();
+        this.date = matchDetailedDto.getDate();
+        this.matchFormatType = matchDetailedDto.getMatchFormatType();
+        this.regularSetWinningPoints = matchDetailedDto.getRegularSetWinningPoints();
+        this.regularSetWinningType = matchDetailedDto.getRegularSetWinningType();
+        this.tieBreakWinningPoints = matchDetailedDto.getTieBreakWinningPoints();
+        this.tieBreakWinningType = matchDetailedDto.getTieBreakWinningType();
+    }
+
     public MatchSimpleDto(final Match match) {
         final RoundGroup roundGroup = match.getRoundGroup();
         final Round round = roundGroup.getRound();
