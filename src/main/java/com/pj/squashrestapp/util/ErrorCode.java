@@ -27,6 +27,7 @@ public class ErrorCode {
     public static final String SEASON_DUPLICATE_ERROR = "SEASON_DUPLICATE_ERROR";
     public static final String INVALID_MATCH_SCORE = "INVALID_MATCH_SCORE";
     public static final String MATCH_SCORE_NOT_EMPTY = "MATCH_SCORE_NOT_EMPTY";
+    public static final String ROUND_MATCHES_NOT_FINISHED = "ROUND_MATCHES_NOT_FINISHED";
 
     // EXPIRED
     public static final String EXPIRED_REFRESH_TOKEN = "EXPIRED_REFRESH_TOKEN";

@@ -1,6 +1,10 @@
 package com.pj.squashrestapp.service;
 
+import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
 import com.pj.squashrestapp.dto.RoundDto;
+import com.pj.squashrestapp.dto.match.MatchSimpleDto;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
+import com.pj.squashrestapp.dto.matchresulthelper.MatchStatusHelper;
 import com.pj.squashrestapp.dto.scoreboard.RoundScoreboard;
 import com.pj.squashrestapp.model.League;
 import com.pj.squashrestapp.model.Match;
@@ -168,13 +172,28 @@ public class RoundService {
     }
 
     public Round updateRoundFinishedState(final UUID roundUuid, final boolean finishedState) {
-        final Round round = roundRepository.findByUuidWithSeasonAndLeague(roundUuid);
+        final Round round = roundRepository.findByUuidWithSeasonLeague(roundUuid);
         final Object roundBefore = JacksonUtil.deepCopy(new RoundDto(round));
+        if (finishedState && !allRoundMatchesFinished(round)) {
+            throw new GeneralBadRequestException(ErrorCode.ROUND_MATCHES_NOT_FINISHED);
+        }
         round.setFinished(finishedState);
         round.updateAudit();
         roundRepository.save(round);
         LogUtil.logModify(roundBefore, new RoundDto(round));
         return round;
+    }
+
+    private boolean allRoundMatchesFinished(final Round round) {
+        for (final RoundGroup roundGroup : round.getRoundGroups()) {
+            for (final Match match : roundGroup.getMatches()) {
+                final MatchStatus matchStatus = MatchStatusHelper.checkStatus(new MatchSimpleDto(match));
+                if (matchStatus != MatchStatus.FINISHED) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public UUID extractLeagueUuid(final UUID roundUuid) {
