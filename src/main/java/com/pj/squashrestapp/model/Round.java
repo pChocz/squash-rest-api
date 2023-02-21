@@ -5,12 +5,15 @@ import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.model.audit.Auditable;
 import com.pj.squashrestapp.model.entityvisitor.EntityVisitor;
 import com.pj.squashrestapp.model.entityvisitor.Identifiable;
+import com.pj.squashrestapp.repository.RoundLeagueUuidDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,7 +23,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.SqlResultSetMapping;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import java.time.LocalDate;
@@ -33,14 +38,53 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@NamedNativeQuery(
+        name = "Round.findAllForPlayersEncounters",
+        query =
+                """
+                  SELECT l.uuid as league_uuid,
+                         r.uuid as round_uuid
+                  FROM leagues l
+                           join seasons s on l.id = s.league_id
+                           join rounds r on s.id = r.season_id
+                           join round_groups rg on r.id = rg.round_id
+                           join matches m on rg.id = m.round_group_id
+                           join players p1 on p1.id = m.first_player_id
+                           join players p2 on p2.id = m.second_player_id
+                                                     where p1.uuid = :playerOneUuid
+                                                        or p2.uuid = :playerOneUuid
+
+                  INTERSECT
+
+                  SELECT l.uuid as league_uuid,
+                         r.uuid as round_uuid
+                  FROM leagues l
+                           join seasons s on l.id = s.league_id
+                           join rounds r on s.id = r.season_id
+                           join round_groups rg on r.id = rg.round_id
+                           join matches m on rg.id = m.round_group_id
+                           join players p1 on p1.id = m.first_player_id
+                           join players p2 on p2.id = m.second_player_id
+                                                     where p1.uuid = :playerTwoUuid
+                                                        or p2.uuid = :playerTwoUuid ;
+                        """,
+        resultSetMapping = "roundLeagueUuidDtoMapping")
+@SqlResultSetMapping(
+        name = "roundLeagueUuidDtoMapping",
+        classes =
+                @ConstructorResult(
+                        targetClass = RoundLeagueUuidDto.class,
+                        columns = {
+                            @ColumnResult(name = "league_uuid", type = UUID.class),
+                            @ColumnResult(name = "round_uuid", type = UUID.class)
+                        }))
 @Entity
 @Table(
         name = "rounds",
         uniqueConstraints = {
-                @UniqueConstraint(
-                        name = "uk_season_and_round_number",
-                        columnNames = {"season_id", "number"}
-                )
+            @UniqueConstraint(
+                    name = "uk_season_and_round_number",
+                    columnNames = {"season_id", "number"})
         })
 @Getter
 @NoArgsConstructor

@@ -21,33 +21,9 @@ public interface RoundRepository
     @EntityGraph(attributePaths = {"season.league"})
     Round findByUuidWithSeasonAndLeague(@Param("uuid") UUID uuid);
 
-    @Query(
-            value =
-                    """
-                SELECT r.id from (SELECT distinct r.id
-                                         FROM rounds r
-                                                  join round_groups rg on r.id = rg.round_id
-                                                  join matches m on rg.id = m.round_group_id
-                                                  join players p1 on p1.id = m.first_player_id
-                                                  join players p2 on p2.id = m.second_player_id
-                                         where p1.uuid = :playerOneUuid
-                                            or p2.uuid = :playerOneUuid
-
-                                         intersect
-
-                                         SELECT distinct r.id
-                                         FROM rounds r
-                                                  join round_groups rg on r.id = rg.round_id
-                                                  join matches m on rg.id = m.round_group_id
-                                                  join players p1 on p1.id = m.first_player_id
-                                                  join players p2 on p2.id = m.second_player_id
-                                         where p1.uuid = :playerTwoUuid
-                                            or p2.uuid = :playerTwoUuid
-                                         ) as r;
-          """,
-            nativeQuery = true)
-    List<Long> findRoundsForEncounter(@Param("playerOneUuid") UUID playerOneUuid,
-                                      @Param("playerTwoUuid") UUID playerTwoUuid);
+    @Query(nativeQuery = true)
+    List<RoundLeagueUuidDto> findAllForPlayersEncounters(@Param("playerOneUuid") UUID playerOneUuid,
+                                                         @Param("playerTwoUuid") UUID playerTwoUuid);
 
     @Query("SELECT r FROM Round r WHERE r.uuid = :uuid")
     @EntityGraph(attributePaths = {
