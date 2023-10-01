@@ -15,8 +15,8 @@ public final class TokenConstants {
     public static final long VERIFICATION_TOKEN_EXPIRATION_TIME_DAYS = 1;
 
     /** Access token expiration time in days */
-    public static final long ACCESS_TOKEN_EXPIRATION_TIME_DAYS = 7;
+    public static final long ACCESS_TOKEN_EXPIRATION_TIME_DAYS = 30;
 
     /** Refresh token expiration time in days */
-    public static final long REFRESH_TOKEN_EXPIRATION_TIME_DAYS = 30;
+    public static final long REFRESH_TOKEN_EXPIRATION_TIME_DAYS = 90;
 }
