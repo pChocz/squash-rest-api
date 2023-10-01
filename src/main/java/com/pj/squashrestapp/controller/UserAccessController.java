@@ -39,13 +39,6 @@ public class UserAccessController {
     private final TokenRemovalService tokenRemovalService;
     private final EmailPrepareFacade emailPrepareFacade;
 
-
-    // TODO: Just for testing exception handling
-    @GetMapping(value = "/exception")
-    PlayerDetailedDto justThrowException() {
-        throw new RuntimeException("Just throwing an uncaught exception on purpose");
-    }
-
     @SecretMethod
     @PostMapping(value = "/check-password-strength")
     boolean checkPasswordStrength(@RequestParam final String password) {
@@ -185,7 +178,6 @@ public class UserAccessController {
                 player.getEmail(), player.getUsername(), new Locale(lang), magicLoginLinkUrl);
     }
 
-
     @PostMapping(value = "/request-validation-mail-resend")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void requestValidationMailResend(
@@ -209,9 +201,7 @@ public class UserAccessController {
 
         final UUID token = UUID.randomUUID();
         playerService.createAndPersistVerificationToken(token, player);
-
         final String confirmationUrl = frontendUrl + "confirm-registration/" + token;
-
         emailPrepareFacade.pushAccountActivationEmailToQueue(
                 player.getEmail(), player.getUsername(), new Locale(lang), confirmationUrl);
     }
