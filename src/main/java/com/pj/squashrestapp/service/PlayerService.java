@@ -76,6 +76,7 @@ public class PlayerService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
     private final TokenCreateService tokenCreateService;
+    private final TokenRemovalService tokenRemovalService;
     private final PasswordEncoder passwordEncoder;
     private final EmailPrepareFacade emailPrepareFacade;
 
@@ -180,10 +181,6 @@ public class PlayerService {
     public void enableUser(final Player player) {
         player.setEnabled(true);
         playerRepository.save(player);
-    }
-
-    public void resendVerificationToken(final Player player) {
-        // todo: implement!
     }
 
     public List<PlayerDetailedDto> getAllPlayers() {
@@ -332,7 +329,10 @@ public class PlayerService {
         final Player player = verificationToken.getPlayer();
         player.setEnabled(true);
         playerRepository.save(player);
-        verificationTokenRepository.delete(verificationToken);
+
+        // remove all other existing verification tokens for this player
+        List<VerificationToken> verificationTokensForPlayer = verificationTokenRepository.findByPlayer(player);
+        verificationTokenRepository.deleteAll(verificationTokensForPlayer);
 
         final Map<String, Object> model = new HashMap<>();
         model.put("preheader", "Account registration confirmed");
@@ -478,5 +478,21 @@ public class PlayerService {
     public TokenPair adminLoginAsUser(final UUID playerUuid) {
         final Player player = playerRepository.findByUuid(playerUuid);
         return tokenCreateService.createTokensPairForPlayer(player, true);
+    }
+
+    public void deleteAccount() {
+        final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        final Player player = getPlayer(auth.getName());
+        if (player == null) {
+            log.error("Player [{}] does not exist", auth.getName());
+            return;
+        }
+        tokenRemovalService.removeAllTokensForPlayerFromDb(player);
+        player.setEnabled(false);
+        player.setNonLocked(false);
+        player.setWantsEmails(false);
+        player.setEmail(UUID.randomUUID().toString());
+        player.setPasswordSessionUuid(UUID.randomUUID());
+        playerRepository.save(player);
     }
 }

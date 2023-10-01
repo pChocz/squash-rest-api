@@ -9,6 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.pj.squashrestapp.dto.match.MatchDetailedDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.RoundGroup;
+import com.pj.squashrestapp.model.audit.Audit;
 import com.pj.squashrestapp.util.GeneralUtil;
 import com.pj.squashrestapp.util.MatchExtractorUtil;
 import com.pj.squashrestapp.util.RomanUtil;
@@ -50,6 +51,8 @@ public class RoundScoreboard {
     private int numberOfAllMatches;
     private int numberOfFinishedMatches;
 
+    private Audit audit;
+
     public RoundScoreboard(final Round round) {
         this.leagueName = round.getSeason().getLeague().getName();
         this.leagueUuid = round.getSeason().getLeague().getUuid();
@@ -66,6 +69,7 @@ public class RoundScoreboard {
         for (final RoundGroup roundGroup : round.getRoundGroupsOrdered()) {
             this.addRoundGroupNew(roundGroup);
         }
+        this.audit = round.getAudit();
     }
 
     private void addRoundGroupNew(final RoundGroup roundGroup) {
