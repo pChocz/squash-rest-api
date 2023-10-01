@@ -74,6 +74,35 @@ public class TokenRemovalService {
         }
     }
 
+
+    /** Finds all tokens for a given player in the database and removes them permanently. */
+    @Transactional
+    public void removeAllTokensForPlayerFromDb(Player player) {
+
+        final List<VerificationToken> expiredVerificationTokens = verificationTokenRepository.findByPlayer(player);
+        final List<RefreshToken> expiredRefreshTokens = refreshTokenRepository.findAllByPlayer(player);
+        final List<PasswordResetToken> expiredPasswordResetTokens = passwordResetTokenRepository.findAllByPlayer(player);
+        final List<EmailChangeToken> expiredEmailChangeTokens = emailChangeTokenRepository.findAllByPlayer(player);
+        final List<MagicLoginLinkToken> expiredMagicLoginLinkTokens = magicLinkLoginTokenRepository.findAllByPlayer(player);
+
+        final int tokensCount = expiredVerificationTokens.size()
+                + expiredRefreshTokens.size()
+                + expiredMagicLoginLinkTokens.size()
+                + expiredEmailChangeTokens.size()
+                + expiredPasswordResetTokens.size();
+
+        if (tokensCount > 0) {
+            refreshTokenRepository.deleteAll(expiredRefreshTokens);
+            passwordResetTokenRepository.deleteAll(expiredPasswordResetTokens);
+            emailChangeTokenRepository.deleteAll(expiredEmailChangeTokens);
+            magicLinkLoginTokenRepository.deleteAll(expiredMagicLoginLinkTokens);
+            log.info("Successfully removed {} tokens for player {}.", tokensCount, player.getUsername());
+
+        } else {
+            log.info("No tokens to remove for player {}", player.getUsername());
+        }
+    }
+
     /**
      * Removes non-enabled players for which verification token has already expired.
      */
