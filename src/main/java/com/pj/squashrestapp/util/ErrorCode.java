@@ -13,6 +13,7 @@ public class ErrorCode {
     public static final String NO_EXISTING_MATCH_SCORE = "NO_EXISTING_MATCH_SCORE";
     public static final String LOGO_NOT_FOUND = "LOGO_NOT_FOUND";
     public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+    public static final String USER_LOCKED = "USER_LOCKED";
 
     // INVALID
     public static final String WRONG_DATA_FORMAT = "WRONG_DATA_FORMAT";

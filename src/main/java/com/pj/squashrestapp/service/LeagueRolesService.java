@@ -73,6 +73,10 @@ public class LeagueRolesService {
         final League league = leagueRepository.findByUuid(leagueUuid).orElseThrow();
         final RoleForLeague roleForLeague = roleForLeagueRepository.findByLeagueAndLeagueRole(league, leagueRole);
 
+        if (!player.isNonLocked()) {
+            throw new GeneralBadRequestException(ErrorCode.USER_LOCKED);
+        }
+
         player.addRole(roleForLeague);
         playerRepository.save(player);
         roleForLeagueRepository.save(roleForLeague);

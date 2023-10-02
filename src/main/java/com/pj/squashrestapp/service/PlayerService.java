@@ -11,7 +11,6 @@ import com.pj.squashrestapp.dto.LeagueDtoSimple;
 import com.pj.squashrestapp.dto.PlayerDetailedDto;
 import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.TokenPair;
-import com.pj.squashrestapp.dto.match.AdditionalMatchSimpleDto;
 import com.pj.squashrestapp.hexagonal.email.EmailPrepareFacade;
 import com.pj.squashrestapp.model.Authority;
 import com.pj.squashrestapp.model.enums.AuthorityType;
@@ -29,6 +28,7 @@ import com.pj.squashrestapp.repository.MagicLinkLoginTokenRepository;
 import com.pj.squashrestapp.repository.PasswordResetTokenRepository;
 import com.pj.squashrestapp.repository.PlayerRepository;
 import com.pj.squashrestapp.repository.RefreshTokenRepository;
+import com.pj.squashrestapp.repository.RoleForLeagueRepository;
 import com.pj.squashrestapp.repository.VerificationTokenRepository;
 import com.pj.squashrestapp.util.AuthorizationUtil;
 import com.pj.squashrestapp.util.EmojiUtil;
@@ -45,15 +45,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -75,6 +69,7 @@ public class PlayerService {
     private final EmailChangeTokenRepository emailChangeTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final MagicLinkLoginTokenRepository magicLinkLoginTokenRepository;
+    private final RoleForLeagueRepository roleForLeagueRepository;
     private final TokenCreateService tokenCreateService;
     private final TokenRemovalService tokenRemovalService;
     private final PasswordEncoder passwordEncoder;
@@ -482,14 +477,26 @@ public class PlayerService {
 
     public void deleteAccount() {
         final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final Player player = getPlayer(auth.getName());
+        final Player player = playerRepository
+                .fetchForAccountRemoval(auth.getName().toUpperCase())
+                .orElse(null);
         if (player == null) {
             log.error("Player [{}] does not exist", auth.getName());
             return;
         }
         final String oldEmail = player.getEmail();
         final String oldUsername = player.getUsername();
+
         tokenRemovalService.removeAllTokensForPlayerFromDb(player);
+
+        Iterator<RoleForLeague> iterator = player.getRoles().iterator();
+        while (iterator.hasNext()) {
+            RoleForLeague role = iterator.next();
+            role.getPlayers().remove(player);
+            roleForLeagueRepository.save(role);
+        }
+
+
         player.setEnabled(false);
         player.setNonLocked(false);
         player.setWantsEmails(false);
