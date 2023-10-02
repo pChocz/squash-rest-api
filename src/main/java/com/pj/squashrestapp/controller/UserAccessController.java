@@ -97,7 +97,7 @@ public class UserAccessController {
         return null;
     }
 
-    @PostMapping(value = "/delete-account")
+    @PostMapping(value = "/delete-my-account")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteAccount() {
         playerService.deleteAccount();
