@@ -487,6 +487,8 @@ public class PlayerService {
             log.error("Player [{}] does not exist", auth.getName());
             return;
         }
+        final String oldEmail = player.getEmail();
+        final String oldUsername = player.getUsername();
         tokenRemovalService.removeAllTokensForPlayerFromDb(player);
         player.setEnabled(false);
         player.setNonLocked(false);
@@ -494,5 +496,12 @@ public class PlayerService {
         player.setEmail(UUID.randomUUID().toString());
         player.setPasswordSessionUuid(UUID.randomUUID());
         playerRepository.save(player);
+
+        final Map<String, Object> model = new HashMap<>();
+        model.put("preheader", "Account removal");
+        model.put("info", "An account has just been deleted!");
+        model.put("user", oldUsername + " (" + oldEmail + ")");
+        model.put("ip", AuthorizationUtil.extractRequestIpAddress());
+        emailPrepareFacade.pushUserActionInfoEmailToQueue(model);
     }
 }
