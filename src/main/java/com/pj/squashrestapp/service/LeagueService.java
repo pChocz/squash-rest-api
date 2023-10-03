@@ -33,6 +33,7 @@ import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
 import com.pj.squashrestapp.model.SetResult;
 import com.pj.squashrestapp.model.enums.SetWinningType;
+import com.pj.squashrestapp.mybatis.PlayersMapper;
 import com.pj.squashrestapp.repository.LeagueLogoRepository;
 import com.pj.squashrestapp.repository.LeagueRepository;
 import com.pj.squashrestapp.repository.LeagueRulesRepository;
@@ -72,12 +73,15 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** */
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class LeagueService {
+
+    private final PlayersMapper playersMapper;
 
     private final XpPointsService xpPointsService;
     private final BonusPointService bonusPointService;
@@ -385,12 +389,8 @@ public class LeagueService {
     }
 
     public List<PlayerDto> extractLeaguePlayersGeneral(final UUID leagueUuid) {
-        final List<Player> players =
-                playerRepository.fetchGeneralInfoSorted(leagueUuid, Sort.by(Sort.Direction.ASC, "username"));
-
-        final List<PlayerDto> playersDtos = players.stream().map(PlayerDto::new).collect(Collectors.toList());
-
-        return playersDtos;
+        final List<PlayerDto> allPlayersForLeague = playersMapper.getAllPlayersForLeague(leagueUuid);
+        return allPlayersForLeague;
     }
 
     public List<PlayerDetailedDto> extractLeaguePlayersDetailed(final UUID leagueUuid) {

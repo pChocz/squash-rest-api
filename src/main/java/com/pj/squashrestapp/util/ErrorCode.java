@@ -23,6 +23,7 @@ public class ErrorCode {
     public static final String INVALID_ACCOUNT_ACTIVATION_TOKEN = "INVALID_ACCOUNT_ACTIVATION_TOKEN";
     public static final String INVALID_MATCH_RESULT = "INVALID_MATCH_RESULT";
     public static final String NOT_A_PLAYER_OF_LEAGUE = "NOT_A_PLAYER_OF_LEAGUE";
+    public static final String NON_ACTIVE_PLAYERS_SELECTED = "NON_ACTIVE_PLAYERS_SELECTED";
     public static final String ALREADY_A_PLAYER_OF_LEAGUE = "ALREADY_A_PLAYER_OF_LEAGUE";
     public static final String ROUND_DUPLICATE_ERROR = "ROUND_DUPLICATE_ERROR";
     public static final String SEASON_DUPLICATE_ERROR = "SEASON_DUPLICATE_ERROR";

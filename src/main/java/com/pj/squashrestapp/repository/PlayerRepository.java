@@ -94,5 +94,5 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
           """)
-    List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
+    List<Player> fetchGeneralInfo(@Param("leagueUuid") UUID leagueUuid);
 }
