@@ -53,7 +53,7 @@ public class SeasonScoreboardDto {
         if (finishedRounds == 1) {
             return 1;
         }
-        return (int) Math.ceil((double) (finishedRounds * countedRoundsOnSeasonFinished) / allRounds);
+        return finishedRounds * countedRoundsOnSeasonFinished / allRounds;
     }
 
     public void sortByCountedPoints() {
