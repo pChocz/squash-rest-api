@@ -4,6 +4,7 @@ import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.SeasonDto;
 import com.pj.squashrestapp.model.Round;
 import com.pj.squashrestapp.model.Season;
+import com.pj.squashrestapp.model.audit.Audit;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,6 +30,7 @@ public class SeasonScoreboardDto {
     private List<RoundDto> rounds;
     private String xpPointsType;
     private Map<UUID, SeasonStar> seasonStars;
+    private Audit audit;
 
     public SeasonScoreboardDto(final Season season) {
         this.season = new SeasonDto(season);
@@ -41,10 +43,17 @@ public class SeasonScoreboardDto {
         this.countedRounds = getNumberOfRoundsThatCount();
         this.rounds = season.getRounds().stream().map(RoundDto::new).collect(Collectors.toList());
         this.seasonStars = new HashMap<>();
+        this.audit = season.getAudit();
     }
 
     private int getNumberOfRoundsThatCount() {
-        return (int) Math.ceil(finishedRounds * countedRoundsOnSeasonFinished / allRounds);
+        if (finishedRounds == 0) {
+            return 0;
+        }
+        if (finishedRounds == 1) {
+            return 1;
+        }
+        return finishedRounds * countedRoundsOnSeasonFinished / allRounds;
     }
 
     public void sortByCountedPoints() {

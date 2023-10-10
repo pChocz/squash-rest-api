@@ -51,6 +51,20 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             })
     Optional<Player> fetchForAuthorizationByUsernameOrEmailUppercase(@Param("usernameOrEmail") String usernameOrEmail);
 
+    @Query(
+            """
+          SELECT p FROM Player p
+            WHERE (upper(p.username) = :usernameOrEmail OR upper(p.email) = :usernameOrEmail)
+          """)
+    @EntityGraph(
+            attributePaths = {
+                "authorities",
+                "roles",
+                "roles.league",
+                "roles.players",
+            })
+    Optional<Player> fetchForAccountRemoval(@Param("usernameOrEmail") String usernameOrEmail);
+
     @Query("SELECT p FROM Player p WHERE p.uuid = :uuid")
     @EntityGraph(
             attributePaths = {
@@ -80,5 +94,5 @@ public interface PlayerRepository extends JpaRepository<Player, Long> {
             JOIN p.roles r
               WHERE r.league.uuid = :leagueUuid
           """)
-    List<Player> fetchGeneralInfoSorted(@Param("leagueUuid") UUID leagueUuid, Sort sort);
+    List<Player> fetchGeneralInfo(@Param("leagueUuid") UUID leagueUuid);
 }

@@ -13,11 +13,11 @@ public class PasswordStrengthValidator {
     /** Note that this number must be smaller than MIN_LENGTH */
     private final int COMMON_STRING_THRESHOLD = 4;
 
-    private final int MIN_LENGTH = 5;
-    private final int MAX_LENGTH = 100;
-    private final int MIN_NUMBER_OF_UNIQUE_CHARS_FOR_PASSWORD = 3;
+    private final int MIN_LENGTH = 4;
+    private final int MAX_LENGTH = 40;
+    private final int MIN_NUMBER_OF_UNIQUE_CHARS_FOR_PASSWORD = 2;
 
-    private final int MIN_LENGTH_FOR_LONG_PASSWORD = 10;
+    private final int MIN_LENGTH_FOR_LONG_PASSWORD = 8;
 
     private final List<String> COMMON_STRINGS = List.of(
             /* latin alphabet */
@@ -33,7 +33,8 @@ public class PasswordStrengthValidator {
 
             /* other common phrases */
             "SQUASH",
-            "PASSWORD");
+            "PASSWORD"
+    );
 
     /**
      *
@@ -42,20 +43,19 @@ public class PasswordStrengthValidator {
      *
      * Password is treated as valid if one of following cases is met:
      *
-     * - contains  5 -  9 characters (out of which at least 3 unique) and is not 'common'
+     * - contains 4 -  7 characters (out of which at least 2 unique) and is not 'common'
      *   (meaning it does not contain any 4-letter-long substring of any common phrases)
      *
-     * - contains 10 - 100 characters (out of which at least 3 unique)
+     * - contains 8 - 40 characters (out of which at least 3 unique)
      *
      * </pre>
      */
     public boolean isValid(String password) {
         if (isNumberBetween(password.length(), MIN_LENGTH, MIN_LENGTH_FOR_LONG_PASSWORD - 1)) {
-
             return isValidStandardPassword(password);
+        }
 
-        } else if (isNumberBetween(password.length(), MIN_LENGTH_FOR_LONG_PASSWORD, MAX_LENGTH)) {
-
+        if (isNumberBetween(password.length(), MIN_LENGTH_FOR_LONG_PASSWORD, MAX_LENGTH)) {
             return isValidLongPassword(password);
         }
 

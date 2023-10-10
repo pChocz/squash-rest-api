@@ -1,5 +1,6 @@
 package com.pj.squashrestapp.repository;
 
+import com.pj.squashrestapp.model.Player;
 import com.pj.squashrestapp.model.VerificationToken;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,8 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
     List<VerificationToken> findAll();
 
     VerificationToken findByToken(UUID token);
+
+    List<VerificationToken> findByPlayer(Player player);
 
     @EntityGraph(attributePaths = {"player.authorities"})
     List<VerificationToken> findAllByExpirationDateTimeBefore(LocalDateTime time);

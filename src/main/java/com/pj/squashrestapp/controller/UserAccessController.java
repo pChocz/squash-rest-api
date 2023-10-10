@@ -39,13 +39,6 @@ public class UserAccessController {
     private final TokenRemovalService tokenRemovalService;
     private final EmailPrepareFacade emailPrepareFacade;
 
-
-    // TODO: Just for testing exception handling
-    @GetMapping(value = "/exception")
-    PlayerDetailedDto justThrowException() {
-        throw new RuntimeException("Just throwing an uncaught exception on purpose");
-    }
-
     @SecretMethod
     @PostMapping(value = "/check-password-strength")
     boolean checkPasswordStrength(@RequestParam final String password) {
@@ -104,6 +97,12 @@ public class UserAccessController {
         return null;
     }
 
+    @PostMapping(value = "/delete-my-account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteAccount() {
+        playerService.deleteAccount();
+    }
+
     @PostMapping(value = "/request-email-change")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void requestEmailChange(
@@ -132,20 +131,23 @@ public class UserAccessController {
 
         final Player player = playerService.getPlayer(usernameOrEmail);
 
-        if (player != null) {
-            final UUID token = UUID.randomUUID();
-            playerService.createAndPersistPasswordResetToken(token, player);
-            final String passwordResetUrl = frontendUrl + "reset-password/" + token;
-            emailPrepareFacade.pushPasswordResetEmailToQueue(
-                    player.getEmail(), player.getUsername(), new Locale(lang), passwordResetUrl);
-
-        } else {
-
+        if (player == null) {
             // we are only logging it internally. Information
             // that the account does not exist does not need
             // to be passed to the frontend.
             log.error("Account [{}] does not exist. This information is not passed to the frontend", usernameOrEmail);
+            return;
         }
+        if (!player.isEnabled()) {
+            log.error("Account [{}] is not activated. This information is not passed to the frontend", usernameOrEmail);
+            return;
+        }
+
+        final UUID token = UUID.randomUUID();
+        playerService.createAndPersistPasswordResetToken(token, player);
+        final String passwordResetUrl = frontendUrl + "reset-password/" + token;
+        emailPrepareFacade.pushPasswordResetEmailToQueue(
+                player.getEmail(), player.getUsername(), new Locale(lang), passwordResetUrl);
     }
 
     @PostMapping(value = "/request-magic-login-link")
@@ -157,20 +159,51 @@ public class UserAccessController {
 
         final Player player = playerService.getPlayer(email);
 
-        if (player != null) {
-            final UUID token = UUID.randomUUID();
-            playerService.createAndPersistMagicLoginLinkToken(token, player);
-            final String magicLoginLinkUrl = frontendUrl + "login-with-magic-link/" + token;
-            emailPrepareFacade.pushMagicLoginLinkEmailToQueue(
-                    player.getEmail(), player.getUsername(), new Locale(lang), magicLoginLinkUrl);
-
-        } else {
-
+        if (player == null) {
             // we are only logging it internally. Information
             // that the account does not exist does not need
             // to be passed to the frontend.
             log.error("Account [{}] does not exist. This information is not passed to the frontend", email);
+            return;
         }
+        if (!player.isEnabled()) {
+            log.error("Account [{}] is not activated. This information is not passed to the frontend", email);
+            return;
+        }
+
+        final UUID token = UUID.randomUUID();
+        playerService.createAndPersistMagicLoginLinkToken(token, player);
+        final String magicLoginLinkUrl = frontendUrl + "login-with-magic-link/" + token;
+        emailPrepareFacade.pushMagicLoginLinkEmailToQueue(
+                player.getEmail(), player.getUsername(), new Locale(lang), magicLoginLinkUrl);
+    }
+
+    @PostMapping(value = "/request-validation-mail-resend")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void requestValidationMailResend(
+            @RequestParam final String email,
+            @RequestParam final String frontendUrl,
+            @RequestParam(defaultValue = "en") final String lang) {
+
+        final Player player = playerService.getPlayer(email);
+
+        if (player == null) {
+            // we are only logging it internally. Information
+            // that the account does not exist does not need
+            // to be passed to the frontend.
+            log.error("Account [{}] does not exist. This information is not passed to the frontend", email);
+            return;
+        }
+        if (player.isEnabled()) {
+            log.error("Account [{}] is already activated. This information is not passed to the frontend", email);
+            return;
+        }
+
+        final UUID token = UUID.randomUUID();
+        playerService.createAndPersistVerificationToken(token, player);
+        final String confirmationUrl = frontendUrl + "confirm-registration/" + token;
+        emailPrepareFacade.pushAccountActivationEmailToQueue(
+                player.getEmail(), player.getUsername(), new Locale(lang), confirmationUrl);
     }
 
     /** Invalidates all tokens (JWT and Refresh tokens) for all players without ADMIN authority. */

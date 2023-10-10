@@ -1,6 +1,7 @@
 package com.pj.squashrestapp.service;
 
 import com.pj.squashrestapp.config.exceptions.GeneralBadRequestException;
+import com.pj.squashrestapp.dto.PlayerDto;
 import com.pj.squashrestapp.dto.RoundDto;
 import com.pj.squashrestapp.dto.match.MatchSimpleDto;
 import com.pj.squashrestapp.dto.matchresulthelper.MatchStatus;
@@ -60,6 +61,14 @@ public class RoundService {
             final int roundNumber, final LocalDate roundDate, final UUID seasonUuid, final List<UUID[]> playersUuids) {
 
         final List<List<Player>> playersPerGroup = getPlayersPerGroups(playersUuids);
+
+        for (final List<Player> group : playersPerGroup) {
+            for (final Player player : group) {
+                if (!player.isEnabled() || !player.isNonLocked()) {
+                    throw new GeneralBadRequestException(ErrorCode.NON_ACTIVE_PLAYERS_SELECTED);
+                }
+            }
+        }
 
         final Season season = seasonRepository.findSeasonByUuid(seasonUuid).orElseThrow();
         final League league = season.getLeague();
@@ -208,6 +217,14 @@ public class RoundService {
         final int setsPerMatch = season.getMatchFormatType().getMaxNumberOfSets();
 
         final List<List<Player>> playersPerGroup = getPlayersPerGroups(playersUuids);
+
+        for (final List<Player> group : playersPerGroup) {
+            for (final Player player : group) {
+                if (!player.isEnabled() || !player.isNonLocked()) {
+                    throw new GeneralBadRequestException(ErrorCode.NON_ACTIVE_PLAYERS_SELECTED);
+                }
+            }
+        }
 
         final List<Integer> countPerRound =
                 playersPerGroup.stream().map(List::size).collect(Collectors.toList());

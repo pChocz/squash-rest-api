@@ -82,6 +82,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/access/request-magic-login-link")
                 .permitAll()
+                .antMatchers(HttpMethod.POST, "/access/request-validation-mail-resend")
+                .permitAll()
                 .antMatchers(HttpMethod.POST, "/access/login-with-magic-link")
                 .permitAll()
                 .antMatchers(HttpMethod.POST, "/access/confirm-password-reset")

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pj.squashrestapp.mybatis.PlayersMapper">
+
+    <select id="getAllPlayersForLeague"
+            resultType="com.pj.squashrestapp.dto.PlayerDto">
+        SELECT
+            *
+        FROM (SELECT distinct p.uuid,
+                              p.username,
+                              p.emoji,
+                              p.enabled,
+                              p.non_locked
+              FROM matches m
+                       join players p on p.id = m.first_player_id
+                       join round_groups rg on rg.id = m.round_group_id
+                       join rounds r on r.id = rg.round_id
+                       join seasons s on s.id = r.season_id
+                       join leagues l on l.id = s.league_id
+              where l.uuid = #{leagueUuid}
+
+              union
+
+              SELECT distinct p.uuid,
+                              p.username,
+                              p.emoji,
+                              p.enabled,
+                              p.non_locked
+              FROM matches m
+                       join players p on p.id = m.second_player_id
+                       join round_groups rg on rg.id = m.round_group_id
+                       join rounds r on r.id = rg.round_id
+                       join seasons s on s.id = r.season_id
+                       join leagues l on l.id = s.league_id
+              where l.uuid = #{leagueUuid}
+
+              union
+
+              SELECT distinct p.uuid,
+                              p.username,
+                              p.emoji,
+                              p.enabled,
+                              p.non_locked
+              FROM additional_matches m
+                       join players p on p.id = m.first_player_id
+                       join leagues l on l.id = m.league_id
+              where l.uuid = #{leagueUuid}
+
+              union
+
+              SELECT distinct p.uuid,
+                              p.username,
+                              p.emoji,
+                              p.enabled,
+                              p.non_locked
+              FROM additional_matches m
+                       join players p on p.id = m.second_player_id
+                       join leagues l on l.id = m.league_id
+              where l.uuid = #{leagueUuid}
+
+              union
+
+              SELECT distinct p.uuid,
+                              p.username,
+                              p.emoji,
+                              p.enabled,
+                              p.non_locked
+              FROM players p
+                       join roles_for_leagues_players rflp on rflp.player_id = p.id
+                       join roles_for_leagues rfl on rfl.id = rflp.roles_for_leagues_id
+                       join leagues l on l.id = rfl.league_id
+              where l.uuid = #{leagueUuid}
+              ) t
+        order by username
+    </select>
+
+</mapper>

@@ -133,6 +133,12 @@ public class AdditionalMatchService {
         if (firstPlayer == null || secondPlayer == null) {
             throw new GeneralBadRequestException(ErrorCode.USER_NOT_FOUND);
         }
+        if (!firstPlayer.isEnabled()
+                || !firstPlayer.isNonLocked()
+                || !secondPlayer.isEnabled()
+                || !secondPlayer.isNonLocked()) {
+            throw new GeneralBadRequestException(ErrorCode.USER_LOCKED);
+        }
 
         final Optional<League> league = leagueRepository.findByUuid(leagueUuid);
         if (league.isEmpty()) {

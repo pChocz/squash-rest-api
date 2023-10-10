@@ -20,11 +20,27 @@ public class PlayerDto {
 
     private String username;
     private String emoji;
+    private boolean enabled;
+    private boolean nonLocked;
 
     public PlayerDto(final Player player) {
         this.uuid = player.getUuid();
         this.username = player.getUsername();
         this.emoji = player.getEmoji();
+        this.enabled = player.isEnabled();
+        this.nonLocked = player.isNonLocked();
+    }
+
+    public PlayerDto(String uuid, String username, String emoji, boolean enabled, boolean nonLocked) {
+        this.uuid = UUID.fromString(uuid);
+        this.username = username;
+        this.emoji = emoji;
+        this.enabled = enabled;
+        this.nonLocked = nonLocked;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = UUID.fromString(uuid);
     }
 
     @Override
