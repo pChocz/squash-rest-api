@@ -40,7 +40,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/ws")
                 .setAllowedOrigins(
                         "http://localhost:4201",
-                        "https://squash-app.win"
+                        "https://squash-app.win",
+                        "https://squashable-api.pjoter1v.pl",
+                        "https://squashable-api.choczynski.pl"
                 );
     }
 
