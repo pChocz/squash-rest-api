@@ -25,3 +25,6 @@ jobs:
 
       - name: Build with Gradle
         run: gradle build
+
+      - name: build docker
+        run: docker build -t squash-backend-java .
