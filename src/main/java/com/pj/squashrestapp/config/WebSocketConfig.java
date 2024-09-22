@@ -41,8 +41,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins(
                         "http://localhost:4201",
                         "https://squash-app.win",
-                        "https://squashable-api.pjoter1v.pl",
-                        "https://squashable-api.choczynski.pl"
+                        "https://squashable.pjoter1v.pl",
+                        "https://squashable.choczynski.pl"
                 );
     }
 
