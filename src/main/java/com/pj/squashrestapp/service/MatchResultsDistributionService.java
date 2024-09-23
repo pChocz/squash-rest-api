@@ -61,6 +61,7 @@ public class MatchResultsDistributionService {
                 }
                 final List<MatchResultDistributionDataDto> matchesDataDto = results
                         .stream()
+                        .filter(v -> !v.getLooserId().equals(v.getWinnerId()))
                         .filter(v -> (Set.of(v.getWinnerId(), v.getLooserId()).equals(Set.of(winnerId, looserId))))
                         .toList();
 
