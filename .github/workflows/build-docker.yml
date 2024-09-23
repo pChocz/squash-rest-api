@@ -26,5 +26,5 @@ jobs:
       - name: build and push the image
         run: |
           docker login --username pChocz --password ${{ secrets.GH_PAT }} ghcr.io
-          docker build . --tag ghcr.io/pChocz/squash-backend-java:latest
+          docker build . --tag ghcr.io/pchocz/squash-backend-java:latest
           docker push ghcr.io/pChocz/squash-backend-java:latest
