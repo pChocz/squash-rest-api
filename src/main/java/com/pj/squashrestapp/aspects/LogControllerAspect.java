@@ -94,22 +94,20 @@ public class LogControllerAspect {
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        Object result;
         try {
             log.info(
                     "Entering service method {}.{}",
                     v("className", className),
                     v("methodName", methodName)
             );
-            result = proceedingJoinPoint.proceed();
-            stopWatch.stop();
-            return result;
+            return proceedingJoinPoint.proceed();
 
         } catch (final Throwable throwable) {
             log.error(throwable.getMessage(), throwable);
             throw throwable;
 
         } finally {
+            stopWatch.stop();
             log.info(
                     "Exiting service method {}.{} | {} | {}",
                     v("className", className),
@@ -129,7 +127,6 @@ public class LogControllerAspect {
      */
     @Around("redisServiceMethodsPointcut()")
     public Object logRedisServiceMethods(final ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
-        final String username = GeneralUtil.extractSessionUsername();
         final Object[] args = proceedingJoinPoint.getArgs();
 
         final MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
@@ -139,17 +136,15 @@ public class LogControllerAspect {
         final StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        Object result;
         try {
-            result = proceedingJoinPoint.proceed();
-            stopWatch.stop();
-            return result;
+            return proceedingJoinPoint.proceed();
 
         } catch (final Throwable throwable) {
             log.error(throwable.getMessage(), throwable);
             throw throwable;
 
         } finally {
+            stopWatch.stop();
             log.info(
                     "REDIS-EVICT {}.{}({}) | {}",
                     v("className", className),
@@ -179,7 +174,6 @@ public class LogControllerAspect {
         final String className = methodSignature.getDeclaringType().getSimpleName();
         final String methodName = methodSignature.getName();
         final boolean isSecretMethod = method.getAnnotation(SecretMethod.class) != null;
-        final boolean logResultIgnore = method.getAnnotation(LogResultIgnore.class) != null;
         final String arguments = isSecretMethod ? "[**_SECRET_ARGUMENTS_**]" : customArrayDeepToString(args);
 
         final String requestMapping = method.getAnnotation(GetMapping.class) != null
@@ -208,11 +202,9 @@ public class LogControllerAspect {
         }
 
         hibernateQueryInterceptor.startQueryCount();
-        Object result = null;
         try {
-            result = proceedingJoinPoint.proceed();
             logEntry.setMessage(className + "." + methodName + "(" + arguments + ")");
-            return result;
+            return proceedingJoinPoint.proceed();
 
         } catch (final Throwable throwable) {
             log.error(throwable.getMessage(), throwable);
@@ -240,13 +232,7 @@ public class LogControllerAspect {
                     v("username", username),
                     kv("ipAddress", AuthorizationUtil.extractRequestIpAddress()),
                     kv("queries", queryCount),
-                    kv("timeMillis", totalTimeMillis),
-                    v("result", result == null
-                            ? "NO_RESULT"
-                            : logResultIgnore
-                                ? "IGNORED"
-                                : result
-                    )
+                    kv("timeMillis", totalTimeMillis)
             );
         }
     }
