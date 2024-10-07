@@ -52,6 +52,9 @@ public class EmailSendConfig {
     @Value(value = "${smtp_port:}")
     private String smtpPort;
 
+    @Value(value = "${smtp_user:}")
+    private String smtpUser;
+
     void sendEmailWithAttachment(
             final String receiver, final String subject, final Object content, final File... files) {
         final Properties properties = buildProperties();
@@ -93,6 +96,7 @@ public class EmailSendConfig {
         final Properties prop = new Properties();
         prop.put("mail.smtp.host", smtpHost);
         prop.put("mail.smtp.port", smtpPort);
+        prop.put("mail.smtp.user", smtpUser);
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
         return prop;
