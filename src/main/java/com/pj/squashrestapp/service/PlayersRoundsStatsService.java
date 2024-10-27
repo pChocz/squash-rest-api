@@ -28,7 +28,7 @@ public class PlayersRoundsStatsService {
     public PlayerAllRoundsStats buildRoundsStatsForPlayer(final UUID leagueUuid, final UUID playerUuid) {
         final Player player = playerRepository.findByUuid(playerUuid);
         final PlayerDto playerDto = new PlayerDto(player);
-        List<RoundScoreboard> allRoundsScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
+        final List<RoundScoreboard> allRoundsScoreboards = scoreboardService.allRoundsScoreboards(leagueUuid);
 
         final PlayerAllRoundsStats playerAllRoundsStats = new PlayerAllRoundsStats(playerDto);
 
@@ -48,7 +48,6 @@ public class PlayersRoundsStatsService {
                         new PlayerSingleRoundStats(player, roundDto, properRoundGroupScoreboard));
             }
         }
-        allRoundsScoreboards = null;
         playerAllRoundsStats.calculateScoreboard();
         return playerAllRoundsStats;
     }

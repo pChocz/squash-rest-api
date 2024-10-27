@@ -92,8 +92,9 @@ public class ScoreboardService {
     @Cacheable(value = RedisCacheConfig.LEAGUE_ALL_ROUNDS_SCOREBOARDS, key = "#leagueUuid")
     public List<RoundScoreboard> allRoundsScoreboards(final UUID leagueUuid) {
         final League leagueRaw = leagueRepository.findByUuid(leagueUuid).orElseThrow();
-        List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
-        League leagueReconstructed = EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
+        final List<SetResult> setResultListForLeague = setResultRepository.fetchByLeagueUuid(leagueUuid);
+        final League leagueReconstructed =
+                EntityGraphBuildUtil.reconstructLeague(setResultListForLeague, leagueRaw.getId());
 
         if (leagueReconstructed == null) {
             return new ArrayList<>();
@@ -114,8 +115,6 @@ public class ScoreboardService {
                 }
             }
         }
-        setResultListForLeague = null;
-        leagueReconstructed = null;
 
         return roundScoreboards;
     }
