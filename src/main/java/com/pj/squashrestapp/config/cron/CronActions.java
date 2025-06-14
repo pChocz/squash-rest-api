@@ -2,6 +2,7 @@ package com.pj.squashrestapp.config.cron;
 
 import com.pj.squashrestapp.controller.RedisCacheController;
 import com.pj.squashrestapp.controller.UserAccessController;
+import com.pj.squashrestapp.hexagonal.healthcheck.HealthcheckService;
 import com.pj.squashrestapp.service.EmailQueueService;
 import com.pj.squashrestapp.util.AuthorizationUtil;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,7 @@ public class CronActions {
     private final UserAccessController userAccessController;
     private final RedisCacheController redisCacheController;
     private final EmailQueueService emailQueueService;
+    private final HealthcheckService healthcheckService;
 
     /**
      * Removes obsolete emails.
@@ -120,5 +122,15 @@ public class CronActions {
         AuthorizationUtil.configureAuthentication(CRON_USER, ROLE_ADMIN);
         redisCacheController.recreateAllLeaguesBigScoreboardsCache();
         AuthorizationUtil.clearAuthentication();
+    }
+
+    /**
+     * Healthcheck - https://healthchecks.io/
+     * every 5 minutes
+     */
+    @Scheduled(cron = "30 */5 * * * *", zone = UTC_ZONE)
+    @SchedulerLock(name = "HEALTHCHECK_LOCK")
+    public void healthcheck() {
+        healthcheckService.ping();
     }
 }

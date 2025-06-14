@@ -87,3 +87,6 @@ email:
   password: _REPLACE_
   smtp_host: _REPLACE_
   smtp_port: _REPLACE_
+
+healthcheck:
+  url: _REPLACE_
