@@ -129,7 +129,7 @@ public class CronActions {
      * every 5 minutes
      */
     @Scheduled(cron = "30 */5 * * * *", zone = UTC_ZONE)
-    @SchedulerLock(name = "HEALTHCHECK_LOCK")
+    @SchedulerLock(name = "HEALTHCHECK_LOCK", lockAtLeastFor = "PT30S")
     public void healthcheck() {
         healthcheckService.ping();
     }
